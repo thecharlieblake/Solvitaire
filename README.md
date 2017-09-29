@@ -1,43 +1,90 @@
 # General Solitaire Solver
-A solver for a range of perfect-information, single player solitaire card games
+A solver for a variety of single-player, perfect
+information solitaire card games.
 
-## Project Outline
+## Project Overview
 
-Most focus in games Artificial Intelligence focusses on games involving two or
-more players. However, many people enjoy single-player games, sometimes
-called “Solitaire Games”. Examples are many variants of card Solitaire games
-(called Patience in the UK), the game Peg-Solitaire, and many others which still
-fall into the category despite not having “solitaire” in the name.
+The solver should be able to correctly provide
+solutions for some instances of solitaire games, and
+be able to report other instances as unsolvable,
+minimising the number of instances that are deemed
+'intractable' (cannot be classified as solvable or
+unsolvable within a reasonable time period). A key
+study for this project will be how to do this
+efficiently for a _variety_ of solitaire games.
 
-A particularly important class of games are “perfect information” games, games
-like Chess and Go where chance plays no role and all players have available all
-the information relevant to the game. Creating world-class players for games
-like this represent some of the highest achievements in Artificial Intelligence.
-Not all card Solitaire games have this property, but many do, such as
-“Freecell”, “King Albert”, and “Black Hole”. The game Peg-Solitaire has this
-property too, as do many others. Unfortunately, good solvers are not available
-for most solitaire games.
+Perfect information games are an especially
+important domain in artificial intelligence, and
+some of the most high-profile successes in the field
+of AI have been creating good players for games like
+Chess, Checkers and Go, all of which are perfect 
+information games. However, relatively little work
+has been done on creating programs to play
+single-player perfect information games, and good
+solvers do not yet exist for most solitaire games.
 
-This project is to build high quality solvers for solitaire games of perfect
-information. The goal is to study how to do this efficiently for a variety
-of games, so the aim will be to build a solver or solvers for multiple
-games.
+Hence, this project will focus on creating a solver
+which is general enough to be able to play a wide
+range of solitaire games, whilst also maintaining a
+high level of efficiency. This efficiency will be
+achieved through a combination of language-level
+optimisation, and through exploring different AI
+search techniques. A specialised solver will be
+written to accomplish this, in code rather than
+using an existing constraint solving or planning
+programs.
 
-The exact specification is negotiable with the student. It could be for card
-solitaire games, peg-solitaire games, or others. The focus could be on a
-greater or smaller range of games, and also could be on modelling games so
-that a variety of games can be expressed in (e.g.) JSON and then solved by a
-multipurpose solver.
+## Objectives
 
-Similarly the solving technology could be negotiated, so it could be
-specially written code, or the use of existing search tools like constraint
-solvers or planning programs.
+### Primary Objectives
+- An application for solving single-player, perfect
+information solitaire instances (software artefact).
+- Some kind of schema or language for describing a
+_wide_ range of solitaire games.
+- The application must be able to solve valid games 
+expressed using the schema/language.
+- Automated testing to demonstrate the correctness
+of my classifications.
+- An implementation of search techniques such as
+'meta-moves'/'super moves' and eliminating
+symmetrical states.
+- An implementation of language-level/design
+optimisations to improve the efficiency of my
+search.
+- An analysis in my report of the effects of the
+above search techniques and implementation choices
+on the performance of the solver.
 
-### Supervisors
+### Secondary Objectives
+
+- Optimise the search algorithm to eliminate
+searching states in which certain moves/states
+'dominate' others.
+- Implement and evaluate more than one different
+type of search (e.g. best first, iterative
+deepening).
+- Experiment with and evaluate different designs
+for the general heuristic for best-first search,
+that works across a variety of games.
+
+### Tertiary Objectives
+
+Other tertiary objectives that satisfy the core
+aims of the project would be reasonable
+additions. Below are two particular instances of
+interesting routes down which this project could
+be taken:
+
+- An extension of the algorithm that aims to
+provide shortened solutions (i.e. ones that
+minimise the number of moves taken).
+- Calculating the solvability ratio for some the
+games my application can solve.
+
+## Supervisor
+
 Ian Gent
 
-### Artefact(s)
-A solver or multiple solvers for a variety of games. 
+## Background
 
-### Background
 ["Search in the Patience Game Black Hole"](https://pn.host.cs.st-andrews.ac.uk/blackhole-revised-final.pdf)
