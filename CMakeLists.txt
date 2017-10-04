@@ -17,6 +17,17 @@ file(GLOB_RECURSE sources_test src/test/*.cpp)
 file(GLOB_RECURSE data resources/*)
 
 ###############################################################################
+## conan.io setup #############################################################
+###############################################################################
+
+if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+else()
+    message(WARNING "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first")
+endif()
+
+###############################################################################
 ## target definitions #########################################################
 ###############################################################################
 
@@ -28,6 +39,9 @@ target_compile_options(solitaire_pip PUBLIC -std=c++1y -Wall -Wfloat-conversion)
 
 # this lets me include files relative to the root src dir with a <> pair
 target_include_directories(solitaire_pip PUBLIC src/main)
+
+# link conan libraries
+target_link_libraries(solitaire_pip ${CONAN_LIBS})
 
 # this copies all resource files in the build directory
 # we need this, because we want to work with paths relative to the executable
