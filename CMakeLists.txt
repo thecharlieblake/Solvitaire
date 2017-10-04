@@ -12,9 +12,8 @@ set(CMAKE_CXX_STANDARD 14)
 # these instructions search the directory tree when cmake is
 # invoked and put all files that match the pattern in the variables 
 # `sources` and `data`
-file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.h)
-file(GLOB_RECURSE sources_test src/test/*.cpp)
-file(GLOB_RECURSE data resources/*)
+set(sources src/main/main.cpp)
+set(sources_test src/test/all_tests.cpp src/test/main_test.cpp)
 
 ###############################################################################
 ## conan.io setup #############################################################
@@ -32,7 +31,7 @@ endif()
 ###############################################################################
 
 # add the data to the target, so it becomes visible in some IDE
-add_executable(solitaire_pip ${sources} ${data})
+add_executable(solitaire_pip ${sources})
 
 # just for example add some compiler flags
 target_compile_options(solitaire_pip PUBLIC -std=c++1y -Wall -Wfloat-conversion)
@@ -46,6 +45,23 @@ target_link_libraries(solitaire_pip ${CONAN_LIBS})
 # this copies all resource files in the build directory
 # we need this, because we want to work with paths relative to the executable
 file(COPY ${data} DESTINATION resources)
+
+###############################################################################
+## testing ####################################################################
+###############################################################################
+
+add_executable(unit_tests ${sources_test})
+
+# this allows us to use our executable as a link library
+# therefore we can inherit all compiler options and library dependencies
+set_target_properties(solitaire_pip PROPERTIES ENABLE_EXPORTS on)
+
+target_link_libraries(unit_tests ${CONAN_LIBS} solitaire_pip)
+
+ENABLE_TESTING()
+ADD_TEST(NAME unit_tests
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+        COMMAND unit_tests)
 
 ###############################################################################
 ## packaging ##################################################################

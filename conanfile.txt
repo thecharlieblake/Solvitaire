@@ -1,5 +1,9 @@
 [requires]
 Boost/1.60.0@lasote/stable
+gtest/1.8.0@lasote/stable
+
+[options]
+gtest:shared=False
 
 [generators]
 cmake

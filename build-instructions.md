@@ -5,7 +5,8 @@ building the project, running the program, and creating an installer.
 
 ### Installing dependencies
 
-`cd cmake-build-[debug|release]; conan install ..; cd ..`
+`cd cmake-build-[debug|release]; conan install .. --build missing -s \
+compiler=gcc -s compiler.version=6.3 -s compiler.libcxx=libstdc++11; cd ..`
 
 ### Generate Build System
 
