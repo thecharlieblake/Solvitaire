@@ -3,23 +3,27 @@
 The project uses the CMake build system generator. there are several stages for
 building the project, running the program, and creating an installer.
 
-## Installing dependencies
+### Installing dependencies
 
-`cd cmake-build-debug; conan install ..; cd ..`
+`cd cmake-build-[debug|release]; conan install ..; cd ..`
 
-## Generate Build System
+### Generate Build System
 
-`cmake -Bcmake-build-debug -H.`
+`cmake -Bcmake-build-[debug|release] -H.`
 
-## Build project
+### Build project
 
-`cmake --build cmake-build-debug`
+`cmake --build cmake-build-[debug|release]`
 
-## Run executable
+### Run executable
 
-`./cmake-build-debug/bin/solitaire_pip`
+`./cmake-build-[debug|release]/bin/solitaire_pip`
 
-## Create project installer
+### Create project installer
 
-`cpack --config cmake-build-debug/CPackConfig.cmake`
+`cpack --config cmake-build-[debug|release]/CPackConfig.cmake`
 
+## A Note on CLion
+
+If CLion complains that a dependency is missing, you may need to run the conan
+install command, and then in Clion run 'File->Reload CMake Project
