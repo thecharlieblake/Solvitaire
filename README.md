@@ -1,4 +1,4 @@
-# General Solitaire Solver
+# Solvitaire
 A solver for a variety of single-player, perfect
 information solitaire card games.
 
