@@ -10,7 +10,7 @@ compiler=gcc -s compiler.version=6.3 -s compiler.libcxx=libstdc++11; cd ..`
 
 ### Generate Build System
 
-`cmake -Bcmake-build-[debug|release] -H.`
+`cmake [-G "CodeBlocks - Unix Makefiles"] -DCMAKE_BUILD_TYPE=[DEBUG|RELEASE] -Bcmake-build-[debug|release] -H.`
 
 ### Build project
 

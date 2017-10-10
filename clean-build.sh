@@ -10,8 +10,8 @@ cd cmake-build-release; conan install .. --build missing -s compiler=gcc \
 	-s compiler.version=6.3 -s compiler.libcxx=libstdc++11; cd ..
 
 echo "Generating build..."
-cmake -Bcmake-build-debug -H.
-cmake -Bcmake-build-release -H.
+cmake -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG --target solitaire_pip -Bcmake-build-debug -H. 
+cmake -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE --target solitaire_pip -Bcmake-build-release -H.
 
 echo "Building..."
 cmake --build cmake-build-debug
