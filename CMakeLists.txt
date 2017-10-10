@@ -6,12 +6,9 @@ project(solitaire_pip)
 set(CMAKE_CXX_STANDARD 14)
 
 ###############################################################################
-## file globbing ##############################################################
+## source files ###############################################################
 ###############################################################################
 
-# these instructions search the directory tree when cmake is
-# invoked and put all files that match the pattern in the variables 
-# `sources` and `data`
 set(sources src/main/main.cpp)
 set(sources_test src/test/all_tests.cpp src/test/main_test.cpp)
 
@@ -21,20 +18,36 @@ set(sources_test src/test/all_tests.cpp src/test/main_test.cpp)
 
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    # Disable warnings/errors for conan libraries
+    set(CONAN_SYSTEM_INCLUDES On)
     conan_basic_setup()
 else()
     message(WARNING "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first")
 endif()
 
 ###############################################################################
+## compile options ############################################################
+###############################################################################
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pedantic -Wall -Wextra \
+-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wformat=2 -Winit-self \
+-Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
+-Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow \
+-Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Werror")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -g")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
+
+###############################################################################
 ## target definitions #########################################################
 ###############################################################################
 
+# Default to building the 'Debug' configuration
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "The build configuration" FORCE)
+endif()
+
 # add the data to the target, so it becomes visible in some IDE
 add_executable(solitaire_pip ${sources})
-
-# just for example add some compiler flags
-target_compile_options(solitaire_pip PUBLIC -std=c++1y -Wall -Wfloat-conversion)
 
 # this lets me include files relative to the root src dir with a <> pair
 target_include_directories(solitaire_pip PUBLIC src/main)
