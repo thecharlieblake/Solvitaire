@@ -3,16 +3,21 @@
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
 
-namespace logging = boost::log;
+#if defined NDEBUG
+    #define LOG_DEBUG(msg)
+#else
+    #define LOG_DEBUG(msg) BOOST_LOG_TRIVIAL(debug) << msg
+#endif
+#define LOG_INFO(msg) BOOST_LOG_TRIVIAL(info) << msg
+#define LOG_WARNING(msg) BOOST_LOG_TRIVIAL(warning) << msg
+#define LOG_ERROR(msg) BOOST_LOG_ERROR(error) << msg
 
 int main()
 {
 
-#ifndef NDEBUG
-    BOOST_LOG_TRIVIAL(debug) << "Log debug";
-#endif
-    BOOST_LOG_TRIVIAL(info) << "Log info";
-    BOOST_LOG_TRIVIAL(warning) << "Log warning";
+    LOG_DEBUG("Log debug");
+    LOG_INFO("Log info");
+    LOG_WARNING("Log warning");
 
     std::string hello( "Hello, world!\n" );
 
