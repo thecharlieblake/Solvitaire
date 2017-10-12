@@ -10,7 +10,7 @@ compiler=gcc -s compiler.version=6.3 -s compiler.libcxx=libstdc++11; cd ..`
 
 ### Generate Build System
 
-`cmake [-G "CodeBlocks - Unix Makefiles"] -DCMAKE_BUILD_TYPE=[DEBUG|RELEASE] -Bcmake-build-[debug|release] -H.`
+`cmake [-G "CodeBlocks - Unix Makefiles"] -D CMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=[DEBUG|RELEASE] -Bcmake-build-[debug|release] -H.`
 
 ### Build project
 
@@ -18,7 +18,7 @@ compiler=gcc -s compiler.version=6.3 -s compiler.libcxx=libstdc++11; cd ..`
 
 ### Run executable
 
-`./cmake-build-[debug|release]/bin/solitaire_pip`
+`./cmake-build-[debug|release]/bin/solvitaire`
 
 ### Create project installer
 

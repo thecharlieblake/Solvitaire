@@ -1,0 +1,31 @@
+language: c++
+
+install:
+# Upgrade GCC
+- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+- sudo apt-get update -qq
+- sudo apt-get install -qq g++-6
+- sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
+
+# Boost
+- echo "Installing Boost Libraries"
+- sudo wget -O boost_1_63_0.tar.gz http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.gz/download > /dev/null 2>&1
+- sudo tar xzvf boost_1_63_0.tar.gz > /dev/null 2>&1
+- cd boost_1_63_0/
+- sudo ./bootstrap.sh --with-libraries=log > /dev/null 2>&1
+- sudo ./b2 link=shared threading=multi toolset=gcc optimization=space > /dev/null 2>&1
+- sudo ./b2 install > /dev/null 2>&1
+- cd ..
+
+script:
+# Generate build
+- cmake -G "CodeBlocks - Unix Makefiles" -D CMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=DEBUG --target solvitaire -Bcmake-build-debug -H. 
+- cmake -G "CodeBlocks - Unix Makefiles" -D CMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=RELEASE --target solvitaire -Bcmake-build-release -H.
+
+# Build
+- cmake --build cmake-build-debug
+- cmake --build cmake-build-release
+
+# Run unit tests
+- ./cmake-build-debug/bin/unit_tests 
+- ./cmake-build-release/bin/unit_tests
