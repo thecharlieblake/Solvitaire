@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 14)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp)
+set(sources src/main/main.cpp src/main/Card.h src/main/Card.cpp)
 set(sources_test src/test/all_tests.cpp src/test/main_test.cpp)
 
 ###############################################################################
