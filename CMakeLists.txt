@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp)
+set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h)
 set(sources_test src/test/main_test.cpp)
 
 ###############################################################################
@@ -20,7 +20,10 @@ set(sources_test src/test/main_test.cpp)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.63.0 REQUIRED COMPONENTS log)
+
+set(boost_components log program_options)
+
+find_package(Boost 1.63.0 REQUIRED COMPONENTS ${boost_components})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
