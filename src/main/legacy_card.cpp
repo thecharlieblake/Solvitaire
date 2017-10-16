@@ -2,12 +2,12 @@
 // Created by thecharlesblake on 10/11/17.
 //
 
-#include "Card.h"
+#include "legacy_card.h"
 #include <string>
 
-Card::Card(const int r, const std::string s): rank(r), suit(s) {}
+legacy_card::legacy_card(const int r, const std::string s): rank(r), suit(s) {}
 
-std::ostream & operator<<(std::ostream & Str, Card const & c) {
+std::ostream & operator<<(std::ostream & Str, legacy_card const & c) {
     std::string r;
     if (c.rank == 1) {
         r = "A";

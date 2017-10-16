@@ -7,13 +7,13 @@
 
 #include <string>
 
-struct Card {
-    Card(const int, const std::string);
+struct legacy_card {
+    legacy_card(const int, const std::string);
     const int rank;
     const std::string suit;
 };
 
-std::ostream & operator<<(std::ostream &, Card const &);
+std::ostream & operator<<(std::ostream &, legacy_card const &);
 
 
 #endif //SOLITAIRE_PIP_CARD_H
