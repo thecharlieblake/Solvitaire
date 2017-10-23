@@ -10,8 +10,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h src/main/log_helper.h)
+set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h src/main/log_helper.h src/main/card.h src/main/card.cpp src/main/deal_parser.cpp src/main/deal_parser.h)
 set(sources_test src/test/main_test.cpp)
+
+###############################################################################
+## Rapid JSON setup ###########################################################
+###############################################################################
+
+find_package(RapidJSON)
 
 ###############################################################################
 ## Boost setup ################################################################
@@ -91,10 +97,6 @@ target_include_directories(solvitaire PUBLIC src/main)
 
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
-# this copies all resource files in the build directory
-# we need this, because we want to work with paths relative to the executable
-file(COPY ${data} DESTINATION resources)
-
 ###############################################################################
 ## testing ####################################################################
 ###############################################################################
@@ -119,10 +121,6 @@ ADD_TEST(NAME unit_tests
 # all install commands get the same destination. this allows us to use paths
 # relative to the executable.
 install(TARGETS solvitaire DESTINATION solvitaire)
-# this is basically a repeat of the file copy instruction that copies the
-# resources in the build directory, but here we tell cmake that we want it
-# in the package
-install(DIRECTORY resources DESTINATION solvitaire)
 
 set(CPACK_OUTPUT_FILE_PREFIX installer)
 set(CPACK_PACKAGE_VERSION "1.0.0")
