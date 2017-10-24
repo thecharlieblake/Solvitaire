@@ -17,11 +17,8 @@
         }
       }
     },
-    "hole cards": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/card"
-      }
+    "hole card": {
+      "$ref": "#/definitions/card"
     }
   },
   "additionalProperties": false,

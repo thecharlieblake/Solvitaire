@@ -8,6 +8,8 @@
 
 using namespace std;
 
+card::card() {}
+
 card::card(const char* c) {
     switch(tolower(c[0])) {
         case 'a': rank = 1;

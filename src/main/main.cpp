@@ -6,7 +6,7 @@
 
 #include "command_line_helper.h"
 #include "card.h"
-#include "deal_parser.h"
+#include "io_utils.h"
 
 using namespace rapidjson;
 
@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
     for (auto filename : clh.get_input_files()) {
         try {
             Document d;
-            deal_parser::parse(d, filename);
+            io_utils::parse(d, filename);
 
             vector<vector<card*>* > tableaux;
             const Value& json_tabx = d["tableau piles"];

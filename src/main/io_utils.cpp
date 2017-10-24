@@ -12,13 +12,13 @@
 #include <rapidjson/schema.h>
 #include <rapidjson/stringbuffer.h>
 
-#include "deal_parser.h"
+#include "io_utils.h"
 
 using namespace std;
 using namespace rapidjson;
 using namespace boost;
 
-void deal_parser::parse(Document& doc, const std::string filename) {
+void io_utils::parse(Document& doc, const std::string filename) {
     const optional<string> in_json = read_file(filename);
 
     if (!in_json) {
@@ -39,7 +39,7 @@ void deal_parser::parse(Document& doc, const std::string filename) {
     }
 }
 
-const optional<string> deal_parser::read_file(const string filename) {
+const optional<string> io_utils::read_file(const string filename) {
     // Reads the file into a string
     std::ifstream ifstr(filename);
     std::stringstream buf;
@@ -52,30 +52,30 @@ const optional<string> deal_parser::read_file(const string filename) {
     return buf.str();
 }
 
-void deal_parser::gen_schema_doc(Document& d) {
+void io_utils::gen_schema_doc(Document& d) {
     const char* schema_json = "{\"$schema\":\"http://json-schema.org/draft-04/sc"
             "hema#\",\"definitions\":{\"card\":{\"type\":\"string\",\"pattern"
             "\":\"^(?i)([A|[1-9]|1[0-3]|J|Q|K])([C|D|H|S])$\"}},\"type\":\""
             "object\",\"properties\":{\"tableau piles\":{\"type\":\"array\""
             ",\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definit"
-            "ions/card\"}}},\"hole cards\":{\"type\":\"array\",\"items\":{"
-            "\"$ref\":\"#/definitions/card\"}}},\"additionalProperties\":fa"
-            "lse,\"anyOf\":[{\"required\":[\"tableau piles\"]}]}";
+            "ions/card\"}}},\"hole card\":{\"$ref\":\"#/definitions/card\"}}"
+            ",\"additionalProperties\":false,\"anyOf\":[{\"required\":[\"tableau"
+            " piles\"]}]}";
 
     bool success = to_json(d, schema_json);
     assert(success);
 }
 
-bool deal_parser::to_json(rapidjson::Document& d, const char* in) {
+bool io_utils::to_json(rapidjson::Document& d, const char* in) {
     d.Parse(in);
     return !d.HasParseError();
 }
 
-bool deal_parser::to_json(rapidjson::Document& d, const string in) {
+bool io_utils::to_json(rapidjson::Document& d, const string in) {
     return to_json(d, in.c_str());
 }
 
-const string deal_parser::schema_err_str(const SchemaValidator& validator) {
+const string io_utils::schema_err_str(const SchemaValidator& validator) {
     // Input JSON is invalid according to the schema
     // Output diagnostic information
     string ret = "input JSON failed to match the required schema.\n";

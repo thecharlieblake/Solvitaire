@@ -13,7 +13,7 @@
 
 #include "card.h"
 
-class deal_parser {
+class io_utils {
 public:
     static void parse(rapidjson::Document&, const std::string);
 private:
