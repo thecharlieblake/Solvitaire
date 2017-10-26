@@ -14,7 +14,6 @@ public:
     int get_rank() const;
     char get_suit() const;
 
-    friend std::string& operator+= (std::ostream&, const game_state&);
 private:
     int rank;
     char suit;

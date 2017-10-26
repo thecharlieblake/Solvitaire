@@ -5,13 +5,15 @@
 #ifndef SOLVITAIRE_LOG_HELPER_H
 #define SOLVITAIRE_LOG_HELPER_H
 
+#include <iostream>
+
 #if defined NDEBUG
-    #define LOG_DEBUG(msg)
+    #define LOG_DEBUG
 #else
-    #define LOG_DEBUG(msg) BOOST_LOG_TRIVIAL(debug) << msg
+    #define LOG_DEBUG clog << "[debug]\n"
 #endif
-#define LOG_INFO(msg) BOOST_LOG_TRIVIAL(info) << msg
-#define LOG_WARNING(msg) BOOST_LOG_TRIVIAL(warning) << msg
-#define LOG_ERROR(msg) BOOST_LOG_ERROR(error) << msg
+#define LOG_INFO(msg) clog << "[info]\n"
+#define LOG_WARNING(msg) clog << "[warning]\n"
+#define LOG_ERROR(msg) cerr << "[error]\n"
 
 #endif //SOLVITAIRE_LOG_HELPER_H

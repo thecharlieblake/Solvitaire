@@ -1,5 +1,5 @@
 //
-// Created by thecharlesblake on 10/23/17.
+// Created by thecharlesblake on 10/24/17.
 //
 
 #ifndef SOLVITAIRE_GAME_STATE_H
@@ -10,19 +10,26 @@
 
 #include <rapidjson/document.h>
 
-#include "card.h
+#include "card.h"
 
 class game_state {
 public:
     game_state(const rapidjson::Document&);
-    virtual std::vector<game_state> get_next_legal_states() const = 0;
-    virtual bool is_solved() const = 0;
-    virtual std::ostream& print(std::ostream&) const;
+    std::vector<game_state> get_next_legal_states() const;
+    bool is_solved() const;
+    std::ostream& print(std::ostream&) const;
 
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
-protected:
-    std::vector<std::vector<card>> tableau_piles;
+private:
+    void move_to_hole(int);
+    bool adjacent(const card& a, const card& b) const;
+
+    std::vector<std::vector<card> > tableau_piles;
+    int max_rank;
+    card hole_card;
+    mutable bool solved;
 };
+
 
 #endif //SOLVITAIRE_GAME_STATE_H

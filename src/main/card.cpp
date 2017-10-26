@@ -3,6 +3,7 @@
 //
 
 #include <ctype.h>
+#include <sstream>
 
 #include "card.h"
 
@@ -34,21 +35,20 @@ char card::get_suit() const {
     return suit;
 }
 
-std::ostream & operator<<(std::ostream & Str, card const & c) {
+std::ostream & operator<<(std::ostream & s, card const & c) {
     std::string r;
     if (c.get_rank() == 1) {
-        r = "A";
+        s << "A";
     } else if (c.get_rank() <= 10) {
-        r = std::to_string(c.get_rank());
+        s << c.get_rank();
     } else if (c.get_rank() == 11) {
-        r = "J";
+        s << "J";
     } else if (c.get_rank() == 12) {
-        r = "Q";
+        s << "Q";
     } else if (c.get_rank() == 13) {
-        r = "K";
+        s << "K";
     }
 
-    r += c.get_suit();
-
-    return Str << r;
+    s << c.get_suit();
+    return s;
 }

@@ -11,16 +11,17 @@ class command_line_helper {
 public:
     command_line_helper();
     bool parse(int argc, const char* argv[]);
-    void print_help();
-    void print_no_input_error();
-    void print_no_sol_type_error();
-    void print_rand_plus_input_err();
     const std::vector<std::string> get_input_files();
     const std::string get_solitaire_type();
     bool get_random_deal();
     bool get_help();
-    bool assess_errors();
 private:
+    bool assess_errors();
+    void print_help();
+    void print_no_input_error();
+    void print_no_sol_type_error();
+    void print_rand_plus_input_err();
+    
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
     boost::program_options::positional_options_description p;
