@@ -22,6 +22,16 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
+    int seed = clh.get_random_deal();
+    if (seed >= 0) {
+        game_state gs(seed);
+        solver sol(gs);
+
+        cout << "Attempting to solve with seed: " << seed << "...\n";
+        sol.run();
+        cout << sol;
+    }
+
     for (auto input_json : clh.get_input_files()) {
         try {
             // Attempts to read the user's json into a document

@@ -10,13 +10,14 @@
 class card {
 public:
     card();
+    card(int, int);
     card(const char*);
     int get_rank() const;
     char get_suit() const;
 
 private:
     int rank;
-    char suit;
+    int suit;
 };
 
 std::ostream & operator<<(std::ostream &, card const &);

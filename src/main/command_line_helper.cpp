@@ -15,13 +15,14 @@ using namespace std;
 namespace po = boost::program_options;
 
 command_line_helper::command_line_helper()
-        : main_options("options") {
+        : main_options("options"), random_deal(-1) {
 
     main_options.add_options()
             ("help", "produce help message")
             ("type", po::value<string>(),
              "specify the type of the solitaire game to be solved (REQUIRED)")
-            ("random", "create and solve a random solitaire deal");
+            ("random", po::value<int>(), "create and solve a random solitaire "
+                    "deal based on a seed");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -55,7 +56,9 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         solitaire_type = vm["type"].as<string>();
     }
 
-    random_deal = vm.count("random");
+    if (vm.count("random")) {
+        random_deal = vm["random"].as<int>();
+    }
 
     // Handle logic error scenarios
     return assess_errors();
@@ -114,7 +117,7 @@ const string command_line_helper::get_solitaire_type() {
     return solitaire_type;
 }
 
-bool command_line_helper::get_random_deal() {
+int command_line_helper::get_random_deal() {
     return random_deal;
 }
 

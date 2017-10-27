@@ -13,7 +13,7 @@ public:
     bool parse(int argc, const char* argv[]);
     const std::vector<std::string> get_input_files();
     const std::string get_solitaire_type();
-    bool get_random_deal();
+    int get_random_deal();
     bool get_help();
 private:
     bool assess_errors();
@@ -28,7 +28,7 @@ private:
 
     std::vector<std::string> input_files;
     std::string solitaire_type;
-    bool random_deal;
+    int random_deal;
     bool help;
 };
 

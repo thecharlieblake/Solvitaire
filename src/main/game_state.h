@@ -15,6 +15,7 @@
 class game_state {
 public:
     game_state(const rapidjson::Document&);
+    game_state(int seed);
     std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
     std::ostream& print(std::ostream&) const;

@@ -4,6 +4,9 @@
 
 #include <vector>
 #include <ostream>
+#include <numeric>
+#include <random>
+#include <algorithm>
 
 #include <rapidjson/document.h>
 
@@ -36,6 +39,38 @@ game_state::game_state(const Document& doc) : max_rank(1) {
     const Value& json_h_card = doc["hole card"];
     assert(json_h_card.IsString());
     hole_card = json_h_card.GetString();
+}
+
+// Construct an initial game state from a seed
+game_state::game_state(int seed) : max_rank(7) {
+    int start = 1; // Ignore the first (hole) card
+    int end = max_rank * 4;
+
+    // Create a vector of pointers to ints from [start, end)
+    vector<int*> v;
+    for (int i = start; i < end; i++) {
+        v.push_back(new int(i));
+    }
+    
+    // Randomly shuffle the pointers
+    auto rng = std::default_random_engine(seed);
+    std::shuffle(std::begin(v), std::end(v), rng);
+
+    for (vector<int*>::size_type i = 0; i < v.size(); i++) {
+        int r = ((*v[i]) % max_rank);
+        int s = (*v[i]) / max_rank;
+
+        // Add the randomly generated card to the tableau piles
+        if (i % 3 == 0) tableau_piles.push_back(vector<card>());
+        tableau_piles[i / 3].push_back(card(r + 1, s));
+    }
+
+    hole_card = "AS";
+
+    // release memory
+    for (int i = start; i < max_rank; i++) {
+        delete v[i];
+    }
 }
 
 vector<game_state> game_state::get_next_legal_states() const {
