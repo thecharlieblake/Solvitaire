@@ -30,8 +30,14 @@ private:
 
     void move_to_hole(int);
     bool adjacent(const card& a, const card& b) const;
+    void print_header(std::ostream&, const char*) const;
+    void print_foundations(std::ostream&) const;
+    void print_tableau_piles(std::ostream&) const;
+    void print_hole(std::ostream&) const;
 
     std::vector<std::vector<card> > tableau_piles;
+    std::vector<card> foundations;
+    sol_rules rules;
     card hole_card;
     mutable bool solved;
 };

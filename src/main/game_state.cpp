@@ -16,7 +16,7 @@ using namespace rapidjson;
 using namespace std;
 
 // Construct an initial game state from a JSON doc
-game_state::game_state(const Document& doc) {
+game_state::game_state(const Document& doc) : rules("simple-black-hole") {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];
@@ -43,7 +43,7 @@ game_state::game_state(const Document& doc) {
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed, const sol_rules& rules) {
+game_state::game_state(int seed, const sol_rules& rules) : rules(rules) {
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
     // Deal to the tableau piles (row-by-row)
@@ -131,8 +131,8 @@ bool game_state::adjacent(const card& a, const card& b) const {
 
     return x == y + 1
            || x + 1 == y
-           || (x == 1 && y == max_rank)
-           || (x == max_rank && y == 1);
+           || (x == 1 && y == rules.max_rank)
+           || (x == rules.max_rank && y == 1);
 }
 
 void game_state::move_to_hole(int tab_idx) {
@@ -145,6 +145,40 @@ bool game_state::is_solved() const {
 }
 
 ostream& game_state::print(ostream& stream) const {
+    const char *sep = "------------------------------\n";
+
+    if (rules.foundations) {
+        print_header(stream, "Foundations");
+        print_foundations(stream);
+    }
+    if (rules.tableau_pile_count > 0) {
+        print_header(stream, "Tableau Piles");
+        print_tableau_piles(stream);
+    }
+    if (rules.hole) {
+        print_header(stream, "Hole Card");
+        print_hole(stream);
+    }
+    return stream << "///////////////////////////////////\n\n";
+}
+
+void game_state::print_header(ostream& stream, const char* header) const {
+    stream << "--- " << header << " ";
+    int pad = 20 - strlen(header);
+    for (int i = 0; i < pad; i++) {
+        stream << '-';
+    }
+    stream << "\n";
+}
+
+void game_state::print_foundations(ostream& stream) const {
+    stream << foundations[0] << "\t"
+           << foundations[1] << "\t"
+           << foundations[2] << "\t"
+           << foundations[3] << "\n";
+};
+
+void game_state::print_tableau_piles(ostream& stream) const {
     bool empty_row = false;
     vector<card>::size_type row_idx = 0;
 
@@ -159,17 +193,14 @@ ostream& game_state::print(ostream& stream) const {
             stream << "\t";
         }
 
-        if (!empty_row) stream << "|";
-        if (row_idx == 0) {
-            stream << " Hole card: " << hole_card;
-        }
-
         stream << "\n";
         row_idx++;
     }
+};
 
-    return stream;
-}
+void game_state::print_hole(ostream& stream) const {
+    stream << hole_card << "\n";
+};
 
 ostream& operator <<(ostream& stream, const game_state& gs) {
     return gs.print(stream);

@@ -7,7 +7,6 @@
 #include "deal_parser.h"
 #include "game_state.h"
 #include "solver.h"
-#include "sol_rules.h"
 
 using namespace rapidjson;
 
@@ -30,8 +29,8 @@ int main(int argc, const char* argv[]) {
     int seed = clh.get_random_deal();
     if (seed >= 0) {
         cout << "Attempting to solve with seed: " << seed << "...\n";
-        game_state gs(seed, sol_rules);
-        solve_game(gs, sol_rules);
+        game_state gs(seed, rules);
+        solve_game(gs, rules);
     }
 
     for (auto input_json : clh.get_input_files()) {
@@ -44,7 +43,7 @@ int main(int argc, const char* argv[]) {
             game_state gs(doc);
 
             cout << "Attempting to solve " << input_json << "...\n";
-            solve_game(gs, sol_rules);
+            solve_game(gs, rules);
 
         } catch (runtime_error& e) {
             cerr << "Error: " << e.what() << "\n";
