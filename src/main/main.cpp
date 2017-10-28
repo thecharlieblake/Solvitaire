@@ -4,7 +4,6 @@
 #include <rapidjson/document.h>
 
 #include "command_line_helper.h"
-#include "card.h"
 #include "deal_parser.h"
 #include "game_state.h"
 #include "solver.h"
