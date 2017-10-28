@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h src/main/log_helper.h src/main/card.h src/main/card.cpp src/main/deal_parser.cpp src/main/deal_parser.h src/main/solver.cpp src/main/solver.h src/main/game_state.cpp src/main/game_state.h src/main/sol_rules.h src/main/sol_rules.cpp)
+set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h src/main/log_helper.h src/main/card.h src/main/card.cpp src/main/deal_parser.cpp src/main/deal_parser.h src/main/solver.cpp src/main/solver.h src/main/game_state.cpp src/main/game_state.h src/main/sol_rules.h src/main/sol_rules.cpp src/main/pile.cpp src/main/pile.h)
 set(sources_test src/test/main_test.cpp)
 
 ###############################################################################

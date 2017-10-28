@@ -7,16 +7,23 @@
 #include <numeric>
 #include <random>
 #include <algorithm>
+#include <functional>
 
 #include <rapidjson/document.h>
 
 #include "game_state.h"
+#include "pile.h"
 
 using namespace rapidjson;
 using namespace std;
 
+typedef sol_rules::build_order ord;
+typedef sol_rules::build_policy pol;
+
 // Construct an initial game state from a JSON doc
-game_state::game_state(const Document& doc) : rules("simple-black-hole") {
+game_state::game_state(const Document& doc)
+        : rules("simple-black-hole"),
+          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];
@@ -24,12 +31,12 @@ game_state::game_state(const Document& doc) : rules("simple-black-hole") {
 
     int max_rank = 1;
     for (auto& json_tab : json_tab_piles.GetArray()) {
-        vector<card> tableau_pile;
+        pile tableau_pile(true, rules.build_order, pol::ANY_SUIT, false);
 
         for (auto& json_card : json_tab.GetArray()) {
             card c(json_card.GetString());
             if (c.get_rank() > max_rank) max_rank = c.get_rank();
-            tableau_pile.push_back(c);
+            tableau_pile.place(c);
         }
 
         tableau_piles.push_back(tableau_pile);
@@ -39,11 +46,13 @@ game_state::game_state(const Document& doc) : rules("simple-black-hole") {
     assert(doc.HasMember("hole card"));
     const Value& json_h_card = doc["hole card"];
     assert(json_h_card.IsString());
-    hole_card = json_h_card.GetString();
+    hole.place(json_h_card.GetString());
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed, const sol_rules& rules) : rules(rules) {
+game_state::game_state(int seed, const sol_rules& rules)
+        : rules(rules),
+          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
     // Deal to the tableau piles (row-by-row)
@@ -52,17 +61,26 @@ game_state::game_state(int seed, const sol_rules& rules) : rules(rules) {
 
         // If there is a hole card, don't deal the ace of spades
         if (rules.hole && c == "AS") {
-            hole_card = "AS";
+            hole.place("AS");
             continue;
         }
 
         // For the first row we must create all the tableau pile vectors
         if (i / rules.tableau_pile_count == 0) {
-            tableau_piles.push_back(vector<card>());
+            pile p(true, rules.build_order, pol::ANY_SUIT, false);
+            tableau_piles.push_back(p);
         }
 
         // Add the randomly generated card to the tableau piles
-        tableau_piles[i % rules.tableau_pile_count].push_back(c);
+        tableau_piles[i % rules.tableau_pile_count].place(c);
+    }
+
+    // If there are foundation piles, create the relevant pile vectors
+    if (rules.foundations) {
+        for (int i = 0; i < 4; i++) {
+            pile p(true, ord::ASCENDING, pol(i), false);
+            foundations.push_back(p);
+        }
     }
 }
 
@@ -93,37 +111,50 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     return deck;
 }
 
-
 vector<game_state> game_state::get_next_legal_states() const {
+    // Generates vectors of references to all the piles from which
+    // cards can be removed, and to which they can be added
+    vector<pile&> can_remove;
+    vector<pile&> can_add;
+
+    for (pile p : tableau_piles) {
+        can_remove.push_back(p);
+        if (rules.build_order != ord::NO_BUILD) {
+            can_add.push_back(p);
+        }
+    }
+    if (rules.foundations) {
+        for (pile p : foundations) {
+            can_remove.push_back(p);
+            can_add.push_back(p);
+        }
+    }
+    if (rules.hole) {
+        can_add.push_back(hole);
+    }
+
+    // The next legal states
     vector<game_state> next;
 
-    // Searches through each column for a top card that can be moved to the hole
-    bool all_tableaux_empty = true;
-    for (vector<vector<card>>::size_type i = 0; i < tableau_piles.size(); i++) {
-        vector<card> tableau_pile = tableau_piles[i];
+    for (pile &rem_pile : can_remove) {
+        if (rem_pile.empty()) continue;
 
-        // Ignore empty piles
-        if (tableau_pile.empty()) {
-            continue;
-        } else {
-            all_tableaux_empty = false;
-        }
-        card top_card = tableau_pile.back();
+        for (pile &add_pile : can_add) {
+            if (&add_pile != &rem_pile
+                && add_pile.can_place(rem_pile.top_card())) {
 
-        // If a card at the top of a tableau pile is adjacent to the hole card,
-        // move it to the hole and add that state
-        if (adjacent(top_card, hole_card)) {
-            game_state s = *this;
-            s.move_to_hole(i);
-            next.push_back(s);
+                move(rem_pile, add_pile); // remove
+                game_state s = *this;
+                next.push_back(s);
+                move(add_pile, rem_pile); // restore
+            }
         }
     }
 
-    // If there are no cards left in play, deal solved
-    solved = all_tableaux_empty;
-
     return next;
 }
+
+
 
 bool game_state::adjacent(const card& a, const card& b) const {
     int x = a.get_rank();
@@ -135,13 +166,13 @@ bool game_state::adjacent(const card& a, const card& b) const {
            || (x == rules.max_rank && y == 1);
 }
 
-void game_state::move_to_hole(int tab_idx) {
-    hole_card = tableau_piles[tab_idx].back();
-    tableau_piles[tab_idx].pop_back();
-}
-
 bool game_state::is_solved() const {
-    return solved;
+    for (auto p : tableau_piles) {
+        if (!p.empty()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 ostream& game_state::print(ostream& stream) const {
@@ -172,10 +203,10 @@ void game_state::print_header(ostream& stream, const char* header) const {
 }
 
 void game_state::print_foundations(ostream& stream) const {
-    stream << foundations[0] << "\t"
-           << foundations[1] << "\t"
-           << foundations[2] << "\t"
-           << foundations[3] << "\n";
+    stream << foundations[0].top_card() << "\t"
+           << foundations[1].top_card() << "\t"
+           << foundations[2].top_card() << "\t"
+           << foundations[3].top_card() << "\n";
 };
 
 void game_state::print_tableau_piles(ostream& stream) const {
@@ -185,7 +216,7 @@ void game_state::print_tableau_piles(ostream& stream) const {
     while (!empty_row) {
         empty_row = true;
 
-        for (vector<card> tableau_pile : tableau_piles) {
+        for (pile tableau_pile : tableau_piles) {
             if (tableau_pile.size() > row_idx) {
                 empty_row = false;
                 stream << tableau_pile[row_idx];
@@ -199,7 +230,7 @@ void game_state::print_tableau_piles(ostream& stream) const {
 };
 
 void game_state::print_hole(ostream& stream) const {
-    stream << hole_card << "\n";
+    stream << hole.top_card() << "\n";
 };
 
 ostream& operator <<(ostream& stream, const game_state& gs) {

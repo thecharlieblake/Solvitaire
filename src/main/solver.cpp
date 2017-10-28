@@ -5,6 +5,7 @@
 #include <string>
 #include <ostream>
 #include <iostream>
+#include <algorithm>
 
 #include "solver.h"
 #include "log_helper.h"
@@ -34,9 +35,17 @@ bool solver::run() {
         // Create new nodes for each of the children
         vector<game_state> new_children = current.state.get_next_legal_states();
         for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
+            game_state new_state = *it;
+
+            // If we have seen the state before, ignore it (loop detection)
+            if (find(begin(current.history), end(current.history), new_state)
+                != end(current.history)) {
+                continue;
+            }
+
             node n = current;
             n.history.push_back(n.state);
-            n.state = *it;
+            n.state = new_state;
 
             frontier.push_back(n);
         }

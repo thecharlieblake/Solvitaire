@@ -13,6 +13,7 @@
 
 #include "card.h"
 #include "sol_rules.h"
+#include "pile.h"
 
 class game_state {
 public:
@@ -35,11 +36,10 @@ private:
     void print_tableau_piles(std::ostream&) const;
     void print_hole(std::ostream&) const;
 
-    std::vector<std::vector<card> > tableau_piles;
-    std::vector<card> foundations;
+    std::vector<pile> tableau_piles;
+    std::vector<pile> foundations;
+    pile hole;
     sol_rules rules;
-    card hole_card;
-    mutable bool solved;
 };
 
 

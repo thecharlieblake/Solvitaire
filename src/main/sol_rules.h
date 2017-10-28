@@ -14,9 +14,19 @@ struct sol_rules {
         SIMPLE_BLACK_HOLE,
         SPANISH_PATIENCE
     };
-    enum class tab_build_order {
+    enum class build_order {
         NO_BUILD,
         DESCENDING,
+        ASCENDING,
+        BOTH
+    };
+    enum class build_policy {
+        CLUBS,
+        DIAMONDS,
+        HEARTS,
+        SPADES,
+        ANY_SUIT,
+        SAME_SUIT
     };
 
     static std::vector<std::string> valid_sol_strs;
@@ -24,7 +34,7 @@ struct sol_rules {
     sol_rules(std::string);
 
     int tableau_pile_count;
-    tab_build_order build_order;
+    build_order build_order;
     int max_rank;
     bool hole;
     bool foundations;
@@ -32,6 +42,5 @@ struct sol_rules {
 private:
     static valid_sol valid_sol_enum(const std::string&);
 };
-
 
 #endif //SOLVITAIRE_SOL_RULES_H
