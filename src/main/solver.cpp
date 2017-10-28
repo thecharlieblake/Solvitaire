@@ -12,8 +12,8 @@
 #include <boost/log/trivial.hpp>
 using namespace std;
 
-solver::solver(const game_state gs) : root(gs), solution(gs),
-                                      solution_found(false) {}
+solver::solver(const game_state gs, const sol_rules& sr)
+        : root(gs), rules(sr), solution(gs), solution_found(false) {}
 
 solver::node::node(const game_state gs) : state(gs) {}
 

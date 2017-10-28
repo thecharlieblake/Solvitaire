@@ -11,10 +11,11 @@
 #include <boost/optional.hpp>
 
 #include "game_state.h"
+#include "sol_rules.h"
 
 class solver {
 public:
-    solver(const game_state);
+    solver(const game_state, const sol_rules&);
     bool run();
 
     friend std::ostream& operator<< (std::ostream&, const solver&);
@@ -26,6 +27,7 @@ private:
         game_state state;
     };
 
+    const sol_rules rules;
     const node root;
     bool been_run;
     node solution;

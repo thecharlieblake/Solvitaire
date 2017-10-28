@@ -9,12 +9,22 @@
 #include <string>
 
 struct sol_rules {
-    static enum class valid_sol;
+    enum class valid_sol {
+        BLACK_HOLE,
+        SIMPLE_BLACK_HOLE,
+        SPANISH_PATIENCE
+    };
+    enum class tab_build_order {
+        NO_BUILD,
+        DESCENDING,
+    };
+
     static std::vector<std::string> valid_sol_strs;
 
     sol_rules(std::string);
 
     int tableau_pile_count;
+    tab_build_order build_order;
     int max_rank;
     bool hole;
     bool foundations;

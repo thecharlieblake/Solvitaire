@@ -11,12 +11,6 @@
 
 using namespace std;
 
-enum class sol_rules::valid_sol {
-    BLACK_HOLE,
-    SIMPLE_BLACK_HOLE,
-    SPANISH_PATIENCE
-};
-
 vector<string> sol_rules::valid_sol_strs = {
     "black-hole",
     "simple-black-hole",
@@ -28,16 +22,19 @@ sol_rules::sol_rules(std::string sol_type) {
 
     hole = false;
     foundations = true;
+    build_order = tab_build_order::DESCENDING;
 
     switch(vs) {
         case valid_sol::BLACK_HOLE:
             tableau_pile_count = 17;
+            build_order = tab_build_order::NO_BUILD;
             max_rank = 13;
             hole = true;
             foundations = false;
             break;
         case valid_sol::SIMPLE_BLACK_HOLE:
             tableau_pile_count = 9;
+            build_order = tab_build_order::NO_BUILD;
             max_rank = 7;
             hole = true;
             foundations = false;
