@@ -16,15 +16,13 @@ using namespace rapidjson;
 using namespace std;
 
 // Construct an initial game state from a JSON doc
-game_state::game_state(const Document& doc, string sol_type)
-        : max_rank(1) {
-    max_rank = sol_type == "simple-black-hole" ? 7 : 13;
-
+game_state::game_state(const Document& doc) {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];
     assert(json_tab_piles.IsArray());
 
+    int max_rank = 1;
     for (auto& json_tab : json_tab_piles.GetArray()) {
         vector<card> tableau_pile;
 
@@ -45,22 +43,27 @@ game_state::game_state(const Document& doc, string sol_type)
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed, string sol_type) {
-    max_rank = sol_type == "simple-black-hole" ? 7 : 13;
+game_state::game_state(int seed, const sol_rules& rules) {
+    vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
-    vector<card> deck = shuffled_deck(seed, max_rank);
-
+    // Deal to the tableau piles (row-by-row)
     for (vector<card>::size_type i = 0; i < deck.size(); i++) {
-        // Don't add the Ace of Spades to the hole card
         card c = deck[i];
-        if (c == "AS") continue;
+
+        // If there is a hole card, don't deal the ace of spades
+        if (rules.hole && c == "AS") {
+            hole_card = "AS";
+            continue;
+        }
+
+        // For the first row we must create all the tableau pile vectors
+        if (i / rules.tableau_pile_count == 0) {
+            tableau_piles.push_back(vector<card>());
+        }
 
         // Add the randomly generated card to the tableau piles
-        if (i % 3 == 0) tableau_piles.push_back(vector<card>());
-        tableau_piles[i / 3].push_back(deck[i]);
+        tableau_piles[i % rules.tableau_pile_count].push_back(c);
     }
-
-    hole_card = "AS";
 }
 
 // Generate a randomly ordered vector of cards

@@ -12,11 +12,12 @@
 #include <rapidjson/document.h>
 
 #include "card.h"
+#include "sol_rules.h"
 
 class game_state {
 public:
-    game_state(const rapidjson::Document&, std::string);
-    game_state(int seed, std::string);
+    game_state(const rapidjson::Document&);
+    game_state(int seed, const sol_rules&);
 
     std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
@@ -31,7 +32,6 @@ private:
     bool adjacent(const card& a, const card& b) const;
 
     std::vector<std::vector<card> > tableau_piles;
-    int max_rank;
     card hole_card;
     mutable bool solved;
 };

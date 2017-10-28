@@ -41,7 +41,7 @@ int main(int argc, const char* argv[]) {
             deal_parser::parse(doc, input_json);
 
             // Creates a game state object from the json, plus a solver
-            game_state gs(doc, clh.get_solitaire_type());
+            game_state gs(doc);
 
             cout << "Attempting to solve " << input_json << "...\n";
             solve_game(gs, sol_rules);
