@@ -10,8 +10,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp src/main/Card.h src/main/Card.cpp)
+set(sources src/main/main.cpp src/main/command_line_helper.cpp src/main/command_line_helper.h src/main/log_helper.h src/main/card.h src/main/card.cpp src/main/deal_parser.cpp src/main/deal_parser.h src/main/solver.cpp src/main/solver.h src/main/game_state.cpp src/main/game_state.h)
 set(sources_test src/test/main_test.cpp)
+
+###############################################################################
+## Rapid JSON setup ###########################################################
+###############################################################################
+
+find_package(RapidJSON)
 
 ###############################################################################
 ## Boost setup ################################################################
@@ -20,7 +26,10 @@ set(sources_test src/test/main_test.cpp)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.63.0 REQUIRED COMPONENTS log)
+
+set(boost_components log program_options)
+
+find_package(Boost 1.63.0 REQUIRED COMPONENTS ${boost_components})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -88,10 +97,6 @@ target_include_directories(solvitaire PUBLIC src/main)
 
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
-# this copies all resource files in the build directory
-# we need this, because we want to work with paths relative to the executable
-file(COPY ${data} DESTINATION resources)
-
 ###############################################################################
 ## testing ####################################################################
 ###############################################################################
@@ -116,10 +121,6 @@ ADD_TEST(NAME unit_tests
 # all install commands get the same destination. this allows us to use paths
 # relative to the executable.
 install(TARGETS solvitaire DESTINATION solvitaire)
-# this is basically a repeat of the file copy instruction that copies the
-# resources in the build directory, but here we tell cmake that we want it
-# in the package
-install(DIRECTORY resources DESTINATION solvitaire)
 
 set(CPACK_OUTPUT_FILE_PREFIX installer)
 set(CPACK_PACKAGE_VERSION "1.0.0")

@@ -12,10 +12,21 @@ install:
 - sudo wget -O boost_1_63_0.tar.gz http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.gz/download > /dev/null 2>&1
 - sudo tar xzvf boost_1_63_0.tar.gz > /dev/null 2>&1
 - cd boost_1_63_0/
-- sudo ./bootstrap.sh --with-libraries=log > /dev/null 2>&1
+- sudo ./bootstrap.sh --with-libraries=log,program_options > /dev/null 2>&1
 - sudo ./b2 link=shared threading=multi toolset=gcc optimization=space > /dev/null 2>&1
 - sudo ./b2 install > /dev/null 2>&1
 - cd ..
+
+# RapidJSON
+- echo "Installing Rapid JSON"
+- git clone https://github.com/Tencent/rapidjson.git
+- cd rapidjson
+- mkdir build
+- cd build
+- cmake ..
+- sudo make
+- sudo make install
+- cd ../..
 
 script:
 # Generate build

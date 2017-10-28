@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "card": {
+      "type": "string",
+      "pattern": "^(?i)([A|[1-9]|1[0-3]|J|Q|K])([C|D|H|S])$"
+    }
+  },
+  "type": "object",
+  "properties": {
+    "tableau piles": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/card"
+        }
+      }
+    },
+    "hole card": {
+      "$ref": "#/definitions/card"
+    }
+  },
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "required": [
+        "tableau piles"
+      ]
+    }
+  ]
+}
