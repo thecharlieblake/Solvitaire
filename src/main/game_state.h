@@ -17,6 +17,7 @@ class game_state {
 public:
     game_state(const rapidjson::Document&, std::string);
     game_state(int seed, std::string);
+
     std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
     std::ostream& print(std::ostream&) const;
@@ -24,9 +25,10 @@ public:
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
 private:
+    static std::vector<card> shuffled_deck(int, int);
+
     void move_to_hole(int);
     bool adjacent(const card& a, const card& b) const;
-    bool simple;
 
     std::vector<std::vector<card> > tableau_piles;
     int max_rank;

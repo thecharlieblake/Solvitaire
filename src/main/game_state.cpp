@@ -18,7 +18,7 @@ using namespace std;
 // Construct an initial game state from a JSON doc
 game_state::game_state(const Document& doc, string sol_type)
         : max_rank(1) {
-    simple = sol_type == "simple-black-hole";
+    max_rank = sol_type == "simple-black-hole" ? 7 : 13;
 
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
@@ -46,15 +46,27 @@ game_state::game_state(const Document& doc, string sol_type)
 
 // Construct an initial game state from a seed
 game_state::game_state(int seed, string sol_type) {
-    simple = sol_type == "simple-black-hole";
-    max_rank = simple ? 7 : 13;
+    max_rank = sol_type == "simple-black-hole" ? 7 : 13;
 
-    int start = 1; // Ignore the first (hole) card
-    int end = max_rank * 4;
+    vector<card> deck = shuffled_deck(seed, max_rank);
 
-    // Create a vector of pointers to ints from [start, end)
+    for (vector<card>::size_type i = 0; i < deck.size(); i++) {
+        // Don't add the Ace of Spades to the hole card
+        card c = deck[i];
+        if (c == "AS") continue;
+
+        // Add the randomly generated card to the tableau piles
+        if (i % 3 == 0) tableau_piles.push_back(vector<card>());
+        tableau_piles[i / 3].push_back(deck[i]);
+    }
+
+    hole_card = "AS";
+}
+
+// Generate a randomly ordered vector of cards
+vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     vector<int*> v;
-    for (int i = start; i < end; i++) {
+    for (int i = 0; i < max_rank * 4; i++) {
         v.push_back(new int(i));
     }
 
@@ -62,22 +74,22 @@ game_state::game_state(int seed, string sol_type) {
     auto rng = std::default_random_engine(seed);
     std::shuffle(std::begin(v), std::end(v), rng);
 
-    for (vector<int*>::size_type i = 0; i < v.size(); i++) {
-        int r = ((*v[i]) % max_rank);
-        int s = (*v[i]) / max_rank;
+    vector<card> deck;
+    for (int *i : v) {
+        int r = ((*i) % max_rank) + 1;
+        int s = (*i) / max_rank;
 
-        // Add the randomly generated card to the tableau piles
-        if (i % 3 == 0) tableau_piles.push_back(vector<card>());
-        tableau_piles[i / 3].push_back(card(r + 1, s));
+        deck.push_back(card(r, s));
     }
-
-    hole_card = "AS";
 
     // release memory
-    for (int i = start; i < max_rank; i++) {
+    for (int i = 0; i < max_rank * 4; i++) {
         delete v[i];
     }
+
+    return deck;
 }
+
 
 vector<game_state> game_state::get_next_legal_states() const {
     vector<game_state> next;

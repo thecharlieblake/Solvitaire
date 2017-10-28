@@ -21,6 +21,7 @@ private:
 };
 
 std::ostream & operator<<(std::ostream &, card const &);
+bool operator==(const card&, const card&);
 
 
 #endif //SOLITAIRE_PIP_CARD_H

@@ -51,6 +51,10 @@ card::card(const char* c) : rank(-1), suit(-1) {
     }
 }
 
+bool operator==(const card& l, const card& r) {
+    return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();
+}
+
 int card::get_rank() const {
     return rank;
 }
