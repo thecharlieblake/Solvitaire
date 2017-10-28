@@ -16,8 +16,6 @@ public:
     int get_random_deal();
     bool get_help();
 private:
-    static std::vector<std::string> valid_sol_types;
-
     bool assess_errors();
     bool assess_sol_type();
     void print_help();

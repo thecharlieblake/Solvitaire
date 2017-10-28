@@ -9,13 +9,11 @@
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
+#include "sol_rules.h"
 
 using namespace std;
 
 namespace po = boost::program_options;
-
-vector<string> command_line_helper::valid_sol_types =
-        {"black-hole", "simple-black-hole", "spanish-patience"};
 
 command_line_helper::command_line_helper()
         : main_options("options"), random_deal(-1) {
@@ -94,13 +92,14 @@ bool command_line_helper::assess_errors() {
 }
 
 bool command_line_helper::assess_sol_type() {
-    if (find(valid_sol_types.begin(), valid_sol_types.end(), solitaire_type) !=
-            valid_sol_types.end()) {
+    if (find(sol_rules::valid_sol_strs.begin(),
+             sol_rules::valid_sol_strs.end(),
+             solitaire_type) != sol_rules::valid_sol_strs.end()) {
         return true;
     } else {
         cerr << "Error: Solitaire type is not valid: " << solitaire_type
                 << "\nValid solitaire types are: ";
-        copy(begin(valid_sol_types), end(valid_sol_types),
+        copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
              ostream_iterator<string>(cerr, ", "));
         cerr << "\n";
         print_help();
