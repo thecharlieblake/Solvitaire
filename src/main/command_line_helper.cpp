@@ -75,16 +75,33 @@ bool command_line_helper::assess_errors() {
         return false;
     }
 
-    if (random_deal && !input_files.empty()) {
+    bool valid_sol_type = assess_sol_type();
+    if (!valid_sol_type) return false;
+
+    if (random_deal >= 0 && !input_files.empty()) {
         print_rand_plus_input_err();
         return false;
     }
 
-    if (input_files.empty() && !random_deal) {
+    if (input_files.empty() && random_deal >= 0) {
         print_no_input_error();
         return false;
     }
     return true;
+}
+
+bool command_line_helper::assess_sol_type() {
+    if (solitaire_type == "black-hole") {
+        return true;
+    } else if (solitaire_type == "simple-black-hole") {
+        return true;
+    } else {
+        cerr << "Error: Solitaire type is not valid: " << solitaire_type
+                << "\nValid solitaire types are: 'black-hole' and "
+                        "'simple-black-hole'";
+        print_help();
+        return false;
+    }
 }
 
 void command_line_helper::print_help() {

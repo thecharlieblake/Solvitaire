@@ -24,7 +24,7 @@ int main(int argc, const char* argv[]) {
 
     int seed = clh.get_random_deal();
     if (seed >= 0) {
-        game_state gs(seed);
+        game_state gs(seed, clh.get_solitaire_type());
         solver sol(gs);
 
         cout << "Attempting to solve with seed: " << seed << "...\n";
@@ -39,7 +39,7 @@ int main(int argc, const char* argv[]) {
             deal_parser::parse(doc, input_json);
 
             // Creates a game state object from the json, plus a solver
-            game_state gs(doc);
+            game_state gs(doc, clh.get_solitaire_type());
             solver sol(gs);
 
             cout << "Attempting to solve " << input_json << "...\n";

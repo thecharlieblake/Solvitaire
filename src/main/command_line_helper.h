@@ -17,6 +17,7 @@ public:
     bool get_help();
 private:
     bool assess_errors();
+    bool assess_sol_type();
     void print_help();
     void print_no_input_error();
     void print_no_sol_type_error();

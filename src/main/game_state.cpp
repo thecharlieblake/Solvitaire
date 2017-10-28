@@ -16,7 +16,10 @@ using namespace rapidjson;
 using namespace std;
 
 // Construct an initial game state from a JSON doc
-game_state::game_state(const Document& doc) : max_rank(1) {
+game_state::game_state(const Document& doc, string sol_type)
+        : max_rank(1) {
+    simple = sol_type == "simple-black-hole";
+
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];
@@ -42,7 +45,10 @@ game_state::game_state(const Document& doc) : max_rank(1) {
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed) : max_rank(7) {
+game_state::game_state(int seed, string sol_type) {
+    simple = sol_type == "simple-black-hole";
+    max_rank = simple ? 7 : 13;
+
     int start = 1; // Ignore the first (hole) card
     int end = max_rank * 4;
 
@@ -51,7 +57,7 @@ game_state::game_state(int seed) : max_rank(7) {
     for (int i = start; i < end; i++) {
         v.push_back(new int(i));
     }
-    
+
     // Randomly shuffle the pointers
     auto rng = std::default_random_engine(seed);
     std::shuffle(std::begin(v), std::end(v), rng);
