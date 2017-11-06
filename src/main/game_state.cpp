@@ -181,6 +181,10 @@ ostream& game_state::print(ostream& stream) const {
         print_header(stream, "Foundations");
         print_foundations(stream);
     }
+    if (rules.cells) {
+        print_header(stream, "Cells");
+        print_cells(stream);
+    }
     if (rules.tableau_pile_count > 0) {
         print_header(stream, "Tableau Piles");
         print_tableau_piles(stream);
@@ -206,6 +210,13 @@ void game_state::print_foundations(ostream& stream) const {
            << foundations[1] << "\t"
            << foundations[2] << "\t"
            << foundations[3] << "\n";
+}
+
+void game_state::print_cells(ostream& stream) const {
+    for (pile cell : cells) {
+        if (!cell.empty()) stream << cells[0] << "\t";
+    }
+    stream << "\n";
 }
 
 void game_state::print_tableau_piles(ostream& stream) const {

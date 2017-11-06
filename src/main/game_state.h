@@ -36,6 +36,7 @@ private:
 
     void print_header(std::ostream&, const char*) const;
     void print_foundations(std::ostream&) const;
+    void print_cells(std::ostream&) const;
     void print_tableau_piles(std::ostream&) const;
     void print_hole(std::ostream&) const;
 
