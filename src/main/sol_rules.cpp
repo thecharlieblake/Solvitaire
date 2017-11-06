@@ -19,7 +19,9 @@ vector<string> sol_rules::valid_sol_strs = {
     "black-hole",
     "simple-black-hole",
     "spanish-patience",
-    "simple-spanish-patience"
+    "simple-spanish-patience",
+    "free-cell",
+    "simple-free-cell"
 };
 
 bool sol_rules::is_suit(pol bp) {
@@ -40,14 +42,21 @@ int sol_rules::suit_val(pol bp) {
 sol_rules::sol_rules(std::string sol_type) {
     valid_sol vs = valid_sol_enum(sol_type);
 
+    // Default game values
+    build_ord = build_order::DESCENDING;
+    max_rank = 13;
+    hole = false;
+    foundations = true;
+    cells = 0;
 
+    // Game-specific values
     switch(vs) {
         case valid_sol::BLACK_HOLE:
             tableau_pile_count = 17;
             build_ord = build_order::NO_BUILD;
-            max_rank = 13;
             hole = true;
             foundations = false;
+            cells = 0;
             break;
         case valid_sol::SIMPLE_BLACK_HOLE:
             tableau_pile_count = 9;
@@ -58,17 +67,19 @@ sol_rules::sol_rules(std::string sol_type) {
             break;
         case valid_sol::SPANISH_PATIENCE:
             tableau_pile_count = 13;
-            build_ord = build_order::DESCENDING;
-            max_rank = 13;
-            hole = false;
-            foundations = true;
             break;
         case valid_sol::SIMPLE_SPANISH_PATIENCE:
             tableau_pile_count = 5;
-            build_ord = build_order::DESCENDING;
             max_rank = 5;
-            hole = false;
-            foundations = true;
+            break;
+        case valid_sol::FREE_CELL:
+            tableau_pile_count = 8;
+            cells = 4;
+            break;
+        case valid_sol::SIMPLE_FREE_CELL:
+            tableau_pile_count = 4;
+            max_rank = 4;
+            cells = 1;
             break;
         default:
             assert(false);
