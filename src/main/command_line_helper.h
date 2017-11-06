@@ -22,7 +22,7 @@ private:
     void print_no_input_error();
     void print_no_sol_type_error();
     void print_rand_plus_input_err();
-    
+
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
     boost::program_options::positional_options_description p;

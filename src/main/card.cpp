@@ -9,8 +9,6 @@
 
 using namespace std;
 
-card::card() : rank(-1), suit(-1) {}
-
 card::card(int r, int s) : rank(r), suit(s) {}
 
 card::card(const char* c) : rank(-1), suit(-1) {
@@ -40,15 +38,19 @@ card::card(const char* c) : rank(-1), suit(-1) {
 
     s = tolower(s);
 
-    if (s == 's') {
+    if (s == 'c') {
         suit = 0;
-    } else if (s == 'h') {
-        suit = 1;
     } else if (s == 'd') {
+        suit = 1;
+    } else if (s == 'h') {
         suit = 2;
-    } else if (s == 'c') {
+    } else if (s == 's') {
         suit = 3;
     }
+}
+
+bool operator==(const card& l, const card& r) {
+    return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();
 }
 
 int card::get_rank() const {
@@ -57,12 +59,16 @@ int card::get_rank() const {
 
 char card::get_suit() const {
     switch (suit) {
-        case 0: return 'S';
-        case 1: return 'H';
-        case 2: return 'D';
-        case 3: return 'C';
+        case 0: return 'C';
+        case 1: return 'D';
+        case 2: return 'H';
+        case 3: return 'S';
         default: return 'X';
     }
+}
+
+int card::get_suit_val() const {
+    return suit;
 }
 
 std::ostream & operator<<(std::ostream & s, card const & c) {

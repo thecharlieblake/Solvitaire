@@ -5,6 +5,7 @@
 #include <string>
 #include <ostream>
 #include <iostream>
+#include <algorithm>
 
 #include "solver.h"
 #include "log_helper.h"
@@ -12,8 +13,9 @@
 #include <boost/log/trivial.hpp>
 using namespace std;
 
-solver::solver(const game_state gs) : root(gs), solution(gs),
-                                      solution_found(false) {}
+solver::solver(const game_state gs, const sol_rules& sr)
+        : root(gs), rules(sr), solution(gs), solution_found(false),
+          states_searched(0) {}
 
 solver::node::node(const game_state gs) : state(gs) {}
 
@@ -33,18 +35,27 @@ bool solver::run() {
 
         // Create new nodes for each of the children
         vector<game_state> new_children = current.state.get_next_legal_states();
+        states_searched++;
+
+        // NOTE: get_next_legal_states() makes the is_solved() function work
+        if (current.state.is_solved()) {
+            solution = current;
+            solution_found = true;
+            break;
+        }
+
         for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
+            // If we have seen the state before, ignore it (loop detection))
+            if (find(begin(current.history), end(current.history), *it)
+                != end(current.history)) {
+                continue;
+            }
+
             node n = current;
             n.history.push_back(n.state);
             n.state = *it;
 
             frontier.push_back(n);
-        }
-
-        if (current.state.is_solved()) {
-            solution = current;
-            solution_found = true;
-            break;
         }
     }
 
@@ -52,17 +63,20 @@ bool solver::run() {
 }
 
 std::ostream& operator<< (std::ostream& stream, const solver& sol) {
+
     if (sol.solution_found) {
         stream << "Solution:\n";
         for (auto state : sol.solution.history) {
             stream << state << "\n";
         }
-        stream << sol.solution.state << "\n";
+        stream << sol.solution.state << "\nSolved!\n";
 
     } else if (sol.been_run) {
-        stream << "No Possible Solution\n";
+        stream << "Deal:\n" << sol.root.state << "\n"
+               << "No Possible Solution\n";
     } else {
         stream << "Solver has not been run yet\n";
     }
+    stream << "States Searched: " << sol.states_searched << "\n";
     return stream;
 }

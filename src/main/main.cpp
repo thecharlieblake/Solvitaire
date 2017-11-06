@@ -4,7 +4,6 @@
 #include <rapidjson/document.h>
 
 #include "command_line_helper.h"
-#include "card.h"
 #include "deal_parser.h"
 #include "game_state.h"
 #include "solver.h"
@@ -15,6 +14,8 @@ using namespace std;
 
 namespace po = boost::program_options;
 
+void solve_game(const game_state&, const sol_rules&);
+
 int main(int argc, const char* argv[]) {
     // Parses the command-line options
     command_line_helper clh;
@@ -22,14 +23,14 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
+    // Generates the rules of the solitaire from the game type
+    const sol_rules rules(clh.get_solitaire_type());
+
     int seed = clh.get_random_deal();
     if (seed >= 0) {
-        game_state gs(seed, clh.get_solitaire_type());
-        solver sol(gs);
-
         cout << "Attempting to solve with seed: " << seed << "...\n";
-        sol.run();
-        cout << sol;
+        game_state gs(seed, rules);
+        solve_game(gs, rules);
     }
 
     for (auto input_json : clh.get_input_files()) {
@@ -39,12 +40,10 @@ int main(int argc, const char* argv[]) {
             deal_parser::parse(doc, input_json);
 
             // Creates a game state object from the json, plus a solver
-            game_state gs(doc, clh.get_solitaire_type());
-            solver sol(gs);
+            game_state gs(doc);
 
             cout << "Attempting to solve " << input_json << "...\n";
-            sol.run();
-            cout << sol;
+            solve_game(gs, rules);
 
         } catch (runtime_error& e) {
             cerr << "Error: " << e.what() << "\n";
@@ -52,4 +51,11 @@ int main(int argc, const char* argv[]) {
     }
 
     return 0;
+}
+
+void solve_game(const game_state& gs, const sol_rules& rules) {
+    solver sol(gs, rules);
+
+    sol.run();
+    cout << sol;
 }

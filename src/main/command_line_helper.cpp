@@ -9,6 +9,7 @@
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
+#include "sol_rules.h"
 
 using namespace std;
 
@@ -78,12 +79,12 @@ bool command_line_helper::assess_errors() {
     bool valid_sol_type = assess_sol_type();
     if (!valid_sol_type) return false;
 
-    if (random_deal >= 0 && !input_files.empty()) {
+    if (random_deal != -1 && !input_files.empty()) {
         print_rand_plus_input_err();
         return false;
     }
 
-    if (input_files.empty() && random_deal >= 0) {
+    if (input_files.empty() && random_deal == -1) {
         print_no_input_error();
         return false;
     }
@@ -91,21 +92,23 @@ bool command_line_helper::assess_errors() {
 }
 
 bool command_line_helper::assess_sol_type() {
-    if (solitaire_type == "black-hole") {
-        return true;
-    } else if (solitaire_type == "simple-black-hole") {
+    if (find(sol_rules::valid_sol_strs.begin(),
+             sol_rules::valid_sol_strs.end(),
+             solitaire_type) != sol_rules::valid_sol_strs.end()) {
         return true;
     } else {
         cerr << "Error: Solitaire type is not valid: " << solitaire_type
-                << "\nValid solitaire types are: 'black-hole' and "
-                        "'simple-black-hole'";
+                << "\nValid solitaire types are: ";
+        copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
+             ostream_iterator<string>(cerr, ", "));
+        cerr << "\n";
         print_help();
         return false;
     }
 }
 
 void command_line_helper::print_help() {
-    cout << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
+    cerr << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
             << main_options << "\n";
 }
 
