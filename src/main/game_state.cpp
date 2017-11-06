@@ -55,7 +55,7 @@ game_state::game_state(int seed, const sol_rules& s_rules)
           hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
-    // If there is a hole, move the ace to spades to it
+    // If there is a hole, move the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
         hole.place("AS");
@@ -79,6 +79,14 @@ game_state::game_state(int seed, const sol_rules& s_rules)
     if (rules.foundations) {
         for (int i = 0; i < 4; i++) {
             pile p(true, ord::ASCENDING, pol(i), false);
+            foundations.push_back(p);
+        }
+    }
+
+    // If there are cell piles, create the relevant cell vectors
+    if (rules.cells > 0) {
+        for (int i = 0; i < rules.cells; i++) {
+            pile p(true, ord::SINGLE_CARD, pol::ANY_SUIT, false);
             foundations.push_back(p);
         }
     }
@@ -128,6 +136,10 @@ vector<game_state> game_state::get_next_legal_states() {
             can_remove.push_back(&foundations[i]);
             can_add.push_back(&foundations[i]);
         }
+    }
+    for (vector<pile>::size_type i = 0; i < cells.size(); i++) {
+        can_remove.push_back(&cells[i]);
+        can_add.push_back(&cells[i]);
     }
     if (rules.hole) {
         can_add.push_back(&hole);

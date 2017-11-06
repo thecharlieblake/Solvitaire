@@ -34,6 +34,8 @@ bool pile::can_place(const card& c) const {
 
     if (build_order == ord::NO_BUILD) {
         return false;
+    } else if (build_order == ord::SINGLE_CARD) {
+        return empty();
     }
 
     if (empty()) {

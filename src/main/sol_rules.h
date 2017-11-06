@@ -22,7 +22,8 @@ public:
         NO_BUILD,
         DESCENDING,
         ASCENDING,
-        BOTH
+        BOTH,
+        SINGLE_CARD
     };
     enum class build_policy {
         CLUBS,

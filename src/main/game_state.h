@@ -40,6 +40,7 @@ private:
     void print_hole(std::ostream&) const;
 
     std::vector<pile> tableau_piles;
+    std::vector<pile> cells;
     std::vector<pile> foundations;
     sol_rules rules;
     pile hole;
