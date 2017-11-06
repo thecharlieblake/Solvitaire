@@ -87,7 +87,7 @@ game_state::game_state(int seed, const sol_rules& s_rules)
     if (rules.cells > 0) {
         for (int i = 0; i < rules.cells; i++) {
             pile p(true, ord::SINGLE_CARD, pol::ANY_SUIT, false);
-            foundations.push_back(p);
+            cells.push_back(p);
         }
     }
 }
@@ -173,6 +173,11 @@ bool game_state::is_solved() const {
             return false;
         }
     }
+    for (auto p : cells) {
+        if (!p.empty()) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -214,7 +219,11 @@ void game_state::print_foundations(ostream& stream) const {
 
 void game_state::print_cells(ostream& stream) const {
     for (pile cell : cells) {
-        if (!cell.empty()) stream << cells[0] << "\t";
+        if (cells.empty()) {
+            stream << "[]" << "\t";
+        } else {
+            stream << cells[0] << "\t";
+        }
     }
     stream << "\n";
 }

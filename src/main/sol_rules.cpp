@@ -77,8 +77,8 @@ sol_rules::sol_rules(std::string sol_type) {
             cells = 4;
             break;
         case valid_sol::SIMPLE_FREE_CELL:
-            tableau_pile_count = 4;
-            max_rank = 4;
+            tableau_pile_count = 3;
+            max_rank = 3;
             cells = 1;
             break;
         default:
