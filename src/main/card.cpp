@@ -9,8 +9,6 @@
 
 using namespace std;
 
-card::card() : rank(-1), suit(-1) {}
-
 card::card(int r, int s) : rank(r), suit(s) {}
 
 card::card(const char* c) : rank(-1), suit(-1) {

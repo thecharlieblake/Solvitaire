@@ -9,7 +9,6 @@
 
 class card {
 public:
-    card();
     card(int, int);
     card(const char*);
     int get_rank() const;

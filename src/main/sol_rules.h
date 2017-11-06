@@ -8,11 +8,13 @@
 #include <vector>
 #include <string>
 
-struct sol_rules {
+class sol_rules {
+public:
     enum class valid_sol {
         BLACK_HOLE,
         SIMPLE_BLACK_HOLE,
-        SPANISH_PATIENCE
+        SPANISH_PATIENCE,
+        SIMPLE_SPANISH_PATIENCE
     };
     enum class build_order {
         NO_BUILD,
@@ -30,11 +32,13 @@ struct sol_rules {
     };
 
     static std::vector<std::string> valid_sol_strs;
+    static bool is_suit(build_policy);
+    static int suit_val(build_policy);
 
     sol_rules(std::string);
 
     int tableau_pile_count;
-    build_order build_order;
+    build_order build_ord;
     int max_rank;
     bool hole;
     bool foundations;

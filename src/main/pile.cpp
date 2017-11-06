@@ -2,14 +2,31 @@
 // Created by thecharlesblake on 10/28/17.
 //
 
-#include "pile.h"
-#include "sol_rules.h"
-#include "card.h"
+#include <vector>
+#include <ostream>
 
-pile::pile(bool c, sol_rules::build_order bo, sol_rules::build_policy bp,
-           bool l, int m) : can_remove(c), build_order(bo),
-                                 build_policy(bp), build_order_loops(l),
-                                 max_rank(m) {}
+#include "pile.h"
+
+using namespace std;
+
+pile::pile() {
+    set_max_rank(13);
+}
+
+pile::pile(bool r, sol_rules::build_order bo, sol_rules::build_policy bp, bool l,
+           int mr) {
+    set_remove(r);
+    set_build_order(bo);
+    set_build_policy(bp);
+    set_loops(l);
+    set_max_rank(mr);
+}
+
+void pile::set_remove(bool r) {remove = r;}
+void pile::set_loops(bool l) {build_order_loops = l;}
+void pile::set_max_rank(int mr) {max_rank = mr;}
+void pile::set_build_order(sol_rules::build_order bo) {build_order = bo;}
+void pile::set_build_policy(sol_rules::build_policy bp) {build_policy = bp;}
 
 bool pile::can_place(const card& c) const {
     typedef sol_rules::build_order ord;
@@ -20,24 +37,27 @@ bool pile::can_place(const card& c) const {
     }
 
     if (empty()) {
-        if (build_policy < 4) {
-            return c.get_suit_val() == build_policy;
+        if (sol_rules::is_suit(build_policy)) {
+            return c.get_suit_val() == sol_rules::suit_val(build_policy)
+                   && c.get_rank() == 1;
         } else {
             return true;
         }
     }
 
-    card top_card = top_card();
+    card top_c = top_card();
 
     // Check suit
-    if (build_policy == pol::SAME_SUIT && c.get_suit_val() != top_card.get_suit_val()) {
+    if (build_policy == pol::SAME_SUIT && c.get_suit_val()
+                                          != top_c.get_suit_val()) {
         return false;
     }
-    if (build_policy < 4 && c.get_suit_val() != build_policy) {
+    if (sol_rules::is_suit(build_policy) && c.get_suit_val()
+                                     != sol_rules::suit_val(build_policy)) {
         return false;
     }
 
-    int tc_r = top_card.get_rank();
+    int tc_r = top_c.get_rank();
     int comp_r = c.get_rank();
 
     if (build_order == ord::ASCENDING) {
@@ -46,11 +66,13 @@ bool pile::can_place(const card& c) const {
         return one_lt(comp_r, tc_r);
     } else if (build_order == ord::BOTH) {
         return one_lt(tc_r, comp_r) || one_lt(comp_r, tc_r);
+    } else {
+        return false;
     }
 }
 
-bool pile::one_lt(int a, int b) {
-    return (a == b - 1) || (loop && a == max_rank && b == 1);
+bool pile::one_lt(int a, int b) const {
+    return (a == b - 1) || (build_order_loops && a == max_rank && b == 1);
 }
 
 void pile::place(const card& c) {
@@ -68,25 +90,37 @@ card pile::take() {
 }
 
 bool pile::can_remove() const {
-    return can_remove;
+    return remove;
 }
 
 bool pile::empty() const {
     return pile_vec.empty();
 }
 
-int pile::size() const {
+unsigned long pile::size() const {
     return pile_vec.size();
 }
 
-card& pile::operator[] (std::vector::size_type i) {
+card& pile::operator[] (vector<card>::size_type i) {
     return pile_vec[i];
 }
-card pile::operator[] (std::vector::size_type i) const {
+card pile::operator[] (vector<card>::size_type i) const {
     return pile_vec[i];
 }
 
 
-void move(const pile& a, const pile& b) {
-    b.place(a.take());
+void move(pile *a, pile *b) {
+    b->place(a->take());
+}
+
+bool operator==(const pile& a, const pile& b) {
+    return a.pile_vec == b.pile_vec;
+}
+
+ostream & operator<<(ostream & stream, pile const & p) {
+    if (p.empty()) {
+        return stream << "[]";
+    } else {
+        return stream << p.top_card();
+    }
 }

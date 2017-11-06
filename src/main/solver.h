@@ -27,11 +27,12 @@ private:
         game_state state;
     };
 
-    const sol_rules rules;
     const node root;
+    const sol_rules rules;
     bool been_run;
     node solution;
     bool solution_found;
+    int states_searched;
 };
 
 

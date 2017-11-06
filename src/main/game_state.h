@@ -17,20 +17,23 @@
 
 class game_state {
 public:
+    // Create a game state representation from a JSON doc
     game_state(const rapidjson::Document&);
+    // Do the same from a 'rules' object
     game_state(int seed, const sol_rules&);
 
-    std::vector<game_state> get_next_legal_states() const;
+    std::vector<game_state> get_next_legal_states();
+    // NOTE: will only be evaluated after get_next_legal_states() is called
     bool is_solved() const;
+
     std::ostream& print(std::ostream&) const;
 
+    friend bool operator==(const game_state&, const game_state&);
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
 private:
     static std::vector<card> shuffled_deck(int, int);
 
-    void move_to_hole(int);
-    bool adjacent(const card& a, const card& b) const;
     void print_header(std::ostream&, const char*) const;
     void print_foundations(std::ostream&) const;
     void print_tableau_piles(std::ostream&) const;
@@ -38,8 +41,8 @@ private:
 
     std::vector<pile> tableau_piles;
     std::vector<pile> foundations;
-    pile hole;
     sol_rules rules;
+    pile hole;
 };
 
 

@@ -31,7 +31,7 @@ game_state::game_state(const Document& doc)
 
     int max_rank = 1;
     for (auto& json_tab : json_tab_piles.GetArray()) {
-        pile tableau_pile(true, rules.build_order, pol::ANY_SUIT, false);
+        pile tableau_pile(true, rules.build_ord, pol::ANY_SUIT, false);
 
         for (auto& json_card : json_tab.GetArray()) {
             card c(json_card.GetString());
@@ -50,24 +50,24 @@ game_state::game_state(const Document& doc)
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed, const sol_rules& rules)
-        : rules(rules),
+game_state::game_state(int seed, const sol_rules& s_rules)
+        : rules(s_rules),
           hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
+
+    // If there is a hole, move the ace to spades to it
+    if (rules.hole) {
+        deck.erase(find(begin(deck), end(deck), card("AS")));
+        hole.place("AS");
+    }
 
     // Deal to the tableau piles (row-by-row)
     for (vector<card>::size_type i = 0; i < deck.size(); i++) {
         card c = deck[i];
 
-        // If there is a hole card, don't deal the ace of spades
-        if (rules.hole && c == "AS") {
-            hole.place("AS");
-            continue;
-        }
-
         // For the first row we must create all the tableau pile vectors
         if (i / rules.tableau_pile_count == 0) {
-            pile p(true, rules.build_order, pol::ANY_SUIT, false);
+            pile p(true, rules.build_ord, pol::ANY_SUIT, false);
             tableau_piles.push_back(p);
         }
 
@@ -111,37 +111,37 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     return deck;
 }
 
-vector<game_state> game_state::get_next_legal_states() const {
+vector<game_state> game_state::get_next_legal_states() {
     // Generates vectors of references to all the piles from which
     // cards can be removed, and to which they can be added
-    vector<pile&> can_remove;
-    vector<pile&> can_add;
+    vector<pile*> can_remove;
+    vector<pile*> can_add;
 
-    for (pile p : tableau_piles) {
-        can_remove.push_back(p);
-        if (rules.build_order != ord::NO_BUILD) {
-            can_add.push_back(p);
+    for (vector<pile>::size_type i = 0; i < tableau_piles.size(); i++) {
+        can_remove.push_back(&tableau_piles[i]);
+        if (rules.build_ord != ord::NO_BUILD) {
+            can_add.push_back(&tableau_piles[i]);
         }
     }
     if (rules.foundations) {
-        for (pile p : foundations) {
-            can_remove.push_back(p);
-            can_add.push_back(p);
+        for (vector<pile>::size_type i = 0; i < foundations.size(); i++) {
+            can_remove.push_back(&foundations[i]);
+            can_add.push_back(&foundations[i]);
         }
     }
     if (rules.hole) {
-        can_add.push_back(hole);
+        can_add.push_back(&hole);
     }
 
     // The next legal states
     vector<game_state> next;
 
-    for (pile &rem_pile : can_remove) {
-        if (rem_pile.empty()) continue;
+    for (pile *rem_pile : can_remove) {
+        if (rem_pile->empty()) continue;
 
-        for (pile &add_pile : can_add) {
-            if (&add_pile != &rem_pile
-                && add_pile.can_place(rem_pile.top_card())) {
+        for (pile *add_pile : can_add) {
+            if (add_pile != rem_pile
+                && add_pile->can_place(rem_pile->top_card())) {
 
                 move(rem_pile, add_pile); // remove
                 game_state s = *this;
@@ -155,17 +155,6 @@ vector<game_state> game_state::get_next_legal_states() const {
 }
 
 
-
-bool game_state::adjacent(const card& a, const card& b) const {
-    int x = a.get_rank();
-    int y = b.get_rank();
-
-    return x == y + 1
-           || x + 1 == y
-           || (x == 1 && y == rules.max_rank)
-           || (x == rules.max_rank && y == 1);
-}
-
 bool game_state::is_solved() const {
     for (auto p : tableau_piles) {
         if (!p.empty()) {
@@ -176,8 +165,6 @@ bool game_state::is_solved() const {
 }
 
 ostream& game_state::print(ostream& stream) const {
-    const char *sep = "------------------------------\n";
-
     if (rules.foundations) {
         print_header(stream, "Foundations");
         print_foundations(stream);
@@ -190,7 +177,7 @@ ostream& game_state::print(ostream& stream) const {
         print_header(stream, "Hole Card");
         print_hole(stream);
     }
-    return stream << "///////////////////////////////////\n\n";
+    return stream << "===================================\n";
 }
 
 void game_state::print_header(ostream& stream, const char* header) const {
@@ -203,11 +190,11 @@ void game_state::print_header(ostream& stream, const char* header) const {
 }
 
 void game_state::print_foundations(ostream& stream) const {
-    stream << foundations[0].top_card() << "\t"
-           << foundations[1].top_card() << "\t"
-           << foundations[2].top_card() << "\t"
-           << foundations[3].top_card() << "\n";
-};
+    stream << foundations[0] << "\t"
+           << foundations[1] << "\t"
+           << foundations[2] << "\t"
+           << foundations[3] << "\n";
+}
 
 void game_state::print_tableau_piles(ostream& stream) const {
     bool empty_row = false;
@@ -227,11 +214,17 @@ void game_state::print_tableau_piles(ostream& stream) const {
         stream << "\n";
         row_idx++;
     }
-};
+}
 
 void game_state::print_hole(ostream& stream) const {
     stream << hole.top_card() << "\n";
-};
+}
+
+bool operator==(const game_state& a, const game_state& b) {
+    return a.tableau_piles == b.tableau_piles
+            && a.foundations == b.foundations
+            && a.hole == b.hole;
+}
 
 ostream& operator <<(ostream& stream, const game_state& gs) {
     return gs.print(stream);
