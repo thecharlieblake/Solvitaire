@@ -14,13 +14,16 @@ public:
         BLACK_HOLE,
         SIMPLE_BLACK_HOLE,
         SPANISH_PATIENCE,
-        SIMPLE_SPANISH_PATIENCE
+        SIMPLE_SPANISH_PATIENCE,
+        FREE_CELL,
+        SIMPLE_FREE_CELL
     };
     enum class build_order {
         NO_BUILD,
         DESCENDING,
         ASCENDING,
-        BOTH
+        BOTH,
+        SINGLE_CARD
     };
     enum class build_policy {
         CLUBS,
@@ -42,6 +45,7 @@ public:
     int max_rank;
     bool hole;
     bool foundations;
+    int cells;
 
 private:
     static valid_sol valid_sol_enum(const std::string&);
