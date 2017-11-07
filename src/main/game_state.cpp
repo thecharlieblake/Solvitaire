@@ -159,6 +159,9 @@ vector<game_state> game_state::get_next_legal_states() {
             can_add.push_back(&tableau_piles[i]);
         }
     }
+    if (rules.reserve_size > 0) {
+        can_remove.push_back(&reserve);
+    }
     if (rules.foundations) {
         for (vector<pile>::size_type i = 0; i < foundations.size(); i++) {
             can_remove.push_back(&foundations[i]);
@@ -176,6 +179,7 @@ vector<game_state> game_state::get_next_legal_states() {
     // The next legal states
     vector<game_state> next;
 
+    // Moving from and to the 'can remove' and 'can add' piles
     for (pile *rem_pile : can_remove) {
         if (rem_pile->empty()) continue;
 
@@ -190,6 +194,12 @@ vector<game_state> game_state::get_next_legal_states() {
             }
         }
     }
+
+    // Dealing from the stock to the waste
+    move(&stock, &waste);
+    game_state s = *this;
+    next.push_back(s);
+    move(&waste, &stock);
 
     return next;
 }
