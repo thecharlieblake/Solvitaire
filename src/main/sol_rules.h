@@ -16,7 +16,9 @@ public:
         SPANISH_PATIENCE,
         SIMPLE_SPANISH_PATIENCE,
         FREE_CELL,
-        SIMPLE_FREE_CELL
+        SIMPLE_FREE_CELL,
+        CANFIELD,
+        SIMPLE_CANFIELD
     };
     enum class build_order {
         NO_BUILD,

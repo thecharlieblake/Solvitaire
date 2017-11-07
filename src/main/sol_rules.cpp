@@ -21,7 +21,9 @@ vector<string> sol_rules::valid_sol_strs = {
     "spanish-patience",
     "simple-spanish-patience",
     "free-cell",
-    "simple-free-cell"
+    "simple-free-cell",
+    "canfield",
+    "simple-canfield"
 };
 
 bool sol_rules::is_suit(pol bp) {
