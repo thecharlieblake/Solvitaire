@@ -46,10 +46,13 @@ sol_rules::sol_rules(std::string sol_type) {
 
     // Default game values
     build_ord = build_order::DESCENDING;
+    build_pol = build_policy::ANY_SUIT;
     max_rank = 13;
     hole = false;
     foundations = true;
     cells = 0;
+    reserve_size = 0;
+    stock_size = 0;
 
     // Game-specific values
     switch(vs) {
@@ -82,6 +85,19 @@ sol_rules::sol_rules(std::string sol_type) {
             tableau_pile_count = 3;
             max_rank = 3;
             cells = 1;
+            break;
+        case valid_sol::CANFIELD:
+            tableau_pile_count = 4;
+            build_pol = build_policy::RED_BLACK;
+            reserve_size = 14;
+            stock_size = 34;
+            break;
+        case valid_sol::SIMPLE_CANFIELD:
+            tableau_pile_count = 3;
+            build_pol = build_policy::RED_BLACK;
+            max_rank = 4;
+            reserve_size = 3;
+            stock_size = 9;
             break;
         default:
             assert(false);
