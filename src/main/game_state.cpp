@@ -22,8 +22,8 @@ typedef sol_rules::build_policy pol;
 
 // Construct an initial game state from a JSON doc
 game_state::game_state(const Document& doc)
-        : rules("simple-black-hole"),
-          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
+        : hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank),
+          rules("simple-black-hole") {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];
@@ -62,34 +62,34 @@ game_state::game_state(int seed, const sol_rules& s_rules)
         hole.place("AS");
     }
 
-    int deckCardsUsed = 0;
+    unsigned int deckCardsUsed = 0;
 
     // If there is a stock, deal to it and set up a waste pile too
     if (rules.stock_size > 0) {
         stock = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
         waste = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
 
-        for (int i = 0; i < rules.stock_size; i++) {
+        for (unsigned int i = 0; i < rules.stock_size; i++) {
             stock.place(deck[i + deckCardsUsed]);
-            deckCardsUsed++;
         }
+        deckCardsUsed += rules.stock_size;
     }
 
     // If there is a reserve, deal to it
     if (rules.reserve_size > 0) {
         reserve = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
 
-        for (int i = 0; i < rules.reserve_size; i++) {
+        for (unsigned int i = 0; i < rules.reserve_size; i++) {
             reserve.place(deck[i + deckCardsUsed]);
-            deckCardsUsed++;
         }
+        deckCardsUsed += rules.reserve_size;
     }
 
 
     // Deal to the tableau piles (row-by-row)
-    for (vector<card>::size_type i = 0; i < deck.size(); i++) {
+    vector<card>::size_type remainingCards = deck.size() - deckCardsUsed;
+    for (vector<card>::size_type i = 0; i < remainingCards; i++) {
         card c = deck[i + deckCardsUsed];
-        deckCardsUsed++;
 
         // For the first row we must create all the tableau pile vectors
         if (i / rules.tableau_pile_count == 0) {
@@ -100,7 +100,7 @@ game_state::game_state(int seed, const sol_rules& s_rules)
         // Add the randomly generated card to the tableau piles
         tableau_piles[i % rules.tableau_pile_count].place(c);
     }
-
+    deckCardsUsed += remainingCards;
     assert(deckCardsUsed == deck.size());
 
     // If there are foundation piles, create the relevant pile vectors
@@ -113,7 +113,7 @@ game_state::game_state(int seed, const sol_rules& s_rules)
 
     // If there are cell piles, create the relevant cell vectors
     if (rules.cells > 0) {
-        for (int i = 0; i < rules.cells; i++) {
+        for (unsigned int i = 0; i < rules.cells; i++) {
             pile p(true, ord::SINGLE_CARD, pol::ANY_SUIT, false);
             cells.push_back(p);
         }
@@ -172,6 +172,9 @@ vector<game_state> game_state::get_next_legal_states() {
         can_remove.push_back(&cells[i]);
         can_add.push_back(&cells[i]);
     }
+    if (rules.stock_size > 0) {
+        can_remove.push_back(&waste);
+    }
     if (rules.hole) {
         can_add.push_back(&hole);
     }
@@ -196,25 +199,26 @@ vector<game_state> game_state::get_next_legal_states() {
     }
 
     // Dealing from the stock to the waste
-    move(&stock, &waste);
-    game_state s = *this;
-    next.push_back(s);
-    move(&waste, &stock);
+    if (!stock.empty()) {
+        move(&stock, &waste);
+        game_state s = *this;
+        next.push_back(s);
+        move(&waste, &stock);
+    }
 
     return next;
 }
 
 
 bool game_state::is_solved() const {
-    for (auto p : tableau_piles) {
-        if (!p.empty()) {
+    for (auto p : foundations) {
+        if (p.size() != rules.max_rank) {
             return false;
         }
     }
-    for (auto p : cells) {
-        if (!p.empty()) {
-            return false;
-        }
+
+    if (rules.hole && hole.size() != rules.max_rank * 4) {
+        return false;
     }
     return true;
 }
@@ -228,9 +232,19 @@ ostream& game_state::print(ostream& stream) const {
         print_header(stream, "Cells");
         print_cells(stream);
     }
+    if (rules.reserve_size > 0) {
+        print_header(stream, "Reserve");
+        print_pile(stream, reserve);
+    }
     if (rules.tableau_pile_count > 0) {
         print_header(stream, "Tableau Piles");
         print_tableau_piles(stream);
+    }
+    if (rules.stock_size > 0) {
+        print_header(stream, "Stock");
+        print_pile(stream, stock);
+        print_header(stream, "Waste");
+        print_pile(stream, waste);
     }
     if (rules.hole) {
         print_header(stream, "Hole Card");
@@ -264,6 +278,16 @@ void game_state::print_cells(ostream& stream) const {
         }
     }
     stream << "\n";
+}
+
+void game_state::print_pile(ostream& stream, const pile &p) const {
+    if (p.empty()) {
+        stream << "[]\n";
+    } else {
+        for (unsigned int i = 0; i < p.size(); i++) {
+            stream << p[i] << "\n";
+        }
+    }
 }
 
 void game_state::print_tableau_piles(ostream& stream) const {

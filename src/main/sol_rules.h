@@ -43,15 +43,15 @@ public:
 
     sol_rules(std::string);
 
-    int tableau_pile_count;
+    unsigned int tableau_pile_count;
     build_order build_ord;
     build_policy build_pol;
-    int max_rank;
+    unsigned int max_rank;
     bool hole;
     bool foundations;
-    int cells;
-    int reserve_size;
-    int stock_size;
+    unsigned int cells;
+    unsigned int reserve_size;
+    unsigned int stock_size;
 
 private:
     static valid_sol valid_sol_enum(const std::string&);
