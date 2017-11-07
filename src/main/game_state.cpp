@@ -51,19 +51,45 @@ game_state::game_state(const Document& doc)
 
 // Construct an initial game state from a seed
 game_state::game_state(int seed, const sol_rules& s_rules)
-        : rules(s_rules),
-          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank) {
+        : rules(s_rules) {
+
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
     // If there is a hole, move the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
+        hole = pile(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank);
         hole.place("AS");
     }
 
+    int deckCardsUsed = 0;
+
+    // If there is a stock, deal to it and set up a waste pile too
+    if (rules.stock_size > 0) {
+        stock = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+        waste = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+
+        for (int i = 0; i < rules.stock_size; i++) {
+            stock.place(deck[i + deckCardsUsed]);
+            deckCardsUsed++;
+        }
+    }
+
+    // If there is a reserve, deal to it
+    if (rules.reserve_size > 0) {
+        reserve = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+
+        for (int i = 0; i < rules.reserve_size; i++) {
+            reserve.place(deck[i + deckCardsUsed]);
+            deckCardsUsed++;
+        }
+    }
+
+
     // Deal to the tableau piles (row-by-row)
     for (vector<card>::size_type i = 0; i < deck.size(); i++) {
-        card c = deck[i];
+        card c = deck[i + deckCardsUsed];
+        deckCardsUsed++;
 
         // For the first row we must create all the tableau pile vectors
         if (i / rules.tableau_pile_count == 0) {
@@ -74,6 +100,8 @@ game_state::game_state(int seed, const sol_rules& s_rules)
         // Add the randomly generated card to the tableau piles
         tableau_piles[i % rules.tableau_pile_count].place(c);
     }
+
+    assert(deckCardsUsed == deck.size());
 
     // If there are foundation piles, create the relevant pile vectors
     if (rules.foundations) {

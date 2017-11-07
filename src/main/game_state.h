@@ -43,8 +43,11 @@ private:
     std::vector<pile> tableau_piles;
     std::vector<pile> cells;
     std::vector<pile> foundations;
-    sol_rules rules;
+    pile waste;
+    pile reserve;
+    pile stock;
     pile hole;
+    sol_rules rules;
 };
 
 
