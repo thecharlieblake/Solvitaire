@@ -10,10 +10,10 @@
 #if defined NDEBUG
     #define LOG_DEBUG
 #else
-    #define LOG_DEBUG(msg) clog << "[debug]\n" << msg
+    #define LOG_DEBUG clog << "[debug]\n"
 #endif
-#define LOG_INFO(msg) clog << "[info]\n" << msg
-#define LOG_WARNING(msg) clog << "[warning]\n" << msg
-#define LOG_ERROR(msg) cerr << "[error]\n" << msg
+#define LOG_INFO clog << "[info] "
+#define LOG_WARNING clog << "[warning] "
+#define LOG_ERROR cerr << "[ERROR] "
 
 #endif //SOLVITAIRE_LOG_HELPER_H

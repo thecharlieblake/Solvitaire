@@ -4,12 +4,12 @@
 
 #include <tuple>
 #include <vector>
-#include <iostream>
 
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
 #include "game/sol_rules.h"
+#include "input-output/log_helper.h"
 
 using namespace std;
 
@@ -43,7 +43,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         store(po::command_line_parser(argc, argv).options(cmdline_options)
                       .positional(p).run(), vm);
     } catch(po::error& e) {
-        cerr << "Error: " << e.what() << "\n";
+        LOG_ERROR << "Error: " << e.what() << "\n";
         return false;
     }
 
@@ -108,34 +108,34 @@ bool command_line_helper::assess_sol_type() {
         return true;
 
     } else {
-        cerr << "Error: Solitaire type is not valid: " << solitaire_type
+        LOG_ERROR << "Error: Solitaire type is not valid: " << solitaire_type
                 << "\nValid solitaire types are: ";
         copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
              ostream_iterator<string>(cerr, ", "));
-        cerr << "\n";
+        LOG_ERROR << "\n";
         print_help();
         return false;
     }
 }
 
 void command_line_helper::print_help() {
-    cerr << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
+    LOG_ERROR << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
             << main_options << "\n";
 }
 
 void command_line_helper::print_no_input_error() {
-    cerr << "Error: User must supply input file(s) or the '--random' "
+    LOG_ERROR << "Error: User must supply input file(s) or the '--random' "
             "option\n";
     print_help();
 }
 
 void command_line_helper::print_no_sol_type_error() {
-    cerr << "Error: User must supply a solitaire type\n";
+    LOG_ERROR << "Error: User must supply a solitaire type\n";
     print_help();
 }
 
 void command_line_helper::print_rand_plus_input_err() {
-    cerr << "Error: User must supply input file(s) or the '--random' option, "
+    LOG_ERROR << "Error: User must supply input file(s) or the '--random' option, "
             "not both\n";
     print_help();
 }

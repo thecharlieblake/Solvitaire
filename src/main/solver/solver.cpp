@@ -31,7 +31,7 @@ bool solver::run() {
         node current = frontier.back();
         frontier.pop_back();
 
-        LOG_DEBUG(current.state);
+        LOG_DEBUG << current.state;
 
         // Create new nodes for each of the children
         vector<game_state> new_children = current.state.get_next_legal_states();

@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <boost/program_options.hpp>
 #include <rapidjson/document.h>
 
@@ -7,6 +5,7 @@
 #include "input-output/deal_parser.h"
 #include "game/game_state.h"
 #include "solver/solver.h"
+#include "input-output/log_helper.h"
 
 using namespace rapidjson;
 
@@ -45,7 +44,7 @@ int main(int argc, const char* argv[]) {
 }
 
 void solve_random_game(int seed, const sol_rules& rules) {
-    cout << "Attempting to solve with seed: " << seed << "...\n";
+    LOG_INFO << "Attempting to solve with seed: " << seed << "...\n";
     game_state gs(seed, rules);
     solve_game(gs, rules);
 }
@@ -59,7 +58,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules rules) 
         // Creates a game state object from the json, plus a solver
         game_state gs(doc);
 
-        cout << "Attempting to solve " << input_json << "...\n";
+        LOG_INFO << "Attempting to solve " << input_json << "...\n";
         solve_game(gs, rules);
     }
 }
