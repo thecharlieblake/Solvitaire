@@ -15,6 +15,7 @@ public:
     const std::string get_solitaire_type();
     int get_random_deal();
     bool get_help();
+
 private:
     bool assess_errors();
     bool assess_sol_type();

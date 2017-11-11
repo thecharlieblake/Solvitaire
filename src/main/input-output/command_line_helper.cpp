@@ -16,7 +16,7 @@ using namespace std;
 namespace po = boost::program_options;
 
 command_line_helper::command_line_helper()
-        : main_options("options"), random_deal(-1) {
+        : main_options("options") {
 
     main_options.add_options()
             ("help", "produce help message")
@@ -35,8 +35,10 @@ command_line_helper::command_line_helper()
     p.add("input-files", -1);
 }
 
+// Returns true if we can continue solving the supplied solitaire(s)
 bool command_line_helper::parse(int argc, const char* argv[]) {
     po::variables_map vm;
+    // Attempts to parse cmdln options. Catches basic errors
     try {
         store(po::command_line_parser(argc, argv).options(cmdline_options)
                       .positional(p).run(), vm);
@@ -45,9 +47,12 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         return false;
     }
 
+    // Updates the variables map which the user's options are stored in
     notify(vm);
 
-    help = vm.count("help");
+    // Converts the variables map into flags and values
+
+    help = (vm.count("help") != 0);
 
     if (vm.count("input-files")) {
         input_files = vm["input-files"].as<vector<string>>();
@@ -59,6 +64,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     if (vm.count("random")) {
         random_deal = vm["random"].as<int>();
+    } else {
+        random_deal = -1;
     }
 
     // Handle logic error scenarios
@@ -79,6 +86,8 @@ bool command_line_helper::assess_errors() {
     bool valid_sol_type = assess_sol_type();
     if (!valid_sol_type) return false;
 
+    // The user must either supply input files or a random seed
+
     if (random_deal != -1 && !input_files.empty()) {
         print_rand_plus_input_err();
         return false;
@@ -91,11 +100,13 @@ bool command_line_helper::assess_errors() {
     return true;
 }
 
+// Checks if the supplied solitaire type is in the list of valid solitaires
 bool command_line_helper::assess_sol_type() {
     if (find(sol_rules::valid_sol_strs.begin(),
              sol_rules::valid_sol_strs.end(),
              solitaire_type) != sol_rules::valid_sol_strs.end()) {
         return true;
+
     } else {
         cerr << "Error: Solitaire type is not valid: " << solitaire_type
                 << "\nValid solitaire types are: ";
