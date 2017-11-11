@@ -39,12 +39,16 @@ private:
     void print_cells(std::ostream&) const;
     void print_tableau_piles(std::ostream&) const;
     void print_hole(std::ostream&) const;
+    void print_pile(std::ostream&, const pile&) const;
 
     std::vector<pile> tableau_piles;
     std::vector<pile> cells;
     std::vector<pile> foundations;
-    sol_rules rules;
+    pile waste;
+    pile reserve;
+    pile stock;
     pile hole;
+    sol_rules rules;
 };
 
 

@@ -16,7 +16,9 @@ public:
         SPANISH_PATIENCE,
         SIMPLE_SPANISH_PATIENCE,
         FREE_CELL,
-        SIMPLE_FREE_CELL
+        SIMPLE_FREE_CELL,
+        CANFIELD,
+        SIMPLE_CANFIELD
     };
     enum class build_order {
         NO_BUILD,
@@ -31,7 +33,8 @@ public:
         HEARTS,
         SPADES,
         ANY_SUIT,
-        SAME_SUIT
+        SAME_SUIT,
+        RED_BLACK
     };
 
     static std::vector<std::string> valid_sol_strs;
@@ -40,12 +43,15 @@ public:
 
     sol_rules(std::string);
 
-    int tableau_pile_count;
+    unsigned int tableau_pile_count;
     build_order build_ord;
-    int max_rank;
+    build_policy build_pol;
+    unsigned int max_rank;
     bool hole;
     bool foundations;
-    int cells;
+    unsigned int cells;
+    unsigned int reserve_size;
+    unsigned int stock_size;
 
 private:
     static valid_sol valid_sol_enum(const std::string&);
