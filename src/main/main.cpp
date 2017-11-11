@@ -3,10 +3,10 @@
 #include <boost/program_options.hpp>
 #include <rapidjson/document.h>
 
-#include "command_line_helper.h"
-#include "deal_parser.h"
-#include "game_state.h"
-#include "solver.h"
+#include "input-output/command_line_helper.h"
+#include "input-output/deal_parser.h"
+#include "game/game_state.h"
+#include "solver/solver.h"
 
 using namespace rapidjson;
 

@@ -8,8 +8,8 @@
 #include <algorithm>
 
 #include "solver.h"
-#include "log_helper.h"
-#include "game_state.h"
+#include "input-output/log_helper.h"
+#include "game/game_state.h"
 #include <boost/log/trivial.hpp>
 using namespace std;
 

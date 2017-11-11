@@ -10,8 +10,8 @@
 
 #include <boost/optional.hpp>
 
-#include "game_state.h"
-#include "sol_rules.h"
+#include "game/game_state.h"
+#include "game/sol_rules.h"
 
 class solver {
 public:

@@ -9,7 +9,7 @@
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
-#include "sol_rules.h"
+#include "game/sol_rules.h"
 
 using namespace std;
 
