@@ -24,18 +24,18 @@ public:
     };
 
     solver(const game_state, const sol_rules&);
-    boost::optional<node> run();
+
     const node get_root() const;
     int get_states_searched() const;
+
+    const boost::optional<node> run();
 
     friend std::ostream& operator<< (std::ostream&, const solver::node&);
 
 private:
     const node root;
     const sol_rules rules;
-    bool been_run;
     node solution;
-    bool solution_found;
     int states_searched;
 };
 

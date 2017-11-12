@@ -16,8 +16,7 @@ using namespace std;
 using namespace boost;
 
 solver::solver(const game_state gs, const sol_rules& sr)
-        : root(NULL, gs), rules(sr), solution(root), solution_found(false),
-          states_searched(0) {}
+        : root(NULL, gs), rules(sr), solution(root), states_searched(0) {}
 
 solver::node::node(const node* parent, const game_state& gs) :
         history(solver::node::gen_history(parent)), state(gs) {}
@@ -33,13 +32,12 @@ const vector<game_state> solver::node::gen_history(const node* parent) {
     return hist;
 }
 
-optional<solver::node> solver::run() {
-    been_run = true;
-
+const optional<solver::node> solver::run() {
     // Iteratively run a depth-first search. Nodes in the frontier are yet to
     // be explored
     vector<node> frontier;
     frontier.push_back(root);
+
     while (!frontier.empty()) {
         // Pop the element at the top of the stack
         const node current = frontier.back();
@@ -51,11 +49,6 @@ optional<solver::node> solver::run() {
         vector<game_state> new_children = current.state.get_next_legal_states();
         states_searched++;
 
-        // NOTE: get_next_legal_states() makes the is_solved() function work
-        if (current.state.is_solved()) {
-            return node(current);
-        }
-
         for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
             // If we have seen the state before, ignore it (loop detection))
             if (find(begin(current.history), end(current.history), *it)
@@ -64,7 +57,11 @@ optional<solver::node> solver::run() {
             }
 
             const node n(&current, *it);
-            frontier.push_back(n);
+            if (n.state.is_solved()) {
+                return n;
+            } else {
+                frontier.push_back(n);
+            }
         }
     }
 
