@@ -38,7 +38,7 @@ card::card(const char* c) : rank(-1), suit(-1) {
         s = c[1];
     }
 
-    s = (char) tolower(s);
+    s = static_cast<char>(tolower(s));
 
     if (s == 'c') {
         suit = 0;
