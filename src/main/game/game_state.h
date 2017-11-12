@@ -41,9 +41,9 @@ private:
     void print_hole(std::ostream&) const;
     void print_pile(std::ostream&, const pile&) const;
 
-    std::vector<pile> tableau_piles;
-    std::vector<pile> cells;
     std::vector<pile> foundations;
+    std::vector<pile> cells;
+    std::vector<pile> tableau_piles;
     pile reserve;
     pile stock;
     pile waste;

@@ -12,7 +12,6 @@
 #include <rapidjson/document.h>
 
 #include "game_state.h"
-#include "pile.h"
 
 using namespace rapidjson;
 using namespace std;
@@ -54,10 +53,10 @@ game_state::game_state(const Document& doc)
 
 // Construct an initial game state from a seed
 game_state::game_state(int seed, const sol_rules& s_rules) :
-        reserve(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-        stock(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-        waste(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-        hole(false, ord::BOTH, pol::ANY_SUIT, true, s_rules.max_rank),
+        reserve(pile::reserve_factory()),
+        stock(pile::stock_factory()),
+        waste(pile::waste_factory()),
+        hole(pile::hole_factory(s_rules.max_rank)),
         rules(s_rules) {
 
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
@@ -94,8 +93,7 @@ game_state::game_state(int seed, const sol_rules& s_rules) :
 
         // For the first row we must create all the tableau pile vectors
         if (i / rules.tableau_pile_count == 0) {
-            pile p(true, rules.build_ord, pol::ANY_SUIT, false);
-            tableau_piles.push_back(p);
+            tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
         }
 
         // Add the randomly generated card to the tableau piles
@@ -107,16 +105,14 @@ game_state::game_state(int seed, const sol_rules& s_rules) :
     // If there are foundation piles, create the relevant pile vectors
     if (rules.foundations) {
         for (int i = 0; i < 4; i++) {
-            pile p(true, ord::ASCENDING, pol(i), false);
-            foundations.push_back(p);
+            foundations.push_back(pile::foundation_factory(pol(i)));
         }
     }
 
     // If there are cell piles, create the relevant cell vectors
     if (rules.cells > 0) {
         for (unsigned int i = 0; i < rules.cells; i++) {
-            pile p(true, ord::SINGLE_CARD, pol::ANY_SUIT, false);
-            cells.push_back(p);
+            cells.push_back(pile::cell_factory());
         }
     }
 }

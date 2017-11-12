@@ -12,7 +12,16 @@
 
 class pile {
 public:
-    pile(bool, sol_rules::build_order, sol_rules::build_policy, bool, int m = 13);
+    static pile foundation_factory(sol_rules::build_policy);
+    static pile cell_factory();
+    static pile tableau_factory(sol_rules::build_order);
+    static pile reserve_factory();
+    static pile stock_factory();
+    static pile waste_factory();
+    static pile hole_factory(int max_rank = 13);
+
+    pile(bool, sol_rules::build_order, sol_rules::build_policy, bool,
+         int max_rank = 13);
 
     bool can_place(const card&) const;
     bool can_remove() const;

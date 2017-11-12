@@ -9,8 +9,40 @@
 
 using namespace std;
 
-pile::pile(bool r, sol_rules::build_order bo, sol_rules::build_policy bp,
-           bool l, int mr) :
+typedef sol_rules::build_order ord;
+typedef sol_rules::build_policy pol;
+
+////////////
+// Static //
+////////////
+
+pile pile::foundation_factory(pol p) {
+    return pile(true, ord::ASCENDING, p, false);
+}
+pile pile::cell_factory() {
+    return pile(true, ord::SINGLE_CARD, pol::ANY_SUIT, false);
+}
+pile pile::tableau_factory(ord o) {
+    return pile(true, o, pol::ANY_SUIT, false);
+}
+pile pile::reserve_factory() {
+    return pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+}
+pile pile::stock_factory() {
+    return pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+}
+pile pile::waste_factory() {
+    return pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
+}
+pile pile::hole_factory(int max_rank) {
+    return pile(false, ord::BOTH, pol::ANY_SUIT, true, max_rank);
+}
+
+////////////////
+// Non-static //
+////////////////
+
+pile::pile(bool r, ord bo, pol bp, bool l, int mr) :
     remove(r),
     build_order(bo),
     build_policy(bp),
@@ -18,8 +50,6 @@ pile::pile(bool r, sol_rules::build_order bo, sol_rules::build_policy bp,
     max_rank(mr) {}
 
 bool pile::can_place(const card& c) const {
-    typedef sol_rules::build_order ord;
-    typedef sol_rules::build_policy pol;
 
     if (build_order == ord::NO_BUILD) {
         return false;
