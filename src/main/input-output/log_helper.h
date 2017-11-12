@@ -8,12 +8,12 @@
 #include <iostream>
 
 #if defined NDEBUG
-    #define LOG_DEBUG
+    #define LOG_DEBUG(msg)
 #else
-    #define LOG_DEBUG clog << "[debug]\n"
+    #define LOG_DEBUG(msg) clog << "[debug]\n" << msg << "\n"
 #endif
-#define LOG_INFO clog << "[info] "
-#define LOG_WARNING clog << "[warning] "
-#define LOG_ERROR cerr << "[ERROR] "
+#define LOG_INFO(msg)  clog << "[info] " << msg << "\n"
+#define LOG_WARNING clog(msg)  << "[warning] " << msg << "\n"
+#define LOG_ERROR(msg)  cerr << "[ERROR] " << msg << "\n"
 
 #endif //SOLVITAIRE_LOG_HELPER_H
