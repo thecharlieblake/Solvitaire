@@ -22,7 +22,10 @@ typedef sol_rules::build_policy pol;
 
 // Construct an initial game state from a JSON doc
 game_state::game_state(const Document& doc)
-        : hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank),
+        : reserve(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+          stock(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+          waste(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank),
           rules("simple-black-hole") {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
@@ -50,15 +53,18 @@ game_state::game_state(const Document& doc)
 }
 
 // Construct an initial game state from a seed
-game_state::game_state(int seed, const sol_rules& s_rules)
-        : rules(s_rules) {
+game_state::game_state(int seed, const sol_rules& s_rules) :
+        reserve(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+        stock(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+        waste(true, ord::NO_BUILD, pol::ANY_SUIT, false),
+        hole(false, ord::BOTH, pol::ANY_SUIT, true, s_rules.max_rank),
+        rules(s_rules) {
 
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
     // If there is a hole, move the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
-        hole = pile(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank);
         hole.place("AS");
     }
 
@@ -66,9 +72,6 @@ game_state::game_state(int seed, const sol_rules& s_rules)
 
     // If there is a stock, deal to it and set up a waste pile too
     if (rules.stock_size > 0) {
-        stock = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
-        waste = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
-
         for (unsigned int i = 0; i < rules.stock_size; i++) {
             stock.place(deck[i + deckCardsUsed]);
         }
@@ -77,8 +80,6 @@ game_state::game_state(int seed, const sol_rules& s_rules)
 
     // If there is a reserve, deal to it
     if (rules.reserve_size > 0) {
-        reserve = pile(true, ord::NO_BUILD, pol::ANY_SUIT, false);
-
         for (unsigned int i = 0; i < rules.reserve_size; i++) {
             reserve.place(deck[i + deckCardsUsed]);
         }
@@ -147,36 +148,40 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     return deck;
 }
 
-vector<game_state> game_state::get_next_legal_states() {
+vector<game_state> game_state::get_next_legal_states() const {
     // Generates vectors of references to all the piles from which
     // cards can be removed, and to which they can be added
     vector<pile*> can_remove;
     vector<pile*> can_add;
 
+    // A mutable version of the current state, used to create the next legal
+    // states
+    game_state mut_state = *this;
+
     for (vector<pile>::size_type i = 0; i < tableau_piles.size(); i++) {
-        can_remove.push_back(&tableau_piles[i]);
+        can_remove.push_back(&mut_state.tableau_piles[i]);
         if (rules.build_ord != ord::NO_BUILD) {
-            can_add.push_back(&tableau_piles[i]);
+            can_add.push_back(&mut_state.tableau_piles[i]);
         }
     }
     if (rules.reserve_size > 0) {
-        can_remove.push_back(&reserve);
+        can_remove.push_back(&mut_state.reserve);
     }
     if (rules.foundations) {
         for (vector<pile>::size_type i = 0; i < foundations.size(); i++) {
-            can_remove.push_back(&foundations[i]);
-            can_add.push_back(&foundations[i]);
+            can_remove.push_back(&mut_state.foundations[i]);
+            can_add.push_back(&mut_state.foundations[i]);
         }
     }
     for (vector<pile>::size_type i = 0; i < cells.size(); i++) {
-        can_remove.push_back(&cells[i]);
-        can_add.push_back(&cells[i]);
+        can_remove.push_back(&mut_state.cells[i]);
+        can_add.push_back(&mut_state.cells[i]);
     }
     if (rules.stock_size > 0) {
-        can_remove.push_back(&waste);
+        can_remove.push_back(&mut_state.waste);
     }
     if (rules.hole) {
-        can_add.push_back(&hole);
+        can_add.push_back(&mut_state.hole);
     }
 
     // The next legal states
@@ -191,7 +196,7 @@ vector<game_state> game_state::get_next_legal_states() {
                 && add_pile->can_place(rem_pile->top_card())) {
 
                 move(rem_pile, add_pile); // remove
-                game_state s = *this;
+                game_state s(mut_state);
                 next.push_back(s);
                 move(add_pile, rem_pile); // restore
             }
@@ -200,10 +205,10 @@ vector<game_state> game_state::get_next_legal_states() {
 
     // Dealing from the stock to the waste
     if (!stock.empty()) {
-        move(&stock, &waste);
-        game_state s = *this;
+        move(&mut_state.stock, &mut_state.waste);
+        game_state s(mut_state);
         next.push_back(s);
-        move(&waste, &stock);
+        move(&mut_state.waste, &mut_state.stock);
     }
 
     return next;

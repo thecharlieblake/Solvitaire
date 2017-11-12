@@ -22,7 +22,7 @@ public:
     // Do the same from a 'rules' object
     game_state(int seed, const sol_rules&);
 
-    std::vector<game_state> get_next_legal_states();
+    std::vector<game_state> get_next_legal_states() const;
     // NOTE: will only be evaluated after get_next_legal_states() is called
     bool is_solved() const;
 
@@ -44,9 +44,9 @@ private:
     std::vector<pile> tableau_piles;
     std::vector<pile> cells;
     std::vector<pile> foundations;
-    pile waste;
     pile reserve;
     pile stock;
+    pile waste;
     pile hole;
     sol_rules rules;
 };
