@@ -28,6 +28,7 @@ public:
     card top_card() const;
     bool empty() const;
     unsigned long size() const;
+    sol_rules::build_order get_build_order() const;
 
     void place(const card&);
     card take();
@@ -49,8 +50,6 @@ private:
 
     std::vector<card> pile_vec;
 };
-
-void move(pile*, pile*);
 
 
 #endif //SOLVITAIRE_PILE_H

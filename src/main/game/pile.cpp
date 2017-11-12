@@ -114,6 +114,10 @@ unsigned long pile::size() const {
     return pile_vec.size();
 }
 
+ord pile::get_build_order() const {
+    return build_order;
+}
+
 card& pile::operator[] (vector<card>::size_type i) {
     return pile_vec[i];
 }
@@ -134,11 +138,6 @@ card pile::take() {
 
 void pile::clear() {
     pile_vec.clear();
-}
-
-
-void move(pile *a, pile *b) {
-    b->place(a->take());
 }
 
 bool operator==(const pile& a, const pile& b) {

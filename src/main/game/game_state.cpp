@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <ostream>
-#include <numeric>
 #include <random>
 #include <algorithm>
 #include <functional>
@@ -140,7 +139,7 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     return deck;
 }
 
-vector<game_state> game_state::get_next_legal_states() const {
+const vector<game_state> game_state::get_next_legal_states() const {
     // Generates vectors of references to all the piles from which
     // cards can be removed, and to which they can be added
     vector<pile*> can_remove;
@@ -150,60 +149,46 @@ vector<game_state> game_state::get_next_legal_states() const {
     // states
     game_state mut_state = *this;
 
-    for (vector<pile>::size_type i = 0; i < tableau_piles.size(); i++) {
-        can_remove.push_back(&mut_state.tableau_piles[i]);
-        if (rules.build_ord != ord::NO_BUILD) {
-            can_add.push_back(&mut_state.tableau_piles[i]);
+    for (pile* p : mut_state.get_regular_pile_refs()) {
+        if (p->can_remove()) {
+            can_remove.push_back(p);
         }
-    }
-    if (rules.reserve_size > 0) {
-        can_remove.push_back(&mut_state.reserve);
-    }
-    if (rules.foundations) {
-        for (vector<pile>::size_type i = 0; i < foundations.size(); i++) {
-            can_remove.push_back(&mut_state.foundations[i]);
-            can_add.push_back(&mut_state.foundations[i]);
+        if (p->get_build_order() != ord::NO_BUILD) {
+            can_add.push_back(p);
         }
-    }
-    for (vector<pile>::size_type i = 0; i < cells.size(); i++) {
-        can_remove.push_back(&mut_state.cells[i]);
-        can_add.push_back(&mut_state.cells[i]);
-    }
-    if (rules.stock_size > 0) {
-        can_remove.push_back(&mut_state.waste);
-    }
-    if (rules.hole) {
-        can_add.push_back(&mut_state.hole);
     }
 
     // The next legal states
     vector<game_state> next;
 
     // Moving from and to the 'can remove' and 'can add' piles
-    for (pile *rem_pile : can_remove) {
+    for (pile* rem_pile : can_remove) {
         if (rem_pile->empty()) continue;
 
-        for (pile *add_pile : can_add) {
-            if (add_pile != rem_pile
+        for (pile* add_pile : can_add) {
+            if (&add_pile != &rem_pile
                 && add_pile->can_place(rem_pile->top_card())) {
 
-                move(rem_pile, add_pile); // remove
-                game_state s(mut_state);
-                next.push_back(s);
-                move(add_pile, rem_pile); // restore
+                game_state new_gs = move(mut_state, rem_pile, add_pile);
+                next.push_back(new_gs);
             }
         }
     }
 
     // Dealing from the stock to the waste
     if (!stock.empty()) {
-        move(&mut_state.stock, &mut_state.waste);
-        game_state s(mut_state);
-        next.push_back(s);
-        move(&mut_state.waste, &mut_state.stock);
+        game_state new_gs = move(mut_state, &mut_state.stock, &mut_state.waste);
+        next.push_back(new_gs);
     }
 
     return next;
+}
+
+const game_state game_state::move(game_state& gs, pile* from, pile* to) const {
+    to->place(from->take());
+    const game_state new_gs(gs);
+    from->place(to->take());
+    return new_gs;
 }
 
 
@@ -215,6 +200,31 @@ bool game_state::is_solved() const {
     }
 
     return !rules.hole || hole.size() == rules.max_rank * 4;
+}
+
+// Not the stock, because cards from it can't be moved to the rest of the piles!
+vector<pile*> game_state::get_regular_pile_refs() {
+    vector<pile*> piles;
+    auto to_ptr = [](pile& p){return &p;};
+
+    if (rules.foundations) {
+        transform(begin(foundations), end(foundations), back_inserter(piles),
+                  to_ptr);
+    }
+    if (rules.cells) {
+        transform(begin(cells), end(cells), back_inserter(piles), to_ptr);
+    }
+    transform(begin(tableau_piles), end(tableau_piles), back_inserter(piles), to_ptr);
+    if (rules.reserve_size > 0) {
+        piles.push_back(&reserve);
+    }
+    if (rules.stock_size > 0) {
+        piles.push_back(&waste);
+    }
+    if (rules.hole) {
+        piles.push_back(&hole);
+    }
+    return piles;
 }
 
 ostream& game_state::print(ostream& stream) const {

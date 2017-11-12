@@ -22,7 +22,7 @@ public:
     // Do the same from a 'rules' object
     game_state(int seed, const sol_rules&);
 
-    std::vector<game_state> get_next_legal_states() const;
+    const std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
 
     std::ostream& print(std::ostream&) const;
@@ -32,6 +32,9 @@ public:
 
 private:
     static std::vector<card> shuffled_deck(int, int);
+
+    const game_state move(game_state&, pile*, pile*) const;
+    std::vector<pile*> get_regular_pile_refs();
 
     void print_header(std::ostream&, const char*) const;
     void print_piles(std::ostream&, const std::vector<pile>&) const;

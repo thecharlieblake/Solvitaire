@@ -99,9 +99,9 @@ sol_rules::sol_rules(std::string sol_type) {
             stock_size = 34;
             break;
         case valid_sol::SIMPLE_CANFIELD:
-            tableau_pile_count = 3;
+            tableau_pile_count = 2;
             build_pol = build_policy::RED_BLACK;
-            max_rank = 3;
+            max_rank = 2;
             reserve_size = 2;
             stock_size = 2;
             break;
