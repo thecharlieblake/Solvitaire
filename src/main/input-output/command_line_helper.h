@@ -10,6 +10,7 @@
 class command_line_helper {
 public:
     command_line_helper();
+
     bool parse(int argc, const char* argv[]);
     const std::vector<std::string> get_input_files();
     const std::string get_solitaire_type();
