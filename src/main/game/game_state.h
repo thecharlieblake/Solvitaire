@@ -34,11 +34,10 @@ private:
     static std::vector<card> shuffled_deck(int, int);
 
     void print_header(std::ostream&, const char*) const;
-    void print_foundations(std::ostream&) const;
-    void print_cells(std::ostream&) const;
-    void print_tableau_piles(std::ostream&) const;
-    void print_hole(std::ostream&) const;
+    void print_piles(std::ostream&, const std::vector<pile>&) const;
     void print_pile(std::ostream&, const pile&) const;
+    void print_top_of_piles(std::ostream&, const std::vector<pile>&) const;
+    void print_top_of_pile(std::ostream&, const pile&) const;
 
     std::vector<pile> foundations;
     std::vector<pile> cells;

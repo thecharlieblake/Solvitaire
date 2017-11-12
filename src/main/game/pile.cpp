@@ -96,18 +96,10 @@ bool pile::one_lt(int a, int b) const {
     return (a == b - 1) || (build_order_loops && a == max_rank && b == 1);
 }
 
-void pile::place(const card& c) {
-    pile_vec.push_back(c);
-}
+
 
 card pile::top_card() const {
     return pile_vec.back();
-}
-
-card pile::take() {
-    card c = top_card();
-    pile_vec.pop_back();
-    return c;
 }
 
 bool pile::can_remove() const {
@@ -129,18 +121,26 @@ card pile::operator[] (vector<card>::size_type i) const {
     return pile_vec[i];
 }
 
+
+void pile::place(const card& c) {
+    pile_vec.push_back(c);
+}
+
+card pile::take() {
+    card c = top_card();
+    pile_vec.pop_back();
+    return c;
+}
+
+void pile::clear() {
+    pile_vec.clear();
+}
+
+
 void move(pile *a, pile *b) {
     b->place(a->take());
 }
 
 bool operator==(const pile& a, const pile& b) {
     return a.pile_vec == b.pile_vec;
-}
-
-ostream & operator<<(ostream & stream, pile const & p) {
-    if (p.empty()) {
-        return stream << "[]";
-    } else {
-        return stream << p.top_card();
-    }
 }

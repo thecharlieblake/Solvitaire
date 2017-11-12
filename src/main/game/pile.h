@@ -31,12 +31,12 @@ public:
 
     void place(const card&);
     card take();
+    void clear();
 
     card& operator[] (std::vector<card>::size_type);
     card operator[] (std::vector<card>::size_type) const;
 
     friend bool operator==(const pile&, const pile&);
-    friend std::ostream & operator<<(std::ostream &, pile const &);
 
 private:
     bool one_lt(int, int) const;

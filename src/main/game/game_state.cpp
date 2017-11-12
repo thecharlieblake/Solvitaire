@@ -220,11 +220,11 @@ bool game_state::is_solved() const {
 ostream& game_state::print(ostream& stream) const {
     if (rules.foundations) {
         print_header(stream, "Foundations");
-        print_foundations(stream);
+        print_top_of_piles(stream, foundations);
     }
     if (rules.cells) {
         print_header(stream, "Cells");
-        print_cells(stream);
+        print_piles(stream, cells);
     }
     if (rules.reserve_size > 0) {
         print_header(stream, "Reserve");
@@ -232,19 +232,17 @@ ostream& game_state::print(ostream& stream) const {
     }
     if (rules.tableau_pile_count > 0) {
         print_header(stream, "Tableau Piles");
-        print_tableau_piles(stream);
+        print_piles(stream, tableau_piles);
     }
     if (rules.stock_size > 0) {
-        print_header(stream, "Stock");
-        print_pile(stream, stock);
-        print_header(stream, "Waste");
-        print_pile(stream, waste);
+        print_header(stream, "Stock | Waste");
+        print_piles(stream, {stock, waste});
     }
     if (rules.hole) {
         print_header(stream, "Hole Card");
-        print_hole(stream);
+        print_top_of_pile(stream, hole);
     }
-    return stream << "===================================\n";
+    return stream << "===================================";
 }
 
 void game_state::print_header(ostream& stream, const char* header) const {
@@ -256,56 +254,57 @@ void game_state::print_header(ostream& stream, const char* header) const {
     stream << "\n";
 }
 
-void game_state::print_foundations(ostream& stream) const {
-    stream << foundations[0] << "\t"
-           << foundations[1] << "\t"
-           << foundations[2] << "\t"
-           << foundations[3] << "\n";
-}
-
-void game_state::print_cells(ostream& stream) const {
-    for (pile cell : cells) {
-        if (cells.empty()) {
-            stream << "[]" << "\t";
-        } else {
-            stream << cells[0] << "\t";
-        }
-    }
-    stream << "\n";
-}
-
-void game_state::print_pile(ostream& stream, const pile &p) const {
-    if (p.empty()) {
-        stream << "[]\n";
-    } else {
-        for (unsigned int i = 0; i < p.size(); i++) {
-            stream << p[i] << "\n";
-        }
-    }
-}
-
-void game_state::print_tableau_piles(ostream& stream) const {
+void game_state::print_piles(ostream& stream,
+                             const vector<pile>& pile_vec) const {
     bool empty_row = false;
     vector<card>::size_type row_idx = 0;
 
+    // Loops through the rows in each pile, starting from the bottom, until
+    // one is empty
     while (!empty_row) {
+        // Loops throught the current row to determine if it is empty
         empty_row = true;
-
-        for (pile tableau_pile : tableau_piles) {
+        for (const pile& tableau_pile : pile_vec) {
             if (tableau_pile.size() > row_idx) {
                 empty_row = false;
-                stream << tableau_pile[row_idx];
+                break;
             }
-            stream << "\t";
         }
+        if (!empty_row || row_idx == 0) {
+            // Loops through the current (non-empty) row, and outputs the values
+            for (const pile& tableau_pile : pile_vec) {
+                if (tableau_pile.size() > row_idx) {
+                    stream << tableau_pile[row_idx];
+                } else if (row_idx == 0) {
+                    stream << "[]";
+                }
+                stream << "\t";
+            }
 
-        stream << "\n";
-        row_idx++;
+            stream << "\n";
+            row_idx++;
+        }
     }
 }
 
-void game_state::print_hole(ostream& stream) const {
-    stream << hole.top_card() << "\n";
+void game_state::print_pile(ostream& stream, const pile &p) const {
+    print_piles(stream, {p});
+}
+
+void game_state::print_top_of_piles(ostream& stream, const vector<pile>& vp) const {
+    vector<pile> top(vp);
+    for (pile& p : top) {
+        if (!p.empty()) {
+            card t = p.top_card();
+            p.clear();
+            p.place(t);
+        }
+    }
+    print_piles(stream, top);
+}
+
+void game_state::print_top_of_pile(ostream& stream, const pile& p) const {
+    print_top_of_piles(stream, {p});
 }
 
 bool operator==(const game_state& a, const game_state& b) {
