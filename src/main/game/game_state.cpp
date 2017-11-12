@@ -123,12 +123,14 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
     vector<int*> v_ptrs;
     for (int i = 0; i < max_rank * 4; i++) {
         values.push_back(i);
+    }
+    for (int i = 0; i < max_rank * 4; i++) {
         v_ptrs.push_back(&values[i]);
     }
 
     // Randomly shuffle the pointers
-    auto rng = std::default_random_engine(seed);
-    std::shuffle(std::begin(v_ptrs), std::end(v_ptrs), rng);
+    auto rng = default_random_engine(seed);
+    shuffle(begin(v_ptrs), end(v_ptrs), rng);
 
     vector<card> deck;
     for (int *i : v_ptrs) {
