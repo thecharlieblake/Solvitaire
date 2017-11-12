@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+#include <boost/optional.hpp>
 #include <rapidjson/document.h>
 
 #include "input-output/command_line_helper.h"
@@ -10,6 +11,7 @@
 using namespace rapidjson;
 
 using namespace std;
+using namespace boost;
 
 namespace po = boost::program_options;
 
@@ -44,7 +46,7 @@ int main(int argc, const char* argv[]) {
 }
 
 void solve_random_game(int seed, const sol_rules& rules) {
-    LOG_INFO << "Attempting to solve with seed: " << seed << "...\n";
+    LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state gs(seed, rules);
     solve_game(gs, rules);
 }
@@ -58,7 +60,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules rules) 
         // Creates a game state object from the json, plus a solver
         game_state gs(doc);
 
-        LOG_INFO << "Attempting to solve " << input_json << "...\n";
+        LOG_INFO ("Attempting to solve " << input_json << "...");
         solve_game(gs, rules);
     }
 }
@@ -66,6 +68,11 @@ void solve_input_files(const vector<string> input_files, const sol_rules rules) 
 void solve_game(const game_state& gs, const sol_rules& rules) {
     solver sol(gs, rules);
 
-    sol.run();
-    cout << sol;
+    optional<solver::node> solution = sol.run();
+    if (solution) {
+        cout << "Solution:\n" << *solution << "States Searched: "
+             << sol.get_states_searched() << "\n";
+    } else {
+        cout << "Deal:\n" << sol.get_root() << "\nNo Possible Solution\n";
+    }
 }
