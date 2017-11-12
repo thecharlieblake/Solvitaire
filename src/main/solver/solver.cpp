@@ -11,15 +11,29 @@
 #include "input-output/log_helper.h"
 #include "game/game_state.h"
 #include <boost/log/trivial.hpp>
+
 using namespace std;
+using namespace boost;
 
 solver::solver(const game_state gs, const sol_rules& sr)
-        : root(gs), rules(sr), solution(gs), solution_found(false),
+        : root(NULL, gs), rules(sr), solution(root), solution_found(false),
           states_searched(0) {}
 
-solver::node::node(const game_state gs) : state(gs) {}
+solver::node::node(const node* parent, const game_state& gs) :
+        history(solver::node::gen_history(parent)), state(gs) {}
 
-bool solver::run() {
+const vector<game_state> solver::node::gen_history(const node* parent) {
+    vector<game_state> hist;
+    if (parent != NULL) {
+        hist = std::vector<game_state>(parent->history);
+        hist.push_back(parent->state);
+    } else {
+        hist = vector<game_state>();
+    }
+    return hist;
+}
+
+optional<solver::node> solver::run() {
     been_run = true;
 
     // Iteratively run a depth-first search. Nodes in the frontier are yet to
@@ -28,10 +42,10 @@ bool solver::run() {
     frontier.push_back(root);
     while (!frontier.empty()) {
         // Pop the element at the top of the stack
-        node current = frontier.back();
+        const node current = frontier.back();
         frontier.pop_back();
 
-        LOG_DEBUG << current.state;
+        LOG_DEBUG (current.state);
 
         // Create new nodes for each of the children
         vector<game_state> new_children = current.state.get_next_legal_states();
@@ -39,9 +53,7 @@ bool solver::run() {
 
         // NOTE: get_next_legal_states() makes the is_solved() function work
         if (current.state.is_solved()) {
-            solution = current;
-            solution_found = true;
-            break;
+            return node(current);
         }
 
         for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
@@ -51,32 +63,26 @@ bool solver::run() {
                 continue;
             }
 
-            node n = current;
-            n.history.push_back(n.state);
-            n.state = *it;
-
+            const node n(&current, *it);
             frontier.push_back(n);
         }
     }
 
-    return solution_found;
+    return none;
 }
 
-std::ostream& operator<< (std::ostream& stream, const solver& sol) {
+const solver::node solver::get_root() const {
+    return root;
+}
 
-    if (sol.solution_found) {
-        stream << "Solution:\n";
-        for (auto state : sol.solution.history) {
-            stream << state << "\n";
-        }
-        stream << sol.solution.state << "\nSolved!\n";
+int solver::get_states_searched() const {
+    return states_searched;
+}
 
-    } else if (sol.been_run) {
-        stream << "Deal:\n" << sol.root.state << "\n"
-               << "No Possible Solution\n";
-    } else {
-        stream << "Solver has not been run yet\n";
+std::ostream& operator<< (std::ostream& stream, const solver::node& solution) {
+    for (auto state : solution.history) {
+        stream << state << "\n";
     }
-    stream << "States Searched: " << sol.states_searched << "\n";
+    stream << solution.state << "\n";
     return stream;
 }
