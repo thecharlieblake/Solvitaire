@@ -214,10 +214,7 @@ bool game_state::is_solved() const {
         }
     }
 
-    if (rules.hole && hole.size() != rules.max_rank * 4) {
-        return false;
-    }
-    return true;
+    return !rules.hole || hole.size() == rules.max_rank * 4;
 }
 
 ostream& game_state::print(ostream& stream) const {

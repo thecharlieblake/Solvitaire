@@ -23,7 +23,6 @@ public:
     game_state(int seed, const sol_rules&);
 
     std::vector<game_state> get_next_legal_states() const;
-    // NOTE: will only be evaluated after get_next_legal_states() is called
     bool is_solved() const;
 
     std::ostream& print(std::ostream&) const;
