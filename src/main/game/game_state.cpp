@@ -67,40 +67,37 @@ game_state::game_state(int seed, const sol_rules& s_rules) :
         hole.place("AS");
     }
 
-    unsigned int deckCardsUsed = 0;
-
     // If there is a stock, deal to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
-            stock.place(deck[i + deckCardsUsed]);
+            stock.place(deck.back());
+            deck.pop_back();
         }
-        deckCardsUsed += rules.stock_size;
     }
 
     // If there is a reserve, deal to it
     if (rules.reserve_size > 0) {
         for (unsigned int i = 0; i < rules.reserve_size; i++) {
-            reserve.place(deck[i + deckCardsUsed]);
+            reserve.place(deck.back());
+            deck.pop_back();
         }
-        deckCardsUsed += rules.reserve_size;
     }
 
-
     // Deal to the tableau piles (row-by-row)
-    vector<card>::size_type remainingCards = deck.size() - deckCardsUsed;
-    for (vector<card>::size_type i = 0; i < remainingCards; i++) {
-        card c = deck[i + deckCardsUsed];
+    unsigned int t = 0;
+    while (!deck.empty()) {
+        card c = deck.back();
+        deck.pop_back();
 
         // For the first row we must create all the tableau pile vectors
-        if (i / rules.tableau_pile_count == 0) {
+        if (t / rules.tableau_pile_count == 0) {
             tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
         }
 
         // Add the randomly generated card to the tableau piles
-        tableau_piles[i % rules.tableau_pile_count].place(c);
+        tableau_piles[t % rules.tableau_pile_count].place(c);
+        t++;
     }
-    deckCardsUsed += remainingCards;
-    assert(deckCardsUsed == deck.size());
 
     // If there are foundation piles, create the relevant pile vectors
     if (rules.foundations) {

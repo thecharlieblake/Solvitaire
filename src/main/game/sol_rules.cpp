@@ -102,8 +102,8 @@ sol_rules::sol_rules(std::string sol_type) {
             tableau_pile_count = 3;
             build_pol = build_policy::RED_BLACK;
             max_rank = 3;
-            reserve_size = 3;
-            stock_size = 6;
+            reserve_size = 2;
+            stock_size = 2;
             break;
         default:
             assert(false);
