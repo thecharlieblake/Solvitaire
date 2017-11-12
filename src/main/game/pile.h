@@ -12,35 +12,32 @@
 
 class pile {
 public:
-    pile();
     pile(bool, sol_rules::build_order, sol_rules::build_policy, bool, int m = 13);
 
-    void set_remove(bool);
-    void set_loops(bool);
-    void set_max_rank(int);
-    void set_build_order(sol_rules::build_order);
-    void set_build_policy(sol_rules::build_policy);
-
     bool can_place(const card&) const;
-    void place(const card&);
-    card take();
-    card top_card() const;
     bool can_remove() const;
+    card top_card() const;
     bool empty() const;
     unsigned long size() const;
+    
+    void place(const card&);
+    card take();
+    
     card& operator[] (std::vector<card>::size_type);
     card operator[] (std::vector<card>::size_type) const;
 
     friend bool operator==(const pile&, const pile&);
     friend std::ostream & operator<<(std::ostream &, pile const &);
 private:
-    std::vector<card> pile_vec;
-    bool remove;
-    bool build_order_loops;
-    int max_rank;
-    sol_rules::build_order build_order;
-    sol_rules::build_policy build_policy;
     bool one_lt(int, int) const;
+
+    std::vector<card> pile_vec;
+
+    const bool remove;
+    const sol_rules::build_order build_order;
+    const sol_rules::build_policy build_policy;
+    const bool build_order_loops;
+    const int max_rank;
 };
 
 void move(pile*, pile*);

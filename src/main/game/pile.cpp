@@ -9,24 +9,13 @@
 
 using namespace std;
 
-pile::pile() {
-    set_max_rank(13);
-}
-
-pile::pile(bool r, sol_rules::build_order bo, sol_rules::build_policy bp, bool l,
-           int mr) {
-    set_remove(r);
-    set_build_order(bo);
-    set_build_policy(bp);
-    set_loops(l);
-    set_max_rank(mr);
-}
-
-void pile::set_remove(bool r) {remove = r;}
-void pile::set_loops(bool l) {build_order_loops = l;}
-void pile::set_max_rank(int mr) {max_rank = mr;}
-void pile::set_build_order(sol_rules::build_order bo) {build_order = bo;}
-void pile::set_build_policy(sol_rules::build_policy bp) {build_policy = bp;}
+pile::pile(bool r, sol_rules::build_order bo, sol_rules::build_policy bp,
+           bool l, int mr) :
+    remove(r),
+    build_order(bo),
+    build_policy(bp),
+    build_order_loops(l),
+    max_rank(mr) {}
 
 bool pile::can_place(const card& c) const {
     typedef sol_rules::build_order ord;
@@ -109,7 +98,6 @@ card& pile::operator[] (vector<card>::size_type i) {
 card pile::operator[] (vector<card>::size_type i) const {
     return pile_vec[i];
 }
-
 
 void move(pile *a, pile *b) {
     b->place(a->take());
