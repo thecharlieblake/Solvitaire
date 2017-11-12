@@ -11,7 +11,9 @@
 
 using namespace std;
 
-// Static
+////////////
+// Static //
+////////////
 
 typedef sol_rules::build_policy pol;
 
@@ -39,12 +41,16 @@ int sol_rules::suit_val(pol bp) {
     }
 }
 
-// Non-static
+////////////////
+// Non-static //
+////////////////
 
 sol_rules::sol_rules(std::string sol_type) {
     valid_sol vs = valid_sol_enum(sol_type);
 
     // Default game values
+
+    // tableau_pile_count = no obvious default
     build_ord = build_order::DESCENDING;
     build_pol = build_policy::ANY_SUIT;
     max_rank = 13;
