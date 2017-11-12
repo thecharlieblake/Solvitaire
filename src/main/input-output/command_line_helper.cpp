@@ -43,7 +43,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         store(po::command_line_parser(argc, argv).options(cmdline_options)
                       .positional(p).run(), vm);
     } catch(po::error& e) {
-        LOG_ERROR << "Error: " << e.what() << "\n";
+        LOG_ERROR ("Error: " << e.what());
         return false;
     }
 
@@ -108,35 +108,35 @@ bool command_line_helper::assess_sol_type() {
         return true;
 
     } else {
-        LOG_ERROR << "Error: Solitaire type is not valid: " << solitaire_type
-                << "\nValid solitaire types are: ";
+        LOG_ERROR ("Error: Solitaire type is not valid: " << solitaire_type
+                << "\nValid solitaire types are: ");
         copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
              ostream_iterator<string>(cerr, ", "));
-        LOG_ERROR << "\n";
+        cerr << "\n";
         print_help();
         return false;
     }
 }
 
 void command_line_helper::print_help() {
-    LOG_ERROR << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
-            << main_options << "\n";
+    LOG_ERROR ("Usage: solvitaire [options] input-file1 input-file2 ...\n"
+            << main_options);
 }
 
 void command_line_helper::print_no_input_error() {
-    LOG_ERROR << "Error: User must supply input file(s) or the '--random' "
-            "option\n";
+    LOG_ERROR ("Error: User must supply input file(s) or the '--random' "
+            "option");
     print_help();
 }
 
 void command_line_helper::print_no_sol_type_error() {
-    LOG_ERROR << "Error: User must supply a solitaire type\n";
+    LOG_ERROR ("Error: User must supply a solitaire type");
     print_help();
 }
 
 void command_line_helper::print_rand_plus_input_err() {
-    LOG_ERROR << "Error: User must supply input file(s) or the '--random' option, "
-            "not both\n";
+    LOG_ERROR ("Error: User must supply input file(s) or the '--random' option, "
+            "not both");
     print_help();
 }
 
