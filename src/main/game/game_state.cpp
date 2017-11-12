@@ -119,26 +119,23 @@ game_state::game_state(int seed, const sol_rules& s_rules) :
 
 // Generate a randomly ordered vector of cards
 vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
-    vector<int*> v;
+    vector<int> values;
+    vector<int*> v_ptrs;
     for (int i = 0; i < max_rank * 4; i++) {
-        v.push_back(new int(i));
+        values.push_back(i);
+        v_ptrs.push_back(&values[i]);
     }
 
     // Randomly shuffle the pointers
     auto rng = std::default_random_engine(seed);
-    std::shuffle(std::begin(v), std::end(v), rng);
+    std::shuffle(std::begin(v_ptrs), std::end(v_ptrs), rng);
 
     vector<card> deck;
-    for (int *i : v) {
+    for (int *i : v_ptrs) {
         int r = ((*i) % max_rank) + 1;
         int s = (*i) / max_rank;
 
-        deck.push_back(card(r, s));
-    }
-
-    // release memory
-    for (int i = 0; i < max_rank * 4; i++) {
-        delete v[i];
+        deck.emplace_back(card(r, s));
     }
 
     return deck;
