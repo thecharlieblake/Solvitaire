@@ -6,11 +6,15 @@
 #define SOLITAIRE_PIP_CARD_H
 
 #include <string>
+#include <map>
 
 class card {
 public:
+    // A card can either be created using two int values (rank & suit), or
+    // using a string (e.g. "AS")
     card(int, int);
     card(const char*);
+
     int get_rank() const;
     char get_suit() const;
     int get_suit_val() const;

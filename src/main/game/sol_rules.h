@@ -41,7 +41,7 @@ public:
     static bool is_suit(build_policy);
     static int suit_val(build_policy);
 
-    sol_rules(std::string);
+    explicit sol_rules(std::string);
 
     unsigned int tableau_pile_count;
     build_order build_ord;

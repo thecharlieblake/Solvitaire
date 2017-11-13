@@ -22,8 +22,7 @@ public:
     // Do the same from a 'rules' object
     game_state(int seed, const sol_rules&);
 
-    std::vector<game_state> get_next_legal_states();
-    // NOTE: will only be evaluated after get_next_legal_states() is called
+    const std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
 
     std::ostream& print(std::ostream&) const;
@@ -34,19 +33,21 @@ public:
 private:
     static std::vector<card> shuffled_deck(int, int);
 
-    void print_header(std::ostream&, const char*) const;
-    void print_foundations(std::ostream&) const;
-    void print_cells(std::ostream&) const;
-    void print_tableau_piles(std::ostream&) const;
-    void print_hole(std::ostream&) const;
-    void print_pile(std::ostream&, const pile&) const;
+    const game_state move(game_state&, pile*, pile*) const;
+    std::vector<pile*> get_regular_pile_refs();
 
-    std::vector<pile> tableau_piles;
-    std::vector<pile> cells;
+    void print_header(std::ostream&, const char*) const;
+    void print_piles(std::ostream&, const std::vector<pile>&) const;
+    void print_pile(std::ostream&, const pile&) const;
+    void print_top_of_piles(std::ostream&, const std::vector<pile>&) const;
+    void print_top_of_pile(std::ostream&, const pile&) const;
+
     std::vector<pile> foundations;
-    pile waste;
+    std::vector<pile> cells;
+    std::vector<pile> tableau_piles;
     pile reserve;
     pile stock;
+    pile waste;
     pile hole;
     sol_rules rules;
 };

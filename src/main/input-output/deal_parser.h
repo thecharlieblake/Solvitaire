@@ -11,7 +11,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/schema.h>
 
-#include "card.h"
+#include "game/card.h"
 
 class deal_parser {
 public:

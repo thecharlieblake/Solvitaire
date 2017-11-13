@@ -4,19 +4,19 @@
 
 #include <tuple>
 #include <vector>
-#include <iostream>
 
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
-#include "sol_rules.h"
+#include "game/sol_rules.h"
+#include "input-output/log_helper.h"
 
 using namespace std;
 
 namespace po = boost::program_options;
 
 command_line_helper::command_line_helper()
-        : main_options("options"), random_deal(-1) {
+        : main_options("options") {
 
     main_options.add_options()
             ("help", "produce help message")
@@ -35,19 +35,24 @@ command_line_helper::command_line_helper()
     p.add("input-files", -1);
 }
 
+// Returns true if we can continue solving the supplied solitaire(s)
 bool command_line_helper::parse(int argc, const char* argv[]) {
     po::variables_map vm;
+    // Attempts to parse cmdln options. Catches basic errors
     try {
         store(po::command_line_parser(argc, argv).options(cmdline_options)
                       .positional(p).run(), vm);
     } catch(po::error& e) {
-        cerr << "Error: " << e.what() << "\n";
+        LOG_ERROR ("Error: " << e.what());
         return false;
     }
 
+    // Updates the variables map which the user's options are stored in
     notify(vm);
 
-    help = vm.count("help");
+    // Converts the variables map into flags and values
+
+    help = (vm.count("help") != 0);
 
     if (vm.count("input-files")) {
         input_files = vm["input-files"].as<vector<string>>();
@@ -59,6 +64,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     if (vm.count("random")) {
         random_deal = vm["random"].as<int>();
+    } else {
+        random_deal = -1;
     }
 
     // Handle logic error scenarios
@@ -79,6 +86,8 @@ bool command_line_helper::assess_errors() {
     bool valid_sol_type = assess_sol_type();
     if (!valid_sol_type) return false;
 
+    // The user must either supply input files or a random seed
+
     if (random_deal != -1 && !input_files.empty()) {
         print_rand_plus_input_err();
         return false;
@@ -91,14 +100,16 @@ bool command_line_helper::assess_errors() {
     return true;
 }
 
+// Checks if the supplied solitaire type is in the list of valid solitaires
 bool command_line_helper::assess_sol_type() {
     if (find(sol_rules::valid_sol_strs.begin(),
              sol_rules::valid_sol_strs.end(),
              solitaire_type) != sol_rules::valid_sol_strs.end()) {
         return true;
+
     } else {
-        cerr << "Error: Solitaire type is not valid: " << solitaire_type
-                << "\nValid solitaire types are: ";
+        LOG_ERROR ("Error: Solitaire type is not valid: " << solitaire_type
+                << "\nValid solitaire types are: ");
         copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
              ostream_iterator<string>(cerr, ", "));
         cerr << "\n";
@@ -108,24 +119,24 @@ bool command_line_helper::assess_sol_type() {
 }
 
 void command_line_helper::print_help() {
-    cerr << "Usage: solvitaire [options] input-file1 input-file2 ...\n"
-            << main_options << "\n";
+    LOG_ERROR ("Usage: solvitaire [options] input-file1 input-file2 ...\n"
+            << main_options);
 }
 
 void command_line_helper::print_no_input_error() {
-    cerr << "Error: User must supply input file(s) or the '--random' "
-            "option\n";
+    LOG_ERROR ("Error: User must supply input file(s) or the '--random' "
+            "option");
     print_help();
 }
 
 void command_line_helper::print_no_sol_type_error() {
-    cerr << "Error: User must supply a solitaire type\n";
+    LOG_ERROR ("Error: User must supply a solitaire type");
     print_help();
 }
 
 void command_line_helper::print_rand_plus_input_err() {
-    cerr << "Error: User must supply input file(s) or the '--random' option, "
-            "not both\n";
+    LOG_ERROR ("Error: User must supply input file(s) or the '--random' option, "
+            "not both");
     print_help();
 }
 

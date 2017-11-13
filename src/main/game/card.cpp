@@ -3,11 +3,13 @@
 //
 
 #include <sstream>
-#include <ctype.h>
 
 #include "card.h"
 
 using namespace std;
+
+// A card can either be created using two int values (rank & suit), or
+// using a string (e.g. "AS")
 
 card::card(int r, int s) : rank(r), suit(s) {}
 
@@ -26,7 +28,7 @@ card::card(const char* c) : rank(-1), suit(-1) {
         case 'k': rank = 13;
                   letter = true;
                   break;
-        default: rank = atoi(c);
+        default: rank = stoi(c);
     }
 
     char s;
@@ -36,7 +38,7 @@ card::card(const char* c) : rank(-1), suit(-1) {
         s = c[1];
     }
 
-    s = tolower(s);
+    s = static_cast<char>(tolower(s));
 
     if (s == 'c') {
         suit = 0;

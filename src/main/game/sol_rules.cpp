@@ -11,7 +11,9 @@
 
 using namespace std;
 
-// Static
+////////////
+// Static //
+////////////
 
 typedef sol_rules::build_policy pol;
 
@@ -39,12 +41,16 @@ int sol_rules::suit_val(pol bp) {
     }
 }
 
-// Non-static
+////////////////
+// Non-static //
+////////////////
 
 sol_rules::sol_rules(std::string sol_type) {
     valid_sol vs = valid_sol_enum(sol_type);
 
     // Default game values
+
+    // tableau_pile_count = no obvious default
     build_ord = build_order::DESCENDING;
     build_pol = build_policy::ANY_SUIT;
     max_rank = 13;
@@ -93,11 +99,11 @@ sol_rules::sol_rules(std::string sol_type) {
             stock_size = 34;
             break;
         case valid_sol::SIMPLE_CANFIELD:
-            tableau_pile_count = 3;
+            tableau_pile_count = 2;
             build_pol = build_policy::RED_BLACK;
-            max_rank = 3;
-            reserve_size = 3;
-            stock_size = 6;
+            max_rank = 2;
+            reserve_size = 2;
+            stock_size = 2;
             break;
         default:
             assert(false);
