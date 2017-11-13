@@ -14,6 +14,7 @@ public:
     bool parse(int argc, const char* argv[]);
     const std::vector<std::string> get_input_files();
     const std::string get_solitaire_type();
+    const std::string get_rules_file();
     int get_random_deal();
     bool get_help();
 
@@ -22,7 +23,7 @@ private:
     bool assess_sol_type();
     void print_help();
     void print_no_input_error();
-    void print_no_sol_type_error();
+    void print_sol_type_rules_error();
     void print_rand_plus_input_err();
 
     boost::program_options::options_description cmdline_options;
@@ -31,6 +32,7 @@ private:
 
     std::vector<std::string> input_files;
     std::string solitaire_type;
+    std::string rules_file;
     int random_deal;
     bool help;
 };

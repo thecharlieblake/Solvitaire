@@ -21,9 +21,14 @@ command_line_helper::command_line_helper()
     main_options.add_options()
             ("help", "produce help message")
             ("type", po::value<string>(),
-             "specify the type of the solitaire game to be solved (REQUIRED)")
+             "specify the type of the solitaire game to be solved. Must supply "
+                     "either 'type' or 'rules' file")
+            ("rules", po::value<string>(),
+             "the path to a JSON file describing the rules of the solitaire "
+                     "to be solved. Must supply either 'type' or 'rules' file")
             ("random", po::value<int>(), "create and solve a random solitaire "
-                    "deal based on a seed");
+                    "deal based on a seed. Must supply either 'random' or list "
+                    "of deals to be sold.");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -62,6 +67,10 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         solitaire_type = vm["type"].as<string>();
     }
 
+    if (vm.count("rules")) {
+        rules_file = vm["type"].as<string>();
+    }
+
     if (vm.count("random")) {
         random_deal = vm["random"].as<int>();
     } else {
@@ -78,14 +87,6 @@ bool command_line_helper::assess_errors() {
         return false;
     }
 
-    if (solitaire_type.empty()) {
-        print_no_sol_type_error();
-        return false;
-    }
-
-    bool valid_sol_type = assess_sol_type();
-    if (!valid_sol_type) return false;
-
     // The user must either supply input files or a random seed
 
     if (random_deal != -1 && !input_files.empty()) {
@@ -97,7 +98,19 @@ bool command_line_helper::assess_errors() {
         print_no_input_error();
         return false;
     }
-    return true;
+
+    // The user must supply either a solitaire type or a rules file
+    if (solitaire_type.empty() && rules_file.empty()
+            || !solitaire_type.empty() && !rules_file.empty()) {
+        print_sol_type_rules_error();
+        return false;
+    }
+
+    if (!solitaire_type.empty()) {
+        return assess_sol_type();
+    } else {
+        return true;
+    }
 }
 
 // Checks if the supplied solitaire type is in the list of valid solitaires
@@ -129,8 +142,9 @@ void command_line_helper::print_no_input_error() {
     print_help();
 }
 
-void command_line_helper::print_no_sol_type_error() {
-    LOG_ERROR ("Error: User must supply a solitaire type");
+void command_line_helper::print_sol_type_rules_error() {
+    LOG_ERROR ("Error: User must supply either a solitaire type, or a 'rules' "
+                       "file");
     print_help();
 }
 
@@ -146,6 +160,10 @@ const vector<string> command_line_helper::get_input_files() {
 
 const string command_line_helper::get_solitaire_type() {
     return solitaire_type;
+}
+
+const string command_line_helper::get_rules_file() {
+    return rules_file;
 }
 
 int command_line_helper::get_random_deal() {
