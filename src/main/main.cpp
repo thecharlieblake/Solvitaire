@@ -15,6 +15,7 @@ using namespace boost;
 
 namespace po = boost::program_options;
 
+const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&);
 void solve_input_files(const vector<string>, const sol_rules);
 void solve_game(const game_state&, const sol_rules&);
@@ -27,7 +28,8 @@ int main(int argc, const char* argv[]) {
     }
 
     // Generates the rules of the solitaire from the game type
-    const sol_rules rules(clh.get_solitaire_type());
+    const optional<sol_rules> rules = gen_rules(clh);
+    if (!rules) return -1;
 
     // Retrieves the input files to be solved
     const vector<string> input_files = clh.get_input_files();
@@ -35,14 +37,22 @@ int main(int argc, const char* argv[]) {
     // If there are no input files, solve a random deal based on the
     // supplied seed
     if (input_files.empty()) {
-        solve_random_game(clh.get_random_deal(), rules);
+        solve_random_game(clh.get_random_deal(), *rules);
     }
     // Otherwise, solve the input files
     else {
-        solve_input_files(input_files, rules);
+        solve_input_files(input_files, *rules);
     }
 
     return 0;
+}
+
+const optional<sol_rules> gen_rules(command_line_helper& clh) {
+    if (!clh.get_solitaire_type().empty()) {
+        return sol_rules::from_preset(clh.get_solitaire_type());
+    } else {
+        return sol_rules::from_file(clh.get_rules_file());
+    }
 }
 
 void solve_random_game(int seed, const sol_rules& rules) {
