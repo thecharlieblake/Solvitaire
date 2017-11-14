@@ -15,7 +15,7 @@ set(sources src/main/main.cpp src/main/input-output/command_line_helper.cpp
         src/main/game/card.cpp src/main/input-output/deal_parser.cpp src/main/input-output/deal_parser.h
         src/main/solver/solver.cpp src/main/solver/solver.h src/main/game/game_state.cpp
         src/main/game/game_state.h src/main/game/sol_rules.h src/main/game/sol_rules.cpp
-        src/main/game/pile.cpp src/main/game/pile.h)
+        src/main/game/pile.cpp src/main/game/pile.h src/main/util/util.cpp src/main/util/util.h src/main/input-output/sol_preset_types.h src/main/input-output/sol_preset_types.cpp)
 set(sources_test src/test/main_test.cpp)
 
 ###############################################################################

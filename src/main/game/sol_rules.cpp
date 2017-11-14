@@ -5,28 +5,23 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <assert.h>
+#include <input-output/log_helper.h>
 
+#include "rapidjson/error/en.h"
+
+#include "util/util.h"
 #include "sol_rules.h"
+#include "input-output/sol_preset_types.h"
 
 using namespace std;
+using namespace boost;
+using namespace rapidjson;
 
 ////////////
 // Static //
 ////////////
 
 typedef sol_rules::build_policy pol;
-
-vector<string> sol_rules::valid_sol_strs = {
-    "black-hole",
-    "simple-black-hole",
-    "spanish-patience",
-    "simple-spanish-patience",
-    "free-cell",
-    "simple-free-cell",
-    "canfield",
-    "simple-canfield"
-};
 
 bool sol_rules::is_suit(pol bp) {
     return suit_val(bp) != -1;
@@ -41,82 +36,156 @@ int sol_rules::suit_val(pol bp) {
     }
 }
 
-////////////////
-// Non-static //
-////////////////
+const sol_rules sol_rules::from_file(const string rules_file) {
+    sol_rules sr = get_default();
 
-sol_rules::sol_rules(std::string sol_type) {
-    valid_sol vs = valid_sol_enum(sol_type);
+    const optional<string> file_contents = util::read_file(rules_file);
+    if (!file_contents) {
+        throw runtime_error("Could not read rules file");
+    }
 
-    // Default game values
+    Document d;
+    if (d.Parse(file_contents->c_str()).HasParseError()) {
+        string errmsg = "Error parsing rules file JSON: ";
+        errmsg += GetParseError_En(d.GetParseError());
+        throw runtime_error(errmsg);
+    }
 
-    // tableau_pile_count = no obvious default
-    build_ord = build_order::DESCENDING;
-    build_pol = build_policy::ANY_SUIT;
-    max_rank = 13;
-    hole = false;
-    foundations = true;
-    cells = 0;
-    reserve_size = 0;
-    stock_size = 0;
+    modify_sol_rules(sr, d);
 
-    // Game-specific values
-    switch(vs) {
-        case valid_sol::BLACK_HOLE:
-            tableau_pile_count = 17;
-            build_ord = build_order::NO_BUILD;
-            hole = true;
-            foundations = false;
-            cells = 0;
-            break;
-        case valid_sol::SIMPLE_BLACK_HOLE:
-            tableau_pile_count = 9;
-            build_ord = build_order::NO_BUILD;
-            max_rank = 7;
-            hole = true;
-            foundations = false;
-            break;
-        case valid_sol::SPANISH_PATIENCE:
-            tableau_pile_count = 13;
-            break;
-        case valid_sol::SIMPLE_SPANISH_PATIENCE:
-            tableau_pile_count = 5;
-            max_rank = 5;
-            break;
-        case valid_sol::FREE_CELL:
-            tableau_pile_count = 8;
-            cells = 4;
-            break;
-        case valid_sol::SIMPLE_FREE_CELL:
-            tableau_pile_count = 3;
-            max_rank = 3;
-            cells = 1;
-            break;
-        case valid_sol::CANFIELD:
-            tableau_pile_count = 4;
-            build_pol = build_policy::RED_BLACK;
-            reserve_size = 14;
-            stock_size = 34;
-            break;
-        case valid_sol::SIMPLE_CANFIELD:
-            tableau_pile_count = 2;
-            build_pol = build_policy::RED_BLACK;
-            max_rank = 2;
-            reserve_size = 2;
-            stock_size = 2;
-            break;
-        default:
-            assert(false);
+    return sr;
+}
+
+const sol_rules sol_rules::from_preset(const string sol_type) {
+    sol_rules sr = get_default();
+
+    const string preset_json = sol_preset_types::get(sol_type);
+
+    Document d;
+    d.Parse(preset_json.c_str());
+    assert(!d.HasParseError());
+
+    modify_sol_rules(sr, d);
+    return sr;
+}
+
+sol_rules sol_rules::get_default() {
+    sol_rules sr;
+    const string default_json = sol_preset_types::get("default");
+
+    Document d;
+    d.Parse(default_json.c_str());
+    assert(!d.HasParseError());
+
+    modify_sol_rules(sr, d);
+    return sr;
+}
+
+void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
+
+    if (!d.IsObject()) {
+        parse_err("JSON doc must be object");
+    }
+
+    if (d.HasMember("tableau piles")) {
+        if (d["tableau piles"].IsObject()) {
+
+            if (d["tableau piles"].HasMember("count")) {
+                if (d["tableau piles"]["count"].IsInt()) {
+                    sr.tableau_pile_count = d["tableau piles"]["count"].GetInt();
+                } else {
+                    parse_err("[tableau piles][count] must be an integer");
+                }
+            }
+
+            if (d["tableau piles"].HasMember("build order")) {
+                if (d["tableau piles"]["build order"].IsString()) {
+                    string bo_str = d["tableau piles"]["build order"].GetString();
+
+                    if (bo_str == "no-build") {
+                        sr.build_ord = build_order::NO_BUILD;
+                    } else if (bo_str == "descending") {
+                        sr.build_ord = build_order::DESCENDING;
+                    } else {
+                        parse_err("[tableau piles][build order] is invalid");
+                    }
+
+                } else {
+                    parse_err("[tableau piles][build order] must be an string");
+                }
+            }
+
+            if (d["tableau piles"].HasMember("build policy")) {
+                if (d["tableau piles"]["build policy"].IsString()) {
+                    string bo_str = d["tableau piles"]["build policy"].GetString();
+
+                    if (bo_str == "any-suit") {
+                        sr.build_pol = build_policy::ANY_SUIT;
+                    } else if (bo_str == "red-black") {
+                        sr.build_pol = build_policy::RED_BLACK;
+                    } else {
+                        parse_err("[tableau piles][build policy] is invalid");
+                    }
+
+                } else {
+                    parse_err("[tableau piles][build policy] must be an string");
+                }
+            }
+
+        } else {
+            parse_err("[tableau piles] must be an object");
+        }
+    }
+
+    if (d.HasMember("max rank")) {
+        if (d["max rank"].IsInt()) {
+            sr.max_rank = d["max rank"].GetInt();
+        } else {
+            parse_err("[max rank] must be an integer");
+        }
+    }
+
+    if (d.HasMember("hole")) {
+        if (d["hole"].IsBool()) {
+            sr.hole = d["hole"].GetBool();
+        } else {
+            parse_err("[hole] must be a boolean");
+        }
+    }
+
+    if (d.HasMember("foundations")) {
+        if (d["foundations"].IsBool()) {
+            sr.foundations = d["foundations"].GetBool();
+        } else {
+            parse_err("[foundations] must be a boolean");
+        }
+    }
+
+    if (d.HasMember("cells")) {
+        if (d["cells"].IsInt()) {
+            sr.cells = d["cells"].GetInt();
+        } else {
+            parse_err("[cells] must be an integer");
+        }
+    }
+
+    if (d.HasMember("reserve size")) {
+        if (d["reserve size"].IsInt()) {
+            sr.reserve_size = d["reserve size"].GetInt();
+        } else {
+            parse_err("[reserve size] must be an integer");
+        }
+    }
+
+    if (d.HasMember("stock size")) {
+        if (d["stock size"].IsInt()) {
+            sr.stock_size = d["stock size"].GetInt();
+        } else {
+            parse_err("[stock size] must be an integer");
+        }
     }
 }
 
-sol_rules::valid_sol sol_rules::valid_sol_enum(const std::string& s) {
-    auto sol_type_it =
-            find(valid_sol_strs.begin(), valid_sol_strs.end(), s);
-
-    assert(sol_type_it != valid_sol_strs.end());
-
-    long idx = sol_type_it - valid_sol_strs.begin();
-
-    return sol_rules::valid_sol(idx);
+void sol_rules::parse_err(const string& msg) {
+    throw runtime_error("Error in JSON doc: " + msg);
 }
