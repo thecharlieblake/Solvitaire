@@ -24,7 +24,7 @@ game_state::game_state(const Document& doc)
           stock(true, ord::NO_BUILD, pol::ANY_SUIT, false),
           waste(true, ord::NO_BUILD, pol::ANY_SUIT, false),
           hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank),
-          rules("simple-black-hole") {
+          rules(sol_rules::from_preset("simple-black-hole")) {
     // Construct tableau piles
     assert(doc.HasMember("tableau piles"));
     const Value& json_tab_piles = doc["tableau piles"];

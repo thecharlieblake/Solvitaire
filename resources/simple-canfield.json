@@ -1,0 +1,9 @@
+{
+  "tableau piles": {
+    "count": 2,
+    "build policy": "red-black"
+  },
+  "max rank": 2,
+  "reserve size": 2,
+  "stock size": 2
+}

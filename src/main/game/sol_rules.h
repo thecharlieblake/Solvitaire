@@ -8,6 +8,9 @@
 #include <vector>
 #include <string>
 
+#include <boost/optional.hpp>
+#include <rapidjson/document.h>
+
 class sol_rules {
 public:
     enum class valid_sol {
@@ -37,11 +40,11 @@ public:
         RED_BLACK
     };
 
-    static std::vector<std::string> valid_sol_strs;
+    static const sol_rules from_preset(const std::string);
+    static const sol_rules from_file(const std::string);
+
     static bool is_suit(build_policy);
     static int suit_val(build_policy);
-
-    explicit sol_rules(std::string);
 
     unsigned int tableau_pile_count;
     build_order build_ord;
@@ -54,6 +57,10 @@ public:
     unsigned int stock_size;
 
 private:
+    static sol_rules get_default();
+    static void modify_sol_rules(sol_rules&, rapidjson::Document&);
+    static void parse_err(const std::string&);
+
     static valid_sol valid_sol_enum(const std::string&);
 };
 

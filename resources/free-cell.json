@@ -1,0 +1,6 @@
+{
+  "tableau piles": {
+    "build policy": "red-black"
+  },
+  "cells": 4
+}

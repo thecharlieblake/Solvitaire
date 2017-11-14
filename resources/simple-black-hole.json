@@ -1,0 +1,9 @@
+{
+  "tableau piles": {
+    "count": 9,
+    "build order": "no-build"
+  },
+  "max rank": 7,
+  "hole": true,
+  "foundations": false
+}
