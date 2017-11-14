@@ -24,12 +24,12 @@ int main(int argc, const char* argv[]) {
     // Parses the command-line options
     command_line_helper clh;
     if (!clh.parse(argc, argv)) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Generates the rules of the solitaire from the game type
     const optional<sol_rules> rules = gen_rules(clh);
-    if (!rules) return -1;
+    if (!rules) return EXIT_FAILURE;
 
     // Retrieves the input files to be solved
     const vector<string> input_files = clh.get_input_files();
@@ -44,14 +44,21 @@ int main(int argc, const char* argv[]) {
         solve_input_files(input_files, *rules);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 const optional<sol_rules> gen_rules(command_line_helper& clh) {
-    if (!clh.get_solitaire_type().empty()) {
-        return sol_rules::from_preset(clh.get_solitaire_type());
-    } else {
-        return sol_rules::from_file(clh.get_rules_file());
+    try {
+        if (!clh.get_solitaire_type().empty()) {
+            return sol_rules::from_preset(clh.get_solitaire_type());
+        } else {
+            return sol_rules::from_file(clh.get_rules_file());
+        }
+    } catch (const runtime_error& error) {
+        string errmsg = "Error in rules generation: ";
+        errmsg += error.what();
+        LOG_ERROR(errmsg);
+        return none;
     }
 }
 
