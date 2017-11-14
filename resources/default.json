@@ -1,0 +1,13 @@
+{
+  "tableau piles": {
+    "count": 8,
+    "build order": "descending",
+    "build policy": "any-suit"
+  },
+  "max rank": 13,
+  "hole": false,
+  "foundations": true,
+  "cells": 0,
+  "reserve size": 0,
+  "stock size": 0
+}
