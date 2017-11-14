@@ -2,6 +2,7 @@ import json
 import math
 import os
 import sys
+import atexit
 from subprocess import run, TimeoutExpired, CalledProcessError, DEVNULL
 from abc import ABCMeta, abstractmethod
 
@@ -68,6 +69,12 @@ class CanfieldRulesGen(SolitaireRulesGen):
         self.baseJson["reserve size"] = reserveSize
         self.baseJson["stock size"] = stockSize
 
+def cleanup():
+    os.remove(tempRulesFilename)
+    run("pkill solvitaire", shell=True)
+
+atexit.register(cleanup)
+
 # Loops through each canonical solitaire
 for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
         FreeCellRulesGen(), CanfieldRulesGen()]:
@@ -112,6 +119,3 @@ for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
                     + " ...")
-
-# Cleans up
-os.remove(tempRulesFilename)
