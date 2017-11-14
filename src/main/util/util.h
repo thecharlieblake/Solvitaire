@@ -5,9 +5,13 @@
 #ifndef SOLVITAIRE_UTIL_H
 #define SOLVITAIRE_UTIL_H
 
+#include <string>
+
+#include <boost/optional.hpp>
 
 class util {
-
+public:
+    static const boost::optional<std::string> read_file(const std::string&);
 };
 
 
