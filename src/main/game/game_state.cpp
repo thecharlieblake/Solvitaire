@@ -82,20 +82,19 @@ game_state::game_state(int seed, const sol_rules& s_rules) :
         }
     }
 
+    // Creates the tableau piles
+    for (unsigned int i = 0; i < rules.tableau_pile_count; i++) {
+        tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
+    }
+
     // Deal to the tableau piles (row-by-row)
     unsigned int t = 0;
     while (!deck.empty()) {
         card c = deck.back();
         deck.pop_back();
 
-        // For the first row we must create all the tableau pile vectors
-        if (t / rules.tableau_pile_count == 0) {
-            tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
-        }
-
         // Add the randomly generated card to the tableau piles
-        tableau_piles[t % rules.tableau_pile_count].place(c);
-        t++;
+        tableau_piles[t++ % rules.tableau_pile_count].place(c);
     }
 
     // If there are foundation piles, create the relevant pile vectors
