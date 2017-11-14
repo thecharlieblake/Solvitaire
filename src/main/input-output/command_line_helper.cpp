@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
+#include <input-output/sol_preset_types.h>
 
 #include "command_line_helper.h"
 #include "game/sol_rules.h"
@@ -68,7 +69,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     }
 
     if (vm.count("rules")) {
-        rules_file = vm["type"].as<string>();
+        rules_file = vm["rules"].as<string>();
     }
 
     if (vm.count("random")) {
@@ -100,8 +101,8 @@ bool command_line_helper::assess_errors() {
     }
 
     // The user must supply either a solitaire type or a rules file
-    if (solitaire_type.empty() && rules_file.empty()
-            || !solitaire_type.empty() && !rules_file.empty()) {
+    if ((solitaire_type.empty() && rules_file.empty())
+            || (!solitaire_type.empty() && !rules_file.empty())) {
         print_sol_type_rules_error();
         return false;
     }
@@ -115,17 +116,11 @@ bool command_line_helper::assess_errors() {
 
 // Checks if the supplied solitaire type is in the list of valid solitaires
 bool command_line_helper::assess_sol_type() {
-    if (find(sol_rules::valid_sol_strs.begin(),
-             sol_rules::valid_sol_strs.end(),
-             solitaire_type) != sol_rules::valid_sol_strs.end()) {
+    if (sol_preset_types::is_valid_preset(solitaire_type)) {
         return true;
 
     } else {
-        LOG_ERROR ("Error: Solitaire type is not valid: " << solitaire_type
-                << "\nValid solitaire types are: ");
-        copy(begin(sol_rules::valid_sol_strs), end(sol_rules::valid_sol_strs),
-             ostream_iterator<string>(cerr, ", "));
-        cerr << "\n";
+        LOG_ERROR ("Error: Solitaire type is not valid: " << solitaire_type);
         print_help();
         return false;
     }
