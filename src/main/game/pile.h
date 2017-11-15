@@ -38,6 +38,7 @@ public:
     card operator[] (std::vector<card>::size_type) const;
 
     friend bool operator==(const pile&, const pile&);
+    friend std::size_t hash_value(pile const&);
 
 private:
     bool one_lt(int, int) const;

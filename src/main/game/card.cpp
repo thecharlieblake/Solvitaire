@@ -4,9 +4,12 @@
 
 #include <sstream>
 
+#include <boost/functional/hash.hpp>
+
 #include "card.h"
 
 using namespace std;
+using namespace boost;
 
 // A card can either be created using two int values (rank & suit), or
 // using a string (e.g. "AS")
@@ -89,4 +92,12 @@ std::ostream & operator<<(std::ostream & s, card const & c) {
 
     s << c.get_suit();
     return s;
+}
+
+size_t hash_value(card const& c) {
+    boost::hash<unsigned char> hasher;
+    unsigned char raw_val = static_cast<unsigned char>(
+            c.get_suit_val() * 13 + c.get_rank());
+
+    return hasher(raw_val);
 }

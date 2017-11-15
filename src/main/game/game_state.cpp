@@ -9,11 +9,13 @@
 #include <functional>
 
 #include <rapidjson/document.h>
+#include <boost/functional/hash.hpp>
 
 #include "game_state.h"
 
-using namespace rapidjson;
 using namespace std;
+using namespace rapidjson;
+using namespace boost;
 
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
@@ -325,3 +327,34 @@ bool operator==(const game_state& a, const game_state& b) {
 ostream& operator <<(ostream& stream, const game_state& gs) {
     return gs.print(stream);
 }
+
+size_t hash_value(game_state const& gs) {
+    size_t seed = 0;
+
+    if (gs.rules.foundations) {
+        hash_combine(seed, gs.foundations);
+    }
+    if (gs.rules.cells) {
+        hash_combine(seed, gs.cells);
+    }
+    if (gs.rules.tableau_pile_count > 0) {
+        hash_combine(seed, gs.tableau_piles);
+    }
+    if (gs.rules.reserve_size > 0) {
+        hash_combine(seed, gs.reserve);
+    }
+    if (gs.rules.stock_size > 0) {
+        hash_combine(seed, gs.stock);
+        hash_combine(seed, gs.waste);
+    }
+    if (gs.rules.hole) {
+        hash_combine(seed, gs.hole);
+    }
+
+    return seed;
+}
+
+size_t hash_value(vector<pile> const& vp) {
+    return hash_range(begin(vp), end(vp));
+}
+
