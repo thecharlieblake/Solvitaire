@@ -106,7 +106,9 @@ for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
             except:
                 print("Unknown error in script")
                 sys.exit()
-
+                
+            run("pkill solvitaire", shell=True)
+                
             if timeouts > timeoutsLimit:
                 break;
 
