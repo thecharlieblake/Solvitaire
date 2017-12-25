@@ -83,9 +83,9 @@ std::map<string, string> sol_preset_types::mp = {
                 R"(
 {
   "tableau piles": {
-    "count": 5
+    "count": 3
   },
-  "max rank": 5
+  "max rank": 2
 }
 )"
 

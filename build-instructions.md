@@ -48,7 +48,8 @@ Note: this doesn't have to (and probably shouldn't) be run from within the proje
 
 `cpack --config cmake-build-[debug|release]/CPackConfig.cmake`
 
-## A Note on CLion
+## Profiling
 
-If CLion complains that a dependency is missing, you may need to run the conan
-install command, and then in Clion run 'File->Reload CMake Project
+env CPUPROFILE=solv.prof cmake-build-debug/bin/solvitaire --type simple-spanish-patience --random 0 > /dev/null 2>&1
+pprof --callgrind src/ solv.prof > solv.callgrind
+kcachegrind solv.callgrind

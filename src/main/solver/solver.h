@@ -9,18 +9,30 @@
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
 
 #include "game/game_state.h"
 #include "game/sol_rules.h"
 
 class solver {
 public:
+    typedef boost::multi_index::multi_index_container<
+    game_state,
+    boost::multi_index::indexed_by<
+            boost::multi_index::sequenced<>,
+            boost::multi_index::hashed_unique<boost::multi_index::identity<game_state>>
+        >
+    > node_history;
+
     struct node {
         node(const node*, const game_state&);
-        std::vector<game_state> history;
+        node_history history;
         game_state state;
 
-        static const std::vector<game_state> gen_history(const node* parent);
+        static const node_history gen_history(const node* parent);
     };
 
     solver(const game_state, const sol_rules&);
@@ -33,6 +45,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const solver::node&);
 
 private:
+
     const node root;
     const sol_rules rules;
     node solution;

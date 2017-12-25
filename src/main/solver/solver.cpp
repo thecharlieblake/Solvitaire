@@ -7,10 +7,10 @@
 #include <iostream>
 #include <algorithm>
 
+#include <gperftools/profiler.h>
+
 #include "solver.h"
 #include "input-output/log_helper.h"
-#include "game/game_state.h"
-#include <boost/log/trivial.hpp>
 
 using namespace std;
 using namespace boost;
@@ -21,13 +21,13 @@ solver::solver(const game_state gs, const sol_rules& sr)
 solver::node::node(const node* parent, const game_state& gs) :
         history(solver::node::gen_history(parent)), state(gs) {}
 
-const vector<game_state> solver::node::gen_history(const node* parent) {
-    vector<game_state> hist;
+const solver::node_history solver::node::gen_history(const node* parent) {
+    node_history hist;
     if (parent != NULL) {
-        hist = std::vector<game_state>(parent->history);
-        hist.push_back(parent->state);
-    } else {
-        hist = vector<game_state>();
+        copy (begin(parent->history.get<0>()),
+              end(parent->history.get<0>()),
+              back_inserter(hist.get<0>()));
+        hist.get<0>().push_back(parent->state);
     }
     return hist;
 }
@@ -51,8 +51,8 @@ const optional<solver::node> solver::run() {
 
         for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
             // If we have seen the state before, ignore it (loop detection))
-            if (find(begin(current.history), end(current.history), *it)
-                != end(current.history)) {
+            if (current.history.get<1>().find(*it)
+                != current.history.get<1>().end()) {
                 continue;
             }
 
@@ -77,7 +77,7 @@ int solver::get_states_searched() const {
 }
 
 std::ostream& operator<< (std::ostream& stream, const solver::node& solution) {
-    for (auto state : solution.history) {
+    for (auto state : solution.history.get<0>()) {
         stream << state << "\n";
     }
     stream << solution.state << "\n";

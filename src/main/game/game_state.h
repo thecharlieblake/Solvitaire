@@ -29,6 +29,8 @@ public:
 
     friend bool operator==(const game_state&, const game_state&);
     friend std::ostream& operator<< (std::ostream&, const game_state&);
+    friend std::size_t hash_value(game_state const&);
+    friend std::size_t hash_value(std::vector<pile> const&);
 
 private:
     static std::vector<card> shuffled_deck(int, int);

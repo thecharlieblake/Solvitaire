@@ -1,0 +1,6231 @@
+positions: instr line
+events: cpu(ms)
+
+ob=(1) /lib/x86_64-linux-gnu/libc-2.24.so
+fl=(1) /build/glibc-mXZSwJ/glibc-2.24/malloc/malloc.c
+fn=(1) _int_malloc
+0x7f396eb02150 3839 770
+-2601 3508 50
+
+ob=(2) /home/thecharlesblake/projects/university/CS4099/Solvitaire/cmake-build-debug/bin/solvitaire
+fl=(2) /usr/include/c++/6/bits/stl_algobase.h
+fn=(2) std::__lower_bound
+0x55984bda6ea6 966 40
+
+ob=(1)
+fl=(1)
+fn=(3) sysmalloc
+0x7f396eb00ce6 2747 40
+
+ob=(1)
+fl=(1)
+fn=(4) malloc_consolidate
+-11834 4218 30
+
+ob=(2)
+fl=(3) /usr/include/c++/6/bits/stl_vector.h
+fn=(5) std::_Vector_base::_M_deallocate
+0x55984bd7f270 177 20
++98 177 20
+
+ob=(2)
+fl=(3)
+fn=(6) std::vector::end
++160474 576 20
+
+ob=(2)
+fl=(4) /usr/include/boost/functional/hash/hash.hpp
+fn=(7) boost::hash_detail::hash_combine_impl
++14037 251 20
+
+ob=(1)
+fl=(1)
+fn=(4)
+0x7f396eafddb0 4220 20
+
+ob=(1)
+fl=(1)
+fn=(8) _int_free
++6338 3933 20
+
+ob=(1)
+fl=(1)
+fn=(1)
++8003 3444 20
+
+ob=(1)
+fl=(1)
+fn=(9) __GI___libc_malloc
++9230 2940 20
+
+ob=(2)
+fl=
+fn=
+0x55984bd7c8f8 0 10
+
+ob=(2)
+fl=(3)
+fn=(5)
++10583 177 10
++147 177 10
+
+ob=(2)
+fl=(5) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/game/card.cpp
+fn=(10) card::get_suit_val
++42327 77 10
+
+ob=(2)
+fl=(5)
+fn=(11) hash_value
++317 100 10
++10 100 10
+
+ob=(2)
+fl=(6) /usr/include/boost/multi_index/detail/hash_index_node.hpp
+fn=(12) boost::multi_index::detail::hashed_index_node_alg::link
++88218 263 10
++34 267 10
+
+ob=(2)
+fl=(7) /usr/include/boost/multi_index/detail/copy_map.hpp
+fn=(13) boost::multi_index::detail::copy_map::find
++16274 108 10
+
+ob=(2)
+fl=(7)
+fn=(14) boost::multi_index::detail::copy_map::clone
++7080 84 10
+
+ob=(2)
+fl=(8) /usr/include/boost/multi_index/hashed_index.hpp
+fn=(15) boost::multi_index::detail::hashed_index::copy_
++510 709 10
++4 711 10
+
+ob=(2)
+fl=(3)
+fn=(16) std::vector::size
++4460 656 10
++3 656 10
+
+ob=(2)
+fl=(9) /usr/include/c++/6/bits/stl_construct.h
+fn=(17) std::_Construct
++251 75 10
+cfl=(10) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/game/pile.h
+cfn=(18) pile::pile
+calls=0 +251 13
+* * 10
++32 75 10
+
+ob=(2)
+fl=(10)
+fn=(18)
++35 13 10
+
+ob=(2)
+fl=(3)
+fn=(16)
++8 656 10
+
+ob=(2)
+fl=(3)
+fn=(17)
++908 576 10
+
+ob=(2)
+fl=(11) /usr/include/c++/6/bits/stl_iterator.h
+fn=(19) __gnu_cxx::__normal_iterator::operator++
++31 799 10
+
+ob=(2)
+fl=(10)
+fn=(18)
++27 13 10
+
+ob=(2)
+fl=(12) /usr/include/c++/6/ext/new_allocator.h
+fn=(20) __gnu_cxx::new_allocator::allocate
++121 104 10
+
+ob=(2)
+fl=(10)
+fn=(18)
++251 13 10
++13 13 10
+
+ob=(2)
+fl=(13) /usr/include/c++/6/bits/stl_uninitialized.h
+fn=(21) std::__uninitialized_copy::__uninit_copy
++449 74 10
+
+ob=(2)
+fl=(14) /usr/include/c++/6/bits/stl_heap.h
+fn=(22) std::__adjust_heap
++4915 220 10
+
+ob=(2)
+fl=(4)
+fn=(7)
++8206 244 10
+
+ob=(2)
+fl=(15) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/game/game_state.cpp
+fn=(11)
++34 331 10
+
+ob=(2)
+fl=(4)
+fn=(7)
++48178 243 10
+
+ob=(2)
+fl=(16) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/game/pile.cpp
+fn=(11)
++36 152 10
++7 152 10
+
+ob=(2)
+fl=(3)
+fn=(16)
++79 656 10
+
+ob=(1)
+fl=(1)
+fn=(4)
+0x7f396eafde17 4233 10
++93 4212 10
++50 4218 10
+
+ob=(1)
+fl=(1)
+fn=(8)
++6003 3878 10
++81 3933 10
++69 3961 10
++4 3961 10
++166 4142 10
+
+ob=(1)
+fl=(1)
+fn=(23) free_perturb
++112 1897 10
+
+ob=(1)
+fl=(1)
+fn=(8)
++264 4063 10
++59 4079 10
++586 3999 10
+
+ob=(1)
+fl=(1)
+fn=(3)
++4937 2366 10
+
+ob=(1)
+fl=(1)
+fn=(1)
++1587 3356 10
++36 3386 10
++15 3386 10
++142 3441 10
++9 3443 10
++9 3444 10
++207 3856 10
+
+ob=(1)
+fl=(1)
+fn=(24) malloc_printerr
++67 5046 10
+
+ob=(1)
+fl=(1)
+fn=(1)
++116 3509 10
++45 3557 10
++474 3526 10
++43 3531 10
++12 3533 10
++34 3540 10
++437 3738 10
++52 3722 10
++1208 3789 10
+
+ob=(1)
+fl=(1)
+fn=(9)
++6477 2927 10
++14 2927 10
++64 2940 10
++9 2940 10
++65 2925 10
+
+ob=(1)
+fl=(1)
+fn=(25) __GI___libc_free
++719 2948 10
++38 2963 10
+
+ob=(3) /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.23
+fl=(17) ??:?
+fn=(26) operator delete
++11585082 0 10
+
+ob=(2)
+fl=(17)
+fn=(27) _start
+0x55984bd7ccb9 0 0
+cfl=(18) /build/glibc-mXZSwJ/glibc-2.24/csu/libc-start.c
+cfn=(28) __libc_start_main
+calls=0 -12005200 291
+* * 1790
+
+ob=(2)
+fl=(19) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/main.cpp
+fn=(29) solve_game
++3813 89 0
+cfl=(20) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/solver/solver.cpp
+cfn=(30) solver::run
+calls=0 +163915 63
+* * 420
+cfl=(20)
+cfn=(30)
+calls=0 +160783 59
+* * 320
+cfl=(20)
+cfn=(30)
+calls=0 +167486 63
+* * 290
+cfl=(20)
+cfn=(30)
+calls=0 +164061 63
+* * 260
+cfl=(20)
+cfn=(30)
+calls=0 +156231 43
+* * 70
+cfl=(20)
+cfn=(30)
+calls=0 +167702 59
+* * 60
+cfl=(20)
+cfn=(30)
+calls=0 +168694 38
+* * 50
+cfl=(20)
+cfn=(30)
+calls=0 +168368 43
+* * 40
+cfl=(20)
+cfn=(30)
+calls=0 +157467 44
+* * 30
+cfl=(20)
+cfn=(30)
+calls=0 +155828 43
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +156081 43
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +157631 49
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +163545 63
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +163770 63
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +164650 63
+* * 20
+cfl=(20)
+cfn=(30)
+calls=0 +156396 43
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +156479 43
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +156944 43
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +156949 43
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +164029 63
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +164434 63
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +164539 63
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +164543 63
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +167710 59
+* * 10
+cfl=(20)
+cfn=(30)
+calls=0 +168702 38
+* * 10
++63 91 0
+cfl=(21) /usr/include/c++/6/ostream
+cfn=(31) std::operator<<
+calls=0 +63 561
+* * 30
+
+ob=(2)
+fl=(21)
+fn=(31)
+* 561 0
+cfl=(17)
+cfn=(32) std::__ostream_insert
+calls=0 0x7f396f695e63 0
+* * 30
+
+ob=(2)
+fl=(19)
+fn=(33) solve_random_game
++2288 69 0
+cfl=(19)
+cfn=(29)
+calls=0 -63 89
+* * 1760
+cfl=(19)
+cfn=(29)
+calls=0 * 91
+* * 30
+
+ob=(2)
+fl=(19)
+fn=(34) main
++1519 41 0
+cfl=(19)
+cfn=(33)
+calls=0 * 69
+* * 1790
+
+ob=(2)
+fl=(22) /usr/include/boost/detail/allocator_utilities.hpp
+fn=(35) boost::detail::allocator::destroy
++1939 172 0
+cfl=(23) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/game/game_state.h
+cfn=(36) game_state::~game_state
+calls=0 +1939 18
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(10)
+cfn=(37) pile::~pile
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(37)
+* 13 0
+cfl=(3)
+cfn=(38) std::vector::~vector
+calls=0 * 427
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(39) std::_Vector_base::~_Vector_base
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 177
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 10
+
+ob=(2)
+fl=(22)
+fn=(35)
++33 172 0
+cfl=(23)
+cfn=(36)
+calls=0 +33 18
+* * 20
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 20
+
+ob=(2)
+fl=(10)
+fn=(37)
+* 13 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 20
+
+ob=(2)
+fl=(9)
+fn=(40) std::_Destroy
+* 126 0
+cfl=(9)
+cfn=(41) std::_Destroy_aux::__destroy
+calls=0 * 103
+* * 20
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 20
+* 93 0
+cfl=(10)
+cfn=(37)
+calls=0 * 13
+* * 20
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 177
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 20
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(42) __gnu_cxx::new_allocator::deallocate
++9 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 40
+cfl=(17)
+cfn=(26)
+calls=0 0x7f396f610340 0
+* * 10
+
+ob=(2)
+fl=(22)
+fn=(35)
+* 172 0
+cfl=(23)
+cfn=(36)
+calls=0 * 18
+* * 50
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 50
+
+ob=(2)
+fl=(10)
+fn=(37)
+* 13 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 50
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 50
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 50
+* 93 0
+cfl=(10)
+cfn=(37)
+calls=0 * 13
+* * 50
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 50
+
+ob=(2)
+fl=(3)
+fn=(5)
+* 178 0
+cfl=(24) /usr/include/c++/6/bits/alloc_traits.h
+cfn=(43) std::allocator_traits::deallocate
+calls=0 * 462
+* * 50
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 178
+* * 50
+
+ob=(2)
+fl=(24)
+fn=(43)
+* 462 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 50
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 50
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 50
+
+ob=(2)
+fl=(12)
+fn=(42)
++16 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 30
+
+ob=(2)
+fl=(22)
+fn=(35)
+* 172 0
+cfl=(23)
+cfn=(36)
+calls=0 * 18
+* * 30
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(5)
+* 178 0
+cfl=(24)
+cfn=(43)
+calls=0 * 462
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 178
+* * 30
+
+ob=(2)
+fl=(24)
+fn=(43)
+* 462 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 30
+
+ob=(2)
+fl=(22)
+fn=(35)
++73 172 0
+cfl=(23)
+cfn=(36)
+calls=0 +73 18
+* * 20
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 20
+
+ob=(2)
+fl=(10)
+fn=(37)
+* 13 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 20
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 20
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 20
+* 93 0
+cfl=(10)
+cfn=(37)
+calls=0 * 13
+* * 20
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 177
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 20
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(42)
++9 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 20
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d06 2963
+* * 10
+
+ob=(2)
+fl=(22)
+fn=(35)
+* 172 0
+cfl=(23)
+cfn=(36)
+calls=0 * 18
+* * 30
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 30
+
+ob=(2)
+fl=(10)
+fn=(37)
+* 13 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 30
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 30
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 30
+* 93 0
+cfl=(10)
+cfn=(37)
+calls=0 * 13
+* * 30
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(5)
+* 178 0
+cfl=(24)
+cfn=(43)
+calls=0 * 462
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 178
+* * 30
+
+ob=(2)
+fl=(24)
+fn=(43)
+* 462 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 30
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 30
+
+ob=(2)
+fl=(22)
+fn=(35)
++7 172 0
+cfl=(23)
+cfn=(36)
+calls=0 +7 18
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 177
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(42)
++9 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03ce0 2948
+* * 10
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 10
+
+ob=(2)
+fl=(22)
+fn=(35)
+* 172 0
+cfl=(23)
+cfn=(36)
+calls=0 * 18
+* * 20
+
+ob=(2)
+fl=(23)
+fn=(36)
+* 18 0
+cfl=(3)
+cfn=(38)
+calls=0 * 427
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(5)
+* 178 0
+cfl=(24)
+cfn=(43)
+calls=0 * 462
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(39)
+* 160 0
+cfl=(3)
+cfn=(5)
+calls=0 * 178
+* * 20
+
+ob=(2)
+fl=(24)
+fn=(43)
+* 462 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 427 0
+cfl=(3)
+cfn=(39)
+calls=0 * 160
+* * 20
+
+ob=(2)
+fl=(5)
+fn=(11)
++42634 100 0
+cfl=(5)
+cfn=(10)
+calls=0 +42318 77
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++83901 104 0
+cfl=(17)
+cfn=(44) operator new
+calls=0 0x7f396f6123f7 0
+* * 10
+
+ob=(2)
+fl=(25) /usr/include/boost/multi_index/detail/header_holder.hpp
+fn=(45) boost::multi_index::detail::header_holder::header_holder
+* 35 0
+cfl=(26) /usr/include/boost/multi_index_container.hpp
+cfn=(46) boost::multi_index::multi_index_container::allocate_node
+calls=0 * 530
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(46)
+* 530 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47) boost::multi_index::multi_index_container::multi_index_container
+* 180 0
+cfl=(25)
+cfn=(45)
+calls=0 * 35
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(48) solver::node::gen_history
+* 25 0
+cfl=(26)
+cfn=(47)
+calls=0 * 180
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++157 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(27) /usr/include/boost/multi_index/detail/auto_space.hpp
+fn=(49) boost::multi_index::detail::auto_space::auto_space
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(28) /usr/include/boost/multi_index/detail/bucket_array.hpp
+fn=(50) boost::multi_index::detail::bucket_array::bucket_array
+* 143 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(51) boost::multi_index::detail::hashed_index::hashed_index
+* 607 0
+cfl=(28)
+cfn=(50)
+calls=0 * 143
+* * 20
+
+ob=(2)
+fl=(29) /usr/include/boost/multi_index/sequenced_index.hpp
+fn=(52) boost::multi_index::detail::sequenced_index::sequenced_index
+* 612 0
+cfl=(8)
+cfn=(51)
+calls=0 * 607
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 180 0
+cfl=(29)
+cfn=(52)
+calls=0 * 612
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 25 0
+cfl=(26)
+cfn=(47)
+calls=0 * 180
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(20)
++620 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(28)
+fn=(50)
+* 143 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(53) boost::multi_index::detail::hashed_index::insert_
+* 780 0
+cfl=(8)
+cfn=(54) boost::multi_index::detail::hashed_index::reserve_for_insert
+calls=0 * 1285
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(54)
+* 1285 0
+cfl=(8)
+cfn=(55) boost::multi_index::detail::hashed_index::unchecked_rehash
+calls=0 * 1289
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(55)
+* 1289 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1296
+* * 20
+* 1296 0
+cfl=(28)
+cfn=(50)
+calls=0 * 143
+* * 20
+
+ob=(2)
+fl=(30) /usr/include/boost/multi_index/detail/index_base.hpp
+fn=(56) boost::multi_index::detail::index_base::final_insert_
+* 219 0
+cfl=(26)
+cfn=(57) boost::multi_index::multi_index_container::insert_
+calls=0 * 570
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(58) boost::multi_index::detail::sequenced_index::insert
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(59) boost::multi_index::detail::sequenced_index::insert_
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 780
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(60) boost::multi_index::detail::sequenced_index::push_back
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 20
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61) std::copy
+calls=0 * 456
+* * 20
+
+ob=(2)
+fl=(2)
+fn=(62) std::__copy_move::__copy_m
+* 294 0
+cfl=(11)
+cfn=(63) std::back_insert_iterator::operator=
+calls=0 * 486
+* * 20
+
+ob=(2)
+fl=(2)
+fn=(64) std::__copy_move_a
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 20
+
+ob=(2)
+fl=(2)
+fn=(65) std::__copy_move_a2
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 20
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 20
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 20
+
+ob=(2)
+fl=(31) /usr/include/boost/functional/hash/extensions.hpp
+fn=(66) boost::hash::operator()
++390 262 0
+cfl=(15)
+cfn=(11)
+calls=0 +47299 335
+* * 20
+cfl=(15)
+cfn=(11)
+calls=0 +47197 331
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(67) boost::multi_index::detail::hashed_index::bucket
+* 536 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 30
+
+ob=(2)
+fl=(8)
+fn=(68) boost::multi_index::detail::hashed_index::find_bucket
+* 1126 0
+cfl=(8)
+cfn=(67)
+calls=0 * 536
+* * 30
+
+ob=(2)
+fl=(8)
+fn=(53)
+* 782 0
+cfl=(8)
+cfn=(68)
+calls=0 * 1126
+* * 30
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 782
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 30
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 30
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 30
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 30
+
+ob=(2)
+fl=(31)
+fn=(66)
++474 262 0
+cfl=(15)
+cfn=(11)
+calls=0 +47017 341
+* * 50
+cfl=(15)
+cfn=(11)
+calls=0 +46909 335
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(53)
+* 780 0
+cfl=(8)
+cfn=(54)
+calls=0 * 1285
+* * 70
+
+ob=(2)
+fl=(8)
+fn=(54)
+* 1285 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1289
+* * 70
+
+ob=(2)
+fl=(8)
+fn=(55)
+* 1289 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1310
+* * 70
+* 1310 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 70
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 70
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 70
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 780
+* * 70
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 70
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 70
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 70
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 70
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 70
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 70
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 70
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 70
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 70
+
+ob=(2)
+fl=(8)
+fn=(53)
++2687 780 0
+cfl=(8)
+cfn=(54)
+calls=0 +2687 1285
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(54)
+* 1285 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1289
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(55)
+* 1289 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1315
+* * 10
+* 1315 0
+cfl=(6)
+cfn=(12)
+calls=0 * 263
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 780
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 10
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 10
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(53)
++34 780 0
+cfl=(8)
+cfn=(54)
+calls=0 +34 1285
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(54)
+* 1285 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1289
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(55)
+* 1289 0
+cfl=(8)
+cfn=(55)
+calls=0 * 1315
+* * 10
+* 1315 0
+cfl=(6)
+cfn=(12)
+calls=0 * 267
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 780
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 10
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 10
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(53)
++3438 784 0
+cfl=(8)
+cfn=(69) boost::multi_index::detail::hashed_index::link_point
+calls=0 +3438 1147
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(69)
+* 1147 0
+cfl=(8)
+cfn=(69)
+calls=0 * 1155
+* * 10
+* 1155 0
+cfl=(32) /usr/include/c++/6/bits/stl_function.h
+cfn=(70) std::equal_to::operator()
+calls=0 * 356
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 784
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 10
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 10
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 10
+
+ob=(2)
+fl=(32)
+fn=(70)
+* 356 0
+cfl=(15)
+cfn=(71) operator==
+calls=0 +47529 322
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++390 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 30
+
+ob=(2)
+fl=(8)
+fn=(53)
+* 789 0
+cfl=(30)
+cfn=(72) boost::multi_index::detail::index_base::insert_
+calls=0 * 103
+* * 30
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 30
+
+ob=(2)
+fl=(30)
+fn=(72)
+* 103 0
+cfl=(26)
+cfn=(46)
+calls=0 * 530
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 789
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(46)
+* 530 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 30
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 30
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 30
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 30
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 30
+
+ob=(2)
+fl=(8)
+fn=(53)
++14 789 0
+cfl=(30)
+cfn=(72)
+calls=0 +14 105
+* * 110
+
+ob=(2)
+fl=(30)
+fn=(56)
+* 219 0
+cfl=(26)
+cfn=(57)
+calls=0 * 570
+* * 110
+
+ob=(2)
+fl=(30)
+fn=(72)
+* 105 0
+cfl=(22)
+cfn=(73) boost::detail::allocator::construct
+calls=0 +27989 153
+* * 110
+
+ob=(2)
+fl=(29)
+fn=(58)
+* 309 0
+cfl=(30)
+cfn=(56)
+calls=0 * 219
+* * 110
+
+ob=(2)
+fl=(29)
+fn=(59)
+* 676 0
+cfl=(8)
+cfn=(53)
+calls=0 * 789
+* * 110
+
+ob=(2)
+fl=(29)
+fn=(60)
+* 296 0
+cfl=(29)
+cfn=(58)
+calls=0 * 309
+* * 110
+
+ob=(2)
+fl=(26)
+fn=(57)
+* 558 0
+cfl=(29)
+cfn=(59)
+calls=0 * 676
+* * 110
+* 570 0
+cfl=(26)
+cfn=(57)
+calls=0 * 558
+* * 110
+
+ob=(2)
+fl=(20)
+fn=(48)
+* 29 0
+cfl=(2)
+cfn=(61)
+calls=0 * 456
+* * 110
+
+ob=(2)
+fl=(2)
+fn=(62)
+* 294 0
+cfl=(11)
+cfn=(63)
+calls=0 * 486
+* * 110
+
+ob=(2)
+fl=(2)
+fn=(64)
+* 386 0
+cfl=(2)
+cfn=(62)
+calls=0 * 294
+* * 110
+
+ob=(2)
+fl=(2)
+fn=(65)
+* 424 0
+cfl=(2)
+cfn=(64)
+calls=0 * 386
+* * 110
+
+ob=(2)
+fl=(11)
+fn=(63)
+* 486 0
+cfl=(29)
+cfn=(60)
+calls=0 * 296
+* * 110
+
+ob=(2)
+fl=(2)
+fn=(61)
+* 456 0
+cfl=(2)
+cfn=(65)
+calls=0 * 424
+* * 110
+
+ob=(2)
+fl=(20)
+fn=(74) solver::node::node
++8246 22 0
+cfl=(20)
+cfn=(48)
+calls=0 * 29
+* * 110
+cfl=(20)
+cfn=(48)
+calls=0 -6563 29
+* * 70
+cfl=(20)
+cfn=(48)
+calls=0 -7037 29
+* * 30
+cfl=(20)
+cfn=(48)
+calls=0 -14 29
+* * 30
+cfl=(20)
+cfn=(48)
+calls=0 -8047 25
+* * 20
+cfl=(20)
+cfn=(48)
+calls=0 -7427 29
+* * 20
+cfl=(20)
+cfn=(48)
+calls=0 -8204 25
+* * 10
+cfl=(20)
+cfn=(48)
+calls=0 -3876 29
+* * 10
+cfl=(20)
+cfn=(48)
+calls=0 -3842 29
+* * 10
+cfl=(20)
+cfn=(48)
+calls=0 -404 29
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++3065 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(28)
+fn=(50)
+* 143 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(51)
+* 625 0
+cfl=(28)
+cfn=(50)
+calls=0 * 143
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(52)
+* 618 0
+cfl=(8)
+cfn=(51)
+calls=0 * 625
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 266 0
+cfl=(29)
+cfn=(52)
+calls=0 * 618
+* * 20
+
+ob=(2)
+fl=(33) /home/thecharlesblake/projects/university/CS4099/Solvitaire/src/main/solver/solver.h
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 266
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(20)
++253 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(7)
+fn=(75) boost::multi_index::detail::copy_map::copy_map
+* 66 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 268 0
+cfl=(7)
+cfn=(75)
+calls=0 * 66
+* * 20
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 268
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 20
+
+ob=(2)
+fl=(7)
+fn=(14)
++150 87 0
+cfl=(22)
+cfn=(73)
+calls=0 +16425 153
+* * 70
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 87
+* * 70
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 70
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 70
+
+ob=(2)
+fl=(12)
+fn=(20)
++165 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(14)
+* 85 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 85
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(14)
++83 98 0
+cfl=(34) /usr/include/c++/6/bits/stl_algo.h
+cfn=(76) std::sort
+calls=0 +83 4707
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 98
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(34)
+fn=(77) std::__sort
+* 1965 0
+cfl=(34)
+cfn=(78) std::__introsort_loop
+calls=0 +20221 1945
+* * 10
+
+ob=(2)
+fl=(34)
+fn=(76)
+* 4707 0
+cfl=(34)
+cfn=(77)
+calls=0 * 1965
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(13)
++465 107 0
+cfl=(2)
+cfn=(79) std::lower_bound
+calls=0 +465 994
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(15)
+* 691 0
+cfl=(8)
+cfn=(15)
+calls=0 * 705
+* * 10
+* 705 0
+cfl=(7)
+cfn=(13)
+calls=0 * 107
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(80) boost::multi_index::detail::sequenced_index::copy_
+* 669 0
+cfl=(8)
+cfn=(15)
+calls=0 * 691
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 669
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(79)
+* 994 0
+cfl=(2)
+cfn=(2)
+calls=0 +15581 966
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(15)
++5 691 0
+cfl=(8)
+cfn=(15)
+calls=0 +5 705
+* * 10
+* 705 0
+cfl=(7)
+cfn=(13)
+calls=0 * 108
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(80)
+* 669 0
+cfl=(8)
+cfn=(15)
+calls=0 * 691
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 669
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(81) __gnu_cxx::new_allocator::destroy
++518 124 0
+cfl=(33)
+cfn=(82) solver::node::~node
+calls=0 +518 30
+* * 30
+
+ob=(2)
+fl=(30)
+fn=(83) boost::multi_index::detail::index_base::delete_node_
+* 166 0
+cfl=(22)
+cfn=(35)
+calls=0 -147803 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -147787 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -147689 172
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84) boost::multi_index::detail::index_base::final_delete_node_
+* 261 0
+cfl=(26)
+cfn=(85) boost::multi_index::multi_index_container::delete_node_
+calls=0 * 766
+* * 30
+
+ob=(2)
+fl=(29)
+fn=(86) boost::multi_index::detail::sequenced_index::delete_all_nodes_
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(87) boost::multi_index::multi_index_container::delete_all_nodes_
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 766 0
+cfl=(30)
+cfn=(83)
+calls=0 * 166
+* * 30
+
+ob=(2)
+fl=(26)
+fn=(88) boost::multi_index::multi_index_container::~multi_index_container
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 30
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 30
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 44 0
+cfl=(3)
+cfn=(89) std::vector::pop_back
+calls=0 * 953
+* * 30
+
+ob=(2)
+fl=(24)
+fn=(90) std::allocator_traits::destroy
+* 487 0
+cfl=(12)
+cfn=(81)
+calls=0 * 124
+* * 30
+
+ob=(2)
+fl=(3)
+fn=(89)
+* 953 0
+cfl=(24)
+cfn=(90)
+calls=0 * 487
+* * 30
+
+ob=(2)
+fl=(20)
+fn=(30)
++164 49 0
+cfl=(15)
+cfn=(91) game_state::get_next_legal_states
+calls=0 +43055 174
+* * 20
++3152 59 0
+cfl=(20)
+cfn=(74)
+calls=0 -4868 22
+* * 320
+
+ob=(2)
+fl=(12)
+fn=(20)
++2762 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(92) __gnu_cxx::new_allocator::construct
+* 120 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 20
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(28)
+fn=(50)
+* 143 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(51)
+* 625 0
+cfl=(28)
+cfn=(50)
+calls=0 * 143
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(52)
+* 618 0
+cfl=(8)
+cfn=(51)
+calls=0 * 625
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 266 0
+cfl=(29)
+cfn=(52)
+calls=0 * 618
+* * 20
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 266
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93) std::vector::push_back
+calls=0 * 918
+* * 20
+
+ob=(2)
+fl=(24)
+fn=(94) std::allocator_traits::construct
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(20)
++225 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(92)
+* 120 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 20
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(7)
+fn=(75)
+* 66 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 268 0
+cfl=(7)
+cfn=(75)
+calls=0 * 66
+* * 20
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 268
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 20
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(92)
++145 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +145 30
+* * 420
+
+ob=(2)
+fl=(7)
+fn=(14)
+* 87 0
+cfl=(22)
+cfn=(73)
+calls=0 +8591 153
+* * 420
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 87
+* * 420
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 420
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 420
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 420
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 420
+
+ob=(2)
+fl=(12)
+fn=(92)
++114 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +114 30
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 84
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++32 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 260
+
+ob=(2)
+fl=(12)
+fn=(92)
+* 120 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 260
+
+ob=(2)
+fl=(7)
+fn=(14)
+* 85 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 260
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 85
+* * 260
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 260
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 260
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 260
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 260
+
+ob=(2)
+fl=(12)
+fn=(92)
++373 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +373 30
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(13)
+* 107 0
+cfl=(2)
+cfn=(79)
+calls=0 * 994
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(80)
+* 662 0
+cfl=(7)
+cfn=(13)
+calls=0 * 107
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 662
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(79)
+* 994 0
+cfl=(2)
+cfn=(2)
+calls=0 +8091 966
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(92)
++105 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +105 30
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(15)
+* 691 0
+cfl=(8)
+cfn=(15)
+calls=0 * 709
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(80)
+* 669 0
+cfl=(8)
+cfn=(15)
+calls=0 * 691
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 669
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(92)
++4 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +4 30
+* * 10
+
+ob=(2)
+fl=(8)
+fn=(15)
+* 691 0
+cfl=(8)
+cfn=(15)
+calls=0 * 711
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(80)
+* 669 0
+cfl=(8)
+cfn=(15)
+calls=0 * 691
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 669
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(92)
++107 120 0
+cfl=(33)
+cfn=(74)
+calls=0 +107 30
+* * 20
+
+ob=(2)
+fl=(7)
+fn=(13)
+* 107 0
+cfl=(2)
+cfn=(79)
+calls=0 * 994
+* * 20
+
+ob=(2)
+fl=(8)
+fn=(15)
+* 691 0
+cfl=(8)
+cfn=(15)
+calls=0 * 705
+* * 20
+* 705 0
+cfl=(7)
+cfn=(13)
+calls=0 * 107
+* * 20
+
+ob=(2)
+fl=(29)
+fn=(80)
+* 669 0
+cfl=(8)
+cfn=(15)
+calls=0 * 691
+* * 20
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 272 0
+cfl=(29)
+cfn=(80)
+calls=0 * 669
+* * 20
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 272
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 63 0
+cfl=(3)
+cfn=(93)
+calls=0 * 918
+* * 20
+
+ob=(2)
+fl=(24)
+fn=(94)
+* 475 0
+cfl=(12)
+cfn=(92)
+calls=0 * 120
+* * 20
+
+ob=(2)
+fl=(2)
+fn=(79)
+* 994 0
+cfl=(2)
+cfn=(2)
+calls=0 +7875 966
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 918 0
+cfl=(24)
+cfn=(94)
+calls=0 * 475
+* * 20
+
+ob=(2)
+fl=(20)
+fn=(30)
++2836 63 0
+cfl=(3)
+cfn=(93)
+calls=0 +2836 924
+* * 290
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 924 0
+cfl=(35) /usr/include/c++/6/bits/vector.tcc
+cfn=(95) std::vector::_M_emplace_back_aux
+calls=0 +11607 420
+* * 150
+cfl=(35)
+cfn=(95)
+calls=0 +11772 420
+* * 100
+cfl=(35)
+cfn=(95)
+calls=0 +9443 412
+* * 10
+cfl=(35)
+cfn=(95)
+calls=0 +11460 420
+* * 10
+cfl=(35)
+cfn=(95)
+calls=0 +15419 436
+* * 10
+cfl=(35)
+cfn=(95)
+calls=0 +15599 438
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(83)
++216 166 0
+cfl=(22)
+cfn=(35)
+calls=0 -157864 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157831 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157822 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157733 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157724 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157717 172
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 766
+* * 60
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 60
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 60
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 766 0
+cfl=(30)
+cfn=(83)
+calls=0 * 166
+* * 60
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 60
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 60
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 59 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 60
+
+ob=(2)
+fl=(12)
+fn=(42)
++8 110 0
+cfl=
+cfn=(96)  [1/2]
+calls=0 -168663 0
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 767
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(97) boost::multi_index::multi_index_container::deallocate_node
+* 536 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 767 0
+cfl=(26)
+cfn=(97)
+calls=0 * 536
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 59 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(83)
++658 166 0
+cfl=(22)
+cfn=(35)
+calls=0 -158055 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -158046 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -158030 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -157948 172
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 766
+* * 40
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 40
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 40
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 766 0
+cfl=(30)
+cfn=(83)
+calls=0 * 166
+* * 40
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 40
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 40
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 43 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 40
+
+ob=(2)
+fl=(30)
+fn=(83)
++326 166 0
+cfl=(22)
+cfn=(35)
+calls=0 -158704 172
+* * 20
+cfl=(22)
+cfn=(35)
+calls=0 -158615 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -158606 172
+* * 10
+cfl=(22)
+cfn=(35)
+calls=0 -158590 172
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 766
+* * 50
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 50
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 50
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 766 0
+cfl=(30)
+cfn=(83)
+calls=0 * 166
+* * 50
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 50
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 50
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 38 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 50
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 50
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 50
+* 93 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 50
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 50
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 50
+
+ob=(2)
+fl=(12)
+fn=(42)
++8 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 767
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(97)
+* 536 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 767 0
+cfl=(26)
+cfn=(97)
+calls=0 * 536
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(20)
+fn=(30)
+* 38 0
+cfl=(3)
+cfn=(38)
+calls=0 * 426
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 10
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 10
+* 93 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(38)
+* 426 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98) game_state::game_state
++301 18 0
+cfl=(3)
+cfn=(99) std::vector::vector
+calls=0 +301 322
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(16)
+calls=0 * 656
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++3 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +3 322
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(16)
+calls=0 * 656
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++79 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 220
+
+ob=(2)
+fl=(23)
+fn=(98)
+* 18 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 220
+
+ob=(2)
+fl=(3)
+fn=(100) std::_Vector_base::_M_allocate
+* 170 0
+cfl=(24)
+cfn=(101) std::allocator_traits::allocate
+calls=0 * 436
+* * 220
+
+ob=(2)
+fl=(3)
+fn=(102) std::_Vector_base::_M_create_storage
+* 185 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 220
+
+ob=(2)
+fl=(3)
+fn=(103) std::_Vector_base::_Vector_base
+* 136 0
+cfl=(3)
+cfn=(102)
+calls=0 * 185
+* * 220
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 220
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(103)
+calls=0 * 136
+* * 220
+
+ob=(2)
+fl=(23)
+fn=(98)
++172 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +172 324
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104) std::__uninitialized_copy_a
+* 281 0
+cfl=(13)
+cfn=(105) std::uninitialized_copy
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++32 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +32 324
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++35 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +35 324
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++8 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +8 324
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(16)
+calls=0 * 656
+* * 10
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++82 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 100
+
+ob=(2)
+fl=(23)
+fn=(98)
+* 18 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 100
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 100
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 100
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 100
+
+ob=(2)
+fl=(3)
+fn=(102)
+* 185 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 100
+
+ob=(2)
+fl=(3)
+fn=(103)
+* 136 0
+cfl=(3)
+cfn=(102)
+calls=0 * 185
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 100
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 100
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(103)
+calls=0 * 136
+* * 100
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 100
+
+ob=(2)
+fl=(12)
+fn=(20)
++616 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 150
+
+ob=(2)
+fl=(23)
+fn=(98)
+* 18 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 150
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 150
+
+ob=(2)
+fl=(3)
+fn=(102)
+* 185 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 150
+
+ob=(2)
+fl=(3)
+fn=(103)
+* 136 0
+cfl=(3)
+cfn=(102)
+calls=0 * 185
+* * 150
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 150
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(103)
+calls=0 * 136
+* * 150
+
+ob=(2)
+fl=(23)
+fn=(98)
++197 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +197 324
+* * 20
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 20
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 20
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 20
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 20
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 20
+cfl=(3)
+cfn=(6)
+calls=0 * 576
+* * 20
+
+ob=(2)
+fl=(23)
+fn=(98)
++13 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +13 324
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+cfl=(3)
+cfn=(17)
+calls=0 * 576
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++31 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +31 324
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 74 0
+cfl=(11)
+cfn=(19)
+calls=0 * 799
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 74
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++27 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +27 324
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++120 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 130
+
+ob=(2)
+fl=(23)
+fn=(98)
+* 18 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 130
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 130
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 130
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 130
+
+ob=(2)
+fl=(3)
+fn=(102)
+* 185 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 130
+
+ob=(2)
+fl=(3)
+fn=(103)
+* 136 0
+cfl=(3)
+cfn=(102)
+calls=0 * 185
+* * 130
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 130
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 130
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 130
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 130
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(103)
+calls=0 * 136
+* * 130
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 130
+
+ob=(2)
+fl=(23)
+fn=(98)
++1 18 0
+cfl=(3)
+cfn=(99)
+calls=0 +1 324
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 322
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(10)
+cfn=(18)
+calls=0 * 13
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(102)
+* 185 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(103)
+* 136 0
+cfl=(3)
+cfn=(102)
+calls=0 * 185
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 322 0
+cfl=(3)
+cfn=(103)
+calls=0 * 136
+* * 10
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(23)
+fn=(98)
++251 18 0
+cfl=(10)
+cfn=(18)
+calls=0 +251 13
+* * 10
++13 18 0
+cfl=(10)
+cfn=(18)
+calls=0 +13 13
+* * 10
++449 18 0
+cfl=(10)
+cfn=(18)
+calls=0 +449 13
+* * 10
+
+ob=(2)
+fl=(10)
+fn=(18)
+* 13 0
+cfl=(3)
+cfn=(99)
+calls=0 * 324
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 74
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(99)
+* 324 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(22)
+fn=(73)
++1374 153 0
+cfl=(23)
+cfn=(98)
+calls=0 -2047 18
+* * 220
+cfl=(23)
+cfn=(98)
+calls=0 -1102 18
+* * 150
+cfl=(23)
+cfn=(98)
+calls=0 -714 18
+* * 130
+cfl=(23)
+cfn=(98)
+calls=0 -1718 18
+* * 100
+cfl=(23)
+cfn=(98)
+calls=0 -905 18
+* * 20
+cfl=(23)
+cfn=(98)
+calls=0 -2129 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -2126 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -1875 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -1843 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -1808 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -1800 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -892 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -861 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -834 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -713 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -462 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 -449 18
+* * 10
+cfl=(23)
+cfn=(98)
+calls=0 * 18
+* * 10
+
+ob=(2)
+fl=(14)
+fn=(106) std::__pop_heap
++3987 247 0
+cfl=(14)
+cfn=(22)
+calls=0 +3541 220
+* * 10
+
+ob=(2)
+fl=(14)
+fn=(107) std::__sort_heap
+* 400 0
+cfl=(14)
+cfn=(106)
+calls=0 * 247
+* * 10
+
+ob=(2)
+fl=(34)
+fn=(78)
++207 1945 0
+cfl=(34)
+cfn=(108) std::__partial_sort
+calls=0 +207 1931
+* * 10
+
+ob=(2)
+fl=(34)
+fn=(108)
+* 1931 0
+cfl=(14)
+cfn=(107)
+calls=0 -207 400
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++229 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 10
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 412 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(20)
++2017 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 10
+
+ob=(2)
+fl=(27)
+fn=(49)
+* 53 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(75)
+* 66 0
+cfl=(27)
+cfn=(49)
+calls=0 * 53
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 268 0
+cfl=(7)
+cfn=(75)
+calls=0 * 66
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 268
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(109) std::__uninitialized_move_if_noexcept_a
+* 304 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 10
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 10
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 420 0
+cfl=(13)
+cfn=(109)
+calls=0 * 304
+* * 10
+
+ob=(2)
+fl=(7)
+fn=(14)
++147 87 0
+cfl=(22)
+cfn=(73)
+calls=0 -6440 153
+* * 150
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 87
+* * 150
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 150
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 150
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 150
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 150
+
+ob=(2)
+fl=(13)
+fn=(109)
+* 304 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 150
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 150
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 420 0
+cfl=(13)
+cfn=(109)
+calls=0 * 304
+* * 150
+
+ob=(2)
+fl=(12)
+fn=(20)
++165 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 100
+
+ob=(2)
+fl=(7)
+fn=(14)
+* 85 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 100
+
+ob=(2)
+fl=(26)
+fn=(47)
+* 270 0
+cfl=(7)
+cfn=(14)
+calls=0 * 85
+* * 100
+
+ob=(2)
+fl=(33)
+fn=(74)
+* 30 0
+cfl=(26)
+cfn=(47)
+calls=0 * 270
+* * 100
+
+ob=(2)
+fl=(9)
+fn=(17)
+* 75 0
+cfl=(33)
+cfn=(74)
+calls=0 * 30
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(21)
+* 75 0
+cfl=(9)
+cfn=(17)
+calls=0 * 75
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(104)
+* 281 0
+cfl=(13)
+cfn=(105)
+calls=0 * 126
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(109)
+* 304 0
+cfl=(13)
+cfn=(104)
+calls=0 * 281
+* * 100
+
+ob=(2)
+fl=(13)
+fn=(105)
+* 126 0
+cfl=(13)
+cfn=(21)
+calls=0 * 75
+* * 100
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 420 0
+cfl=(13)
+cfn=(109)
+calls=0 * 304
+* * 100
+
+ob=(2)
+fl=(30)
+fn=(83)
++3647 166 0
+cfl=(22)
+cfn=(35)
+calls=0 -169578 172
+* * 10
+
+ob=(2)
+fl=(30)
+fn=(84)
+* 261 0
+cfl=(26)
+cfn=(85)
+calls=0 * 766
+* * 10
+
+ob=(2)
+fl=(29)
+fn=(86)
+* 704 0
+cfl=(30)
+cfn=(84)
+calls=0 * 261
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(87)
+* 772 0
+cfl=(29)
+cfn=(86)
+calls=0 * 704
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(85)
+* 766 0
+cfl=(30)
+cfn=(83)
+calls=0 * 166
+* * 10
+
+ob=(2)
+fl=(26)
+fn=(88)
+* 296 0
+cfl=(26)
+cfn=(87)
+calls=0 * 772
+* * 10
+
+ob=(2)
+fl=(33)
+fn=(82)
+* 30 0
+cfl=(26)
+cfn=(88)
+calls=0 * 296
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(40)
+* 126 0
+cfl=(9)
+cfn=(41)
+calls=0 * 103
+* * 10
+* 151 0
+cfl=(9)
+cfn=(40)
+calls=0 * 126
+* * 10
+* 93 0
+cfl=(33)
+cfn=(82)
+calls=0 * 30
+* * 10
+
+ob=(2)
+fl=(9)
+fn=(41)
+* 103 0
+cfl=(9)
+cfn=(40)
+calls=0 * 93
+* * 10
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 436 0
+cfl=(9)
+cfn=(40)
+calls=0 * 151
+* * 10
+
+ob=(2)
+fl=(12)
+fn=(42)
++180 110 0
+cfl=(1)
+cfn=(25)
+calls=0 0x7f396eb03d2b 2984
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(5)
+* 178 0
+cfl=(24)
+cfn=(43)
+calls=0 * 462
+* * 10
+
+ob=(2)
+fl=(24)
+fn=(43)
+* 462 0
+cfl=(12)
+cfn=(42)
+calls=0 * 110
+* * 10
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 438 0
+cfl=(3)
+cfn=(5)
+calls=0 * 178
+* * 10
+
+ob=(2)
+fl=(31)
+fn=(66)
++1143 262 0
+cfl=(16)
+cfn=(11)
+calls=0 +49365 151
+* * 30
+cfl=(16)
+cfn=(11)
+calls=0 +49380 151
+* * 10
+cfl=(16)
+cfn=(11)
+calls=0 +49416 152
+* * 10
+cfl=(16)
+cfn=(11)
+calls=0 +49423 152
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(110) boost::hash_combine
+* 315 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 60
+
+ob=(2)
+fl=(4)
+fn=(111) boost::hash_range
+* 329 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 60
+
+ob=(2)
+fl=(15)
+fn=(11)
+* 358 0
+cfl=(4)
+cfn=(111)
+calls=0 * 329
+* * 60
+
+ob=(2)
+fl=(4)
+fn=(110)
++25 315 0
+cfl=(4)
+cfn=(7)
+calls=0 +25 244
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(111)
+* 329 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 10
+
+ob=(2)
+fl=(15)
+fn=(11)
+* 358 0
+cfl=(4)
+cfn=(111)
+calls=0 * 329
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(110)
++11 315 0
+cfl=(4)
+cfn=(7)
+calls=0 +11 251
+* * 20
+
+ob=(2)
+fl=(4)
+fn=(111)
+* 329 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 20
+
+ob=(2)
+fl=(15)
+fn=(11)
+* 358 0
+cfl=(4)
+cfn=(111)
+calls=0 * 329
+* * 20
+
+ob=(2)
+fl=(31)
+fn=(66)
++125 262 0
+cfl=(15)
+cfn=(11)
+calls=0 -36 358
+* * 20
+cfl=(15)
+cfn=(11)
+calls=0 -11 358
+* * 10
+cfl=(15)
+cfn=(11)
+calls=0 * 358
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(110)
+* 315 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 40
+
+ob=(2)
+fl=(15)
+fn=(11)
+* 335 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 40
+
+ob=(2)
+fl=(31)
+fn=(66)
++108 262 0
+cfl=(15)
+cfn=(11)
+calls=0 -161 358
+* * 40
+cfl=(15)
+cfn=(11)
+calls=0 -125 358
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(110)
+* 315 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 50
+
+ob=(2)
+fl=(15)
+fn=(11)
+* 341 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 50
+
+ob=(2)
+fl=(15)
+fn=(71)
++7145 322 0
+cfl=(3)
+cfn=(112) std::operator==
+calls=0 +7145 1511
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(113) std::__equal::equal
+* 800 0
+cfl=(16)
+cfn=(71)
+calls=0 +40945 147
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(114) std::__equal_aux
+* 831 0
+cfl=(2)
+cfn=(113)
+calls=0 * 800
+* * 10
+
+ob=(2)
+fl=(2)
+fn=(115) std::equal
+* 1053 0
+cfl=(2)
+cfn=(114)
+calls=0 * 831
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(112)
+* 1511 0
+cfl=(2)
+cfn=(115)
+calls=0 * 1053
+* * 10
+
+ob=(2)
+fl=(15)
+fn=(91)
++8880 174 0
+cfl=(3)
+cfn=(93)
+calls=0 +8880 924
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(93)
+* 924 0
+cfl=(35)
+cfn=(95)
+calls=0 +4712 412
+* * 20
+
+ob=(2)
+fl=(12)
+fn=(20)
++4712 104 0
+cfl=(17)
+cfn=(44)
+calls=0 0x7f396f6123f7 0
+* * 20
+
+ob=(2)
+fl=(3)
+fn=(100)
+* 170 0
+cfl=(24)
+cfn=(101)
+calls=0 * 436
+* * 20
+
+ob=(2)
+fl=(24)
+fn=(101)
+* 436 0
+cfl=(12)
+cfn=(20)
+calls=0 * 104
+* * 20
+
+ob=(2)
+fl=(35)
+fn=(95)
+* 412 0
+cfl=(3)
+cfn=(100)
+calls=0 * 170
+* * 20
+
+ob=(2)
+fl=(31)
+fn=(66)
++27216 262 0
+cfl=(5)
+cfn=(11)
+calls=0 -152822 100
+* * 10
+cfl=(5)
+cfn=(11)
+calls=0 -152821 100
+* * 10
+cfl=(5)
+cfn=(11)
+calls=0 -152811 100
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(110)
+* 315 0
+cfl=(31)
+cfn=(66)
+calls=0 * 262
+* * 30
+
+ob=(2)
+fl=(4)
+fn=(111)
+* 329 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 30
+
+ob=(2)
+fl=(16)
+fn=(11)
+* 151 0
+cfl=(4)
+cfn=(111)
+calls=0 * 329
+* * 30
+
+ob=(2)
+fl=(4)
+fn=(110)
++15 315 0
+cfl=(4)
+cfn=(7)
+calls=0 +15 243
+* * 10
+
+ob=(2)
+fl=(4)
+fn=(111)
+* 329 0
+cfl=(4)
+cfn=(110)
+calls=0 * 315
+* * 10
+
+ob=(2)
+fl=(16)
+fn=(11)
+* 151 0
+cfl=(4)
+cfn=(111)
+calls=0 * 329
+* * 10
+
+ob=(2)
+fl=(16)
+fn=(71)
++122 147 0
+cfl=(3)
+cfn=(112)
+calls=0 +122 1510
+* * 10
+
+ob=(2)
+fl=(3)
+fn=(112)
+* 1510 0
+cfl=(3)
+cfn=(16)
+calls=0 * 656
+* * 10
+
+ob=(1)
+fl=(18)
+fn=(28)
+0x7f396ea9d3f0 291 0
+cfl=(19)
+cfn=(34)
+calls=0 -224904 41
+* * 1790
+
+ob=(1)
+fl=(36) /build/glibc-mXZSwJ/glibc-2.24/libio/filedoalloc.c
+fn=(116) __GI__IO_file_doallocate
++319313 101 0
+cfl=(1)
+cfn=(9)
+calls=0 +419219 2927
+* * 30
+
+ob=(1)
+fl=(37) /build/glibc-mXZSwJ/glibc-2.24/libio/iofwrite.c
+fn=(117) __GI__IO_fwrite
++5881 39 0
+cfl=(38) /build/glibc-mXZSwJ/glibc-2.24/libio/fileops.c
+cfn=(118) _IO_new_file_xsputn
+calls=0 +52635 1339
+* * 30
+
+ob=(1)
+fl=(38)
+fn=(118)
++46754 1339 0
+cfl=(38)
+cfn=(119) _IO_new_file_overflow
+calls=0 +53165 828
+* * 30
+
+ob=(1)
+fl=(38)
+fn=(119)
++6411 828 0
+cfl=(39) /build/glibc-mXZSwJ/glibc-2.24/libio/genops.c
+cfn=(120) __GI__IO_doallocbuf
+calls=0 +10041 398
+* * 30
+
+ob=(1)
+fl=(39)
+fn=(120)
++3630 398 0
+cfl=(36)
+cfn=(116)
+calls=0 -59046 101
+* * 30
+
+ob=(1)
+fl=(1)
+fn=(8)
++20404 4035 0
+cfl=(1)
+cfn=(23)
+calls=0 +20404 1897
+* * 10
++1878 4112 0
+cfl=(1)
+cfn=(4)
+calls=0 -6429 4218
+* * 10
+
+ob=(1)
+fl=(1)
+fn=(1)
++5903 3487 0
+cfl=(1)
+cfn=(4)
+calls=0 -8559 4220
+* * 20
+cfl=(1)
+cfn=(4)
+calls=0 -8307 4218
+* * 20
+cfl=(1)
+cfn=(4)
+calls=0 -8456 4233
+* * 10
+cfl=(1)
+cfn=(4)
+calls=0 -8363 4212
+* * 10
+cfl=(1)
+cfn=(4)
+calls=0 -8313 4218
+* * 10
++137 3511 0
+cfl=(1)
+cfn=(24)
+calls=0 +137 5046
+* * 10
++1818 3864 0
+cfl=(1)
+cfn=(3)
+calls=0 -2513 2747
+* * 40
+cfl=(1)
+cfn=(3)
+calls=0 -2072 2366
+* * 10
+
+ob=(1)
+fl=(1)
+fn=(9)
++7090 2927 0
+cfl=(1)
+cfn=(1)
+calls=0 +895 3839
+* * 770
+cfl=(1)
+cfn=(1)
+calls=0 -1955 3487
+* * 70
+cfl=(1)
+cfn=(1)
+calls=0 -1706 3508
+* * 50
+cfl=(1)
+cfn=(1)
+calls=0 * 3864
+* * 50
+cfl=(1)
+cfn=(1)
+calls=0 -2076 3444
+* * 20
+cfl=(1)
+cfn=(1)
+calls=0 -2303 3356
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -2267 3386
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -2252 3386
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -2110 3441
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -2101 3443
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -2092 3444
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1885 3856
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1818 3511
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1702 3509
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1657 3557
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1183 3526
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1140 3531
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1128 3533
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -1094 3540
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -657 3738
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 -605 3722
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 +603 3789
+* * 10
+
+ob=(1)
+fl=(1)
+fn=(25)
++936 2984 0
+cfl=(1)
+cfn=(8)
+calls=0 -17169 3933
+* * 20
+cfl=(1)
+cfn=(8)
+calls=0 -17258 3878
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -17177 3933
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -17108 3961
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -17104 3961
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -16938 4142
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -16826 4035
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -16562 4063
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -16503 4079
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -15917 3999
+* * 10
+cfl=(1)
+cfn=(8)
+calls=0 -14948 4112
+* * 10
+
+ob=(3)
+fl=(17)
+fn=(44)
++11593420 0 0
+cfl=(1)
+cfn=(9)
+calls=0 -936 2927
+* * 1100
+cfl=(1)
+cfn=(9)
+calls=0 -872 2940
+* * 20
+cfl=(1)
+cfn=(9)
+calls=0 -946 2927
+* * 10
+cfl=(1)
+cfn=(9)
+calls=0 -932 2927
+* * 10
+cfl=(1)
+cfn=(9)
+calls=0 -868 2940
+* * 10
+cfl=(1)
+cfn=(9)
+calls=0 -859 2940
+* * 10
+cfl=(1)
+cfn=(9)
+calls=0 -794 2925
+* * 10
+
+ob=(3)
+fl=(17)
+fn=(32)
++539244 0 0
+cfl=(37)
+cfn=(117)
+calls=0 -11688381 39
+* * 30
+
+ob=
+fl=
+fn=
+-139884659039844 0 0
+cfl=(17)
+cfn=(27)
+calls=0 0x55984bd7ccb9 0
+* * 1790
