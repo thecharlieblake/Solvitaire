@@ -21,6 +21,7 @@ void solve_input_files(const vector<string>, const sol_rules);
 void solve_game(const game_state&, const sol_rules&);
 
 int main(int argc, const char* argv[]) {
+
     // Parses the command-line options
     command_line_helper clh;
     if (!clh.parse(argc, argv)) {

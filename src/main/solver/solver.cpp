@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <gperftools/profiler.h>
+
 #include "solver.h"
 #include "input-output/log_helper.h"
 

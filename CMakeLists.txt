@@ -100,7 +100,8 @@ add_executable(solvitaire ${sources})
 # this lets me include files relative to the root src dir with a <> pair
 target_include_directories(solvitaire PUBLIC src/main)
 
-target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+
 
 ###############################################################################
 ## testing ####################################################################
