@@ -4,7 +4,6 @@
 
 #include "input-output/command_line_helper.h"
 #include "input-output/deal_parser.h"
-#include "game/game_state.h"
 #include "solver/solver.h"
 #include "input-output/log_helper.h"
 
@@ -17,7 +16,7 @@ namespace po = boost::program_options;
 
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&);
-void solve_input_files(const vector<string>, const sol_rules);
+void solve_input_files(const vector<string>, const sol_rules&);
 void solve_game(const game_state&, const sol_rules&);
 
 int main(int argc, const char* argv[]) {
@@ -69,17 +68,22 @@ void solve_random_game(int seed, const sol_rules& rules) {
     solve_game(gs, rules);
 }
 
-void solve_input_files(const vector<string> input_files, const sol_rules rules) {
-    for (const auto &input_json : input_files) {
-        // Attempts to read the user's json into a document
-        Document doc;
-        deal_parser::parse(doc, input_json);
+void solve_input_files(const vector<string> input_files, const sol_rules& rules) {
+    deal_parser dp(rules);
 
-        // Creates a game state object from the json, plus a solver
-        game_state gs(doc);
+    for (const string& input_json : input_files) {
+        try {
+            // Attempts to create a game state object from the json
+            game_state gs = dp.parse(input_json);
 
-        LOG_INFO ("Attempting to solve " << input_json << "...");
-        solve_game(gs, rules);
+            LOG_INFO ("Attempting to solve " << input_json << "...");
+            solve_game(gs, rules);
+
+        } catch (const runtime_error& error) {
+            string errmsg = "Error parsing deal file: ";
+            errmsg += error.what();
+            LOG_ERROR(errmsg);
+        }
     }
 }
 
