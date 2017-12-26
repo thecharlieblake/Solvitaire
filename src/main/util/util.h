@@ -7,11 +7,12 @@
 
 #include <string>
 
-#include <boost/optional.hpp>
+#include <rapidjson/schema.h>
 
 class util {
 public:
-    static const boost::optional<std::string> read_file(const std::string&);
+    static rapidjson::Document get_file_json(const std::string&);
+    static void json_parse_err(const std::string& msg);
 };
 
 

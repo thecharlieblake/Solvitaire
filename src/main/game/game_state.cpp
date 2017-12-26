@@ -12,6 +12,7 @@
 #include <boost/functional/hash.hpp>
 
 #include "game_state.h"
+#include "../input-output/deal_parser.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -26,10 +27,18 @@ game_state::game_state(const sol_rules& s_rules) :
         reserve(pile::reserve_factory()),
         stock(pile::stock_factory()),
         waste(pile::waste_factory()),
-        hole(pile::hole_factory(s_rules.max_rank)) {}
+        hole(pile::hole_factory(s_rules.max_rank)) {
+}
+
+// Construct an initial game state from a JSON doc
+game_state::game_state(const sol_rules& s_rules, const Document& doc) :
+        game_state(s_rules) {
+    deal_parser::parse(*this, doc);
+}
 
 // Construct an initial game state from a seed
-game_state::game_state(const sol_rules& s_rules, int seed) : game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, int seed) :
+        game_state(s_rules) {
 
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
@@ -328,4 +337,3 @@ size_t hash_value(game_state const& gs) {
 size_t hash_value(vector<pile> const& vp) {
     return hash_range(begin(vp), end(vp));
 }
-

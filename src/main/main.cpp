@@ -3,9 +3,9 @@
 #include <rapidjson/document.h>
 
 #include "input-output/command_line_helper.h"
-#include "input-output/deal_parser.h"
 #include "solver/solver.h"
 #include "input-output/log_helper.h"
+#include "util/util.h"
 
 using namespace rapidjson;
 
@@ -69,14 +69,15 @@ void solve_random_game(int seed, const sol_rules& rules) {
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules) {
-    deal_parser dp(rules);
-
-    for (const string& input_json : input_files) {
+    for (const string& input_file : input_files) {
         try {
-            // Attempts to create a game state object from the json
-            game_state gs = dp.parse(input_json);
+            // Reads in the input file to a json doc
+            const Document in_doc = util::get_file_json(input_file);
 
-            LOG_INFO ("Attempting to solve " << input_json << "...");
+            // Attempts to create a game state object from the json
+            game_state gs(rules, in_doc);
+
+            LOG_INFO ("Attempting to solve " << input_file << "...");
             solve_game(gs, rules);
 
         } catch (const runtime_error& error) {

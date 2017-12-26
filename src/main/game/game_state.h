@@ -15,10 +15,13 @@
 #include "sol_rules.h"
 #include "pile.h"
 
+class deal_parser;
+
 class game_state {
+    friend class deal_parser;
 public:
     // Create a game state representation from a JSON doc
-    explicit game_state(const sol_rules&);
+    game_state(const sol_rules&, const rapidjson::Document&);
     // Do the same from a 'rules' object
     game_state(const sol_rules&, int seed);
 
@@ -33,6 +36,8 @@ public:
     friend std::size_t hash_value(std::vector<pile> const&);
 
 private:
+    explicit game_state(const sol_rules&);
+
     static std::vector<card> shuffled_deck(int, int);
 
     const game_state move(game_state&, pile*, pile*) const;

@@ -13,16 +13,14 @@
 
 #include "game/card.h"
 #include "game/sol_rules.h"
-#include "game/game_state.h"
+
+class game_state;
 
 class deal_parser {
 public:
-    explicit deal_parser(const sol_rules& rules);
-    game_state parse(const std::string&) const;
+    static void parse(game_state&, const rapidjson::Document&);
 private:
-    const sol_rules& rules;
-
-    static rapidjson::Document read_file(const std::string&);
+    static void parse_tableau_piles(game_state&, const rapidjson::Document&);
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H

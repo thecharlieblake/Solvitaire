@@ -38,18 +38,7 @@ int sol_rules::suit_val(pol bp) {
 
 const sol_rules sol_rules::from_file(const string rules_file) {
     sol_rules sr = get_default();
-
-    const optional<string> file_contents = util::read_file(rules_file);
-    if (!file_contents) {
-        throw runtime_error("Could not read rules file");
-    }
-
-    Document d;
-    if (d.Parse(file_contents->c_str()).HasParseError()) {
-        string errmsg = "Error parsing rules file JSON: ";
-        errmsg += GetParseError_En(d.GetParseError());
-        throw runtime_error(errmsg);
-    }
+    Document d = util::get_file_json(rules_file);
 
     modify_sol_rules(sr, d);
 
@@ -84,7 +73,7 @@ sol_rules sol_rules::get_default() {
 void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (!d.IsObject()) {
-        parse_err("JSON doc must be object");
+        util::json_parse_err("JSON doc must be object");
     }
 
     if (d.HasMember("tableau piles")) {
@@ -94,7 +83,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                 if (d["tableau piles"]["count"].IsInt()) {
                     sr.tableau_pile_count = d["tableau piles"]["count"].GetInt();
                 } else {
-                    parse_err("[tableau piles][count] must be an integer");
+                    util::json_parse_err("[tableau piles][count] must be an integer");
                 }
             }
 
@@ -107,11 +96,11 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                     } else if (bo_str == "descending") {
                         sr.build_ord = build_order::DESCENDING;
                     } else {
-                        parse_err("[tableau piles][build order] is invalid");
+                        util::json_parse_err("[tableau piles][build order] is invalid");
                     }
 
                 } else {
-                    parse_err("[tableau piles][build order] must be an string");
+                    util::json_parse_err("[tableau piles][build order] must be an string");
                 }
             }
 
@@ -124,16 +113,16 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                     } else if (bo_str == "red-black") {
                         sr.build_pol = build_policy::RED_BLACK;
                     } else {
-                        parse_err("[tableau piles][build policy] is invalid");
+                        util::json_parse_err("[tableau piles][build policy] is invalid");
                     }
 
                 } else {
-                    parse_err("[tableau piles][build policy] must be an string");
+                    util::json_parse_err("[tableau piles][build policy] must be an string");
                 }
             }
 
         } else {
-            parse_err("[tableau piles] must be an object");
+            util::json_parse_err("[tableau piles] must be an object");
         }
     }
 
@@ -141,7 +130,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["max rank"].IsInt()) {
             sr.max_rank = d["max rank"].GetInt();
         } else {
-            parse_err("[max rank] must be an integer");
+            util::json_parse_err("[max rank] must be an integer");
         }
     }
 
@@ -149,7 +138,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["hole"].IsBool()) {
             sr.hole = d["hole"].GetBool();
         } else {
-            parse_err("[hole] must be a boolean");
+            util::json_parse_err("[hole] must be a boolean");
         }
     }
 
@@ -157,7 +146,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["foundations"].IsBool()) {
             sr.foundations = d["foundations"].GetBool();
         } else {
-            parse_err("[foundations] must be a boolean");
+            util::json_parse_err("[foundations] must be a boolean");
         }
     }
 
@@ -165,7 +154,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["cells"].IsInt()) {
             sr.cells = d["cells"].GetInt();
         } else {
-            parse_err("[cells] must be an integer");
+            util::json_parse_err("[cells] must be an integer");
         }
     }
 
@@ -173,7 +162,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["reserve size"].IsInt()) {
             sr.reserve_size = d["reserve size"].GetInt();
         } else {
-            parse_err("[reserve size] must be an integer");
+            util::json_parse_err("[reserve size] must be an integer");
         }
     }
 
@@ -181,11 +170,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
         if (d["stock size"].IsInt()) {
             sr.stock_size = d["stock size"].GetInt();
         } else {
-            parse_err("[stock size] must be an integer");
+            util::json_parse_err("[stock size] must be an integer");
         }
     }
-}
-
-void sol_rules::parse_err(const string& msg) {
-    throw runtime_error("Error in JSON doc: " + msg);
 }

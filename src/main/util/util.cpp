@@ -8,16 +8,28 @@
 #include "util.h"
 
 using namespace std;
-using namespace boost;
+using namespace rapidjson;
 
-const optional<string> util::read_file(const string& filename) {
-    ifstream ifstr(filename);
-    stringstream buf;
+Document util::get_file_json(const string& filename) {
+    // Reads the file into a string
+    std::ifstream ifstr(filename);
+    std::stringstream buf;
     buf << ifstr.rdbuf();
 
     if (ifstr.fail()) {
-        return none;
+        throw runtime_error("could not read file " + filename);
     } else {
-        return buf.str();
+        Document d;
+
+        d.Parse(buf.str().c_str());
+        if (d.HasParseError()) {
+            throw runtime_error(filename + " not valid json");
+        } else {
+            return d;
+        }
     }
+}
+
+void util::json_parse_err(const string& msg) {
+    throw runtime_error("Error in JSON doc: " + msg);
 }
