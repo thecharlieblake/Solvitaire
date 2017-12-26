@@ -21,7 +21,32 @@ deal_parser::deal_parser(const sol_rules &r) : rules(r) {}
 game_state deal_parser::parse(const string& filename) const {
     const Document doc = read_file(filename);
 
-    game_state gs;
+    game_state gs(rules);
+    /*
+    // Construct tableau piles
+    assert(doc.HasMember("tableau piles"));
+    const Value& json_tab_piles = doc["tableau piles"];
+    assert(json_tab_piles.IsArray());
+
+    int max_rank = 1;
+    for (auto& json_tab : json_tab_piles.GetArray()) {
+        pile tableau_pile(true, rules.build_ord, pol::ANY_SUIT, false);
+
+        for (auto& json_card : json_tab.GetArray()) {
+            card c(json_card.GetString());
+            if (c.get_rank() > max_rank) max_rank = c.get_rank();
+            tableau_pile.place(c);
+        }
+
+        tableau_piles.push_back(tableau_pile);
+    }
+
+    // Assign hole card
+    assert(doc.HasMember("hole card"));
+    const Value& json_h_card = doc["hole card"];
+    assert(json_h_card.IsString());
+    hole.place(json_h_card.GetString());
+    */
     return gs;
 }
 

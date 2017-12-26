@@ -64,7 +64,7 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
 
 void solve_random_game(int seed, const sol_rules& rules) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
-    game_state gs(seed, rules);
+    game_state gs(rules, seed);
     solve_game(gs, rules);
 }
 

@@ -18,9 +18,9 @@
 class game_state {
 public:
     // Create a game state representation from a JSON doc
-    game_state(const rapidjson::Document&);
+    explicit game_state(const sol_rules&);
     // Do the same from a 'rules' object
-    game_state(int seed, const sol_rules&);
+    game_state(const sol_rules&, int seed);
 
     const std::vector<game_state> get_next_legal_states() const;
     bool is_solved() const;
@@ -44,6 +44,7 @@ private:
     void print_top_of_piles(std::ostream&, const std::vector<pile>&) const;
     void print_top_of_pile(std::ostream&, const pile&) const;
 
+    sol_rules rules;
     std::vector<pile> foundations;
     std::vector<pile> cells;
     std::vector<pile> tableau_piles;
@@ -51,7 +52,6 @@ private:
     pile stock;
     pile waste;
     pile hole;
-    sol_rules rules;
 };
 
 

@@ -21,44 +21,15 @@ typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 
 // Construct an initial game state from a JSON doc
-game_state::game_state(const Document& doc)
-        : reserve(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-          stock(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-          waste(true, ord::NO_BUILD, pol::ANY_SUIT, false),
-          hole(false, ord::BOTH, pol::ANY_SUIT, true, rules.max_rank),
-          rules(sol_rules::from_preset("simple-black-hole")) {
-    // Construct tableau piles
-    assert(doc.HasMember("tableau piles"));
-    const Value& json_tab_piles = doc["tableau piles"];
-    assert(json_tab_piles.IsArray());
-
-    int max_rank = 1;
-    for (auto& json_tab : json_tab_piles.GetArray()) {
-        pile tableau_pile(true, rules.build_ord, pol::ANY_SUIT, false);
-
-        for (auto& json_card : json_tab.GetArray()) {
-            card c(json_card.GetString());
-            if (c.get_rank() > max_rank) max_rank = c.get_rank();
-            tableau_pile.place(c);
-        }
-
-        tableau_piles.push_back(tableau_pile);
-    }
-
-    // Assign hole card
-    assert(doc.HasMember("hole card"));
-    const Value& json_h_card = doc["hole card"];
-    assert(json_h_card.IsString());
-    hole.place(json_h_card.GetString());
-}
-
-// Construct an initial game state from a seed
-game_state::game_state(int seed, const sol_rules& s_rules) :
+game_state::game_state(const sol_rules& s_rules) :
+        rules(s_rules),
         reserve(pile::reserve_factory()),
         stock(pile::stock_factory()),
         waste(pile::waste_factory()),
-        hole(pile::hole_factory(s_rules.max_rank)),
-        rules(s_rules) {
+        hole(pile::hole_factory(s_rules.max_rank)) {}
+
+// Construct an initial game state from a seed
+game_state::game_state(const sol_rules& s_rules, int seed) : game_state(s_rules) {
 
     vector<card> deck = shuffled_deck(seed, rules.max_rank);
 
