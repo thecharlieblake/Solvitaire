@@ -17,6 +17,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     if (gs.rules.tableau_pile_count > 0) {
         parse_tableau_piles(gs, doc);
     }
+
+    // Construct hole card
+    if (gs.rules.hole) {
+        parse_hole(gs, doc);
+    }
 }
 
 void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document& doc) {
@@ -36,4 +41,12 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
             p.second->place(card(json_card.GetString()));
         }
     }
+}
+
+void deal_parser::parse_hole(game_state &gs, const rapidjson::Document& doc) {
+    assert(doc.HasMember("hole"));
+    const Value& json_hole = doc["hole"];
+    assert(json_hole.IsString());
+
+    gs.hole.place(card(json_hole.GetString()));
 }

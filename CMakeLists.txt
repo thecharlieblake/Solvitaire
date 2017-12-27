@@ -17,7 +17,7 @@ set(sources src/main/input-output/command_line_helper.cpp
         src/main/solver/solver.cpp src/main/solver/solver.h src/main/game/game_state.cpp
         src/main/game/game_state.h src/main/game/sol_rules.h src/main/game/sol_rules.cpp
         src/main/game/pile.cpp src/main/game/pile.h src/main/util/util.cpp src/main/util/util.h src/main/input-output/sol_preset_types.h src/main/input-output/sol_preset_types.cpp)
-set(sources_test src/test/spanish_patience_test.cpp src/test/test_helper.cpp src/test/test_helper.h)
+set(sources_test src/test/spanish_patience_test.cpp src/test/test_helper.cpp src/test/test_helper.h src/test/black_hole_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################

@@ -21,6 +21,7 @@ public:
     static void parse(game_state&, const rapidjson::Document&);
 private:
     static void parse_tableau_piles(game_state&, const rapidjson::Document&);
+    static void parse_hole(game_state&, const rapidjson::Document&);
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H
