@@ -11,8 +11,8 @@
 #include <rapidjson/document.h>
 #include <rapidjson/schema.h>
 
-#include "game/card.h"
-#include "game/sol_rules.h"
+#include "../game/card.h"
+#include "../game/sol_rules.h"
 
 class game_state;
 

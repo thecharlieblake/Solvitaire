@@ -5,13 +5,12 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <input-output/log_helper.h>
 
 #include "rapidjson/error/en.h"
 
-#include "util/util.h"
 #include "sol_rules.h"
-#include "input-output/sol_preset_types.h"
+#include "../util/util.h"
+#include "../input-output/sol_preset_types.h"
 
 using namespace std;
 using namespace boost;

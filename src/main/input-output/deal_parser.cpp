@@ -24,17 +24,16 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
     const Value& json_tab_piles = doc["tableau piles"];
     assert(json_tab_piles.IsArray());
 
-    for (auto& json_tab : json_tab_piles.GetArray()) {
-        pile tableau_pile(true, gs.rules.build_ord, pol::ANY_SUIT, false);
+    if (gs.tableau_piles.size() != gs.rules.tableau_pile_count) {
+        util::json_parse_err("Incorrect number of tableau piles");
+    }
 
-        for (auto& json_card : json_tab.GetArray()) {
-            tableau_pile.place(card(json_card.GetString()));
-        }
+    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.tableau_piles));
+         p.second != end(gs.tableau_piles);
+         ++p.first, ++p.second) {
 
-        gs.tableau_piles.push_back(tableau_pile);
-
-        if (gs.tableau_piles.size() != gs.rules.tableau_pile_count) {
-            util::json_parse_err("Incorrect number of tableau piles");
+        for (auto& json_card : p.first->GetArray()) {
+            p.second->place(card(json_card.GetString()));
         }
     }
 }

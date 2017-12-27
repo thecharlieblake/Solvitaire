@@ -9,7 +9,7 @@
 
 class test_helper {
 public:
-    static bool is_solvable(std::string, std::string);
+    static bool is_solvable(const std::string&, const std::string&);
 };
 
 

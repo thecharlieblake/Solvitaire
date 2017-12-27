@@ -10,7 +10,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ## source files ###############################################################
 ###############################################################################
 
-set(sources src/main/main.cpp src/main/input-output/command_line_helper.cpp
+set(main src/main/main.cpp)
+set(sources src/main/input-output/command_line_helper.cpp
         src/main/input-output/command_line_helper.h src/main/input-output/log_helper.h src/main/game/card.h
         src/main/game/card.cpp src/main/input-output/deal_parser.h src/main/input-output/deal_parser.cpp
         src/main/solver/solver.cpp src/main/solver/solver.h src/main/game/game_state.cpp
@@ -82,7 +83,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread
 -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
 -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow \
 -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Werror")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
 
 ###############################################################################
@@ -95,10 +96,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # add the data to the target, so it becomes visible in some IDE
-add_executable(solvitaire ${sources})
-
-# this lets me include files relative to the root src dir with a <> pair
-target_include_directories(solvitaire PUBLIC src/main)
+add_executable(solvitaire ${main} ${sources})
 
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 
@@ -107,13 +105,13 @@ target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 ## testing ####################################################################
 ###############################################################################
 
-add_executable(unit_tests ${sources_test})
+add_executable(unit_tests ${sources_test} ${sources})
 
 # this allows us to use our executable as a link library
 # therefore we can inherit all compiler options and library dependencies
 set_target_properties(solvitaire PROPERTIES ENABLE_EXPORTS on)
 
-target_link_libraries(unit_tests gtest_main)
+target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES})
 
 ENABLE_TESTING()
 ADD_TEST(NAME unit_tests

@@ -6,6 +6,10 @@
 
 #include "test_helper.h"
 
+typedef test_helper th;
+
+const static std::string type = "simple-spanish-patience";
+
 TEST(SpanishPatience, SPTestName) {
-    EXPECT_TRUE(test_helper::is_solvable("i", "simple-spanish-patience"));
+    EXPECT_TRUE(th::is_solvable("SPTestName", type));
 }

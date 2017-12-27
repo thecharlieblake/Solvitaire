@@ -2,8 +2,22 @@
 // Created by thecharlesblake on 12/26/17.
 //
 
-#include "test_helper.h"
+#include <rapidjson/document.h>
 
-bool test_helper::is_solvable(std::string, std::string) {
-    return false;
+#include "test_helper.h"
+#include "../main/game/game_state.h"
+#include "../main/solver/solver.h"
+#include "../main/util/util.h"
+
+using namespace rapidjson;
+using namespace std;
+
+bool test_helper::is_solvable(const std::string& input_file, const std::string& preset_type) {
+    const Document in_doc = util::get_file_json("resources/" + input_file + ".json");
+    const sol_rules rules = sol_rules::from_preset(preset_type);
+
+    game_state gs(rules, in_doc);
+    solver sol(gs, rules);
+
+    return sol.run() ? true : false;
 }

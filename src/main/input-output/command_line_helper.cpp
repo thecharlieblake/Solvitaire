@@ -6,11 +6,11 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
-#include <input-output/sol_preset_types.h>
 
 #include "command_line_helper.h"
-#include "game/sol_rules.h"
-#include "input-output/log_helper.h"
+#include "../game/sol_rules.h"
+#include "log_helper.h"
+#include "sol_preset_types.h"
 
 using namespace std;
 

@@ -28,6 +28,25 @@ game_state::game_state(const sol_rules& s_rules) :
         stock(pile::stock_factory()),
         waste(pile::waste_factory()),
         hole(pile::hole_factory(s_rules.max_rank)) {
+
+    // Creates the tableau piles
+    for (unsigned int i = 0; i < rules.tableau_pile_count; i++) {
+        tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
+    }
+
+    // If there are foundation piles, create the relevant pile vectors
+    if (rules.foundations) {
+        for (int i = 0; i < 4; i++) {
+            foundations.push_back(pile::foundation_factory(pol(i)));
+        }
+    }
+
+    // If there are cell piles, create the relevant cell vectors
+    if (rules.cells > 0) {
+        for (unsigned int i = 0; i < rules.cells; i++) {
+            cells.push_back(pile::cell_factory());
+        }
+    }
 }
 
 // Construct an initial game state from a JSON doc
@@ -64,11 +83,6 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
         }
     }
 
-    // Creates the tableau piles
-    for (unsigned int i = 0; i < rules.tableau_pile_count; i++) {
-        tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
-    }
-
     // Deal to the tableau piles (row-by-row)
     unsigned int t = 0;
     while (!deck.empty()) {
@@ -77,20 +91,6 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
 
         // Add the randomly generated card to the tableau piles
         tableau_piles[t++ % rules.tableau_pile_count].place(c);
-    }
-
-    // If there are foundation piles, create the relevant pile vectors
-    if (rules.foundations) {
-        for (int i = 0; i < 4; i++) {
-            foundations.push_back(pile::foundation_factory(pol(i)));
-        }
-    }
-
-    // If there are cell piles, create the relevant cell vectors
-    if (rules.cells > 0) {
-        for (unsigned int i = 0; i < rules.cells; i++) {
-            cells.push_back(pile::cell_factory());
-        }
     }
 }
 
