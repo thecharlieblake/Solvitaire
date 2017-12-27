@@ -13,7 +13,7 @@ using namespace rapidjson;
 using namespace std;
 
 bool test_helper::is_solvable(const std::string& input_file, const std::string& preset_type) {
-    const Document in_doc = util::get_file_json("resources/" + input_file + ".json");
+    const Document in_doc = util::get_file_json(input_file);
     const sol_rules rules = sol_rules::from_preset(preset_type);
 
     game_state gs(rules, in_doc);
