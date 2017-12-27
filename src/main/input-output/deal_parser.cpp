@@ -22,6 +22,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     if (gs.rules.hole) {
         parse_hole(gs, doc);
     }
+
+    // Construct filled cells
+    if (gs.rules.cells) {
+        parse_cells(gs, doc);
+    }
 }
 
 void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document& doc) {
@@ -38,15 +43,40 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
          ++p.first, ++p.second) {
 
         for (auto& json_card : p.first->GetArray()) {
+            assert(json_card.IsString());
             p.second->place(card(json_card.GetString()));
         }
     }
 }
 
-void deal_parser::parse_hole(game_state &gs, const rapidjson::Document& doc) {
-    assert(doc.HasMember("hole"));
-    const Value& json_hole = doc["hole"];
-    assert(json_hole.IsString());
+void deal_parser::parse_hole(game_state &gs, const Document& doc) {
+    if (doc.HasMember("hole")) {
+        const Value &json_hole = doc["hole"];
+        assert(json_hole.IsString());
 
-    gs.hole.place(card(json_hole.GetString()));
+        gs.hole.place(card(json_hole.GetString()));
+    }
+}
+
+void deal_parser::parse_cells(game_state &gs, const Document& doc) {
+    if (doc.HasMember("cells")) {
+        const Value &json_cells = doc["cells"];
+        assert(json_cells.IsArray());
+
+        const auto json_cell_arr = json_cells.GetArray();
+
+        if (json_cell_arr.Empty()) return;
+        else if (gs.rules.cells != json_cell_arr.Size()) {
+            util::json_parse_err("Incorrect number of cells");
+        }
+
+        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.cells));
+             p.second != end(gs.cells);
+             ++p.first, ++p.second) {
+
+            auto json_card = p.first;
+            assert(json_card->IsString());
+            p.second->place(json_card->GetString());
+        }
+    }
 }
