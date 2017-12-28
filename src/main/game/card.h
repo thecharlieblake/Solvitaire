@@ -10,18 +10,23 @@
 
 class card {
 public:
+    enum class suit_t : uint8_t {Clubs, Diamonds, Hearts, Spades};
+    typedef uint8_t rank_t;
+
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
-    card(int, int);
+    card(suit_t, rank_t);
     card(const char*);
 
-    int get_rank() const;
-    char get_suit() const;
-    int get_suit_val() const;
+    suit_t get_suit() const;
+    rank_t get_rank() const;
 
 private:
-    int rank;
-    int suit;
+    static suit_t suit_from_str(const char* c);
+    static rank_t rank_from_str(const char* c);
+
+    suit_t suit : 4;
+    rank_t rank : 4;
 };
 
 std::ostream & operator<<(std::ostream &, card const &);
