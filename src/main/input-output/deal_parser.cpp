@@ -2,95 +2,81 @@
 // Created by thecharlesblake on 10/21/17.
 //
 
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
-#include <boost/optional.hpp>
-#include <rapidjson/document.h>
-#include <rapidjson/schema.h>
-#include <rapidjson/stringbuffer.h>
-
 #include "deal_parser.h"
+#include "../game/game_state.h"
+#include "../util/util.h"
 
 using namespace std;
 using namespace rapidjson;
-using namespace boost;
 
-void deal_parser::parse(Document& doc, const std::string filename) {
-    const optional<string> in_json = read_file(filename);
+typedef sol_rules::build_order ord;
+typedef sol_rules::build_policy pol;
 
-    if (!in_json) {
-        throw runtime_error("could not read file " + filename);
+void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
+    // Construct tableau piles
+    if (gs.rules.tableau_pile_count > 0) {
+        parse_tableau_piles(gs, doc);
     }
 
-    Document sd;
-    gen_schema_doc(sd);
-    SchemaDocument schema(sd);
-    SchemaValidator validator(schema);
-
-    if(!to_json(doc, *in_json)) {
-        throw runtime_error(filename + " not valid json");
+    // Construct hole card
+    if (gs.rules.hole) {
+        parse_hole(gs, doc);
     }
 
-    if (!doc.Accept(validator)) {
-        throw runtime_error(schema_err_str(validator));
+    // Construct filled cells
+    if (gs.rules.cells) {
+        parse_cells(gs, doc);
     }
 }
 
-const optional<string> deal_parser::read_file(const string filename) {
-    // Reads the file into a string
-    std::ifstream ifstr(filename);
-    std::stringstream buf;
-    buf << ifstr.rdbuf();
+void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document& doc) {
+    assert(doc.HasMember("tableau piles"));
+    const Value& json_tab_piles = doc["tableau piles"];
+    assert(json_tab_piles.IsArray());
 
-    if (ifstr.fail()) {
-        return none;
+    if (gs.tableau_piles.size() != gs.rules.tableau_pile_count) {
+        util::json_parse_err("Incorrect number of tableau piles");
     }
 
-    return buf.str();
+    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.tableau_piles));
+         p.second != end(gs.tableau_piles);
+         ++p.first, ++p.second) {
+
+        for (auto& json_card : p.first->GetArray()) {
+            assert(json_card.IsString());
+            p.second->place(card(json_card.GetString()));
+        }
+    }
 }
 
-void deal_parser::gen_schema_doc(Document& d) {
-    const char* schema_json = "{\"$schema\":\"http://json-schema.org/draft-04/sc"
-            "hema#\",\"definitions\":{\"card\":{\"type\":\"string\",\"pattern"
-            "\":\"^(?i)([A|[1-9]|1[0-3]|J|Q|K])([C|D|H|S])$\"}},\"type\":\""
-            "object\",\"properties\":{\"tableau piles\":{\"type\":\"array\""
-            ",\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definit"
-            "ions/card\"}}},\"hole card\":{\"$ref\":\"#/definitions/card\"}}"
-            ",\"additionalProperties\":false,\"anyOf\":[{\"required\":[\"tableau"
-            " piles\"]}]}";
+void deal_parser::parse_hole(game_state &gs, const Document& doc) {
+    if (doc.HasMember("hole")) {
+        const Value &json_hole = doc["hole"];
+        assert(json_hole.IsString());
 
-    to_json(d, schema_json);
+        gs.hole.place(card(json_hole.GetString()));
+    }
 }
 
-bool deal_parser::to_json(rapidjson::Document& d, const char* in) {
-    d.Parse(in);
-    return !d.HasParseError();
-}
+void deal_parser::parse_cells(game_state &gs, const Document& doc) {
+    if (doc.HasMember("cells")) {
+        const Value &json_cells = doc["cells"];
+        assert(json_cells.IsArray());
 
-bool deal_parser::to_json(rapidjson::Document& d, const string in) {
-    return to_json(d, in.c_str());
-}
+        const auto json_cell_arr = json_cells.GetArray();
 
-const string deal_parser::schema_err_str(const SchemaValidator& validator) {
-    // Input JSON is invalid according to the schema
-    // Output diagnostic information
-    string ret = "input JSON failed to match the required schema.\n";
+        if (json_cell_arr.Empty()) return;
+        else if (gs.rules.cells != json_cell_arr.Size()) {
+            util::json_parse_err("Incorrect number of cells");
+        }
 
-    StringBuffer sb;
-    validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
-    ret += "Invalid schema keyword: ";
-    ret += validator.GetInvalidSchemaKeyword();
-    ret += "\n";
+        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.cells));
+             p.second != end(gs.cells);
+             ++p.first, ++p.second) {
 
-    sb.Clear();
-    validator.GetInvalidDocumentPointer().StringifyUriFragment(sb);
-
-    ret += "Invalid document: ";
-    ret += sb.GetString();
-    ret += "\n";
-
-    return ret;
+            auto json_card = p.first;
+            assert(json_card->IsString());
+            p.second->place(json_card->GetString());
+        }
+    }
 }

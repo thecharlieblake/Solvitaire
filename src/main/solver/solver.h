@@ -14,8 +14,8 @@
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 
-#include "game/game_state.h"
-#include "game/sol_rules.h"
+#include "../game/game_state.h"
+#include "../game/sol_rules.h"
 
 class solver {
 public:

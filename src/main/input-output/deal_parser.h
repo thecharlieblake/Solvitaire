@@ -11,17 +11,18 @@
 #include <rapidjson/document.h>
 #include <rapidjson/schema.h>
 
-#include "game/card.h"
+#include "../game/card.h"
+#include "../game/sol_rules.h"
+
+class game_state;
 
 class deal_parser {
 public:
-    static void parse(rapidjson::Document&, const std::string);
+    static void parse(game_state&, const rapidjson::Document&);
 private:
-    static const boost::optional<std::string> read_file(const std::string);
-    static void gen_schema_doc(rapidjson::Document&);
-    static bool to_json(rapidjson::Document&, const char*);
-    static bool to_json(rapidjson::Document&, const std::string);
-    static const std::string schema_err_str(const rapidjson::SchemaValidator&);
+    static void parse_tableau_piles(game_state&, const rapidjson::Document&);
+    static void parse_hole(game_state&, const rapidjson::Document&);
+    static void parse_cells(game_state&, const rapidjson::Document&);
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H
