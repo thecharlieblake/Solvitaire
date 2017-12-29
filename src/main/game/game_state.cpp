@@ -21,88 +21,118 @@ using namespace boost;
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 
-// Construct an initial game state from a JSON doc
+// A private constructor used by both of the public ones. Initializes all of the
+// piles and pile refs specified by the rules
 game_state::game_state(const sol_rules& s_rules) :
-        rules(s_rules),
-        reserve(pile::reserve_factory()),
-        stock(pile::stock_factory()),
-        waste(pile::waste_factory()),
-        hole(pile::hole_factory(s_rules.max_rank)) {
+        rules(s_rules) {
 
     // Creates the tableau piles
-    for (unsigned int i = 0; i < rules.tableau_pile_count; i++) {
-        tableau_piles.push_back(pile::tableau_factory(rules.build_ord));
+    for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
+        piles.push_back(pile::tableau_factory(rules.build_ord, rules.build_pol));
+        tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
     }
 
-    // If there are foundation piles, create the relevant pile vectors
+    // If there are foundation piles, creates the relevant pile vectors
     if (rules.foundations) {
-        for (int i = 0; i < 4; i++) {
-            foundations.push_back(pile::foundation_factory(pol(i)));
+        for (uint8_t i = 0; i < 4; i++) {
+            piles.push_back(pile::foundation_factory(pol(i)));
+            foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
     }
 
-    // If there are cell piles, create the relevant cell vectors
+    // If there are cell piles, creates the relevant cell vectors
     if (rules.cells > 0) {
-        for (unsigned int i = 0; i < rules.cells; i++) {
-            cells.push_back(pile::cell_factory());
+        for (uint8_t i = 0; i < rules.cells; i++) {
+            piles.push_back(pile::cell_factory());
+            cells.push_back(static_cast<pile_ref>(piles.size() - 1));
+        }
+    }
+
+    // If there is a reserve, creates a reserve pile
+    if (rules.reserve_size > 0) {
+        piles.push_back(pile::reserve_factory());
+        reserve = static_cast<pile_ref>(piles.size() - 1);
+    }
+
+    // If there is a stock & waste, creates piles
+    if (rules.stock_size > 0) {
+        piles.push_back(pile::stock_factory());
+        stock = static_cast<pile_ref>(piles.size() - 1);
+        piles.push_back(pile::waste_factory());
+        waste = static_cast<pile_ref>(piles.size() - 1);
+    }
+
+    if (rules.hole) {
+        piles.push_back(pile::hole_factory(s_rules.max_rank));
+        hole = static_cast<pile_ref>(piles.size() - 1);
+    }
+
+    for (pile_ref pr = 0; pr < piles.size(); pr++) {
+        if (rules.stock_size > 0 && pr == waste) continue;
+
+        if (piles[pr].can_remove()) {
+            removable_piles.emplace_back(pr);
+        }
+        if (piles[pr].get_build_order() != ord::NO_BUILD) {
+            addable_piles.emplace_back(pr);
         }
     }
 }
 
-// Construct an initial game state from a JSON doc
+// Constructs an initial game state from a JSON doc
 game_state::game_state(const sol_rules& s_rules, const Document& doc) :
         game_state(s_rules) {
     deal_parser::parse(*this, doc);
 }
 
-// Construct an initial game state from a seed
+// Constructs an initial game state from a seed
 game_state::game_state(const sol_rules& s_rules, int seed) :
         game_state(s_rules) {
 
-    vector<card> deck = shuffled_deck(seed, rules.max_rank);
+    vector<card> deck = gen_shuffled_deck(seed, rules.max_rank);
 
-    // If there is a hole, move the ace of spades to it
+    // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
-        hole.place("AS");
+        piles[hole].place(card("AS"));
     }
 
-    // If there is a stock, deal to it and set up a waste pile too
+    // If there is a stock, deals to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
-            stock.place(deck.back());
+            piles[stock].place(deck.back());
             deck.pop_back();
         }
     }
 
-    // If there is a reserve, deal to it
+    // If there is a reserve, deals to it
     if (rules.reserve_size > 0) {
         for (unsigned int i = 0; i < rules.reserve_size; i++) {
-            reserve.place(deck.back());
+            piles[reserve].place(deck.back());
             deck.pop_back();
         }
     }
 
-    // Deal to the tableau piles (row-by-row)
-    unsigned int t = 0;
-    while (!deck.empty()) {
+    // Deals to the tableau piles (row-by-row)
+    for (int t = 0; !deck.empty(); t++) {
         card c = deck.back();
         deck.pop_back();
 
         // Add the randomly generated card to the tableau piles
-        tableau_piles[t++ % rules.tableau_pile_count].place(c);
+        pile_ref tableau_pile = tableau_piles[t % tableau_piles.size()];
+        piles[tableau_pile].place(c);
     }
 }
 
-// Generate a randomly ordered vector of cards
-vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
+// Generates a randomly ordered vector of cards
+vector<card> game_state::gen_shuffled_deck(int seed, int max_rank = 13) {
     vector<int> values;
     vector<int*> v_ptrs;
     for (int i = 0; i < max_rank * 4; i++) {
-        values.push_back(i);
+        values.emplace_back(i);
     }
     for (int i = 0; i < max_rank * 4; i++) {
-        v_ptrs.push_back(&values[i]);
+        v_ptrs.emplace_back(&values[i]);
     }
 
     // Randomly shuffle the pointers
@@ -111,100 +141,74 @@ vector<card> game_state::shuffled_deck(int seed, int max_rank = 13) {
 
     vector<card> deck;
     for (int *i : v_ptrs) {
-        int r = ((*i) % max_rank) + 1;
-        int s = (*i) / max_rank;
+        auto r = static_cast<card::rank_t>(((*i) % max_rank) + 1);
+        card::suit_t s;
+        switch ((*i) / max_rank) {
+            case 0 :  s = card::suit_t::Clubs;
+                      break;
+            case 1 :  s = card::suit_t::Diamonds;
+                      break;
+            case 2 :  s = card::suit_t::Hearts;
+                      break;
+            case 3 :  s = card::suit_t::Spades;
+                      break;
+            default : assert(false);
+                      s = card::suit_t::Clubs;
+                      break;
+        }
 
-        deck.emplace_back(card(r, s));
+        deck.emplace_back(card(s, r));
     }
 
     return deck;
 }
 
-const vector<game_state> game_state::get_next_legal_states() const {
-    // Generates vectors of references to all the piles from which
-    // cards can be removed, and to which they can be added
-    vector<pile*> can_remove;
-    vector<pile*> can_add;
+void game_state::make_move(const move m) {
+    piles[m.second].place(piles[m.first].take());
+}
 
-    // A mutable version of the current state, used to create the next legal
-    // states
-    game_state mut_state = *this;
+void game_state::undo_move(const move m) {
+    piles[m.first].place(piles[m.second].take());
+}
 
-    for (pile* p : mut_state.get_regular_pile_refs()) {
-        if (p->can_remove()) {
-            can_remove.push_back(p);
-        }
-        if (p->get_build_order() != ord::NO_BUILD) {
-            can_add.push_back(p);
-        }
+vector<game_state::move> game_state::get_legal_moves() const {
+    // The next legal states
+    vector<move> moves;
+
+    // Dealing from the stock to the waste
+    if (rules.stock_size > 0 && !piles[stock].empty()) {
+        moves.emplace_back(stock, waste);
     }
 
-    // The next legal states
-    vector<game_state> next;
-
     // Moving from and to the 'can remove' and 'can add' piles
-    for (pile* rem_pile : can_remove) {
-        if (rem_pile->empty()) continue;
+    // Note traversal order. Solver evaluates backwards, so we reverse traversal
+    // order of removable piles, but not addable. This moves from tableau piles
+    // to foundations first if possible
+    for (auto rem_it = removable_piles.rbegin(); rem_it != removable_piles.rend(); ++rem_it) {
+        if (piles[*rem_it].empty()) continue;
 
-        for (pile* add_pile : can_add) {
-            if (&add_pile != &rem_pile
-                && add_pile->can_place(rem_pile->top_card())) {
-
-                game_state new_gs = move(mut_state, rem_pile, add_pile);
-                next.push_back(new_gs);
+        for (const pile_ref add_pile : addable_piles) {
+            if (add_pile != *rem_it &&
+                    piles[add_pile].can_place(piles[*rem_it].top_card())) {
+                moves.emplace_back(*rem_it, add_pile);
             }
         }
     }
 
-    // Dealing from the stock to the waste
-    if (!stock.empty()) {
-        game_state new_gs = move(mut_state, &mut_state.stock, &mut_state.waste);
-        next.push_back(new_gs);
-    }
-
-    return next;
+    return moves;
 }
-
-const game_state game_state::move(game_state& gs, pile* from, pile* to) const {
-    to->place(from->take());
-    const game_state new_gs(gs);
-    from->place(to->take());
-    return new_gs;
-}
-
 
 bool game_state::is_solved() const {
-    for (auto p : foundations) {
-        if (p.size() != rules.max_rank) {
+    for (auto f : foundations) {
+        if (piles[f].size() != rules.max_rank) {
             return false;
         }
     }
 
-    return !rules.hole || hole.size() == rules.max_rank * 4;
+    return !rules.hole || piles[hole].size() == rules.max_rank * 4;
 }
 
-// Not the stock, because cards from it can't be moved to the rest of the piles!
-vector<pile*> game_state::get_regular_pile_refs() {
-    vector<pile*> piles;
-    auto to_ptr = [](pile& p){return &p;};
-
-    if (rules.foundations) {
-        transform(begin(foundations), end(foundations), back_inserter(piles),
-                  to_ptr);
-    }
-    if (rules.cells) {
-        transform(begin(cells), end(cells), back_inserter(piles), to_ptr);
-    }
-    transform(begin(tableau_piles), end(tableau_piles), back_inserter(piles), to_ptr);
-    if (rules.reserve_size > 0) {
-        piles.push_back(&reserve);
-    }
-    if (rules.stock_size > 0) {
-        piles.push_back(&waste);
-    }
-    if (rules.hole) {
-        piles.push_back(&hole);
-    }
+const vector<pile>& game_state::get_data() const {
     return piles;
 }
 
@@ -238,34 +242,33 @@ ostream& game_state::print(ostream& stream) const {
 
 void game_state::print_header(ostream& stream, const char* header) const {
     stream << "--- " << header << " ";
-    int pad = 20 - strlen(header);
-    for (int i = 0; i < pad; i++) {
+    size_t pad = 20 - strlen(header);
+    for (size_t i = 0; i < pad; i++) {
         stream << '-';
     }
     stream << "\n";
 }
 
-void game_state::print_piles(ostream& stream,
-                             const vector<pile>& pile_vec) const {
+void game_state::print_piles(ostream& stream, const vector<pile_ref>& pile_rs) const {
     bool empty_row = false;
     vector<card>::size_type row_idx = 0;
 
     // Loops through the rows in each pile, starting from the bottom, until
     // one is empty
     while (!empty_row) {
-        // Loops throught the current row to determine if it is empty
+        // Loops through the current row to determine if it is empty
         empty_row = true;
-        for (const pile& tableau_pile : pile_vec) {
-            if (tableau_pile.size() > row_idx) {
+        for (const pile_ref pile_r : pile_rs) {
+            if (piles[pile_r].size() > row_idx) {
                 empty_row = false;
                 break;
             }
         }
         if (!empty_row || row_idx == 0) {
             // Loops through the current (non-empty) row, and outputs the values
-            for (const pile& tableau_pile : pile_vec) {
-                if (tableau_pile.size() > row_idx) {
-                    stream << tableau_pile[row_idx];
+            for (const pile_ref pile_r : pile_rs) {
+                if (piles[pile_r].size() > row_idx) {
+                    stream << piles[pile_r][row_idx];
                 } else if (row_idx == 0) {
                     stream << "[]";
                 }
@@ -278,24 +281,26 @@ void game_state::print_piles(ostream& stream,
     }
 }
 
-void game_state::print_pile(ostream& stream, const pile &p) const {
-    print_piles(stream, {p});
+void game_state::print_pile(ostream& stream, const pile_ref pile_r) const {
+    print_piles(stream, {pile_r});
 }
 
-void game_state::print_top_of_piles(ostream& stream, const vector<pile>& vp) const {
-    vector<pile> top(vp);
-    for (pile& p : top) {
-        if (!p.empty()) {
-            card t = p.top_card();
-            p.clear();
-            p.place(t);
+void game_state::print_top_of_piles(ostream& stream, const vector<pile_ref>& vp) const {
+    vector<pile_ref> top(vp);
+
+    for (pile_ref p : top) {
+        if (piles[p].empty()) {
+            stream << "[]";
+        } else {
+            stream << piles[p].top_card();
         }
+        stream << "\t";
     }
-    print_piles(stream, top);
+    stream << "\n";
 }
 
-void game_state::print_top_of_pile(ostream& stream, const pile& p) const {
-    print_top_of_piles(stream, {p});
+void game_state::print_top_of_pile(ostream& stream, const pile_ref pile_r) const {
+    print_top_of_piles(stream, {pile_r});
 }
 
 bool operator==(const game_state& a, const game_state& b) {
@@ -320,15 +325,16 @@ size_t hash_value(game_state const& gs) {
     if (gs.rules.tableau_pile_count > 0) {
         hash_combine(seed, gs.tableau_piles);
     }
+
     if (gs.rules.reserve_size > 0) {
-        hash_combine(seed, gs.reserve);
+        hash_combine(seed, gs.piles[gs.reserve]);
     }
     if (gs.rules.stock_size > 0) {
-        hash_combine(seed, gs.stock);
-        hash_combine(seed, gs.waste);
+        hash_combine(seed, gs.piles[gs.stock]);
+        hash_combine(seed, gs.piles[gs.waste]);
     }
     if (gs.rules.hole) {
-        hash_combine(seed, gs.hole);
+        hash_combine(seed, gs.piles[gs.hole]);
     }
 
     return seed;
