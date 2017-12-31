@@ -44,7 +44,7 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
 
         for (auto& json_card : p.first->GetArray()) {
             assert(json_card.IsString());
-            p.second->place(card(json_card.GetString()));
+            gs.piles[*p.second].place(card(json_card.GetString()));
         }
     }
 }
@@ -54,7 +54,7 @@ void deal_parser::parse_hole(game_state &gs, const Document& doc) {
         const Value &json_hole = doc["hole"];
         assert(json_hole.IsString());
 
-        gs.hole.place(card(json_hole.GetString()));
+        gs.piles[gs.hole].place(card(json_hole.GetString()));
     }
 }
 
@@ -76,7 +76,7 @@ void deal_parser::parse_cells(game_state &gs, const Document& doc) {
 
             auto json_card = p.first;
             assert(json_card->IsString());
-            p.second->place(json_card->GetString());
+            gs.piles[*p.second].place(json_card->GetString());
         }
     }
 }
