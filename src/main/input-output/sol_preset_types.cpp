@@ -109,10 +109,10 @@ std::map<string, string> sol_preset_types::mp = {
                 R"(
 {
   "tableau piles": {
-    "count": 3,
+    "count": 4,
     "build policy": "red-black"
   },
-  "max rank": 3,
+  "max rank": 4,
   "cells": 1
 }
 )"
