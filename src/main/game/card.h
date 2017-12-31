@@ -10,7 +10,8 @@
 
 class card {
 public:
-    enum class suit_t : uint8_t {Clubs, Diamonds, Hearts, Spades};
+    enum class suit_t {Clubs, Diamonds, Hearts, Spades};
+    enum class colour_t {Black, Red};
     typedef uint8_t rank_t;
 
     // A card can either be created using two int values (rank & suit), or
@@ -19,13 +20,14 @@ public:
     card(const char*);
 
     suit_t get_suit() const;
+    colour_t get_colour() const;
     rank_t get_rank() const;
 
 private:
     static suit_t suit_from_str(const char* c);
     static rank_t rank_from_str(const char* c);
 
-    suit_t suit : 4;
+    suit_t suit;
     rank_t rank : 4;
 };
 

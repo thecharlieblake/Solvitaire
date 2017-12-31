@@ -18,7 +18,7 @@ card::card(suit_t s, rank_t r) : suit(s), rank(r) {}
 
 card::card(const char* c) : suit(suit_from_str(c)), rank(rank_from_str(c)) {}
 
-suit_t card::suit_from_str(const char* c) {
+card::suit_t card::suit_from_str(const char* c) {
     switch(tolower(c[strlen(c) - 1])) {
         case 'c': return suit_t::Clubs;
         case 'd': return suit_t::Diamonds;
@@ -29,7 +29,7 @@ suit_t card::suit_from_str(const char* c) {
     }
 }
 
-rank_t card::rank_from_str(const char* c) {
+card::rank_t card::rank_from_str(const char* c) {
     switch(tolower(c[0])) {
         case 'a': return 1;
         case 'j': return 11;
@@ -39,12 +39,20 @@ rank_t card::rank_from_str(const char* c) {
     }
 }
 
-rank_t card::get_rank() const {
-    return rank;
+card::suit_t card::get_suit() const {
+    return suit;
 }
 
-suit_t card::get_suit() const {
-    return suit;
+card::colour_t card::get_colour() const {
+    switch (suit) {
+        case card::suit_t::Spades  :
+        case card::suit_t::Clubs   : return card::colour_t::Black;
+        default :                    return card::colour_t::Red;
+    }
+}
+
+card::rank_t card::get_rank() const {
+    return rank;
 }
 
 bool operator==(const card& l, const card& r) {
@@ -52,25 +60,25 @@ bool operator==(const card& l, const card& r) {
 }
 
 std::ostream & operator<<(std::ostream & s, card const & c) {
-    switch(c.rank) {
-        case 1 : s << "A";
-        case 11: s << "J";
-        case 12: s << "Q";
-        case 13: s << "K";
-        default: s << c.rank;
+    switch(c.get_rank()) {
+        case 1 : s << "A"; break;
+        case 11: s << "J"; break;
+        case 12: s << "Q"; break;
+        case 13: s << "K"; break;
+        default: s << int(c.get_rank());
     }
-    switch(c.suit) {
-        case suit_t::Spades  : s << "S";
-        case suit_t::Hearts  : s << "H";
-        case suit_t::Clubs   : s << "C";
-        case suit_t::Diamonds: s << "D";
+    switch(c.get_suit()) {
+        case card::suit_t::Spades  : s << "S"; break;
+        case card::suit_t::Hearts  : s << "H"; break;
+        case card::suit_t::Clubs   : s << "C"; break;
+        case card::suit_t::Diamonds: s << "D"; break;
     }
     return s;
 }
 
 size_t hash_value(card const& c) {
     boost::hash<unsigned char> hasher;
-    unsigned char raw_val = static_cast<unsigned char>(
+    auto raw_val = static_cast<unsigned char>(
             static_cast<std::underlying_type_t<card::suit_t>>(c.get_suit())
             * 13 + c.get_rank());
 
