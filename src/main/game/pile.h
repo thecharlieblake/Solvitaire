@@ -55,8 +55,8 @@ private:
     const sol_rules::build_order build_order;
     const sol_rules::build_policy build_policy;
     const bool removable;
-    const int max_rank;
     const bool build_order_loops;
+    const int max_rank;
 
     // Underlying vector
     std::vector<card> pile_vec;

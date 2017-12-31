@@ -73,12 +73,17 @@ bool pile::can_place(const card c) const {
 
     card top_c = top_card();
 
-    // Check suit
+    // Checks violation of same suit policy
     if (build_policy == pol::SAME_SUIT && c.get_suit() != top_c.get_suit()) {
         return false;
     }
+    // Checks violation of specific suit policy
     if (sol_rules::is_suit(build_policy) && c.get_suit()
                                             != sol_rules::suit_val(build_policy)) {
+        return false;
+    }
+    // Checks violation of red-black suit policy
+    if (build_policy == pol::RED_BLACK && c.get_colour() == top_c.get_colour()) {
         return false;
     }
 
