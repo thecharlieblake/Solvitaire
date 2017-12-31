@@ -7,48 +7,33 @@
 
 #include <string>
 #include <vector>
-
-#include <boost/optional.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/multi_index/sequenced_index.hpp>
+#include <unordered_set>
 
 #include "../game/game_state.h"
 #include "../game/sol_rules.h"
 
 class solver {
 public:
-    typedef boost::multi_index::multi_index_container<
-    game_state,
-    boost::multi_index::indexed_by<
-            boost::multi_index::sequenced<>,
-            boost::multi_index::hashed_unique<boost::multi_index::identity<game_state>>
-        >
-    > node_history;
+    std::unordered_set<
+            std::vector<pile>,
+            boost::hash<std::vector<pile>>
+    > global_cache;
 
     struct node {
-        node(const node*, const game_state&);
-        node_history history;
-        game_state state;
-
-        static const node_history gen_history(const node* parent);
+        explicit node(const game_state::move, std::vector<game_state::move>&&);
+        const game_state::move move;
+        std::vector<game_state::move> unsearched_children;
     };
 
-    solver(const game_state, const sol_rules&);
+    solver(const game_state&, const sol_rules&);
 
-    const node get_root() const;
-    int get_states_searched() const;
-
-    const boost::optional<node> run();
-
-    friend std::ostream& operator<< (std::ostream&, const solver::node&);
+    bool run();
+    void print_solution() const;
 
 private:
-
-    const node root;
+    const game_state initial_state;
     const sol_rules rules;
-    node solution;
+    std::vector<node> frontier;
     int states_searched;
 };
 

@@ -89,13 +89,12 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules)
 }
 
 void solve_game(const game_state& gs, const sol_rules& rules) {
-    solver sol(gs, rules);
+    solver solv(gs, rules);
+    bool solution = solv.run();
 
-    optional<solver::node> solution = sol.run();
     if (solution) {
-        cout << "Solution:\n" << *solution << "States Searched: "
-             << sol.get_states_searched() << "\n";
+        solv.print_solution();
     } else {
-        cout << "Deal:\n" << sol.get_root() << "\nNo Possible Solution\n";
+        cout << "Deal:\n" << gs << "\nNo Possible Solution\n";
     }
 }

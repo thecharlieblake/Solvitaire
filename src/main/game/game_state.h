@@ -5,11 +5,14 @@
 #ifndef SOLVITAIRE_GAME_STATE_H
 #define SOLVITAIRE_GAME_STATE_H
 
+#define NULL_MOVE (game_state::move(255, 255))
+
 #include <vector>
 #include <ostream>
 #include <string>
 
 #include <rapidjson/document.h>
+#include <boost/functional/hash.hpp>
 
 #include "card.h"
 #include "sol_rules.h"
@@ -20,13 +23,19 @@ class deal_parser;
 class game_state {
     friend class deal_parser;
 public:
+    typedef uint8_t pile_ref;
+    typedef std::pair<pile_ref, pile_ref> move;
+
     // Create a game state representation from a JSON doc
     game_state(const sol_rules&, const rapidjson::Document&);
     // Do the same from a 'rules' object
     game_state(const sol_rules&, int seed);
 
-    const std::vector<game_state> get_next_legal_states() const;
+    void make_move(move);
+    void undo_move(move);
+    std::vector<move> get_legal_moves() const;
     bool is_solved() const;
+    const std::vector<pile>& get_data() const;
 
     std::ostream& print(std::ostream&) const;
 
@@ -36,27 +45,29 @@ public:
     friend std::size_t hash_value(std::vector<pile> const&);
 
 private:
+    static std::vector<card> gen_shuffled_deck(int, int);
+
     explicit game_state(const sol_rules&);
 
-    static std::vector<card> shuffled_deck(int, int);
-
-    const game_state move(game_state&, pile*, pile*) const;
-    std::vector<pile*> get_regular_pile_refs();
-
     void print_header(std::ostream&, const char*) const;
-    void print_piles(std::ostream&, const std::vector<pile>&) const;
-    void print_pile(std::ostream&, const pile&) const;
-    void print_top_of_piles(std::ostream&, const std::vector<pile>&) const;
-    void print_top_of_pile(std::ostream&, const pile&) const;
+    void print_piles(std::ostream&, const std::vector<pile_ref>&) const;
+    void print_pile(std::ostream&, pile_ref) const;
+    void print_top_of_piles(std::ostream&, const std::vector<pile_ref>&) const;
+    void print_top_of_pile(std::ostream&, pile_ref) const;
 
     sol_rules rules;
-    std::vector<pile> foundations;
-    std::vector<pile> cells;
-    std::vector<pile> tableau_piles;
-    pile reserve;
-    pile stock;
-    pile waste;
-    pile hole;
+    std::vector<pile_ref> foundations;
+    std::vector<pile_ref> cells;
+    std::vector<pile_ref> tableau_piles;
+    pile_ref reserve;
+    pile_ref stock;
+    pile_ref waste;
+    pile_ref hole;
+
+    std::vector<pile_ref> addable_piles;
+    std::vector<pile_ref> removable_piles;
+
+    std::vector<pile> piles;
 };
 
 

@@ -11,6 +11,8 @@
 #include <boost/optional.hpp>
 #include <rapidjson/document.h>
 
+#include "card.h"
+
 class sol_rules {
 public:
     enum class valid_sol {
@@ -28,7 +30,8 @@ public:
         DESCENDING,
         ASCENDING,
         BOTH,
-        SINGLE_CARD
+        SINGLE_CARD,
+        ANY
     };
     enum class build_policy {
         CLUBS,
@@ -37,24 +40,25 @@ public:
         SPADES,
         ANY_SUIT,
         SAME_SUIT,
-        RED_BLACK
+        RED_BLACK,
+        N_A
     };
+
+    static bool is_suit(build_policy);
+    static card::suit_t suit_val(build_policy);
 
     static const sol_rules from_preset(const std::string);
     static const sol_rules from_file(const std::string);
 
-    static bool is_suit(build_policy);
-    static int suit_val(build_policy);
-
-    unsigned int tableau_pile_count;
+    uint8_t tableau_pile_count;
     build_order build_ord;
     build_policy build_pol;
-    unsigned int max_rank;
+    card::rank_t max_rank;
     bool hole;
     bool foundations;
-    unsigned int cells;
-    unsigned int reserve_size;
-    unsigned int stock_size;
+    uint8_t cells;
+    uint8_t reserve_size;
+    uint8_t stock_size;
 
 private:
     static sol_rules get_default();

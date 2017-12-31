@@ -23,15 +23,21 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 
 bool sol_rules::is_suit(pol bp) {
-    return suit_val(bp) != -1;
-}
-int sol_rules::suit_val(pol bp) {
     switch (bp) {
-        case pol::CLUBS:    return 0;
-        case pol::DIAMONDS: return 1;
-        case pol::HEARTS:   return 2;
-        case pol::SPADES:   return 3;
-        default:            return -1;
+        case pol::CLUBS    :
+        case pol::DIAMONDS :
+        case pol::HEARTS   :
+        case pol::SPADES   : return true;
+        default            : return false;
+    }
+}
+card::suit_t sol_rules::suit_val(pol bp) {
+    switch (bp) {
+        case pol::CLUBS    : return card::suit_t::Clubs;
+        case pol::DIAMONDS : return card::suit_t::Diamonds;
+        case pol::HEARTS   : return card::suit_t::Hearts;
+        case pol::SPADES   : return card::suit_t::Spades;
+        default: assert(false); return card::suit_t::Spades;
     }
 }
 
@@ -80,7 +86,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
             if (d["tableau piles"].HasMember("count")) {
                 if (d["tableau piles"]["count"].IsInt()) {
-                    sr.tableau_pile_count = d["tableau piles"]["count"].GetInt();
+                    sr.tableau_pile_count = static_cast<uint8_t>(d["tableau piles"]["count"].GetInt());
                 } else {
                     util::json_parse_err("[tableau piles][count] must be an integer");
                 }
@@ -127,7 +133,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (d.HasMember("max rank")) {
         if (d["max rank"].IsInt()) {
-            sr.max_rank = d["max rank"].GetInt();
+            sr.max_rank = static_cast<card::rank_t>(d["max rank"].GetInt());
         } else {
             util::json_parse_err("[max rank] must be an integer");
         }
@@ -151,7 +157,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (d.HasMember("cells")) {
         if (d["cells"].IsInt()) {
-            sr.cells = d["cells"].GetInt();
+            sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
         } else {
             util::json_parse_err("[cells] must be an integer");
         }
@@ -159,7 +165,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (d.HasMember("reserve size")) {
         if (d["reserve size"].IsInt()) {
-            sr.reserve_size = d["reserve size"].GetInt();
+            sr.reserve_size = static_cast<uint8_t>(d["reserve size"].GetInt());
         } else {
             util::json_parse_err("[reserve size] must be an integer");
         }
@@ -167,7 +173,7 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (d.HasMember("stock size")) {
         if (d["stock size"].IsInt()) {
-            sr.stock_size = d["stock size"].GetInt();
+            sr.stock_size = static_cast<uint8_t>(d["stock size"].GetInt());
         } else {
             util::json_parse_err("[stock size] must be an integer");
         }
