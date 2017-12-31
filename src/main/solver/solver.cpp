@@ -6,6 +6,7 @@
 #include <ostream>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 
 #include "solver.h"
 #include "../input-output/log_helper.h"
@@ -13,71 +14,77 @@
 using namespace std;
 using namespace boost;
 
-solver::solver(const game_state gs, const sol_rules& sr)
-        : root(NULL, gs), rules(sr), solution(root), states_searched(0) {}
+solver::solver(const game_state& gs, const sol_rules& sr)
+        : initial_state(gs), rules(sr), states_searched(0) {}
 
-solver::node::node(const node* parent, const game_state& gs) :
-        history(solver::node::gen_history(parent)), state(gs) {}
-
-const solver::node_history solver::node::gen_history(const node* parent) {
-    node_history hist;
-    if (parent != NULL) {
-        copy (begin(parent->history.get<0>()),
-              end(parent->history.get<0>()),
-              back_inserter(hist.get<0>()));
-        hist.get<0>().push_back(parent->state);
-    }
-    return hist;
+solver::node::node(const game_state::move m,
+                   vector<game_state::move> &&uc)
+        : move(m), unsearched_children(std::move(uc)) {
 }
 
-const optional<solver::node> solver::run() {
-    // Iteratively run a depth-first search. Nodes in the frontier are yet to
-    // be explored
-    vector<node> frontier;
-    frontier.push_back(root);
+bool solver::run() {
+    game_state state = initial_state;
+
+    frontier.emplace_back(NULL_MOVE, state.get_legal_moves());
+    states_searched++;
 
     while (!frontier.empty()) {
-        // Pop the element at the top of the stack
-        const node current = frontier.back();
-        frontier.pop_back();
+        node& current = frontier.back();
+        LOG_DEBUG (state);
 
-        LOG_DEBUG (current.state);
+        // If we have a solution, returns true
+        if (state.is_solved()) return true;
 
-        // Create new nodes for each of the children
-        vector<game_state> new_children = current.state.get_next_legal_states();
-        states_searched++;
-
-        for (auto it = new_children.rbegin(); it != new_children.rend(); it++) {
-            // If we have seen the state before, ignore it (loop detection))
-            if (current.history.get<1>().find(*it)
-                != current.history.get<1>().end()) {
-                continue;
+        // If the current node has no unsearched children
+        if (current.unsearched_children.empty()) {
+            // Undoes the move that led to this state
+            // (unless it's the null first move)
+            if (frontier.size() > 1) {
+                state.undo_move(current.move);
             }
+            // Returns to the previous state
+            frontier.pop_back();
+        } else {
+            // Applies the first possible move in this state
+            state.make_move(current.unsearched_children.back());
 
-            const node n(&current, *it);
-            if (n.state.is_solved()) {
-                return n;
+            // Insert the state into the global cache
+            bool is_new_state = global_cache.insert(state.get_data()).second;
+            if (is_new_state) {
+                // If the state is new, creates a new node in the frontier to
+                // represent the move just made, and those that are now possible
+                frontier.emplace_back(current.unsearched_children.back(),
+                                      state.get_legal_moves());
+                states_searched++;
             } else {
-                frontier.push_back(n);
+                // If we've seen the state before, undo the move
+                state.undo_move(current.unsearched_children.back());
             }
+            // Removes the move just made from the list of possible moves
+            current.unsearched_children.pop_back();
         }
     }
 
-    return none;
+    return false;
 }
 
-const solver::node solver::get_root() const {
-    return root;
-}
+void solver::print_solution() const {
+    std::flush(clog);
+    std::flush(cout);
+    game_state state = initial_state;
 
-int solver::get_states_searched() const {
-    return states_searched;
-}
-
-std::ostream& operator<< (std::ostream& stream, const solver::node& solution) {
-    for (auto state : solution.history.get<0>()) {
-        stream << state << "\n";
+    cout << "Solution:\n";
+    cout << state << "\n";
+    // Ignores first move which is
+    bool first = true;
+    for (auto f_node : frontier) {
+        if (first) {
+            first = false;
+            continue;
+        }
+        // TODO print move as well
+        state.make_move(f_node.move);
+        cout << state << "\n";
     }
-    stream << solution.state << "\n";
-    return stream;
+    cout << "States Searched: " << states_searched << "\n";
 }
