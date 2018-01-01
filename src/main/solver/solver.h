@@ -20,7 +20,7 @@ public:
     > global_cache;
 
     struct node {
-        explicit node(const game_state::move, std::vector<game_state::move>&&);
+        explicit node(game_state::move, std::vector<game_state::move>);
         const game_state::move move;
         std::vector<game_state::move> unsearched_children;
     };
