@@ -56,19 +56,6 @@ class FreeCellRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(level * 0.61)
         self.baseJson["cells"] = math.ceil(level * 0.3)
 
-class CanfieldRulesGen(SolitaireRulesGen):
-
-    def __init__(self):
-        super().__init__("canfield")
-
-    def alterFieldsToChange(self, level):
-        self.baseJson["max rank"] = level
-        cardsNotInTableau = (level - 1) * 4
-        reserveSize = math.ceil(cardsNotInTableau * 0.7)
-        stockSize = (level - 1) * 4 - reserveSize
-        self.baseJson["reserve size"] = reserveSize
-        self.baseJson["stock size"] = stockSize
-
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -77,7 +64,7 @@ atexit.register(cleanup)
 
 # Loops through each canonical solitaire
 for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
-        FreeCellRulesGen(), CanfieldRulesGen()]:
+        FreeCellRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 13):
@@ -101,7 +88,7 @@ for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
                 timeouts += 1
             except CalledProcessError:
                 print("Error running " + rulesGen.name + " at level "
-                        + str(level) + "!")
+                        + str(level) + " with seed " + str(attempt + 1) + "!")
                 sys.exit()
             except:
                 print("Unknown error in script")
