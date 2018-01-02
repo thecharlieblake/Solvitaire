@@ -14,13 +14,14 @@ using namespace boost;
 
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
+typedef sol_rules::spaces_policy s_pol;
 
 ////////////
 // Static //
 ////////////
 
-pile pile::tableau_factory(ord o, pol p) {
-    return pile(o, p);
+pile pile::tableau_factory(ord o, pol p, s_pol sp) {
+    return pile(o, p, sp);
 }
 pile pile::cell_factory() {
     return pile(ord::SINGLE_CARD, pol::N_A);
@@ -38,16 +39,17 @@ pile pile::foundation_factory(pol p) {
     return pile(ord::ASCENDING, p);
 }
 pile pile::hole_factory(int max_rank) {
-    return pile(ord::BOTH, pol::ANY_SUIT, false, true, max_rank);
+    return pile(ord::BOTH, pol::ANY_SUIT, s_pol::ANY, false, true, max_rank);
 }
 
 ////////////////
 // Non-static //
 ////////////////
 
-pile::pile(ord bo, pol bp, bool r, bool l, int mr) :
+pile::pile(ord bo, pol bp, s_pol sp, bool r, bool l, int mr) :
         build_order(bo),
         build_policy(bp),
+        spaces_policy(sp),
         removable(r),
         build_order_loops(l),
         max_rank(mr) {
@@ -63,6 +65,9 @@ bool pile::can_place(const card c) const {
     }
 
     if (empty()) {
+        if (spaces_policy == s_pol::NO_BUILD) {
+            return false;
+        }
         if (sol_rules::is_suit(build_policy)) {
             return c.get_suit() == sol_rules::suit_val(build_policy)
                    && c.get_rank() == 1;

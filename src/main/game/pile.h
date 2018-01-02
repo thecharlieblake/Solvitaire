@@ -13,7 +13,8 @@
 class pile {
 public:
     // Factory methods
-    static pile tableau_factory(sol_rules::build_order, sol_rules::build_policy);
+    static pile tableau_factory(sol_rules::build_order, sol_rules::build_policy,
+                                sol_rules::spaces_policy);
     static pile cell_factory();
     static pile reserve_factory();
     static pile stock_factory();
@@ -24,6 +25,7 @@ public:
     // Constructors
     pile(sol_rules::build_order bo = sol_rules::build_order::DESCENDING,
          sol_rules::build_policy bp = sol_rules::build_policy::ANY_SUIT,
+         sol_rules::spaces_policy sp = sol_rules::spaces_policy::ANY,
          bool removable = true,
          bool loops = false,
          int max_rank = 13);
@@ -54,6 +56,7 @@ private:
     // const pile properties
     const sol_rules::build_order build_order;
     const sol_rules::build_policy build_policy;
+    const sol_rules::spaces_policy spaces_policy;
     const bool removable;
     const bool build_order_loops;
     const int max_rank;

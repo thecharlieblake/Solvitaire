@@ -20,6 +20,7 @@ using namespace boost;
 
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
+typedef sol_rules::spaces_policy s_pol;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
@@ -28,7 +29,8 @@ game_state::game_state(const sol_rules& s_rules) :
 
     // Creates the tableau piles
     for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
-        piles.push_back(pile::tableau_factory(rules.build_ord, rules.build_pol));
+        piles.push_back(pile::tableau_factory(rules.build_ord, rules.build_pol,
+                                              rules.spaces_pol));
         tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
     }
 
