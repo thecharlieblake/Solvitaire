@@ -43,16 +43,21 @@ public:
         RED_BLACK,
         N_A
     };
+    enum class spaces_policy {
+        NO_BUILD,
+        ANY
+    };
 
     static bool is_suit(build_policy);
     static card::suit_t suit_val(build_policy);
 
-    static const sol_rules from_preset(const std::string);
-    static const sol_rules from_file(const std::string);
+    static const sol_rules from_preset(std::string);
+    static const sol_rules from_file(std::string);
 
     uint8_t tableau_pile_count;
     build_order build_ord;
     build_policy build_pol;
+    spaces_policy spaces_pol;
     card::rank_t max_rank;
     bool hole;
     bool foundations;

@@ -111,11 +111,11 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
             if (d["tableau piles"].HasMember("build policy")) {
                 if (d["tableau piles"]["build policy"].IsString()) {
-                    string bo_str = d["tableau piles"]["build policy"].GetString();
+                    string bp_str = d["tableau piles"]["build policy"].GetString();
 
-                    if (bo_str == "any-suit") {
+                    if (bp_str == "any-suit") {
                         sr.build_pol = build_policy::ANY_SUIT;
-                    } else if (bo_str == "red-black") {
+                    } else if (bp_str == "red-black") {
                         sr.build_pol = build_policy::RED_BLACK;
                     } else {
                         util::json_parse_err("[tableau piles][build policy] is invalid");
@@ -123,6 +123,23 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
 
                 } else {
                     util::json_parse_err("[tableau piles][build policy] must be an string");
+                }
+            }
+
+            if (d["tableau piles"].HasMember("spaces policy")) {
+                if (d["tableau piles"]["spaces policy"].IsString()) {
+                    string sp_str = d["tableau piles"]["spaces policy"].GetString();
+
+                    if (sp_str == "any") {
+                        sr.spaces_pol = spaces_policy::ANY;
+                    } else if (sp_str == "no-build") {
+                        sr.spaces_pol = spaces_policy::NO_BUILD;
+                    } else {
+                        util::json_parse_err("[tableau piles][spaces policy] is invalid");
+                    }
+
+                } else {
+                    util::json_parse_err("[tableau piles][spaces policy] must be an string");
                 }
             }
 
