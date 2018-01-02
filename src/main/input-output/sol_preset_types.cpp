@@ -22,7 +22,8 @@ std::map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 8,
     "build order": "descending",
-    "build policy": "any-suit"
+    "build policy": "any-suit",
+    "spaces policy": "any"
   },
   "max rank": 13,
   "hole": false,
@@ -30,37 +31,6 @@ std::map<string, string> sol_preset_types::mp = {
   "cells": 0,
   "reserve size": 0,
   "stock size": 0
-}
-)"
-
-        },
-        {
-                "black-hole",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 17,
-    "build order": "no-build"
-  },
-  "hole": true,
-  "foundations": false
-}
-)"
-
-        },
-        {
-                "simple-black-hole",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build order": "no-build"
-  },
-  "max rank": 5,
-  "hole": true,
-  "foundations": false
 }
 )"
 
@@ -114,6 +84,64 @@ std::map<string, string> sol_preset_types::mp = {
   },
   "max rank": 4,
   "cells": 1
+}
+)"
+
+        },
+        {
+                "bakers-dozen",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "spaces policy": "no-build"
+  }
+}
+)"
+
+        },
+        {
+                "simple-bakers-dozen",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "spaces policy": "no-build"
+  },
+  "max rank": 3
+}
+)"
+
+        },
+        {
+                "black-hole",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 17,
+    "build order": "no-build"
+  },
+  "hole": true,
+  "foundations": false
+}
+)"
+
+        },
+        {
+                "simple-black-hole",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build order": "no-build"
+  },
+  "max rank": 5,
+  "hole": true,
+  "foundations": false
 }
 )"
 
