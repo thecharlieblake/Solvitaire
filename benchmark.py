@@ -28,15 +28,6 @@ class SolitaireRulesGen(metaclass=ABCMeta):
     def __str__(self):
         return json.dumps(self.baseJson, indent=4)
 
-class BlackHoleRulesGen(SolitaireRulesGen):
-
-    def __init__(self):
-        super().__init__("black-hole")
-
-    def alterFieldsToChange(self, level):
-        self.baseJson["max rank"] = level
-        self.baseJson["tableau piles"]["count"] = math.ceil((4*level - 1)/3)
-
 class SpanishPatienceRulesGen(SolitaireRulesGen):
 
     def __init__(self):
@@ -56,6 +47,24 @@ class FreeCellRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(level * 0.61)
         self.baseJson["cells"] = math.ceil(level * 0.3)
 
+class BlackHoleRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("black-hole")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil((4*level - 1)/3)
+
+class BakersDozenRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("bakers-dozen")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = level
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -63,8 +72,10 @@ def cleanup():
 atexit.register(cleanup)
 
 # Loops through each canonical solitaire
-for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
-        FreeCellRulesGen()]:
+for rulesGen in [SpanishPatienceRulesGen(),
+                 FreeCellRulesGen(),
+                 BlackHoleRulesGen(),
+                 BakersDozenRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 13):
