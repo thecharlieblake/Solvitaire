@@ -22,25 +22,6 @@ using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
 
-bool sol_rules::is_suit(pol bp) {
-    switch (bp) {
-        case pol::CLUBS    :
-        case pol::DIAMONDS :
-        case pol::HEARTS   :
-        case pol::SPADES   : return true;
-        default            : return false;
-    }
-}
-card::suit_t sol_rules::suit_val(pol bp) {
-    switch (bp) {
-        case pol::CLUBS    : return card::suit_t::Clubs;
-        case pol::DIAMONDS : return card::suit_t::Diamonds;
-        case pol::HEARTS   : return card::suit_t::Hearts;
-        case pol::SPADES   : return card::suit_t::Spades;
-        default: assert(false); return card::suit_t::Spades;
-    }
-}
-
 const sol_rules sol_rules::from_file(const string rules_file) {
     sol_rules sr = get_default();
     Document d = util::get_file_json(rules_file);
@@ -96,8 +77,8 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                 if (d["tableau piles"]["build order"].IsString()) {
                     string bo_str = d["tableau piles"]["build order"].GetString();
 
-                    if (bo_str == "no-build") {
-                        sr.build_ord = build_order::NO_BUILD;
+                    if (bo_str == "ascending") {
+                        sr.build_ord = build_order::ASCENDING;
                     } else if (bo_str == "descending") {
                         sr.build_ord = build_order::DESCENDING;
                     } else {
@@ -117,6 +98,10 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.build_pol = build_policy::ANY_SUIT;
                     } else if (bp_str == "red-black") {
                         sr.build_pol = build_policy::RED_BLACK;
+                    } else if (bp_str == "same-suit") {
+                        sr.build_pol = build_policy::SAME_SUIT;
+                    } else if (bp_str == "no-build") {
+                        sr.build_pol = build_policy::NO_BUILD;
                     } else {
                         util::json_parse_err("[tableau piles][build policy] is invalid");
                     }
@@ -177,14 +162,6 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
             sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
         } else {
             util::json_parse_err("[cells] must be an integer");
-        }
-    }
-
-    if (d.HasMember("reserve size")) {
-        if (d["reserve size"].IsInt()) {
-            sr.reserve_size = static_cast<uint8_t>(d["reserve size"].GetInt());
-        } else {
-            util::json_parse_err("[reserve size] must be an integer");
         }
     }
 

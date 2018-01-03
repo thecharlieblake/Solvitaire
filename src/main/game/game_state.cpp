@@ -22,62 +22,53 @@ typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 
+
+//////////////////
+// CONSTRUCTORS //
+//////////////////
+
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
 game_state::game_state(const sol_rules& s_rules) :
-        rules(s_rules) {
+        rules(s_rules),
+        stock(PILE_REF_MAX),
+        waste(PILE_REF_MAX),
+        hole(PILE_REF_MAX) {
 
-    // Creates the tableau piles
-    for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
-        piles.push_back(pile::tableau_factory(rules.build_ord, rules.build_pol,
-                                              rules.spaces_pol));
-        tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
+    // If there is a hole, creates pile
+    if (rules.hole) {
+        piles.emplace_back();
+        hole = static_cast<pile_ref>(piles.size() - 1);
     }
 
     // If there are foundation piles, creates the relevant pile vectors
     if (rules.foundations) {
         for (uint8_t i = 0; i < 4; i++) {
-            piles.push_back(pile::foundation_factory(pol(i)));
+            piles.emplace_back();
             foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
+    }
+
+    // If there is a stock & waste, creates piles
+    if (rules.stock_size > 0) {
+        piles.emplace_back();
+        stock = static_cast<pile_ref>(piles.size() - 1);
+        piles.emplace_back();
+        waste = static_cast<pile_ref>(piles.size() - 1);
     }
 
     // If there are cell piles, creates the relevant cell vectors
     if (rules.cells > 0) {
         for (uint8_t i = 0; i < rules.cells; i++) {
-            piles.push_back(pile::cell_factory());
+            piles.emplace_back();
             cells.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
     }
 
-    // If there is a reserve, creates a reserve pile
-    if (rules.reserve_size > 0) {
-        piles.push_back(pile::reserve_factory());
-        reserve = static_cast<pile_ref>(piles.size() - 1);
-    }
-
-    // If there is a stock & waste, creates piles
-    if (rules.stock_size > 0) {
-        piles.push_back(pile::stock_factory());
-        stock = static_cast<pile_ref>(piles.size() - 1);
-        piles.push_back(pile::waste_factory());
-        waste = static_cast<pile_ref>(piles.size() - 1);
-    }
-
-    if (rules.hole) {
-        piles.push_back(pile::hole_factory(s_rules.max_rank));
-        hole = static_cast<pile_ref>(piles.size() - 1);
-    }
-
-    for (pile_ref pr = 0; pr < piles.size(); pr++) {
-        if (rules.stock_size > 0 && pr == waste) continue;
-
-        if (piles[pr].can_remove()) {
-            removable_piles.emplace_back(pr);
-        }
-        if (piles[pr].get_build_order() != ord::NO_BUILD) {
-            addable_piles.emplace_back(pr);
-        }
+    // Creates the tableau piles
+    for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
+        piles.emplace_back();
+        tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
     }
 }
 
@@ -96,21 +87,13 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
-        piles[hole].place(card("AS"));
+        piles[hole].place("AS");
     }
 
     // If there is a stock, deals to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
             piles[stock].place(deck.back());
-            deck.pop_back();
-        }
-    }
-
-    // If there is a reserve, deals to it
-    if (rules.reserve_size > 0) {
-        for (unsigned int i = 0; i < rules.reserve_size; i++) {
-            piles[reserve].place(deck.back());
             deck.pop_back();
         }
     }
@@ -147,16 +130,16 @@ vector<card> game_state::gen_shuffled_deck(int seed, int max_rank = 13) {
         card::suit_t s;
         switch ((*i) / max_rank) {
             case 0 :  s = card::suit_t::Clubs;
-                      break;
+                break;
             case 1 :  s = card::suit_t::Diamonds;
-                      break;
+                break;
             case 2 :  s = card::suit_t::Hearts;
-                      break;
+                break;
             case 3 :  s = card::suit_t::Spades;
-                      break;
+                break;
             default : assert(false);
-                      s = card::suit_t::Clubs;
-                      break;
+                s = card::suit_t::Clubs;
+                break;
         }
 
         deck.emplace_back(card(s, r));
@@ -164,6 +147,11 @@ vector<card> game_state::gen_shuffled_deck(int seed, int max_rank = 13) {
 
     return deck;
 }
+
+
+/////////////////////////
+// MODIFYING FUNCTIONS //
+/////////////////////////
 
 void game_state::make_move(const move m) {
     piles[m.second].place(piles[m.first].take());
@@ -173,32 +161,139 @@ void game_state::undo_move(const move m) {
     piles[m.first].place(piles[m.second].take());
 }
 
+
+///////////////////////////
+// LEGAL MOVE GENERATION //
+///////////////////////////
+
 vector<game_state::move> game_state::get_legal_moves() const {
-    // The next legal states
+    // The next legal moves
     vector<move> moves;
 
-    // Dealing from the stock to the waste
-    if (rules.stock_size > 0 && !piles[stock].empty()) {
-        moves.emplace_back(stock, waste);
-    }
+    // Cycles through each pile which we may be able to remove a card from
+    for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
+        // Never removes a card from the hole, the waste, or an empty pile
+        if (rem_ref == hole
+            || rem_ref == waste
+            || piles[rem_ref].empty()) continue;
 
-    // Moving from and to the 'can remove' and 'can add' piles
-    // Note traversal order. Solver evaluates backwards, so we reverse traversal
-    // order of removable piles, but not addable. This moves from tableau piles
-    // to foundations first if possible
-    for (auto rem_it = removable_piles.rbegin(); rem_it != removable_piles.rend(); ++rem_it) {
-        if (piles[*rem_it].empty()) continue;
+        // Stock cards can only be moved to the waste
+        if (stock != PILE_REF_MAX && rem_ref == stock) {
+            moves.emplace_back(stock, waste);
+            continue;
+        }
 
-        for (const pile_ref add_pile : addable_piles) {
-            if (add_pile != *rem_it &&
-                    piles[add_pile].can_place(piles[*rem_it].top_card())) {
-                moves.emplace_back(*rem_it, add_pile);
+        // For each tableau pile, check if moving from the rem pile is a valid
+        // tableau move according to the rules
+        for (auto add_ref : tableau_piles) {
+            if (is_valid_tableau_move(rem_ref, add_ref)) {
+                moves.emplace_back(rem_ref, add_ref);
             }
+        }
+
+        // Any card can be moved to a cell, so long as the cell isn't full
+        for (auto add_ref : cells) {
+            if (add_ref != rem_ref && piles[add_ref].empty()) {
+                moves.emplace_back(rem_ref, add_ref);
+            }
+        }
+
+        // Any card can be added to the waste
+        if (waste != PILE_REF_MAX && waste != rem_ref) {
+            moves.emplace_back(rem_ref, waste);
+        }
+
+        // For each foundation pile, check if moving from the rem pile is a valid
+        // move according to the rules
+        for (auto add_ref : foundations) {
+            if (is_valid_foundations_move(rem_ref, add_ref)) {
+                moves.emplace_back(rem_ref, add_ref);
+            }
+        }
+
+        // Does the same for the hole
+        if (hole != PILE_REF_MAX && is_valid_hole_move(rem_ref)) {
+            moves.emplace_back(rem_ref, hole);
         }
     }
 
     return moves;
 }
+
+// If a tableau pile is empty and the space policy is
+// no-build, do not add. Otherwise any card with the right
+// suit/rank can be moved to a tableau
+bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
+                                       const pile_ref add_ref) const {
+    if (rem_ref == add_ref) return false;
+
+    else if (rules.build_pol == pol::NO_BUILD) return false;
+
+    else if (piles[add_ref].empty()) {
+        return rules.spaces_pol == s_pol::ANY;
+    }
+
+    card rem_c = piles[rem_ref].top_card();
+    card add_c = piles[add_ref].top_card();
+
+    // Checks violation of same suit policy
+    if (rules.build_pol == pol::SAME_SUIT
+        && rem_c.get_suit() != add_c.get_suit()) {
+        return false;
+    }
+
+        // Checks violation of red-black suit policy
+    else if (rules.build_pol == pol::RED_BLACK
+             && rem_c.get_colour() == add_c.get_colour()) {
+        return false;
+    }
+
+        // Checks rank
+    else if (rules.build_ord == ord::DESCENDING
+             && rem_c.get_rank() + 1 != add_c.get_rank()) {
+        return false;
+    } else if (rules.build_ord == ord::ASCENDING
+               && rem_c.get_rank() - 1 != add_c.get_rank()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
+                                       const pile_ref add_ref) const {
+    if (rem_ref == add_ref) return false;
+
+    card rem_c = piles[rem_ref].top_card();
+
+    // Checks violation of same suit policy
+    if (rem_c.get_suit() != card::to_suit(add_ref - foundations.front())) {
+        return false;
+    }
+
+        // Checks rank
+    else {
+        card::rank_t add_rank = piles[add_ref].empty()
+                                ? card::rank_t(0)
+                                : piles[add_ref].top_card().get_rank();
+        return rem_c.get_rank() - 1 == add_rank;
+    }
+}
+
+bool game_state::is_valid_hole_move(const pile_ref rem_ref) const {
+    if (rem_ref == hole) return false;
+    card::rank_t rank = piles[rem_ref].top_card().get_rank();
+    card::rank_t hole_rank = piles[hole].top_card().get_rank();
+    return rank + 1 == hole_rank
+           || rank - 1 == hole_rank
+           || (rank == rules.max_rank && hole_rank == 1)
+           || (rank == 1 && hole_rank == rules.max_rank);
+}
+
+
+////////////////////////
+// INSPECT GAME STATE //
+////////////////////////
 
 bool game_state::is_solved() const {
     for (auto f : foundations) {
@@ -214,6 +309,11 @@ const vector<pile>& game_state::get_data() const {
     return piles;
 }
 
+
+//////////////
+// PRINTING //
+//////////////
+
 ostream& game_state::print(ostream& stream) const {
     if (rules.foundations) {
         print_header(stream, "Foundations");
@@ -222,10 +322,6 @@ ostream& game_state::print(ostream& stream) const {
     if (rules.cells) {
         print_header(stream, "Cells");
         print_piles(stream, cells);
-    }
-    if (rules.reserve_size > 0) {
-        print_header(stream, "Reserve");
-        print_pile(stream, reserve);
     }
     if (rules.tableau_pile_count > 0) {
         print_header(stream, "Tableau Piles");
@@ -307,13 +403,18 @@ void game_state::print_top_of_pile(ostream& stream, const pile_ref pile_r) const
 
 bool operator==(const game_state& a, const game_state& b) {
     return a.tableau_piles == b.tableau_piles
-            && a.foundations == b.foundations
-            && a.hole == b.hole;
+           && a.foundations == b.foundations
+           && a.hole == b.hole;
 }
 
 ostream& operator <<(ostream& stream, const game_state& gs) {
     return gs.print(stream);
 }
+
+
+////////////////////
+// HASH FUNCTIONS //
+////////////////////
 
 size_t hash_value(game_state const& gs) {
     size_t seed = 0;
@@ -328,9 +429,6 @@ size_t hash_value(game_state const& gs) {
         hash_combine(seed, gs.tableau_piles);
     }
 
-    if (gs.rules.reserve_size > 0) {
-        hash_combine(seed, gs.piles[gs.reserve]);
-    }
     if (gs.rules.stock_size > 0) {
         hash_combine(seed, gs.piles[gs.stock]);
         hash_combine(seed, gs.piles[gs.waste]);

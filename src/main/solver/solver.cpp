@@ -25,9 +25,9 @@ solver::node::node(const game_state::move m,
 bool solver::run() {
     game_state state = initial_state;
 
-    frontier.emplace_back(NULL_MOVE, state.get_legal_moves());
     states_searched++;
     LOG_DEBUG (state);
+    frontier.emplace_back(NULL_MOVE, state.get_legal_moves());
 
     while (!frontier.empty()) {
         node& current = frontier.back();
@@ -54,11 +54,11 @@ bool solver::run() {
             // Insert the state into the global cache
             bool is_new_state = global_cache.insert(state.get_data()).second;
             if (is_new_state) {
+                states_searched++;
+                LOG_DEBUG (state);
                 // If the state is new, creates a new node in the frontier to
                 // represent the move just made, and those that are now possible
                 frontier.emplace_back(next_move, state.get_legal_moves());
-                states_searched++;
-                LOG_DEBUG (state);
             } else {
                 // If we've seen the state before, undoes the move
                 state.undo_move(next_move);

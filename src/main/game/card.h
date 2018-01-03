@@ -14,6 +14,8 @@ public:
     enum class colour_t {Black, Red};
     typedef uint8_t rank_t;
 
+    static suit_t to_suit(uint8_t);
+
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
     card(suit_t, rank_t);

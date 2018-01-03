@@ -12,112 +12,9 @@
 using namespace std;
 using namespace boost;
 
-typedef sol_rules::build_order ord;
-typedef sol_rules::build_policy pol;
-typedef sol_rules::spaces_policy s_pol;
-
-////////////
-// Static //
-////////////
-
-pile pile::tableau_factory(ord o, pol p, s_pol sp) {
-    return pile(o, p, sp);
-}
-pile pile::cell_factory() {
-    return pile(ord::SINGLE_CARD, pol::N_A);
-}
-pile pile::reserve_factory() {
-    return pile(ord::NO_BUILD, pol::N_A);
-}
-pile pile::stock_factory() {
-    return pile(ord::NO_BUILD, pol::N_A);
-}
-pile pile::waste_factory() {
-    return pile(ord::NO_BUILD, pol::N_A);
-}
-pile pile::foundation_factory(pol p) {
-    return pile(ord::ASCENDING, p);
-}
-pile pile::hole_factory(int max_rank) {
-    return pile(ord::BOTH, pol::ANY_SUIT, s_pol::ANY, false, true, max_rank);
-}
-
-////////////////
-// Non-static //
-////////////////
-
-pile::pile(ord bo, pol bp, s_pol sp, bool r, bool l, int mr) :
-        build_order(bo),
-        build_policy(bp),
-        spaces_policy(sp),
-        removable(r),
-        build_order_loops(l),
-        max_rank(mr) {
-}
-
-bool pile::can_place(const card c) const {
-    if (build_order == ord::ANY) {
-        return true;
-    } else if (build_order == ord::NO_BUILD) {
-        return false;
-    } else if (build_order == ord::SINGLE_CARD) {
-        return empty();
-    }
-
-    if (empty()) {
-        if (spaces_policy == s_pol::NO_BUILD) {
-            return false;
-        }
-        if (sol_rules::is_suit(build_policy)) {
-            return c.get_suit() == sol_rules::suit_val(build_policy)
-                   && c.get_rank() == 1;
-        } else {
-            return true;
-        }
-    }
-
-    card top_c = top_card();
-
-    // Checks violation of same suit policy
-    if (build_policy == pol::SAME_SUIT && c.get_suit() != top_c.get_suit()) {
-        return false;
-    }
-    // Checks violation of specific suit policy
-    if (sol_rules::is_suit(build_policy) && c.get_suit()
-                                            != sol_rules::suit_val(build_policy)) {
-        return false;
-    }
-    // Checks violation of red-black suit policy
-    if (build_policy == pol::RED_BLACK && c.get_colour() == top_c.get_colour()) {
-        return false;
-    }
-
-    int tc_r = top_c.get_rank();
-    int comp_r = c.get_rank();
-
-    if (build_order == ord::ASCENDING) {
-        return one_lt(tc_r, comp_r);
-    } else if (build_order == ord::DESCENDING) {
-        return one_lt(comp_r, tc_r);
-    } else if (build_order == ord::BOTH) {
-        return one_lt(tc_r, comp_r) || one_lt(comp_r, tc_r);
-    } else {
-        return false;
-    }
-}
-
-bool pile::one_lt(int a, int b) const {
-    return (a == b - 1) || (build_order_loops && a == max_rank && b == 1);
-}
-
-
-
 card pile::top_card() const {
+    assert(!empty());
     return pile_vec.back();
-}
-
-bool pile::can_remove() const {
-    return removable;
 }
 
 bool pile::empty() const {
@@ -128,17 +25,12 @@ uint8_t pile::size() const {
     return static_cast<uint8_t>(pile_vec.size());
 }
 
-ord pile::get_build_order() const {
-    return build_order;
-}
-
 card& pile::operator[] (vector<card>::size_type i) {
     return pile_vec[i];
 }
 card pile::operator[] (vector<card>::size_type i) const {
     return pile_vec[i];
 }
-
 
 void pile::place(const card c) {
     pile_vec.emplace_back(c);

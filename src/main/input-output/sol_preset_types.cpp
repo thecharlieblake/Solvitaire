@@ -122,7 +122,7 @@ std::map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 17,
-    "build order": "no-build"
+    "build policy": "no-build"
   },
   "hole": true,
   "foundations": false
@@ -137,7 +137,7 @@ std::map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 4,
-    "build order": "no-build"
+    "build policy": "no-build"
   },
   "max rank": 5,
   "hole": true,

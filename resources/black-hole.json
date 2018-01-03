@@ -1,7 +1,7 @@
 {
   "tableau piles": {
     "count": 17,
-    "build order": "no-build"
+    "build policy": "no-build"
   },
   "hole": true,
   "foundations": false

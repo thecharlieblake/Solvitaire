@@ -55,6 +55,16 @@ card::rank_t card::get_rank() const {
     return rank;
 }
 
+card::suit_t card::to_suit(uint8_t v) {
+    switch (v) {
+        case 0: return suit_t::Clubs;
+        case 1: return suit_t::Diamonds;
+        case 2: return suit_t::Hearts;
+        case 3: return suit_t::Spades;
+        default: assert(false); return suit_t::Clubs;
+    }
+}
+
 bool operator==(const card& l, const card& r) {
     return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();
 }
