@@ -1,28 +1,26 @@
 //
-// Created by thecharlesblake on 10/28/17.
+// Created by thecharlesblake on 1/3/18.
 //
 
-#include <string>
 #include <vector>
 #include <algorithm>
 
-#include "rapidjson/error/en.h"
-
-#include "sol_rules.h"
+#include "rules_parser.h"
 #include "../input-output/json_helper.h"
 #include "../input-output/sol_preset_types.h"
 
 using namespace std;
-using namespace boost;
 using namespace rapidjson;
 
 ////////////
 // Static //
 ////////////
 
+typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
+typedef sol_rules::spaces_policy s_pol;
 
-const sol_rules sol_rules::from_file(const string rules_file) {
+const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
     Document d = json_helper::get_file_json(rules_file);
 
@@ -31,7 +29,7 @@ const sol_rules sol_rules::from_file(const string rules_file) {
     return sr;
 }
 
-const sol_rules sol_rules::from_preset(const string sol_type) {
+const sol_rules rules_parser::from_preset(const string sol_type) {
     sol_rules sr = get_default();
 
     const string preset_json = sol_preset_types::get(sol_type);
@@ -44,7 +42,7 @@ const sol_rules sol_rules::from_preset(const string sol_type) {
     return sr;
 }
 
-sol_rules sol_rules::get_default() {
+sol_rules rules_parser::get_default() {
     sol_rules sr;
     const string default_json = sol_preset_types::get("default");
 
@@ -56,7 +54,7 @@ sol_rules sol_rules::get_default() {
     return sr;
 }
 
-void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
+void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
 
     if (!d.IsObject()) {
         json_helper::json_parse_err("JSON doc must be object");
@@ -78,9 +76,9 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                     string bo_str = d["tableau piles"]["build order"].GetString();
 
                     if (bo_str == "ascending") {
-                        sr.build_ord = build_order::ASCENDING;
+                        sr.build_ord = ord::ASCENDING;
                     } else if (bo_str == "descending") {
-                        sr.build_ord = build_order::DESCENDING;
+                        sr.build_ord = ord::DESCENDING;
                     } else {
                         json_helper::json_parse_err("[tableau piles][build order] is invalid");
                     }
@@ -95,13 +93,13 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                     string bp_str = d["tableau piles"]["build policy"].GetString();
 
                     if (bp_str == "any-suit") {
-                        sr.build_pol = build_policy::ANY_SUIT;
+                        sr.build_pol = pol::ANY_SUIT;
                     } else if (bp_str == "red-black") {
-                        sr.build_pol = build_policy::RED_BLACK;
+                        sr.build_pol = pol::RED_BLACK;
                     } else if (bp_str == "same-suit") {
-                        sr.build_pol = build_policy::SAME_SUIT;
+                        sr.build_pol = pol::SAME_SUIT;
                     } else if (bp_str == "no-build") {
-                        sr.build_pol = build_policy::NO_BUILD;
+                        sr.build_pol = pol::NO_BUILD;
                     } else {
                         json_helper::json_parse_err("[tableau piles][build policy] is invalid");
                     }
@@ -116,9 +114,9 @@ void sol_rules::modify_sol_rules(sol_rules& sr, Document& d) {
                     string sp_str = d["tableau piles"]["spaces policy"].GetString();
 
                     if (sp_str == "any") {
-                        sr.spaces_pol = spaces_policy::ANY;
+                        sr.spaces_pol = s_pol::ANY;
                     } else if (sp_str == "no-build") {
-                        sr.spaces_pol = spaces_policy::NO_BUILD;
+                        sr.spaces_pol = s_pol::NO_BUILD;
                     } else {
                         json_helper::json_parse_err("[tableau piles][spaces policy] is invalid");
                     }

@@ -3,9 +3,10 @@
 #include <rapidjson/document.h>
 
 #include "input-output/command_line_helper.h"
-#include "solver/solver.h"
 #include "input-output/log_helper.h"
 #include "input-output/json_helper.h"
+#include "input-output/rules_parser.h"
+#include "solver/solver.h"
 
 using namespace rapidjson;
 
@@ -16,7 +17,7 @@ namespace po = boost::program_options;
 
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&);
-void solve_input_files(const vector<string>, const sol_rules&);
+void solve_input_files(vector<string>, const sol_rules&);
 void solve_game(const game_state&, const sol_rules&);
 
 int main(int argc, const char* argv[]) {
@@ -50,9 +51,9 @@ int main(int argc, const char* argv[]) {
 const optional<sol_rules> gen_rules(command_line_helper& clh) {
     try {
         if (!clh.get_solitaire_type().empty()) {
-            return sol_rules::from_preset(clh.get_solitaire_type());
+            return rules_parser::from_preset(clh.get_solitaire_type());
         } else {
-            return sol_rules::from_file(clh.get_rules_file());
+            return rules_parser::from_file(clh.get_rules_file());
         }
     } catch (const runtime_error& error) {
         string errmsg = "Error in rules generation: ";
