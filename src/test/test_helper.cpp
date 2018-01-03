@@ -7,8 +7,8 @@
 #include "test_helper.h"
 #include "../main/game/game_state.h"
 #include "../main/solver/solver.h"
-#include "../main/input-output/json_helper.h"
-#include "../main/input-output/rules_parser.h"
+#include "../main/input-output/input/json-parsing/json_helper.h"
+#include "../main/input-output/input/json-parsing/rules_parser.h"
 
 using namespace rapidjson;
 using namespace std;

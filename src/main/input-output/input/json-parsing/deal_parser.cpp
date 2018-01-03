@@ -3,7 +3,7 @@
 //
 
 #include "deal_parser.h"
-#include "../game/game_state.h"
+#include "../../../game/game_state.h"
 #include "json_helper.h"
 
 using namespace std;

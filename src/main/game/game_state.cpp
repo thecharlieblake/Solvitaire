@@ -12,7 +12,7 @@
 #include <boost/functional/hash.hpp>
 
 #include "game_state.h"
-#include "../input-output/deal_parser.h"
+#include "../input-output/input/json-parsing/deal_parser.h"
 
 using namespace std;
 using namespace rapidjson;

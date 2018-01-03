@@ -2,10 +2,10 @@
 #include <boost/optional.hpp>
 #include <rapidjson/document.h>
 
-#include "input-output/command_line_helper.h"
-#include "input-output/log_helper.h"
-#include "input-output/json_helper.h"
-#include "input-output/rules_parser.h"
+#include "input-output/input/command_line_helper.h"
+#include "input-output/output/log_helper.h"
+#include "input-output/input/json-parsing/json_helper.h"
+#include "input-output/input/json-parsing/rules_parser.h"
 #include "solver/solver.h"
 
 using namespace rapidjson;

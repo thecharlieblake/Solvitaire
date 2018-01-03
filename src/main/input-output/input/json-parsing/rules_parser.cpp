@@ -6,8 +6,8 @@
 #include <algorithm>
 
 #include "rules_parser.h"
-#include "../input-output/json_helper.h"
-#include "../input-output/sol_preset_types.h"
+#include "json_helper.h"
+#include "../sol_preset_types.h"
 
 using namespace std;
 using namespace rapidjson;
