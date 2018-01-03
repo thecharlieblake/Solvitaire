@@ -87,7 +87,7 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
-        piles[hole].place("AS");
+        piles[hole].place(card("AS"));
     }
 
     // If there is a stock, deals to it and set up a waste pile too

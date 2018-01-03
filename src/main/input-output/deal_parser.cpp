@@ -76,7 +76,7 @@ void deal_parser::parse_cells(game_state &gs, const Document& doc) {
 
             auto json_card = p.first;
             assert(json_card->IsString());
-            gs.piles[*p.second].place(json_card->GetString());
+            gs.piles[*p.second].place(card(json_card->GetString()));
         }
     }
 }
