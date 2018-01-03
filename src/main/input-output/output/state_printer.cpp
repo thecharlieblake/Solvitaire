@@ -60,7 +60,7 @@ void state_printer::print_piles(ostream& stream,
             // Loops through the current (non-empty) row, and outputs the values
             for (const game_state::pile_ref pile_r : pile_rs) {
                 if (gs.piles[pile_r].size() > row_idx) {
-                    stream << gs.piles[pile_r][row_idx];
+                    print_card(stream, gs.piles[pile_r][row_idx]);
                 } else if (row_idx == 0) {
                     stream << "[]";
                 }
@@ -82,7 +82,7 @@ void state_printer::print_top_of_piles(ostream& stream,
         if (gs.piles[p].empty()) {
             stream << "[]";
         } else {
-            stream << gs.piles[p].top_card();
+            print_card(stream, gs.piles[p].top_card());
         }
         stream << "\t";
     }
@@ -93,4 +93,20 @@ void state_printer::print_top_of_pile(ostream& stream,
                                       const game_state::pile_ref pile_r,
                                       const game_state& gs) {
     print_top_of_piles(stream, {pile_r}, gs);
+}
+
+void state_printer::print_card(std::ostream& s, const card c) {
+    switch(c.get_rank()) {
+        case 1 : s << "A"; break;
+        case 11: s << "J"; break;
+        case 12: s << "Q"; break;
+        case 13: s << "K"; break;
+        default: s << int(c.get_rank());
+    }
+    switch(c.get_suit()) {
+        case card::suit_t::Spades  : s << "S"; break;
+        case card::suit_t::Hearts  : s << "H"; break;
+        case card::suit_t::Clubs   : s << "C"; break;
+        case card::suit_t::Diamonds: s << "D"; break;
+    }
 }

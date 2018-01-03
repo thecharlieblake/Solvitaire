@@ -23,6 +23,7 @@ private:
                                    const game_state&);
     static void print_top_of_pile(std::ostream&, game_state::pile_ref,
                                   const game_state&);
+    static void print_card(std::ostream&, card);
 };
 
 #endif //SOLVITAIRE_STATE_PRINT_H

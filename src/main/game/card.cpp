@@ -69,23 +69,6 @@ bool operator==(const card& l, const card& r) {
     return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();
 }
 
-std::ostream & operator<<(std::ostream & s, card const & c) {
-    switch(c.get_rank()) {
-        case 1 : s << "A"; break;
-        case 11: s << "J"; break;
-        case 12: s << "Q"; break;
-        case 13: s << "K"; break;
-        default: s << int(c.get_rank());
-    }
-    switch(c.get_suit()) {
-        case card::suit_t::Spades  : s << "S"; break;
-        case card::suit_t::Hearts  : s << "H"; break;
-        case card::suit_t::Clubs   : s << "C"; break;
-        case card::suit_t::Diamonds: s << "D"; break;
-    }
-    return s;
-}
-
 size_t hash_value(card const& c) {
     boost::hash<unsigned char> hasher;
     auto raw_val = static_cast<unsigned char>(

@@ -35,7 +35,6 @@ private:
     rank_t rank : 4;
 };
 
-std::ostream & operator<<(std::ostream &, card const &);
 bool operator==(const card&, const card&);
 std::size_t hash_value(card const&);
 
