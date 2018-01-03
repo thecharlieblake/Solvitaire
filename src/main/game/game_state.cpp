@@ -13,6 +13,7 @@
 
 #include "game_state.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
+#include "../input-output/output/state_printer.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -309,106 +310,10 @@ const vector<pile>& game_state::get_data() const {
     return piles;
 }
 
-
-//////////////
-// PRINTING //
-//////////////
-
-ostream& game_state::print(ostream& stream) const {
-    if (rules.foundations) {
-        print_header(stream, "Foundations");
-        print_top_of_piles(stream, foundations);
-    }
-    if (rules.cells) {
-        print_header(stream, "Cells");
-        print_piles(stream, cells);
-    }
-    if (rules.tableau_pile_count > 0) {
-        print_header(stream, "Tableau Piles");
-        print_piles(stream, tableau_piles);
-    }
-    if (rules.stock_size > 0) {
-        print_header(stream, "Stock | Waste");
-        print_piles(stream, {stock, waste});
-    }
-    if (rules.hole) {
-        print_header(stream, "Hole Card");
-        print_top_of_pile(stream, hole);
-    }
-    return stream << "===================================";
-}
-
-void game_state::print_header(ostream& stream, const char* header) const {
-    stream << "--- " << header << " ";
-    size_t pad = 20 - strlen(header);
-    for (size_t i = 0; i < pad; i++) {
-        stream << '-';
-    }
-    stream << "\n";
-}
-
-void game_state::print_piles(ostream& stream, const vector<pile_ref>& pile_rs) const {
-    bool empty_row = false;
-    vector<card>::size_type row_idx = 0;
-
-    // Loops through the rows in each pile, starting from the bottom, until
-    // one is empty
-    while (!empty_row) {
-        // Loops through the current row to determine if it is empty
-        empty_row = true;
-        for (const pile_ref pile_r : pile_rs) {
-            if (piles[pile_r].size() > row_idx) {
-                empty_row = false;
-                break;
-            }
-        }
-        if (!empty_row || row_idx == 0) {
-            // Loops through the current (non-empty) row, and outputs the values
-            for (const pile_ref pile_r : pile_rs) {
-                if (piles[pile_r].size() > row_idx) {
-                    stream << piles[pile_r][row_idx];
-                } else if (row_idx == 0) {
-                    stream << "[]";
-                }
-                stream << "\t";
-            }
-
-            stream << "\n";
-            row_idx++;
-        }
-    }
-}
-
-void game_state::print_pile(ostream& stream, const pile_ref pile_r) const {
-    print_piles(stream, {pile_r});
-}
-
-void game_state::print_top_of_piles(ostream& stream, const vector<pile_ref>& vp) const {
-    vector<pile_ref> top(vp);
-
-    for (pile_ref p : top) {
-        if (piles[p].empty()) {
-            stream << "[]";
-        } else {
-            stream << piles[p].top_card();
-        }
-        stream << "\t";
-    }
-    stream << "\n";
-}
-
-void game_state::print_top_of_pile(ostream& stream, const pile_ref pile_r) const {
-    print_top_of_piles(stream, {pile_r});
-}
-
 bool operator==(const game_state& a, const game_state& b) {
     return a.tableau_piles == b.tableau_piles
            && a.foundations == b.foundations
            && a.hole == b.hole;
-}
-
-ostream& operator <<(ostream& stream, const game_state& gs) {
-    return gs.print(stream);
 }
 
 
@@ -442,4 +347,13 @@ size_t hash_value(game_state const& gs) {
 
 size_t hash_value(vector<pile> const& vp) {
     return hash_range(begin(vp), end(vp));
+}
+
+
+///////////
+// PRINT //
+///////////
+
+ostream& operator<< (ostream& str, const game_state& gs) {
+    return state_printer::print(str, gs);
 }

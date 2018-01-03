@@ -3,9 +3,9 @@
 #include <rapidjson/document.h>
 
 #include "input-output/input/command_line_helper.h"
-#include "input-output/output/log_helper.h"
 #include "input-output/input/json-parsing/json_helper.h"
 #include "input-output/input/json-parsing/rules_parser.h"
+#include "input-output/output/log_helper.h"
 #include "solver/solver.h"
 
 using namespace rapidjson;

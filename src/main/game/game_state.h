@@ -9,7 +9,6 @@
 #define PILE_REF_MAX (255)
 
 #include <vector>
-#include <ostream>
 #include <string>
 
 #include <rapidjson/document.h>
@@ -23,6 +22,7 @@ class deal_parser;
 
 class game_state {
     friend class deal_parser;
+    friend class state_printer;
 public:
     // Defines types
     typedef uint8_t pile_ref;
@@ -44,11 +44,9 @@ public:
     bool is_solved() const;
     const std::vector<pile>& get_data() const;
 
-    // Prints
-    std::ostream& print(std::ostream&) const;
-
     friend bool operator==(const game_state&, const game_state&);
     friend std::ostream& operator<< (std::ostream&, const game_state&);
+
     friend std::size_t hash_value(game_state const&);
     friend std::size_t hash_value(std::vector<pile> const&);
 
@@ -62,13 +60,6 @@ private:
     bool is_valid_tableau_move(pile_ref, pile_ref) const;
     bool is_valid_foundations_move(pile_ref, pile_ref) const;
     bool is_valid_hole_move(pile_ref) const;
-
-    // Prints
-    void print_header(std::ostream&, const char*) const;
-    void print_piles(std::ostream&, const std::vector<pile_ref>&) const;
-    void print_pile(std::ostream&, pile_ref) const;
-    void print_top_of_piles(std::ostream&, const std::vector<pile_ref>&) const;
-    void print_top_of_pile(std::ostream&, pile_ref) const;
 
     // References to piles
     sol_rules rules;

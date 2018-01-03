@@ -5,7 +5,7 @@
 #ifndef SOLVITAIRE_RULES_PARSER_H
 #define SOLVITAIRE_RULES_PARSER_H
 
-#include "../../game/sol_rules.h"
+#include "../../../game/sol_rules.h"
 
 class rules_parser {
 public:

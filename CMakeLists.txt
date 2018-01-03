@@ -16,7 +16,7 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/game/card.cpp src/main/input-output/input/json-parsing/deal_parser.h src/main/input-output/input/json-parsing/deal_parser.cpp
         src/main/solver/solver.cpp src/main/solver/solver.h src/main/game/game_state.cpp
         src/main/game/game_state.h src/main/game/sol_rules.h
-        src/main/game/pile.cpp src/main/game/pile.h src/main/input-output/input/json-parsing/json_helper.cpp src/main/input-output/input/json-parsing/json_helper.h src/main/input-output/input/sol_preset_types.h src/main/input-output/input/sol_preset_types.cpp src/main/input-output/input/json-parsing/rules_parser.cpp src/main/input-output/input/json-parsing/rules_parser.h)
+        src/main/game/pile.cpp src/main/game/pile.h src/main/input-output/input/json-parsing/json_helper.cpp src/main/input-output/input/json-parsing/json_helper.h src/main/input-output/input/sol_preset_types.h src/main/input-output/input/sol_preset_types.cpp src/main/input-output/input/json-parsing/rules_parser.cpp src/main/input-output/input/json-parsing/rules_parser.h src/main/input-output/output/state_printer.cpp src/main/input-output/output/state_printer.h)
 set(sources_test src/test/test_helper.cpp
         src/test/test_helper.h
         src/test/spanish_patience_test.cpp

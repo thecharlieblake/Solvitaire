@@ -6,7 +6,6 @@
 #include <ostream>
 #include <iostream>
 #include <algorithm>
-#include <utility>
 
 #include "solver.h"
 #include "../input-output/output/log_helper.h"
