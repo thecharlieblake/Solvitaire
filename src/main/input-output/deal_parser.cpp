@@ -4,7 +4,7 @@
 
 #include "deal_parser.h"
 #include "../game/game_state.h"
-#include "../util/util.h"
+#include "json_helper.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -35,7 +35,7 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
     assert(json_tab_piles.IsArray());
 
     if (gs.tableau_piles.size() != gs.rules.tableau_pile_count) {
-        util::json_parse_err("Incorrect number of tableau piles");
+        json_helper::json_parse_err("Incorrect number of tableau piles");
     }
 
     for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.tableau_piles));
@@ -67,7 +67,7 @@ void deal_parser::parse_cells(game_state &gs, const Document& doc) {
 
         if (json_cell_arr.Empty()) return;
         else if (gs.rules.cells != json_cell_arr.Size()) {
-            util::json_parse_err("Incorrect number of cells");
+            json_helper::json_parse_err("Incorrect number of cells");
         }
 
         for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.cells));

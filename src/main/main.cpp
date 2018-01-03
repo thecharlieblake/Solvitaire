@@ -5,7 +5,7 @@
 #include "input-output/command_line_helper.h"
 #include "solver/solver.h"
 #include "input-output/log_helper.h"
-#include "util/util.h"
+#include "input-output/json_helper.h"
 
 using namespace rapidjson;
 
@@ -72,7 +72,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules)
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
-            const Document in_doc = util::get_file_json(input_file);
+            const Document in_doc = json_helper::get_file_json(input_file);
 
             // Attempts to create a game state object from the json
             game_state gs(rules, in_doc);
