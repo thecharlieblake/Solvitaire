@@ -28,9 +28,10 @@ std::map<string, string> sol_preset_types::mp = {
   "max rank": 13,
   "hole": false,
   "foundations": true,
+  "foundations initial card": false,
   "cells": 0,
-  "reserve size": 0,
-  "stock size": 0
+  "stock size": 0,
+  "reserve size": 0
 }
 )"
 
@@ -173,6 +174,33 @@ std::map<string, string> sol_preset_types::mp = {
   "max rank": 4,
   "foundations initial card": true,
   "stock size": 3
+}
+)"
+
+        },
+        {
+                "flower-garden",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 6
+  },
+  "reserve size": 16
+}
+)"
+
+        },
+        {
+                "simple-flower-garden",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3
+  },
+  "max rank": 3,
+  "reserve size": 3
 }
 )"
 
