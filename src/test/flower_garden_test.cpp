@@ -8,21 +8,21 @@
 
 typedef test_helper th;
 
-const static std::string path = "resources/fortunes_favor/";
-const static std::string type = "simple-fortunes-favor";
+const static std::string path = "resources/flower_garden/";
+const static std::string type = "simple-flower-garden";
 
-TEST(FortunesFavor, SimpleSolvable) {
+TEST(FlowerGarden, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));
 }
 
-TEST(FortunesFavor, ComplexSolvable) {
+TEST(FlowerGarden, ComplexSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "ComplexSolvable.json", type));
 }
 
-TEST(FortunesFavor, SimpleUnsolvable) {
+TEST(FlowerGarden, SimpleUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "SimpleUnsolvable.json", type));
 }
 
-TEST(FortunesFavor, ComplexUnsolvable) {
+TEST(FlowerGarden, ComplexUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "ComplexUnsolvable.json", type));
 }

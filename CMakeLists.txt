@@ -23,7 +23,8 @@ set(sources_test src/test/test_helper.cpp
         src/test/black_hole_test.cpp
         src/test/free_cell_test.cpp
         src/test/bakers_dozen_test.cpp
-        src/test/fortunes_favor_test.cpp)
+        src/test/fortunes_favor_test.cpp
+        src/test/flower_garden_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
