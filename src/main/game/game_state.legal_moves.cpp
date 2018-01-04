@@ -18,7 +18,6 @@ vector<game_state::move> game_state::get_legal_moves() const {
     for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
         // Never removes a card from the hole, the waste, or an empty pile
         if (rem_ref == hole
-            || rem_ref == waste
             || piles[rem_ref].empty()) continue;
 
         // Stock cards can only be moved to the waste
@@ -40,11 +39,6 @@ vector<game_state::move> game_state::get_legal_moves() const {
             if (add_ref != rem_ref && piles[add_ref].empty()) {
                 moves.emplace_back(rem_ref, add_ref);
             }
-        }
-
-        // Any card can be added to the waste
-        if (waste != PILE_REF_MAX && waste != rem_ref) {
-            moves.emplace_back(rem_ref, waste);
         }
 
         // For each foundation pile, check if moving from the rem pile is a valid
