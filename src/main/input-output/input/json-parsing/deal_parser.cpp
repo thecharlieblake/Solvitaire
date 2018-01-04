@@ -33,6 +33,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
         parse_stock(gs, doc);
     }
 
+    // Construct reserve
+    if (gs.rules.reserve_size > 0) {
+        parse_reserve(gs, doc);
+    }
+
     // If the foundations begin with cards in them, fill them
     if (gs.rules.foundations_init_card) {
         fill_foundations(gs);
@@ -103,6 +108,24 @@ void deal_parser::parse_stock(game_state &gs, const Document& doc) {
         for (const Value& json_card : json_stock.GetArray()) {
             gs.piles[gs.stock].place(card(json_card.GetString()));
         }
+    }
+}
+
+void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
+    assert(doc.HasMember("reserve"));
+    const Value& json_reserve_piles = doc["reserve"];
+    assert(json_reserve_piles.IsArray());
+
+    if (gs.reserve.size() != gs.rules.reserve_size) {
+        json_helper::json_parse_err("Incorrect reserve size");
+    }
+
+    for (auto p = std::make_pair(begin(json_reserve_piles.GetArray()), begin(gs.reserve));
+         p.second != end(gs.reserve);
+         ++p.first, ++p.second) {
+
+        assert(p.first->IsString());
+        gs.piles[*p.second].place(card(p.first->GetString()));
     }
 }
 
