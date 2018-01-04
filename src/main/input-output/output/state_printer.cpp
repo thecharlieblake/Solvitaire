@@ -19,6 +19,10 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         state_printer::print_header(stream, "Tableau Piles");
         state_printer::print_piles(stream, gs.tableau_piles, gs);
     }
+    if (gs.rules.reserve_size > 0) {
+        state_printer::print_header(stream, "Reserve");
+        state_printer::print_piles(stream, gs.reserve, gs);
+    }
     if (gs.rules.stock_size > 0) {
         state_printer::print_header(stream, "Stock | Waste");
         state_printer::print_piles(stream, {gs.stock, gs.waste}, gs);
