@@ -147,32 +147,32 @@ std::map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "canfield",
+                "fortunes-favor",
 
                 R"(
 {
   "tableau piles": {
-    "count": 4,
-    "build policy": "red-black"
+    "count": 12,
+    "build policy": "same-suit"
   },
-  "reserve size": 14,
-  "stock size": 34
+  "foundations initial card": true,
+  "stock size": 36
 }
 )"
 
         },
         {
-                "simple-canfield",
+                "simple-fortunes-favor",
 
                 R"(
 {
   "tableau piles": {
-    "count": 2,
-    "build policy": "red-black"
+    "count": 3,
+    "build policy": "same-suit"
   },
-  "max rank": 2,
-  "reserve size": 2,
-  "stock size": 2
+  "max rank": 4,
+  "foundations initial card": true,
+  "stock size": 3
 }
 )"
 

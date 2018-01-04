@@ -8,7 +8,7 @@
   "max rank": 13,
   "hole": false,
   "foundations": true,
+  "foundation initial card": false,
   "cells": 0,
-  "reserve size": 0,
   "stock size": 0
 }
