@@ -65,6 +65,18 @@ class BakersDozenRulesGen(SolitaireRulesGen):
         self.baseJson["max rank"] = level
         self.baseJson["tableau piles"]["count"] = level
 
+class FortunesFavorRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("fortunes-favor")
+
+    def alterFieldsToChange(self, level):
+        # Because aces start up we must skip lv 1
+        if (level == 1): level = 2;
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(12*level/13)
+        self.baseJson["stock size"] = level * 4 - 4 - self.baseJson["tableau piles"]["count"]
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -75,7 +87,8 @@ atexit.register(cleanup)
 for rulesGen in [SpanishPatienceRulesGen(),
                  FreeCellRulesGen(),
                  BlackHoleRulesGen(),
-                 BakersDozenRulesGen()]:
+                 BakersDozenRulesGen(),
+                 FortunesFavorRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 13):
