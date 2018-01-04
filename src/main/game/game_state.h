@@ -67,6 +67,7 @@ private:
     std::vector<pile_ref> cells;
     pile_ref stock;
     pile_ref waste;
+    std::vector<pile_ref> reserve;
     std::vector<pile_ref> foundations;
     pile_ref hole;
 

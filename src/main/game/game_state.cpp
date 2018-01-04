@@ -50,6 +50,14 @@ game_state::game_state(const sol_rules& s_rules) :
         }
     }
 
+    // If there are cell piles, creates the relevant cell vectors
+    if (rules.cells > 0) {
+        for (uint8_t i = 0; i < rules.cells; i++) {
+            piles.emplace_back();
+            cells.push_back(static_cast<pile_ref>(piles.size() - 1));
+        }
+    }
+
     // If there is a stock & waste, creates piles
     if (rules.stock_size > 0) {
         piles.emplace_back();
@@ -58,11 +66,11 @@ game_state::game_state(const sol_rules& s_rules) :
         waste = static_cast<pile_ref>(piles.size() - 1);
     }
 
-    // If there are cell piles, creates the relevant cell vectors
-    if (rules.cells > 0) {
-        for (uint8_t i = 0; i < rules.cells; i++) {
+    // If there is a reserve, creates piles
+    if (rules.reserve_size > 0) {
+        for (uint8_t i = 0; i < rules.reserve_size; i++) {
             piles.emplace_back();
-            cells.push_back(static_cast<pile_ref>(piles.size() - 1));
+            reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
     }
 
@@ -104,6 +112,14 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
             piles[stock].place(deck.back());
+            deck.pop_back();
+        }
+    }
+
+    // If there is a reserve, deals to it
+    if (rules.reserve_size > 0) {
+        for (unsigned int i = 0; i < rules.reserve_size; i++) {
+            piles[reserve[i]].place(deck.back());
             deck.pop_back();
         }
     }
