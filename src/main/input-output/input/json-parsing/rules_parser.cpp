@@ -178,4 +178,12 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             json_helper::json_parse_err("[stock size] must be an integer");
         }
     }
+
+    if (d.HasMember("reserve size")) {
+        if (d["reserve size"].IsInt()) {
+            sr.reserve_size = static_cast<uint8_t>(d["reserve size"].GetInt());
+        } else {
+            json_helper::json_parse_err("[reserve size] must be an integer");
+        }
+    }
 }

@@ -38,6 +38,7 @@ struct sol_rules {
     bool foundations_init_card;
     uint8_t cells;
     uint8_t stock_size;
+    uint8_t reserve_size;
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H
