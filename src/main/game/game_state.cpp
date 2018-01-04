@@ -90,6 +90,16 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
         piles[hole].place(card("AS"));
     }
 
+    // If the foundations begin filled, then fills them
+    if (rules.foundations_init_card) {
+        for (uint8_t f_idx = 0; f_idx < 4; f_idx++) {
+            card c = card(card::to_suit(f_idx), 1);
+
+            deck.erase(find(begin(deck), end(deck), c));
+            piles[foundations[f_idx]].place(c);
+        }
+    }
+
     // If there is a stock, deals to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
@@ -167,13 +177,16 @@ void game_state::undo_move(const move m) {
 ////////////////////////
 
 bool game_state::is_solved() const {
-    for (auto f : foundations) {
-        if (piles[f].size() != rules.max_rank) {
-            return false;
+    if (rules.hole) {
+        return piles[hole].size() == rules.max_rank * 4;
+    } else {
+        for (auto f : foundations) {
+            if (piles[f].size() != rules.max_rank) {
+                return false;
+            }
         }
+        return true;
     }
-
-    return !rules.hole || piles[hole].size() == rules.max_rank * 4;
 }
 
 const vector<pile>& game_state::get_data() const {
