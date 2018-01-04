@@ -35,6 +35,7 @@ struct sol_rules {
     card::rank_t max_rank;
     bool hole;
     bool foundations;
+    bool foundations_init_card;
     uint8_t cells;
     uint8_t stock_size;
 };

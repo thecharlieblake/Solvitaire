@@ -155,6 +155,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("foundations initial card")) {
+        if (d["foundations initial card"].IsBool()) {
+            sr.foundations_init_card = d["foundations initial card"].GetBool();
+        } else {
+            json_helper::json_parse_err("[foundations initial card] must be a boolean");
+        }
+    }
+
     if (d.HasMember("cells")) {
         if (d["cells"].IsInt()) {
             sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
