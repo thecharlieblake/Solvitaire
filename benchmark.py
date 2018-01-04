@@ -77,6 +77,16 @@ class FortunesFavorRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(12*level/13)
         self.baseJson["stock size"] = level * 4 - 4 - self.baseJson["tableau piles"]["count"]
 
+class FlowerGardenRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("flower-garden")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(6*level/13)
+        self.baseJson["reserve size"] = math.ceil(16*level/13)
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -88,7 +98,8 @@ for rulesGen in [SpanishPatienceRulesGen(),
                  FreeCellRulesGen(),
                  BlackHoleRulesGen(),
                  BakersDozenRulesGen(),
-                 FortunesFavorRulesGen()]:
+                 FortunesFavorRulesGen(),
+                 FlowerGardenRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 13):
@@ -121,7 +132,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
             run("pkill solvitaire", shell=True)
                 
             if timeouts > timeoutsLimit:
-                break;
+                break
 
         if timeouts > timeoutsLimit:
             print("Could not solve " + rulesGen.name + " at level " + str(level)
