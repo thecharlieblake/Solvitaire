@@ -39,6 +39,7 @@ struct sol_rules {
     uint8_t cells;
     uint8_t stock_size;
     uint8_t reserve_size;
+    bool reserve_stacked;
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H

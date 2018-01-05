@@ -186,4 +186,12 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             json_helper::json_parse_err("[reserve size] must be an integer");
         }
     }
+
+    if (d.HasMember("reserve stacked")) {
+        if (d["reserve stacked"].IsBool()) {
+            sr.reserve_stacked = d["reserve stacked"].GetBool();
+        } else {
+            json_helper::json_parse_err("[reserve stacked] must be a boolean");
+        }
+    }
 }
