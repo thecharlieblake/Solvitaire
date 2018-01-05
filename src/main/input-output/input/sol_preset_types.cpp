@@ -23,7 +23,8 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 8,
     "build order": "descending",
     "build policy": "any-suit",
-    "spaces policy": "any"
+    "spaces policy": "any",
+    "diagonal deal": true
   },
   "max rank": 13,
   "hole": false,
@@ -235,6 +236,35 @@ std::map<string, string> sol_preset_types::mp = {
   "stock size": 1,
   "reserve size": 2,
   "reserve stacked": true
+}
+)"
+
+        },
+        {
+                "somerset",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "red-black",
+    "diagonal deal": true
+  }
+}
+)"
+
+        },
+        {
+                "simple-somerset",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "max rank": 2
 }
 )"
 
