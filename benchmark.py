@@ -87,7 +87,6 @@ class FlowerGardenRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(6*level/13)
         self.baseJson["reserve size"] = math.ceil(16*level/13)
 
-
 class CanfieldRulesGen(SolitaireRulesGen):
 
     def __init__(self):
@@ -100,6 +99,15 @@ class CanfieldRulesGen(SolitaireRulesGen):
         stockSize = (level - 1) * 4 - reserveSize
         self.baseJson["reserve size"] = reserveSize
         self.baseJson["stock size"] = stockSize
+
+class SomersetRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("somerset")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(10*level/13)
 
 def cleanup():
     os.remove(tempRulesFilename)
@@ -114,7 +122,8 @@ for rulesGen in [SpanishPatienceRulesGen(),
                  BakersDozenRulesGen(),
                  FortunesFavorRulesGen(),
                  FlowerGardenRulesGen(),
-                 CanfieldRulesGen()]:
+                 CanfieldRulesGen(),
+                 SomersetRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 14):
