@@ -31,7 +31,8 @@ std::map<string, string> sol_preset_types::mp = {
   "foundations initial card": false,
   "cells": 0,
   "stock size": 0,
-  "reserve size": 0
+  "reserve size": 0,
+  "reserve stacked": false
 }
 )"
 
@@ -201,6 +202,39 @@ std::map<string, string> sol_preset_types::mp = {
   },
   "max rank": 3,
   "reserve size": 3
+}
+)"
+
+        },
+        {
+                "canfield",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black"
+  },
+  "stock size": 34,
+  "reserve size": 14,
+  "reserve stacked": true
+}
+)"
+
+        },
+        {
+                "simple-canfield",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "red-black"
+  },
+  "max rank": 3,
+  "stock size": 1,
+  "reserve size": 2,
+  "reserve stacked": true
 }
 )"
 
