@@ -116,16 +116,26 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
     const Value& json_reserve_piles = doc["reserve"];
     assert(json_reserve_piles.IsArray());
 
-    if (gs.reserve.size() != gs.rules.reserve_size) {
-        json_helper::json_parse_err("Incorrect reserve size");
+    // We treat a regular reserve like multiple single-card piles,
+    // but a stacked reserve as a single multiple-card pile
+    if (gs.rules.reserve_stacked) {
+        if (json_reserve_piles.Size() != gs.rules.reserve_size
+            || json_reserve_piles.Size() != gs.rules.reserve_size) {
+            json_helper::json_parse_err("Incorrect reserve size");
+        }
+    } else {
+        if (gs.reserve.size() != gs.rules.reserve_size
+                || json_reserve_piles.Size() != gs.rules.reserve_size) {
+            json_helper::json_parse_err("Incorrect reserve size");
+        }
     }
 
-    for (auto p = std::make_pair(begin(json_reserve_piles.GetArray()), begin(gs.reserve));
-         p.second != end(gs.reserve);
-         ++p.first, ++p.second) {
-
-        assert(p.first->IsString());
-        gs.piles[*p.second].place(card(p.first->GetString()));
+    const auto& json_card_arr = json_reserve_piles.GetArray();
+    for (game_state::pile_ref i = 0; i < json_card_arr.Size(); i++) {
+        assert(json_card_arr[i].IsString());
+        game_state::pile_ref pr = gs.reserve[0];
+        if (!gs.rules.reserve_stacked) pr += i;
+        gs.piles[pr].place(card(json_card_arr[i].GetString()));
     }
 }
 
