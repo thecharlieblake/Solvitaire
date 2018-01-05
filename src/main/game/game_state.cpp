@@ -132,11 +132,26 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     // Deals to the tableau piles (row-by-row)
     for (int t = 0; !deck.empty(); t++) {
         card c = deck.back();
-        deck.pop_back();
 
         // Add the randomly generated card to the tableau piles
-        pile_ref tableau_pile = tableau_piles[t % tableau_piles.size()];
-        piles[tableau_pile].place(c);
+        auto p = t % tableau_piles.size();
+
+        // If we are doing a diagonal deal, each row should have one fewer card.
+        // Leftover cards are dealt normally in full rows.
+        auto row_idx = t / tableau_piles.size();
+        if (rules.diagonal_deal && row_idx < tableau_piles.size()) {
+            p = tableau_piles.size()-p-1;
+            pile_ref tableau_pile = tableau_piles[p];
+
+            if (p >= row_idx) {
+                piles[tableau_pile].place(c);
+                deck.pop_back();
+            }
+        } else {
+            pile_ref tableau_pile = tableau_piles[p];
+            piles[tableau_pile].place(c);
+            deck.pop_back();
+        }
     }
 }
 
