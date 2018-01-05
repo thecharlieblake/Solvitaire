@@ -1,5 +1,7 @@
 {
   "tableau piles": {
-    "count": 13
+    "count": 10,
+    "build policy": "red-black",
+    "diagonal deal": true
   }
 }
