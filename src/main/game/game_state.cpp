@@ -68,7 +68,9 @@ game_state::game_state(const sol_rules& s_rules) :
 
     // If there is a reserve, creates piles
     if (rules.reserve_size > 0) {
-        for (uint8_t i = 0; i < rules.reserve_size; i++) {
+        uint8_t pile_count = rules.reserve_stacked ?
+                             uint8_t(1) : rules.reserve_size;
+        for (uint8_t i = 0; i < pile_count; i++) {
             piles.emplace_back();
             reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
@@ -116,10 +118,13 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
         }
     }
 
-    // If there is a reserve, deals to it
+    // If there is a reserve, deals to it.
+    // We treat a regular reserve like multiple single-card piles,
+    // but a stacked reserve as a single multiple-card pile.
     if (rules.reserve_size > 0) {
         for (unsigned int i = 0; i < rules.reserve_size; i++) {
-            piles[reserve[i]].place(deck.back());
+            int idx = rules.reserve_stacked ? 0 : i;
+            piles[reserve[idx]].place(deck.back());
             deck.pop_back();
         }
     }
