@@ -87,6 +87,20 @@ class FlowerGardenRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(6*level/13)
         self.baseJson["reserve size"] = math.ceil(16*level/13)
 
+
+class CanfieldRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("canfield")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        cardsNotInTableau = (level - 1) * 4
+        reserveSize = math.ceil(cardsNotInTableau * 0.7)
+        stockSize = (level - 1) * 4 - reserveSize
+        self.baseJson["reserve size"] = reserveSize
+        self.baseJson["stock size"] = stockSize
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -99,10 +113,11 @@ for rulesGen in [SpanishPatienceRulesGen(),
                  BlackHoleRulesGen(),
                  BakersDozenRulesGen(),
                  FortunesFavorRulesGen(),
-                 FlowerGardenRulesGen()]:
+                 FlowerGardenRulesGen(),
+                 CanfieldRulesGen()]:
 
     # Loops through the levels
-    for level in range(1, 13):
+    for level in range(1, 14):
 
         # Calls the solitaire rules generator function with the level
         rulesGen.genRules(level)
