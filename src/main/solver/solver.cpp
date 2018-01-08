@@ -26,7 +26,7 @@ bool solver::run() {
 
     states_searched++;
     LOG_DEBUG (state);
-    frontier.emplace_back(NULL_MOVE, state.get_legal_moves());
+    frontier.emplace_back(game_state::null_move(), state.get_legal_moves());
 
     while (!frontier.empty()) {
         node& current = frontier.back();

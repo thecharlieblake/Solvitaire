@@ -51,7 +51,7 @@ void state_printer::print_piles(ostream& stream,
                                 const vector<game_state::pile_ref>& pile_rs,
                                 const game_state& gs) {
     bool empty_row = false;
-    vector<card>::size_type row_idx = 0;
+    pile::size_type row_idx = 0;
 
     // Loops through the rows in each pile, starting from the bottom, until
     // one is empty
@@ -67,8 +67,9 @@ void state_printer::print_piles(ostream& stream,
         if (!empty_row || row_idx == 0) {
             // Loops through the current (non-empty) row, and outputs the values
             for (const game_state::pile_ref pile_r : pile_rs) {
-                if (gs.piles[pile_r].size() > row_idx) {
-                    print_card(stream, gs.piles[pile_r][row_idx]);
+                const pile& p = gs.piles[pile_r];
+                if (p.size() > row_idx) {
+                    print_card(stream, p[p.size() - 1 - row_idx]);
                 } else if (row_idx == 0) {
                     stream << "[]";
                 }

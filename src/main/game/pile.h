@@ -6,25 +6,27 @@
 #define SOLVITAIRE_PILE_H
 
 #include <vector>
+#include <iterator>
 
 #include "sol_rules.h"
 #include "card.h"
 
 class pile {
 public:
+    typedef uint8_t size_type;
+
     // Inspect
     card top_card() const;
     bool empty() const;
-    uint8_t size() const;
+    size_type size() const;
 
     // Modify
     void place(card);
     card take();
-    void clear();
 
-    // Index like array
-    card& operator[] (std::vector<card>::size_type);
-    card operator[] (std::vector<card>::size_type) const;
+    // Indexes the vector, with the top card as index 0
+    card& operator[] (size_type);
+    card operator[] (size_type) const;
 
     friend bool operator==(const pile&, const pile&);
     friend std::size_t hash_value(pile const&);

@@ -5,9 +5,6 @@
 #ifndef SOLVITAIRE_GAME_STATE_H
 #define SOLVITAIRE_GAME_STATE_H
 
-#define NULL_MOVE (game_state::move(PILE_REF_MAX, PILE_REF_MAX))
-#define PILE_REF_MAX (255)
-
 #include <vector>
 #include <string>
 
@@ -26,7 +23,10 @@ class game_state {
 public:
     // Defines types
     typedef uint8_t pile_ref;
-    typedef std::pair<pile_ref, pile_ref> move;
+    struct move {
+        move(pile_ref, pile_ref, pile::size_type = 1);
+        pile_ref from; pile_ref to; pile::size_type count;
+    };
 
     // Constructors
     // Creates a game state representation from a JSON doc
@@ -45,10 +45,15 @@ public:
     const std::vector<pile>& get_data() const;
 
     friend bool operator==(const game_state&, const game_state&);
-    friend std::ostream& operator<< (std::ostream&, const game_state&);
+
+    // Static pile ref members/vars
+    static pile_ref PILE_REF_MAX;
+    static move null_move();
 
     friend std::size_t hash_value(game_state const&);
     friend std::size_t hash_value(std::vector<pile> const&);
+
+    friend std::ostream& operator<< (std::ostream&, const game_state&);
 
 private:
     static std::vector<card> gen_shuffled_deck(int, int);
@@ -60,6 +65,12 @@ private:
     bool is_valid_tableau_move(pile_ref, pile_ref) const;
     bool is_valid_foundations_move(pile_ref, pile_ref) const;
     bool is_valid_hole_move(pile_ref) const;
+    void get_built_group_moves(std::vector<move>&) const;
+    pile::size_type get_built_group_height(pile_ref) const;
+    bool valid_built_group_move(card, card, card) const;
+    void add_built_group_move(std::vector<move>&, pile_ref, pile_ref) const;
+    void add_empty_built_group_moves(std::vector<move>&, pile_ref, pile_ref,
+                                     card) const;
 
     // References to piles
     sol_rules rules;
