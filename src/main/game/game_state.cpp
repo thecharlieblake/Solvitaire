@@ -194,17 +194,48 @@ vector<card> game_state::gen_shuffled_deck(int seed, int max_rank = 13) {
     return deck;
 }
 
+game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
+        : from(f), to(t), count(i) {
+    assert(i >= 1);
+}
+
 
 /////////////////////////
 // MODIFYING FUNCTIONS //
 /////////////////////////
 
 void game_state::make_move(const move m) {
-    piles[m.second].place(piles[m.first].take());
+    // If this is not a built-pile move
+    if (m.count == 1) {
+        piles[m.to].place(piles[m.from].take());
+    } else {
+        // Adds the cards to the 'to' pile
+        for (auto pile_idx = m.count; pile_idx-- > 0;) {
+            piles[m.to].place(piles[m.from][pile_idx]);
+        }
+
+        // Removes the cards from the 'from' pile
+        for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
+            piles[m.from].take();
+        }
+    }
 }
 
 void game_state::undo_move(const move m) {
-    piles[m.first].place(piles[m.second].take());
+    // If this is not a built-pile move
+    if (m.count == 1) {
+        piles[m.from].place(piles[m.to].take());
+    } else {
+        // Adds the cards to the 'from' pile
+        for (auto pile_idx = m.count; pile_idx-- > 0;) {
+            piles[m.from].place(piles[m.to][pile_idx]);
+        }
+
+        // Removes the cards from the 'to' pile
+        for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
+            piles[m.to].take();
+        }
+    }
 }
 
 
@@ -233,6 +264,17 @@ bool operator==(const game_state& a, const game_state& b) {
     return a.tableau_piles == b.tableau_piles
            && a.foundations == b.foundations
            && a.hole == b.hole;
+}
+
+
+//////////////////////////////////
+// STATIC VARIABLES AND MEMBERS //
+//////////////////////////////////
+
+game_state::pile_ref game_state::PILE_REF_MAX = 255;
+
+game_state::move game_state::null_move() {
+    return {PILE_REF_MAX, 0, PILE_REF_MAX};
 }
 
 
