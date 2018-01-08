@@ -32,6 +32,7 @@ struct sol_rules {
     build_order build_ord;
     build_policy build_pol;
     spaces_policy spaces_pol;
+    bool move_built_group;
     card::rank_t max_rank;
     bool hole;
     bool foundations;

@@ -126,6 +126,22 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
+            if (d["tableau piles"].HasMember("move built group")) {
+                if (d["tableau piles"]["move built group"].IsBool()) {
+                    sr.move_built_group = d["tableau piles"]["move built group"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[tableau piles][move built group] must be a boolean");
+                }
+            }
+
+            if (d["tableau piles"].HasMember("diagonal deal")) {
+                if (d["tableau piles"]["diagonal deal"].IsBool()) {
+                    sr.diagonal_deal = d["tableau piles"]["diagonal deal"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[tableau piles][diagonal deal] must be a boolean");
+                }
+            }
+
         } else {
             json_helper::json_parse_err("[tableau piles] must be an object");
         }
@@ -160,14 +176,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             sr.foundations_init_card = d["foundations initial card"].GetBool();
         } else {
             json_helper::json_parse_err("[foundations initial card] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("diagonal deal")) {
-        if (d["diagonal deal"].IsBool()) {
-            sr.diagonal_deal = d["diagonal deal"].GetBool();
-        } else {
-            json_helper::json_parse_err("[diagonal deal] must be a boolean");
         }
     }
 
