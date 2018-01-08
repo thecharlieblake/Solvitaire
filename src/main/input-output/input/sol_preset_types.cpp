@@ -24,7 +24,8 @@ std::map<string, string> sol_preset_types::mp = {
     "build order": "descending",
     "build policy": "any-suit",
     "spaces policy": "any",
-    "diagonal deal": true
+    "diagonal deal": true,
+    "move built group": false
   },
   "max rank": 13,
   "hole": false,
@@ -265,6 +266,37 @@ std::map<string, string> sol_preset_types::mp = {
     "diagonal deal": true
   },
   "max rank": 2
+}
+)"
+
+        },
+        {
+                "alpha-star",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "same-suit",
+    "move built group": true
+  },
+  "foundations initial card": true
+}
+)"
+
+        },
+        {
+                "simple-alpha-star",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "same-suit",
+    "move built group": true
+  },
+  "max rank": 5,
+  "foundations initial card": true
 }
 )"
 

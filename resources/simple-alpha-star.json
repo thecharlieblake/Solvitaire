@@ -1,0 +1,9 @@
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "same-suit",
+    "move built group": true
+  },
+  "max rank": 5,
+  "foundations initial card": true
+}
