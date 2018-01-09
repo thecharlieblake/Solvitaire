@@ -14,14 +14,14 @@
 #include "game_state.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
 #include "../input-output/output/state_printer.h"
+#include "sol_rules.h"
 
 using namespace std;
 using namespace rapidjson;
 using namespace boost;
 
-typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
-typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::stock_deal_type sdt;
 
 
 //////////////////
@@ -44,7 +44,7 @@ game_state::game_state(const sol_rules& s_rules) :
 
     // If there are foundation piles, creates the relevant pile vectors
     if (rules.foundations) {
-        for (uint8_t i = 0; i < 4; i++) {
+        for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
             foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
@@ -58,12 +58,16 @@ game_state::game_state(const sol_rules& s_rules) :
         }
     }
 
-    // If there is a stock & waste, creates piles
+    // If there is a stock, creates a pile
     if (rules.stock_size > 0) {
         piles.emplace_back();
         stock = static_cast<pile_ref>(piles.size() - 1);
-        piles.emplace_back();
-        waste = static_cast<pile_ref>(piles.size() - 1);
+
+        // If the stock deals to a waste, create the waste
+        if (rules.stock_deal_t == sdt::WASTE) {
+            piles.emplace_back();
+            waste = static_cast<pile_ref>(piles.size() - 1);
+        }
     }
 
     // If there is a reserve, creates piles
@@ -92,7 +96,7 @@ game_state::game_state(const sol_rules& s_rules, const Document& doc) :
 // Constructs an initial game state from a seed
 game_state::game_state(const sol_rules& s_rules, int seed) :
         game_state(s_rules) {
-    vector<card> deck = gen_shuffled_deck(seed, rules.max_rank);
+    vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
@@ -102,8 +106,8 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
 
     // If the foundations begin filled, then fills them
     if (rules.foundations_init_card) {
-        for (uint8_t f_idx = 0; f_idx < 4; f_idx++) {
-            card c = card(card::to_suit(f_idx), 1);
+        for (uint8_t f_idx = 0; f_idx < 4*(rules.two_decks ? 2:1); f_idx++) {
+            card c = card(card::to_suit(f_idx % uint8_t(4)), 1);
 
             deck.erase(find(begin(deck), end(deck), c));
             piles[foundations[f_idx]].place(c);
@@ -156,14 +160,16 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
 }
 
 // Generates a randomly ordered vector of cards
-vector<card> game_state::gen_shuffled_deck(int seed, int max_rank = 13) {
+vector<card> game_state::gen_shuffled_deck(int seed, int max_rank,
+                                           bool two_decks) {
     vector<int> values;
     vector<int*> v_ptrs;
     for (int i = 0; i < max_rank * 4; i++) {
         values.emplace_back(i);
+        if (two_decks) values.emplace_back(i);
     }
-    for (int i = 0; i < max_rank * 4; i++) {
-        v_ptrs.emplace_back(&values[i]);
+    for (auto& v : values) {
+        v_ptrs.emplace_back(&v);
     }
 
     // Randomly shuffle the pointers
@@ -205,8 +211,16 @@ game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
 /////////////////////////
 
 void game_state::make_move(const move m) {
+    // Handles special stock-to-tableau-piles move
+    if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
+        for (pile_ref tab_pr = tableau_piles.front();
+             tab_pr < tableau_piles.front() + m.count;
+             tab_pr++) {
+            piles[tab_pr].place(piles[stock].take());
+        }
+    }
     // If this is not a built-pile move
-    if (m.count == 1) {
+    else if (m.count == 1) {
         piles[m.to].place(piles[m.from].take());
     } else {
         // Adds the cards to the 'to' pile
@@ -222,8 +236,16 @@ void game_state::make_move(const move m) {
 }
 
 void game_state::undo_move(const move m) {
+    // Handles special stock-to-tableau-piles move
+    if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
+        for (pile_ref tab_pr = tableau_piles.front() + m.count;
+             tab_pr-- > tableau_piles.front();
+                ) {
+            piles[stock].place(piles[tab_pr].take());
+        }
+    }
     // If this is not a built-pile move
-    if (m.count == 1) {
+    else if (m.count == 1) {
         piles[m.from].place(piles[m.to].take());
     } else {
         // Adds the cards to the 'from' pile
@@ -245,7 +267,8 @@ void game_state::undo_move(const move m) {
 
 bool game_state::is_solved() const {
     if (rules.hole) {
-        return piles[hole].size() == rules.max_rank * 4;
+        return piles[hole].size()
+               == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
