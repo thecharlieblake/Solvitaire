@@ -24,15 +24,17 @@ std::map<string, string> sol_preset_types::mp = {
     "build order": "descending",
     "build policy": "any-suit",
     "spaces policy": "any",
-    "diagonal deal": true,
+    "diagonal deal": false,
     "move built group": false
   },
   "max rank": 13,
+  "two decks": false,
   "hole": false,
   "foundations": true,
   "foundations initial card": false,
   "cells": 0,
   "stock size": 0,
+  "stock deal type": "waste",
   "reserve size": 0,
   "reserve stacked": false
 }
@@ -297,6 +299,37 @@ std::map<string, string> sol_preset_types::mp = {
   },
   "max rank": 5,
   "foundations initial card": true
+}
+)"
+
+        },
+        {
+                "spider",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10
+  },
+  "two decks": true,
+  "stock size": 60,
+  "stock deal type": "tableau piles"
+}
+)"
+
+        },
+        {
+                "simple-spider",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4
+  },
+  "two decks": true,
+  "max rank": 3,
+  "stock size": 12,
+  "stock deal type": "tableau piles"
 }
 )"
 

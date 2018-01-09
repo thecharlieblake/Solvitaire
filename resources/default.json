@@ -8,11 +8,13 @@
     "move built group": false
   },
   "max rank": 13,
+  "two decks": false,
   "hole": false,
   "foundations": true,
   "foundations initial card": false,
   "cells": 0,
   "stock size": 0,
+  "stock deal type": "waste",
   "reserve size": 0,
   "reserve stacked": false
 }

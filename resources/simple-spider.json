@@ -1,0 +1,9 @@
+{
+  "tableau piles": {
+    "count": 4
+  },
+  "two decks": true,
+  "max rank": 3,
+  "stock size": 12,
+  "stock deal type": "tableau piles"
+}
