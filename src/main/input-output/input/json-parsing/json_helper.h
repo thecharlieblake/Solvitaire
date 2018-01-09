@@ -9,7 +9,7 @@
 
 #include <rapidjson/schema.h>
 
-class util {
+class json_helper {
 public:
     static rapidjson::Document get_file_json(const std::string&);
     static void json_parse_err(const std::string& msg);

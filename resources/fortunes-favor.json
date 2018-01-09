@@ -1,0 +1,8 @@
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "same-suit"
+  },
+  "foundations initial card": true,
+  "stock size": 36
+}

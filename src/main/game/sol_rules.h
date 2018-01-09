@@ -5,67 +5,49 @@
 #ifndef SOLVITAIRE_SOL_RULES_H
 #define SOLVITAIRE_SOL_RULES_H
 
-#include <vector>
 #include <string>
 
-#include <boost/optional.hpp>
 #include <rapidjson/document.h>
 
 #include "card.h"
 
-class sol_rules {
-public:
-    enum class valid_sol {
-        BLACK_HOLE,
-        SIMPLE_BLACK_HOLE,
-        SPANISH_PATIENCE,
-        SIMPLE_SPANISH_PATIENCE,
-        FREE_CELL,
-        SIMPLE_FREE_CELL,
-        CANFIELD,
-        SIMPLE_CANFIELD
-    };
+struct sol_rules {
+    // Tableau policies
     enum class build_order {
-        NO_BUILD,
         DESCENDING,
-        ASCENDING,
-        BOTH,
-        SINGLE_CARD,
-        ANY
+        ASCENDING
     };
     enum class build_policy {
-        CLUBS,
-        DIAMONDS,
-        HEARTS,
-        SPADES,
-        ANY_SUIT,
+        NO_BUILD,
         SAME_SUIT,
         RED_BLACK,
-        N_A
+        ANY_SUIT
     };
-
-    static bool is_suit(build_policy);
-    static card::suit_t suit_val(build_policy);
-
-    static const sol_rules from_preset(const std::string);
-    static const sol_rules from_file(const std::string);
+    enum class spaces_policy {
+        NO_BUILD,
+        ANY
+    };
+    enum class stock_deal_type {
+        WASTE,
+        TABLEAU_PILES
+    };
 
     uint8_t tableau_pile_count;
     build_order build_ord;
     build_policy build_pol;
+    spaces_policy spaces_pol;
+    bool move_built_group;
+    bool two_decks;
     card::rank_t max_rank;
     bool hole;
     bool foundations;
+    bool foundations_init_card;
+    bool diagonal_deal;
     uint8_t cells;
-    uint8_t reserve_size;
     uint8_t stock_size;
-
-private:
-    static sol_rules get_default();
-    static void modify_sol_rules(sol_rules&, rapidjson::Document&);
-    static void parse_err(const std::string&);
-
-    static valid_sol valid_sol_enum(const std::string&);
+    stock_deal_type stock_deal_t;
+    uint8_t reserve_size;
+    bool reserve_stacked;
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H

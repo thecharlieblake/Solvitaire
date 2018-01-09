@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="excludedDirectories">
+      <list>
+        <option value="$PROJECT_DIR$/src/test/resources" />
+        <option value="$PROJECT_DIR$/cmake-build-debug" />
+        <option value="$PROJECT_DIR$/cmake-build-release" />
+        <option value="$PROJECT_DIR$/docs" />
+        <option value="$PROJECT_DIR$/resources" />
+      </list>
+    </option>
+  </component>
+</project>

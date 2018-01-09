@@ -5,68 +5,85 @@
 #ifndef SOLVITAIRE_GAME_STATE_H
 #define SOLVITAIRE_GAME_STATE_H
 
-#define NULL_MOVE (game_state::move(255, 255))
-
 #include <vector>
-#include <ostream>
 #include <string>
 
 #include <rapidjson/document.h>
 #include <boost/functional/hash.hpp>
 
 #include "card.h"
-#include "sol_rules.h"
 #include "pile.h"
+#include "sol_rules.h"
 
 class deal_parser;
 
 class game_state {
     friend class deal_parser;
+    friend class state_printer;
 public:
+    // Defines types
     typedef uint8_t pile_ref;
-    typedef std::pair<pile_ref, pile_ref> move;
+    struct move {
+        move(pile_ref, pile_ref, pile::size_type = 1);
+        pile_ref from; pile_ref to; pile::size_type count;
+    };
 
-    // Create a game state representation from a JSON doc
+    // Constructors
+    // Creates a game state representation from a JSON doc
     game_state(const sol_rules&, const rapidjson::Document&);
-    // Do the same from a 'rules' object
+    // Does the same from a 'rules' object
     game_state(const sol_rules&, int seed);
 
+    // Alters state
     void make_move(move);
     void undo_move(move);
+
     std::vector<move> get_legal_moves() const;
+
+    // Inspects state
     bool is_solved() const;
     const std::vector<pile>& get_data() const;
 
-    std::ostream& print(std::ostream&) const;
-
     friend bool operator==(const game_state&, const game_state&);
-    friend std::ostream& operator<< (std::ostream&, const game_state&);
+
+    // Static pile ref members/vars
+    static pile_ref PILE_REF_MAX;
+    static move null_move();
+
     friend std::size_t hash_value(game_state const&);
     friend std::size_t hash_value(std::vector<pile> const&);
 
-private:
-    static std::vector<card> gen_shuffled_deck(int, int);
+    friend std::ostream& operator<< (std::ostream&, const game_state&);
 
+private:
+    static std::vector<card> gen_shuffled_deck(int, int, bool);
+
+    // Private constructor
     explicit game_state(const sol_rules&);
 
-    void print_header(std::ostream&, const char*) const;
-    void print_piles(std::ostream&, const std::vector<pile_ref>&) const;
-    void print_pile(std::ostream&, pile_ref) const;
-    void print_top_of_piles(std::ostream&, const std::vector<pile_ref>&) const;
-    void print_top_of_pile(std::ostream&, pile_ref) const;
+    // Used in get_legal_moves()
+    move get_stock_tableau_move() const;
+    bool is_valid_tableau_move(pile_ref, pile_ref) const;
+    bool is_valid_foundations_move(pile_ref, pile_ref) const;
+    bool is_valid_hole_move(pile_ref) const;
+    void get_built_group_moves(std::vector<move>&) const;
+    pile::size_type get_built_group_height(pile_ref) const;
+    bool valid_built_group_move(card, card, card) const;
+    void add_built_group_move(std::vector<move>&, pile_ref, pile_ref) const;
+    void add_empty_built_group_moves(std::vector<move>&, pile_ref, pile_ref,
+                                     card) const;
 
+    // References to piles
     sol_rules rules;
-    std::vector<pile_ref> foundations;
-    std::vector<pile_ref> cells;
     std::vector<pile_ref> tableau_piles;
-    pile_ref reserve;
+    std::vector<pile_ref> cells;
     pile_ref stock;
     pile_ref waste;
+    std::vector<pile_ref> reserve;
+    std::vector<pile_ref> foundations;
     pile_ref hole;
 
-    std::vector<pile_ref> addable_piles;
-    std::vector<pile_ref> removable_piles;
-
+    // The core piles
     std::vector<pile> piles;
 };
 

@@ -1,0 +1,8 @@
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "max rank": 2
+}

@@ -10,14 +10,18 @@
 
 class card {
 public:
+    // Types & typedefs
     enum class suit_t {Clubs, Diamonds, Hearts, Spades};
     enum class colour_t {Black, Red};
     typedef uint8_t rank_t;
 
+    // Converts a number (0-3) to a suit (Clubs-Spades)
+    static suit_t to_suit(uint8_t);
+
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
     card(suit_t, rank_t);
-    card(const char*);
+    explicit card(const char*);
 
     suit_t get_suit() const;
     colour_t get_colour() const;
@@ -31,8 +35,8 @@ private:
     rank_t rank : 4;
 };
 
-std::ostream & operator<<(std::ostream &, card const &);
 bool operator==(const card&, const card&);
+bool operator!=(const card&, const card&);
 std::size_t hash_value(card const&);
 
 

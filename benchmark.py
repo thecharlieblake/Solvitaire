@@ -28,15 +28,6 @@ class SolitaireRulesGen(metaclass=ABCMeta):
     def __str__(self):
         return json.dumps(self.baseJson, indent=4)
 
-class BlackHoleRulesGen(SolitaireRulesGen):
-
-    def __init__(self):
-        super().__init__("black-hole")
-
-    def alterFieldsToChange(self, level):
-        self.baseJson["max rank"] = level
-        self.baseJson["tableau piles"]["count"] = math.ceil((4*level - 1)/3)
-
 class SpanishPatienceRulesGen(SolitaireRulesGen):
 
     def __init__(self):
@@ -56,6 +47,46 @@ class FreeCellRulesGen(SolitaireRulesGen):
         self.baseJson["tableau piles"]["count"] = math.ceil(level * 0.61)
         self.baseJson["cells"] = math.ceil(level * 0.3)
 
+class BlackHoleRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("black-hole")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil((4*level - 1)/3)
+
+class BakersDozenRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("bakers-dozen")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = level
+
+class FortunesFavorRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("fortunes-favor")
+
+    def alterFieldsToChange(self, level):
+        # Because aces start up we must skip lv 1
+        if (level == 1): level = 2;
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(12*level/13)
+        self.baseJson["stock size"] = level * 4 - 4 - self.baseJson["tableau piles"]["count"]
+
+class FlowerGardenRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("flower-garden")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(6*level/13)
+        self.baseJson["reserve size"] = math.ceil(16*level/13)
+
 class CanfieldRulesGen(SolitaireRulesGen):
 
     def __init__(self):
@@ -69,6 +100,34 @@ class CanfieldRulesGen(SolitaireRulesGen):
         self.baseJson["reserve size"] = reserveSize
         self.baseJson["stock size"] = stockSize
 
+class SomersetRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("somerset")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(10*level/13)
+
+class AlphaStarRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("alpha-star")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(12*level/13)
+
+class SpiderRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("spider")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(10*level/13)
+        self.baseJson["stock size"] = math.ceil(60*level/13)
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -76,11 +135,19 @@ def cleanup():
 atexit.register(cleanup)
 
 # Loops through each canonical solitaire
-for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
-        FreeCellRulesGen(), CanfieldRulesGen()]:
+for rulesGen in [SpanishPatienceRulesGen(),
+                 FreeCellRulesGen(),
+                 BlackHoleRulesGen(),
+                 BakersDozenRulesGen(),
+                 FortunesFavorRulesGen(),
+                 FlowerGardenRulesGen(),
+                 CanfieldRulesGen(),
+                 SomersetRulesGen(),
+                 AlphaStarRulesGen(),
+                 SpiderRulesGen()]:
 
     # Loops through the levels
-    for level in range(1, 13):
+    for level in range(1, 14):
 
         # Calls the solitaire rules generator function with the level
         rulesGen.genRules(level)
@@ -101,7 +168,7 @@ for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
                 timeouts += 1
             except CalledProcessError:
                 print("Error running " + rulesGen.name + " at level "
-                        + str(level) + "!")
+                        + str(level) + " with seed " + str(attempt + 1) + "!")
                 sys.exit()
             except:
                 print("Unknown error in script")
@@ -110,7 +177,7 @@ for rulesGen in [BlackHoleRulesGen(), SpanishPatienceRulesGen(),
             run("pkill solvitaire", shell=True)
                 
             if timeouts > timeoutsLimit:
-                break;
+                break
 
         if timeouts > timeoutsLimit:
             print("Could not solve " + rulesGen.name + " at level " + str(level)

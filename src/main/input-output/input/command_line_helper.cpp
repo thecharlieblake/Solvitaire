@@ -8,8 +8,8 @@
 #include <boost/program_options.hpp>
 
 #include "command_line_helper.h"
-#include "../game/sol_rules.h"
-#include "log_helper.h"
+#include "../../game/sol_rules.h"
+#include "../output/log_helper.h"
 #include "sol_preset_types.h"
 
 using namespace std;

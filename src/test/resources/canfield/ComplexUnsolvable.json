@@ -1,0 +1,9 @@
+{
+  "tableau piles": [
+    ["AC","2H","2D"],
+    ["AD","3D","3C"],
+    ["2S","AS","3H"]
+  ],
+  "stock": ["2C"],
+  "reserve": ["AH","3S"]
+}

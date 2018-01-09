@@ -11,8 +11,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/schema.h>
 
-#include "../game/card.h"
-#include "../game/sol_rules.h"
+#include "../../../game/sol_rules.h"
 
 class game_state;
 
@@ -23,6 +22,9 @@ private:
     static void parse_tableau_piles(game_state&, const rapidjson::Document&);
     static void parse_hole(game_state&, const rapidjson::Document&);
     static void parse_cells(game_state&, const rapidjson::Document&);
+    static void parse_stock(game_state&, const rapidjson::Document&);
+    static void parse_reserve(game_state&, const rapidjson::Document&);
+    static void fill_foundations(game_state&);
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H

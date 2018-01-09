@@ -11,15 +11,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###############################################################################
 
 set(main src/main/main.cpp)
-set(sources src/main/input-output/command_line_helper.cpp
-        src/main/input-output/command_line_helper.h src/main/input-output/log_helper.h src/main/game/card.h
-        src/main/game/card.cpp src/main/input-output/deal_parser.h src/main/input-output/deal_parser.cpp
+set(sources src/main/input-output/input/command_line_helper.cpp
+        src/main/input-output/input/command_line_helper.h src/main/input-output/output/log_helper.h src/main/game/card.h
+        src/main/game/card.cpp src/main/input-output/input/json-parsing/deal_parser.h src/main/input-output/input/json-parsing/deal_parser.cpp
         src/main/solver/solver.cpp src/main/solver/solver.h src/main/game/game_state.cpp
-        src/main/game/game_state.h src/main/game/sol_rules.h src/main/game/sol_rules.cpp
-        src/main/game/pile.cpp src/main/game/pile.h src/main/util/util.cpp src/main/util/util.h src/main/input-output/sol_preset_types.h src/main/input-output/sol_preset_types.cpp)
-set(sources_test src/test/spanish_patience_test.cpp src/test/test_helper.cpp
-        src/test/test_helper.h src/test/black_hole_test.cpp
-        src/test/free_cell_test.cpp)
+        src/main/game/game_state.h src/main/game/sol_rules.h
+        src/main/game/pile.cpp src/main/game/pile.h src/main/input-output/input/json-parsing/json_helper.cpp src/main/input-output/input/json-parsing/json_helper.h src/main/input-output/input/sol_preset_types.h src/main/input-output/input/sol_preset_types.cpp src/main/input-output/input/json-parsing/rules_parser.cpp src/main/input-output/input/json-parsing/rules_parser.h src/main/input-output/output/state_printer.cpp src/main/input-output/output/state_printer.h src/main/game/game_state.legal_moves.cpp)
+set(sources_test src/test/test_helper.cpp
+        src/test/test_helper.h
+        src/test/spanish_patience_test.cpp
+        src/test/black_hole_test.cpp
+        src/test/free_cell_test.cpp
+        src/test/bakers_dozen_test.cpp
+        src/test/fortunes_favor_test.cpp
+        src/test/flower_garden_test.cpp
+        src/test/canfield_test.cpp
+        src/test/somerset_test.cpp
+        src/test/alpha_star_test.cpp
+        src/test/spider_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################

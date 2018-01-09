@@ -5,12 +5,12 @@
 #include <fstream>
 #include <sstream>
 
-#include "util.h"
+#include "json_helper.h"
 
 using namespace std;
 using namespace rapidjson;
 
-Document util::get_file_json(const string& filename) {
+Document json_helper::get_file_json(const string& filename) {
     // Reads the file into a string
     std::ifstream ifstr(filename);
     std::stringstream buf;
@@ -30,6 +30,6 @@ Document util::get_file_json(const string& filename) {
     }
 }
 
-void util::json_parse_err(const string& msg) {
+void json_helper::json_parse_err(const string& msg) {
     throw runtime_error("Error in JSON doc: " + msg);
 }
