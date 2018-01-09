@@ -118,6 +118,16 @@ class AlphaStarRulesGen(SolitaireRulesGen):
         self.baseJson["max rank"] = level
         self.baseJson["tableau piles"]["count"] = math.ceil(12*level/13)
 
+class SpiderRulesGen(SolitaireRulesGen):
+
+    def __init__(self):
+        super().__init__("spider")
+
+    def alterFieldsToChange(self, level):
+        self.baseJson["max rank"] = level
+        self.baseJson["tableau piles"]["count"] = math.ceil(10*level/13)
+        self.baseJson["stock size"] = math.ceil(60*level/13)
+
 def cleanup():
     os.remove(tempRulesFilename)
     run("pkill solvitaire", shell=True)
@@ -133,7 +143,8 @@ for rulesGen in [SpanishPatienceRulesGen(),
                  FlowerGardenRulesGen(),
                  CanfieldRulesGen(),
                  SomersetRulesGen(),
-                 AlphaStarRulesGen()]:
+                 AlphaStarRulesGen(),
+                 SpiderRulesGen()]:
 
     # Loops through the levels
     for level in range(1, 14):
