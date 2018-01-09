@@ -27,12 +27,17 @@ struct sol_rules {
         NO_BUILD,
         ANY
     };
+    enum class stock_deal_type {
+        WASTE,
+        TABLEAU_PILES
+    };
 
     uint8_t tableau_pile_count;
     build_order build_ord;
     build_policy build_pol;
     spaces_policy spaces_pol;
     bool move_built_group;
+    bool two_decks;
     card::rank_t max_rank;
     bool hole;
     bool foundations;
@@ -40,6 +45,7 @@ struct sol_rules {
     bool diagonal_deal;
     uint8_t cells;
     uint8_t stock_size;
+    stock_deal_type stock_deal_t;
     uint8_t reserve_size;
     bool reserve_stacked;
 };

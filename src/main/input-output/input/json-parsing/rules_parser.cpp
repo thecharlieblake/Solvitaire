@@ -19,6 +19,7 @@ using namespace rapidjson;
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::stock_deal_type sdt;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -155,6 +156,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("two decks")) {
+        if (d["two decks"].IsBool()) {
+            sr.two_decks = d["two decks"].GetBool();
+        } else {
+            json_helper::json_parse_err("[two decks] must be a boolean");
+        }
+    }
+
     if (d.HasMember("hole")) {
         if (d["hole"].IsBool()) {
             sr.hole = d["hole"].GetBool();
@@ -192,6 +201,18 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             sr.stock_size = static_cast<uint8_t>(d["stock size"].GetInt());
         } else {
             json_helper::json_parse_err("[stock size] must be an integer");
+        }
+    }
+
+    if (d.HasMember("stock deal type")) {
+        if (d["stock deal type"].IsString()) {
+            if(string(d["stock deal type"].GetString()) == "waste") {
+                sr.stock_deal_t = sdt::WASTE;
+            } else {
+                sr.stock_deal_t = sdt::TABLEAU_PILES;
+            }
+        } else {
+            json_helper::json_parse_err("[stock deal type] must be a string");
         }
     }
 
