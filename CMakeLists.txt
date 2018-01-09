@@ -27,7 +27,8 @@ set(sources_test src/test/test_helper.cpp
         src/test/flower_garden_test.cpp
         src/test/canfield_test.cpp
         src/test/somerset_test.cpp
-        src/test/alpha_star_test.cpp)
+        src/test/alpha_star_test.cpp
+        src/test/spider_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
