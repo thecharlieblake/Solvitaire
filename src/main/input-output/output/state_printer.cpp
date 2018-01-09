@@ -6,6 +6,8 @@
 
 using namespace std;
 
+typedef sol_rules::stock_deal_type sdt;
+
 ostream& state_printer::print(ostream& stream, const game_state& gs) {
     if (gs.rules.foundations) {
         state_printer::print_header(stream, "Foundations");
@@ -28,8 +30,13 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         state_printer::print_piles(stream, gs.reserve, gs);
     }
     if (gs.rules.stock_size > 0) {
-        state_printer::print_header(stream, "Stock | Waste");
-        state_printer::print_piles(stream, {gs.stock, gs.waste}, gs);
+        if (gs.rules.stock_deal_t == sdt::WASTE) {
+            state_printer::print_header(stream, "Stock | Waste");
+            state_printer::print_piles(stream, {gs.stock, gs.waste}, gs);
+        } else {
+            state_printer::print_header(stream, "Stock");
+            state_printer::print_piles(stream, {gs.stock}, gs);
+        }
     }
     if (gs.rules.hole) {
         state_printer::print_header(stream, "Hole Card");
