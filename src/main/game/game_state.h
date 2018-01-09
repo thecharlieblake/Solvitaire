@@ -56,12 +56,13 @@ public:
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
 private:
-    static std::vector<card> gen_shuffled_deck(int, int);
+    static std::vector<card> gen_shuffled_deck(int, int, bool);
 
     // Private constructor
     explicit game_state(const sol_rules&);
 
     // Used in get_legal_moves()
+    move get_stock_tableau_move() const;
     bool is_valid_tableau_move(pile_ref, pile_ref) const;
     bool is_valid_foundations_move(pile_ref, pile_ref) const;
     bool is_valid_hole_move(pile_ref) const;

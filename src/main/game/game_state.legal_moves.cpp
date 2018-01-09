@@ -9,19 +9,27 @@ using namespace std;
 typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::stock_deal_type sdt;
 
 vector<game_state::move> game_state::get_legal_moves() const {
     // The next legal moves
     vector<move> moves;
+
+    // If we have a stock that can deal to the tableau piles, add this move
+    if (rules.stock_deal_t == sdt::TABLEAU_PILES && !piles[stock].empty()) {
+        moves.emplace_back(get_stock_tableau_move());
+    }
 
     // Cycles through each pile which we may be able to remove a card from
     for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
         // Never removes a card from the hole, the waste, or an empty pile
         if (rem_ref == hole || piles[rem_ref].empty()) continue;
 
-        // Stock cards can only be moved to the waste
+        // Stock cards can only be moved to the waste (assuming there is a waste)
         if (stock != PILE_REF_MAX && rem_ref == stock) {
-            moves.emplace_back(stock, waste);
+            if (waste != PILE_REF_MAX) {
+                moves.emplace_back(stock, waste);
+            }
             continue;
         }
 
@@ -62,6 +70,17 @@ vector<game_state::move> game_state::get_legal_moves() const {
     }
 
     return moves;
+}
+
+// This is a special kind of move which the solver handles differently. Hence
+// the arbitrary second param. We must supply the number of stock cards
+// that we will deal, so that the move can be undone in backtracking
+game_state::move game_state::get_stock_tableau_move() const {
+    pile::size_type stock_moves =
+            piles[stock].size() >= tableau_piles.size()
+            ? pile::size_type(tableau_piles.size())
+            : piles[stock].size();
+    return {stock, PILE_REF_MAX, stock_moves};
 }
 
 // If a tableau pile is empty and the space policy is
@@ -111,7 +130,8 @@ bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
     card rem_c = piles[rem_ref].top_card();
 
     // Checks violation of same suit policy
-    if (rem_c.get_suit() != card::to_suit(add_ref - foundations.front())) {
+    uint8_t suit_idx = (add_ref - foundations.front()) % uint8_t(4);
+    if (rem_c.get_suit() != card::to_suit(suit_idx)) {
         return false;
     }
 
