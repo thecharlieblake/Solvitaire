@@ -9,7 +9,6 @@
 using namespace std;
 using namespace rapidjson;
 
-typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {

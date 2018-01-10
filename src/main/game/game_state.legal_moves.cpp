@@ -6,7 +6,6 @@
 
 using namespace std;
 
-typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -112,11 +111,7 @@ bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
     }
 
         // Checks rank
-    else if (rules.build_ord == ord::DESCENDING
-             && rem_c.get_rank() + 1 != add_c.get_rank()) {
-        return false;
-    } else if (rules.build_ord == ord::ASCENDING
-               && rem_c.get_rank() - 1 != add_c.get_rank()) {
+    else if (rem_c.get_rank() + 1 != add_c.get_rank()) {
         return false;
     } else {
         return true;

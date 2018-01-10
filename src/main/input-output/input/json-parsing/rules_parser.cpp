@@ -16,7 +16,6 @@ using namespace rapidjson;
 // Static //
 ////////////
 
-typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -69,23 +68,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     sr.tableau_pile_count = static_cast<uint8_t>(d["tableau piles"]["count"].GetInt());
                 } else {
                     json_helper::json_parse_err("[tableau piles][count] must be an integer");
-                }
-            }
-
-            if (d["tableau piles"].HasMember("build order")) {
-                if (d["tableau piles"]["build order"].IsString()) {
-                    string bo_str = d["tableau piles"]["build order"].GetString();
-
-                    if (bo_str == "ascending") {
-                        sr.build_ord = ord::ASCENDING;
-                    } else if (bo_str == "descending") {
-                        sr.build_ord = ord::DESCENDING;
-                    } else {
-                        json_helper::json_parse_err("[tableau piles][build order] is invalid");
-                    }
-
-                } else {
-                    json_helper::json_parse_err("[tableau piles][build order] must be an string");
                 }
             }
 
