@@ -11,6 +11,12 @@ tempRulesFilename = "temp_rules.json"
 timeoutsLimit = 4
 timeoutSeconds = 1
 
+runtype = "release"
+if (len(sys.argv) == 2
+    and (sys.argv[1] == "--debug" or sys.argv[1] == "-d")):
+    runtype = "debug"
+    print("Running in debug mode...")
+
 class SolitaireRulesGen(metaclass=ABCMeta):
 
     def __init__(self, name):
@@ -160,7 +166,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
         timeouts = 0
         for attempt in range(20):
             try:
-                run("./cmake-build-release/bin/solvitaire --rules "
+                run("./cmake-build-" + runtype + "/bin/solvitaire --rules "
                         + tempRulesFilename + " --random " + str(attempt + 1),
                     shell=True,
                     check=True,
@@ -172,6 +178,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
             except CalledProcessError:
                 print("Error running " + rulesGen.name + " at level "
                         + str(level) + " with seed " + str(attempt + 1) + "!")
+                print(str(rulesGen) + "\n")
                 sys.exit()
             except:
                 print("Unknown error in script")
