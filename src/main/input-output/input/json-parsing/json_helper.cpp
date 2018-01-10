@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "json_helper.h"
+#include "../../output/log_helper.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -31,5 +32,11 @@ Document json_helper::get_file_json(const string& filename) {
 }
 
 void json_helper::json_parse_err(const string& msg) {
-    throw runtime_error("Error in JSON doc: " + msg);
+    string err_msg = "Error in JSON doc: " + msg;
+    LOG_DEBUG(err_msg);
+    throw runtime_error(err_msg);
+}
+
+void json_helper::json_parse_warning(const string& msg) {
+    LOG_WARNING("Error in JSON doc: " + msg);
 }

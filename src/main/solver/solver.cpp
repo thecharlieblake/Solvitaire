@@ -26,7 +26,8 @@ bool solver::run() {
 
     states_searched++;
     LOG_DEBUG (state);
-    frontier.emplace_back(game_state::null_move(), state.get_legal_moves());
+    frontier.emplace_back(game_state::move(0,0), state.get_legal_moves());
+    global_cache.insert(state.get_data());
 
     while (!frontier.empty()) {
         node& current = frontier.back();
@@ -40,11 +41,13 @@ bool solver::run() {
             // (unless it's the null first move)
             if (frontier.size() > 1) {
                 state.undo_move(current.move);
+                assert(global_cache.count(state.get_data()) == 1);
+                LOG_DEBUG (state);
             }
             // Returns to the previous state
             frontier.pop_back();
         } else {
-            game_state::move next_move = current.unsearched_children[current.unsearched_children.size()-1];
+            game_state::move next_move = current.unsearched_children.back();
             current.unsearched_children.pop_back();
 
             // Applies the first possible move in this state
@@ -61,6 +64,7 @@ bool solver::run() {
             } else {
                 // If we've seen the state before, undoes the move
                 state.undo_move(next_move);
+                assert(global_cache.count(state.get_data()) == 1);
             }
         }
     }

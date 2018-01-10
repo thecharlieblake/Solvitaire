@@ -13,10 +13,6 @@
 
 struct sol_rules {
     // Tableau policies
-    enum class build_order {
-        DESCENDING,
-        ASCENDING
-    };
     enum class build_policy {
         NO_BUILD,
         SAME_SUIT,
@@ -33,7 +29,6 @@ struct sol_rules {
     };
 
     uint8_t tableau_pile_count;
-    build_order build_ord;
     build_policy build_pol;
     spaces_policy spaces_pol;
     bool move_built_group;

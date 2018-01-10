@@ -35,7 +35,9 @@ card::rank_t card::rank_from_str(const char* c) {
         case 'j': return 11;
         case 'q': return 12;
         case 'k': return 13;
-        default: return static_cast<rank_t>(stoi(c));
+        default:
+            assert(stoi(c) >= 1 && stoi(c) <= 13);
+            return static_cast<rank_t>(stoi(c));
     }
 }
 

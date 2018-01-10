@@ -16,7 +16,6 @@ using namespace rapidjson;
 // Static //
 ////////////
 
-typedef sol_rules::build_order ord;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -67,25 +66,11 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             if (d["tableau piles"].HasMember("count")) {
                 if (d["tableau piles"]["count"].IsInt()) {
                     sr.tableau_pile_count = static_cast<uint8_t>(d["tableau piles"]["count"].GetInt());
+                    if (sr.tableau_pile_count > 52) {
+                        json_helper::json_parse_warning("[tableau piles][count] may be too high");
+                    }
                 } else {
                     json_helper::json_parse_err("[tableau piles][count] must be an integer");
-                }
-            }
-
-            if (d["tableau piles"].HasMember("build order")) {
-                if (d["tableau piles"]["build order"].IsString()) {
-                    string bo_str = d["tableau piles"]["build order"].GetString();
-
-                    if (bo_str == "ascending") {
-                        sr.build_ord = ord::ASCENDING;
-                    } else if (bo_str == "descending") {
-                        sr.build_ord = ord::DESCENDING;
-                    } else {
-                        json_helper::json_parse_err("[tableau piles][build order] is invalid");
-                    }
-
-                } else {
-                    json_helper::json_parse_err("[tableau piles][build order] must be an string");
                 }
             }
 
@@ -151,6 +136,9 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (d.HasMember("max rank")) {
         if (d["max rank"].IsInt()) {
             sr.max_rank = static_cast<card::rank_t>(d["max rank"].GetInt());
+            if (sr.max_rank > 13) {
+                json_helper::json_parse_err("[max rank] must be a valid rank");
+            }
         } else {
             json_helper::json_parse_err("[max rank] must be an integer");
         }
@@ -178,6 +166,10 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         } else {
             json_helper::json_parse_err("[foundations] must be a boolean");
         }
+    }
+
+    if (!sr.hole && !sr.foundations) {
+        json_helper::json_parse_err("one of [hole] and [foundations] must be true");
     }
 
     if (d.HasMember("foundations initial card")) {
