@@ -31,10 +31,7 @@ typedef sol_rules::stock_deal_type sdt;
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
 game_state::game_state(const sol_rules& s_rules) :
-        rules(s_rules),
-        stock(PILE_REF_MAX),
-        waste(PILE_REF_MAX),
-        hole(PILE_REF_MAX) {
+        rules(s_rules) {
 
     // If there is a hole, creates pile
     if (rules.hole) {
@@ -157,13 +154,20 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
             deck.pop_back();
         }
     }
+
+    // The size of all piles must equal the deck size
+    int piles_sz = 0;
+    for (auto& p : piles) piles_sz += p.size();
+    if (piles_sz != rules.max_rank * (rules.two_decks ? 8:4)) {
+        throw runtime_error("Error: incorrect number of cards in starting piles");
+    }
 }
 
 // Generates a randomly ordered vector of cards
-vector<card> game_state::gen_shuffled_deck(int seed, int max_rank,
+vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
                                            bool two_decks) {
-    vector<int> values;
-    vector<int*> v_ptrs;
+    vector<uint8_t> values;
+    vector<uint8_t*> v_ptrs;
     for (int i = 0; i < max_rank * 4; i++) {
         values.emplace_back(i);
         if (two_decks) values.emplace_back(i);
@@ -177,26 +181,13 @@ vector<card> game_state::gen_shuffled_deck(int seed, int max_rank,
     shuffle(begin(v_ptrs), end(v_ptrs), rng);
 
     vector<card> deck;
-    for (int *i : v_ptrs) {
+    for (uint8_t *i : v_ptrs) {
         auto r = static_cast<card::rank_t>(((*i) % max_rank) + 1);
-        card::suit_t s;
-        switch ((*i) / max_rank) {
-            case 0 :  s = card::suit_t::Clubs;
-                break;
-            case 1 :  s = card::suit_t::Diamonds;
-                break;
-            case 2 :  s = card::suit_t::Hearts;
-                break;
-            case 3 :  s = card::suit_t::Spades;
-                break;
-            default : assert(false);
-                s = card::suit_t::Clubs;
-                break;
-        }
-
+        card::suit_t s = card::to_suit((*i) / max_rank);
         deck.emplace_back(card(s, r));
     }
 
+    assert(deck.size() == pile::size_type(max_rank * (two_decks ? 8 : 4)));
     return deck;
 }
 
@@ -211,6 +202,9 @@ game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
 /////////////////////////
 
 void game_state::make_move(const move m) {
+    assert(m.from < piles.size());
+    assert(m.to < piles.size());
+
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
         for (pile_ref tab_pr = tableau_piles.front();
@@ -223,6 +217,7 @@ void game_state::make_move(const move m) {
     else if (m.count == 1) {
         piles[m.to].place(piles[m.from].take());
     } else {
+        assert(m.count <= rules.max_rank);
         // Adds the cards to the 'to' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
             piles[m.to].place(piles[m.from][pile_idx]);
@@ -236,6 +231,9 @@ void game_state::make_move(const move m) {
 }
 
 void game_state::undo_move(const move m) {
+    assert(m.from < piles.size());
+    assert(m.to < piles.size());
+
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
         for (pile_ref tab_pr = tableau_piles.front() + m.count;
@@ -248,6 +246,7 @@ void game_state::undo_move(const move m) {
     else if (m.count == 1) {
         piles[m.from].place(piles[m.to].take());
     } else {
+        assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
             piles[m.from].place(piles[m.to][pile_idx]);
@@ -266,17 +265,45 @@ void game_state::undo_move(const move m) {
 ////////////////////////
 
 bool game_state::is_solved() const {
+    bool solved = true;
     if (rules.hole) {
-        return piles[hole].size()
+        solved = piles[hole].size()
                == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
-                return false;
+                solved = false;
             }
         }
-        return true;
     }
+
+    // Runs some alternative checks in debug mode to make sure the game state
+    // is consistent
+#ifndef NDEBUG
+    bool rest_empty = true;
+    for (pile_ref pr = 0; pr < piles.size(); pr++) {
+        // All piles other than the hole must be empty
+        if (rules.hole) {
+            if (pr != hole && !piles[pr].empty()) {
+                rest_empty = false;
+                break;
+            }
+        }
+            // All piles other than the foundations must be empty
+        else {
+            bool non_foundation_ref =
+                    pr < foundations.front()
+                    || pr >= foundations.front() + foundations.size();
+            if (non_foundation_ref && !piles[pr].empty()) {
+                rest_empty = false;
+                break;
+            }
+        }
+    }
+    assert(solved == rest_empty);
+#endif
+
+    return solved;
 }
 
 const vector<pile>& game_state::get_data() const {
@@ -287,17 +314,6 @@ bool operator==(const game_state& a, const game_state& b) {
     return a.tableau_piles == b.tableau_piles
            && a.foundations == b.foundations
            && a.hole == b.hole;
-}
-
-
-//////////////////////////////////
-// STATIC VARIABLES AND MEMBERS //
-//////////////////////////////////
-
-game_state::pile_ref game_state::PILE_REF_MAX = 255;
-
-game_state::move game_state::null_move() {
-    return {PILE_REF_MAX, 0, PILE_REF_MAX};
 }
 
 

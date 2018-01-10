@@ -38,6 +38,7 @@ void pile::place(const card c) {
 }
 
 card pile::take() {
+    assert(!empty());
     card c = top_card();
     pile_vec.pop_back();
     return c;

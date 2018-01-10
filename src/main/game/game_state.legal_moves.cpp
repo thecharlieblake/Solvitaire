@@ -25,8 +25,8 @@ vector<game_state::move> game_state::get_legal_moves() const {
         if (rem_ref == hole || piles[rem_ref].empty()) continue;
 
         // Stock cards can only be moved to the waste (assuming there is a waste)
-        if (stock != PILE_REF_MAX && rem_ref == stock) {
-            if (waste != PILE_REF_MAX) {
+        if (rules.stock_size > 0 && rem_ref == stock) {
+            if (rules.stock_deal_t == sdt::WASTE) {
                 moves.emplace_back(stock, waste);
             }
             continue;
@@ -56,7 +56,7 @@ vector<game_state::move> game_state::get_legal_moves() const {
         }
 
         // Does the same for the hole
-        if (hole != PILE_REF_MAX && is_valid_hole_move(rem_ref)) {
+        if (rules.hole && is_valid_hole_move(rem_ref)) {
             moves.emplace_back(rem_ref, hole);
         }
 
@@ -79,7 +79,9 @@ game_state::move game_state::get_stock_tableau_move() const {
             piles[stock].size() >= tableau_piles.size()
             ? pile::size_type(tableau_piles.size())
             : piles[stock].size();
-    return {stock, PILE_REF_MAX, stock_moves};
+
+    assert(stock_moves > 0 && stock_moves <= piles[stock].size());
+    return {stock, 0, stock_moves};
 }
 
 // If a tableau pile is empty and the space policy is

@@ -46,17 +46,13 @@ public:
 
     friend bool operator==(const game_state&, const game_state&);
 
-    // Static pile ref members/vars
-    static pile_ref PILE_REF_MAX;
-    static move null_move();
-
     friend std::size_t hash_value(game_state const&);
     friend std::size_t hash_value(std::vector<pile> const&);
 
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
 private:
-    static std::vector<card> gen_shuffled_deck(int, int, bool);
+    static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
 
     // Private constructor
     explicit game_state(const sol_rules&);
