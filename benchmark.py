@@ -5,6 +5,7 @@ import sys
 import atexit
 from subprocess import run, TimeoutExpired, CalledProcessError, DEVNULL
 from abc import ABCMeta, abstractmethod
+from prettytable import PrettyTable
 
 tempRulesFilename = "temp_rules.json"
 timeoutsLimit = 4
@@ -134,6 +135,8 @@ def cleanup():
 
 atexit.register(cleanup)
 
+summaryResults = {}
+
 # Loops through each canonical solitaire
 for rulesGen in [SpanishPatienceRulesGen(),
                  FreeCellRulesGen(),
@@ -184,7 +187,14 @@ for rulesGen in [SpanishPatienceRulesGen(),
             + " within time constraint\n")
             print("Game description at level " + str(level) + ":")
             print(str(rulesGen) + "\n")
+            summaryResults[rulesGen.name] = level
             break
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
                     + " ...")
+
+# Prints results summary table
+t = PrettyTable(['Solitaire', 'Level'])
+for name, level in summaryResults.items():
+    t.add_row([name, level])
+print(t)
