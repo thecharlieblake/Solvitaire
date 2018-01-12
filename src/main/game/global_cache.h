@@ -21,6 +21,7 @@ public:
     friend std::size_t hash_value(card const&);
 private:
     static sol_rules rules;
+
     std::unordered_set<
             std::vector<pile>,
             boost::hash<std::vector<pile>>

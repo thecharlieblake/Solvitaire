@@ -29,6 +29,8 @@ public:
     card& operator[] (size_type);
     card operator[] (size_type) const;
 
+
+
     friend bool operator==(const pile&, const pile&);
     friend std::size_t hash_value(pile const&);
 private:

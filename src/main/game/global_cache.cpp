@@ -2,8 +2,12 @@
 // Created by thecharlesblake on 1/10/18.
 //
 
+#include <boost/functional/hash.hpp>
+
 #include "global_cache.h"
 
+using namespace std;
+using namespace boost;
 
 typedef sol_rules::build_policy pol;
 
@@ -39,4 +43,8 @@ size_t hash_value(card const& c) {
 
     auto raw_val = static_cast<unsigned char>(suit_val * 13 + c.get_rank());
     return hasher(raw_val);
+}
+
+size_t hash_value(pile const& p) {
+    return hash_range(begin(p.pile_vec), end(p.pile_vec));
 }
