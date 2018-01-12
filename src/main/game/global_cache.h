@@ -13,14 +13,15 @@
 
 class global_cache {
 public:
-    explicit global_cache(const sol_rules&);
+    explicit global_cache(game_state);
 
     bool insert(const std::vector<pile>&);
     bool contains(const std::vector<pile>&);
 
     friend std::size_t hash_value(card const&);
+    friend std::size_t hash_value(std::vector<pile> const&);
 private:
-    static sol_rules rules;
+    static game_state init_gs;
 
     std::unordered_set<
             std::vector<pile>,

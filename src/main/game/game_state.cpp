@@ -317,39 +317,6 @@ bool operator==(const game_state& a, const game_state& b) {
 }
 
 
-////////////////////
-// HASH FUNCTIONS //
-////////////////////
-
-size_t hash_value(game_state const& gs) {
-    size_t seed = 0;
-
-    if (gs.rules.foundations) {
-        hash_combine(seed, gs.foundations);
-    }
-    if (gs.rules.cells) {
-        hash_combine(seed, gs.cells);
-    }
-    if (gs.rules.tableau_pile_count > 0) {
-        hash_combine(seed, gs.tableau_piles);
-    }
-
-    if (gs.rules.stock_size > 0) {
-        hash_combine(seed, gs.piles[gs.stock]);
-        hash_combine(seed, gs.piles[gs.waste]);
-    }
-    if (gs.rules.hole) {
-        hash_combine(seed, gs.piles[gs.hole]);
-    }
-
-    return seed;
-}
-
-size_t hash_value(vector<pile> const& vp) {
-    return hash_range(begin(vp), end(vp));
-}
-
-
 ///////////
 // PRINT //
 ///////////

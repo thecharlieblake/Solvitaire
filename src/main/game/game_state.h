@@ -45,11 +45,10 @@ public:
     const std::vector<pile>& get_data() const;
 
     friend bool operator==(const game_state&, const game_state&);
-
-    friend std::size_t hash_value(game_state const&);
-    friend std::size_t hash_value(std::vector<pile> const&);
-
     friend std::ostream& operator<< (std::ostream&, const game_state&);
+
+    friend std::size_t hash_value(card const&);
+    friend std::size_t hash_value(std::vector<pile> const&);
 
 private:
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
