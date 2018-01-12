@@ -12,6 +12,8 @@
 #include "card.h"
 
 struct sol_rules {
+    sol_rules();
+    
     // Tableau policies
     enum class build_policy {
         NO_BUILD,

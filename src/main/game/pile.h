@@ -13,6 +13,7 @@
 
 class pile {
 public:
+    pile(std::vector<card>);
     typedef uint8_t size_type;
 
     // Inspect

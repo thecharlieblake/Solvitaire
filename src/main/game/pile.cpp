@@ -12,6 +12,8 @@
 using namespace std;
 using namespace boost;
 
+pile::pile(std::vector<card> pv) : pile_vec(pv) {}
+
 card pile::top_card() const {
     assert(!empty());
     return pile_vec.back();
