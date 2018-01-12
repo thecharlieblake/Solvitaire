@@ -18,12 +18,13 @@ public:
     bool insert(const std::vector<pile>&);
     bool contains(const std::vector<pile>&);
 
+    friend std::size_t hash_value(card const&);
 private:
+    static sol_rules rules;
     std::unordered_set<
             std::vector<pile>,
             boost::hash<std::vector<pile>>
     > u_set;
 };
-
 
 #endif //SOLVITAIRE_GLOBAL_CACHE_H

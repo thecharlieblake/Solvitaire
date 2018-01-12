@@ -37,7 +37,6 @@ private:
 
 bool operator==(const card&, const card&);
 bool operator!=(const card&, const card&);
-std::size_t hash_value(card const&);
 
 
 #endif //SOLITAIRE_PIP_CARD_H

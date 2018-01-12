@@ -74,12 +74,3 @@ bool operator==(const card& l, const card& r) {
 bool operator!=(const card& l, const card& r) {
     return !(l == r);
 }
-
-size_t hash_value(card const& c) {
-    boost::hash<unsigned char> hasher;
-    
-    auto suit_val = static_cast<std::underlying_type_t<card::suit_t>>(c.get_suit());
-    auto raw_val = static_cast<unsigned char>(suit_val * 13 + c.get_rank());
-
-    return hasher(raw_val);
-}
