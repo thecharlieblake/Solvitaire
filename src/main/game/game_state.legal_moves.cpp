@@ -128,7 +128,7 @@ bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
 
     // Checks violation of same suit policy
     uint8_t suit_idx = (add_ref - foundations.front()) % uint8_t(4);
-    if (rem_c.get_suit() != card::to_suit(suit_idx)) {
+    if (rem_c.get_suit() != suit_idx) {
         return false;
     }
 
