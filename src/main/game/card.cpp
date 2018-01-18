@@ -20,12 +20,12 @@ card::card(const char* c) : suit(suit_from_str(c)), rank(rank_from_str(c)) {}
 
 card::suit_t card::suit_from_str(const char* c) {
     switch(tolower(c[strlen(c) - 1])) {
-        case 'c': return suit_t::Clubs;
-        case 'd': return suit_t::Diamonds;
-        case 'h': return suit_t::Hearts;
-        case 's': return suit_t::Spades;
+        case 'c': return suit::Clubs;
+        case 'h': return suit::Hearts;
+        case 's': return suit::Spades;
+        case 'd': return suit::Diamonds;
         default: assert(false);
-            return suit_t::Clubs;
+            return suit::Clubs;
     }
 }
 
@@ -47,9 +47,9 @@ card::suit_t card::get_suit() const {
 
 card::colour_t card::get_colour() const {
     switch (suit) {
-        case card::suit_t::Spades  :
-        case card::suit_t::Clubs   : return card::colour_t::Black;
-        default :                    return card::colour_t::Red;
+        case card::suit::Spades  :
+        case card::suit::Clubs   : return card::colour::Black;
+        default :                    return card::colour::Red;
     }
 }
 
@@ -57,14 +57,22 @@ card::rank_t card::get_rank() const {
     return rank;
 }
 
-card::suit_t card::to_suit(uint8_t v) {
-    switch (v) {
-        case 0: return suit_t::Clubs;
-        case 1: return suit_t::Diamonds;
-        case 2: return suit_t::Hearts;
-        case 3: return suit_t::Spades;
-        default: assert(false); return suit_t::Clubs;
+std::string card::to_string() const {
+    string s;
+    switch(rank) {
+        case 1 : s += "A"; break;
+        case 11: s += "J"; break;
+        case 12: s += "Q"; break;
+        case 13: s += "K"; break;
+        default: s += std::to_string(rank);
     }
+    switch(suit) {
+        case card::suit::Spades  : s += "S"; break;
+        case card::suit::Hearts  : s += "H"; break;
+        case card::suit::Clubs   : s += "C"; break;
+        case card::suit::Diamonds: s += "D"; break;
+    }
+    return s;
 }
 
 bool operator==(const card& l, const card& r) {
