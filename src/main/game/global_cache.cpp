@@ -27,6 +27,9 @@ void global_cache::clear() {
 size_t hash_value(card const& c) {
     boost::hash<uint8_t> hasher;
 
+#ifdef SIMPLE_HASH
+    uint8_t suit_val = static_cast<uint8_t>(c.get_suit());
+#else
     uint8_t suit_val;
     switch (game_state::rules.build_pol) {
         case pol::SAME_SUIT:
@@ -38,6 +41,7 @@ size_t hash_value(card const& c) {
         default:
             suit_val = 0;
     }
+#endif
 
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
     return hasher(raw_val);
@@ -48,8 +52,14 @@ size_t hash_value(pile const& p) {
 }
 
 size_t hash_value(game_state const& gs) {
-    boost::hash<pile> pile_hasher;
     size_t seed = 0;
+
+#ifdef SIMPLE_HASH
+    for (game_state::pile_ref pr = 0; pr < gs.piles.size(); pr++) {
+        hash_combine(seed, gs.piles[pr]);
+    }
+#else
+    boost::hash<pile> pile_hasher;
 
     // Using addition for commutative hash
     for (game_state::pile_ref pr : game_state::tableau_piles) {
@@ -82,6 +92,7 @@ size_t hash_value(game_state const& gs) {
     for (game_state::pile_ref pr : game_state::cells) {
         seed += pile_hasher(gs.piles[pr]);
     }
+#endif
 
     return seed;
 }
@@ -112,9 +123,11 @@ bool game_state_pred::operator()(const game_state& x,
     vector<pile> x_piles = x.piles;
     vector<pile> y_piles = y.piles;
 
+    // Orders the piles from largest to smallest
     sort(begin(x_piles), end(x_piles), comp_pile);
     sort(begin(y_piles), end(y_piles), comp_pile);
 
+    // Compares the two for equality
     for (vector<pile>::size_type pile_idx = 0; pile_idx < x_piles.size(); pile_idx++) {
         if (x_piles[pile_idx].size() != y_piles[pile_idx].size()) return false;
 
@@ -124,6 +137,9 @@ bool game_state_pred::operator()(const game_state& x,
 
             if (cx.get_rank() != cy.get_rank()) return false;
 
+#ifdef SIMPLE_HASH
+            if (cx.get_suit() != cy.get_suit()) return false;
+#else
             switch (game_state::rules.build_pol) {
                 case pol::SAME_SUIT:
                     if (cx.get_suit() != cy.get_suit()) return false;
@@ -134,6 +150,7 @@ bool game_state_pred::operator()(const game_state& x,
                 default:
                     break;
             }
+#endif
         }
     }
 
