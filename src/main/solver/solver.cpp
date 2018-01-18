@@ -53,7 +53,6 @@ bool solver::run() {
             // Applies the first possible move in this state
             state.make_move(next_move);
 
-            assert(state.piles.size() == 18);
             // Insert the state into the global cache
             bool is_new_state = cache.insert(state);
             if (is_new_state) {
