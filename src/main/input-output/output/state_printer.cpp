@@ -112,17 +112,5 @@ void state_printer::print_top_of_pile(ostream& stream,
 }
 
 void state_printer::print_card(std::ostream& s, const card c) {
-    switch(c.get_rank()) {
-        case 1 : s << "A"; break;
-        case 11: s << "J"; break;
-        case 12: s << "Q"; break;
-        case 13: s << "K"; break;
-        default: s << int(c.get_rank());
-    }
-    switch(c.get_suit()) {
-        case card::suit_t::Spades  : s << "S"; break;
-        case card::suit_t::Hearts  : s << "H"; break;
-        case card::suit_t::Clubs   : s << "C"; break;
-        case card::suit_t::Diamonds: s << "D"; break;
-    }
+    s << c.to_string();
 }

@@ -7,17 +7,13 @@
 
 #include <string>
 #include <vector>
-#include <unordered_set>
 
-#include "../game/game_state.h"
+#include "../game/global_cache.h"
 #include "../game/sol_rules.h"
 
 class solver {
 public:
-    std::unordered_set<
-            std::vector<pile>,
-            boost::hash<std::vector<pile>>
-    > global_cache;
+    global_cache cache;
 
     struct node {
         explicit node(game_state::move, std::vector<game_state::move>);
@@ -25,14 +21,13 @@ public:
         std::vector<game_state::move> unsearched_children;
     };
 
-    solver(const game_state&, const sol_rules&);
+    explicit solver(const game_state&);
 
     bool run();
     void print_solution() const;
 
 private:
     const game_state initial_state;
-    const sol_rules rules;
     std::vector<node> frontier;
     int states_searched;
 };

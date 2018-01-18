@@ -18,7 +18,7 @@ namespace po = boost::program_options;
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&);
 void solve_input_files(vector<string>, const sol_rules&);
-void solve_game(const game_state&, const sol_rules&);
+void solve_game(const game_state&);
 
 int main(int argc, const char* argv[]) {
 
@@ -66,7 +66,7 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
 void solve_random_game(int seed, const sol_rules& rules) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state gs(rules, seed);
-    solve_game(gs, rules);
+    solve_game(gs);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules) {
@@ -79,7 +79,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules)
             game_state gs(rules, in_doc);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, rules);
+            solve_game(gs);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -89,8 +89,8 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules)
     }
 }
 
-void solve_game(const game_state& gs, const sol_rules& rules) {
-    solver solv(gs, rules);
+void solve_game(const game_state& gs) {
+    solver solv(gs);
     bool solution = solv.run();
 
     if (solution) {

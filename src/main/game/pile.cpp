@@ -5,12 +5,15 @@
 #include <vector>
 #include <ostream>
 
-#include <boost/functional/hash.hpp>
-
 #include "pile.h"
 
 using namespace std;
-using namespace boost;
+
+pile::pile(std::vector<card> pv) : pile_vec(pv) {
+}
+
+pile::pile(std::initializer_list<card> il) : pile_vec(il) {
+}
 
 card pile::top_card() const {
     assert(!empty());
@@ -46,8 +49,4 @@ card pile::take() {
 
 bool operator==(const pile& a, const pile& b) {
     return a.pile_vec == b.pile_vec;
-}
-
-size_t hash_value(pile const& p) {
-    return hash_range(begin(p.pile_vec), end(p.pile_vec));
 }

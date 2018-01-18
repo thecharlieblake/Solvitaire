@@ -13,8 +13,8 @@
 using namespace std;
 using namespace boost;
 
-solver::solver(const game_state& gs, const sol_rules& sr)
-        : initial_state(gs), rules(sr), states_searched(0) {}
+solver::solver(const game_state& gs)
+        : initial_state(gs), states_searched(0) {}
 
 solver::node::node(const game_state::move m,
                    vector<game_state::move> uc)
@@ -27,7 +27,7 @@ bool solver::run() {
     states_searched++;
     LOG_DEBUG (state);
     frontier.emplace_back(game_state::move(0,0), state.get_legal_moves());
-    global_cache.insert(state.get_data());
+    cache.insert(state);
 
     while (!frontier.empty()) {
         node& current = frontier.back();
@@ -41,7 +41,7 @@ bool solver::run() {
             // (unless it's the null first move)
             if (frontier.size() > 1) {
                 state.undo_move(current.move);
-                assert(global_cache.count(state.get_data()) == 1);
+                assert(cache.contains(state));
                 LOG_DEBUG (state);
             }
             // Returns to the previous state
@@ -54,7 +54,7 @@ bool solver::run() {
             state.make_move(next_move);
 
             // Insert the state into the global cache
-            bool is_new_state = global_cache.insert(state.get_data()).second;
+            bool is_new_state = cache.insert(state);
             if (is_new_state) {
                 states_searched++;
                 LOG_DEBUG (state);
@@ -64,7 +64,7 @@ bool solver::run() {
             } else {
                 // If we've seen the state before, undoes the move
                 state.undo_move(next_move);
-                assert(global_cache.count(state.get_data()) == 1);
+                assert(cache.contains(state));
             }
         }
     }

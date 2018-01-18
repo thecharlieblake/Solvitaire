@@ -12,10 +12,16 @@ timeoutsLimit = 4
 timeoutSeconds = 1
 
 runtype = "release"
-if (len(sys.argv) == 2
+if (len(sys.argv) >= 2
     and (sys.argv[1] == "--debug" or sys.argv[1] == "-d")):
     runtype = "debug"
     print("Running in debug mode...")
+
+flag = ""
+if (len(sys.argv) >= 2
+    and (sys.argv[1] == "--simple-hash" or sys.argv[1] == "-sh")):
+    flag = "-simple-hash"
+    print("Running in simple-hash mode...")
 
 class SolitaireRulesGen(metaclass=ABCMeta):
 
@@ -166,8 +172,9 @@ for rulesGen in [SpanishPatienceRulesGen(),
         timeouts = 0
         for attempt in range(20):
             try:
-                run("./cmake-build-" + runtype + "/bin/solvitaire --rules "
-                        + tempRulesFilename + " --random " + str(attempt + 1),
+                run("./cmake-build-" + runtype + "/bin/solvitaire" + flag
+                    + " --rules " + tempRulesFilename + " --random "
+                    + str(attempt + 1),
                     shell=True,
                     check=True,
                     stdout=DEVNULL,
@@ -199,6 +206,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
                     + " ...")
+            summaryResults[rulesGen.name] = level
 
 # Prints results summary table
 t = PrettyTable(['Solitaire', 'Level'])

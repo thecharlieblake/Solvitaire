@@ -8,6 +8,7 @@
 #include "rules_parser.h"
 #include "json_helper.h"
 #include "../sol_preset_types.h"
+#include "../../../game/card.h"
 
 using namespace std;
 using namespace rapidjson;

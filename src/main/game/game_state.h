@@ -15,11 +15,10 @@
 #include "pile.h"
 #include "sol_rules.h"
 
-class deal_parser;
-
 class game_state {
     friend class deal_parser;
     friend class state_printer;
+    friend class game_state_pred;
 public:
     // Defines types
     typedef uint8_t pile_ref;
@@ -34,6 +33,9 @@ public:
     // Does the same from a 'rules' object
     game_state(const sol_rules&, int seed);
 
+    // For testing
+    game_state(std::initializer_list<pile>);
+
     // Alters state
     void make_move(move);
     void undo_move(move);
@@ -44,14 +46,13 @@ public:
     bool is_solved() const;
     const std::vector<pile>& get_data() const;
 
-    friend bool operator==(const game_state&, const game_state&);
-
-    friend std::size_t hash_value(game_state const&);
-    friend std::size_t hash_value(std::vector<pile> const&);
-
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
+    friend std::size_t hash_value(card const&);
+    friend std::size_t hash_value(game_state const&);
+
 private:
+    void static_reset();
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
 
     // Private constructor
@@ -70,18 +71,17 @@ private:
                                      card) const;
 
     // References to piles
-    sol_rules rules;
-    std::vector<pile_ref> tableau_piles;
-    std::vector<pile_ref> cells;
-    pile_ref stock;
-    pile_ref waste;
-    std::vector<pile_ref> reserve;
-    std::vector<pile_ref> foundations;
-    pile_ref hole;
+    static sol_rules rules;
+    static std::vector<pile_ref> tableau_piles;
+    static std::vector<pile_ref> cells;
+    static pile_ref stock;
+    static pile_ref waste;
+    static std::vector<pile_ref> reserve;
+    static std::vector<pile_ref> foundations;
+    static pile_ref hole;
 
     // The core piles
     std::vector<pile> piles;
 };
-
 
 #endif //SOLVITAIRE_GAME_STATE_H

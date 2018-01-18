@@ -9,9 +9,9 @@
 
 #include <rapidjson/document.h>
 
-#include "card.h"
-
 struct sol_rules {
+    sol_rules();
+    
     // Tableau policies
     enum class build_policy {
         NO_BUILD,
@@ -33,7 +33,7 @@ struct sol_rules {
     spaces_policy spaces_pol;
     bool move_built_group;
     bool two_decks;
-    card::rank_t max_rank;
+    uint8_t max_rank;
     bool hole;
     bool foundations;
     bool foundations_init_card;
