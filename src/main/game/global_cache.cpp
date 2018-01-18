@@ -2,7 +2,7 @@
 // Created by thecharlesblake on 1/10/18.
 //
 
-#include <boost/functional/hash.hpp>
+#include <algorithm>
 
 #include "global_cache.h"
 
@@ -11,39 +11,35 @@ using namespace boost;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
-typedef global_cache cache;
 
-global_cache::global_cache(const game_state init_game_state) {
-    global_cache::init_gs = init_game_state;
+bool global_cache::insert(const game_state& gs) {
+    return u_set.insert(gs).second;
 }
 
-bool global_cache::insert(const std::vector<pile>& pile_vec) {
-    return u_set.insert(pile_vec).second;
+bool global_cache::contains(const game_state& gs) const {
+    return u_set.count(gs) > 0;
 }
 
-bool global_cache::contains(const std::vector<pile>& pile_vec) {
-    return u_set.count(pile_vec) > 0;
+void global_cache::clear() {
+    u_set.clear();
 }
 
 size_t hash_value(card const& c) {
-    boost::hash<unsigned char> hasher;
+    boost::hash<uint8_t> hasher;
 
-    auto suit_val;
-    switch (cache::init_gs.rules.build_pol) {
+    uint8_t suit_val;
+    switch (game_state::rules.build_pol) {
         case pol::SAME_SUIT:
-            suit_val = static_cast<std::underlying_type_t<card::suit_t>>(
-                    c.get_suit());
+            suit_val = static_cast<uint8_t>(c.get_suit());
             break;
         case pol::RED_BLACK:
-            suit_val = static_cast<std::underlying_type_t<card::colour_t >>(
-                    c.get_colour());
+            suit_val = static_cast<uint8_t>(c.get_colour());
             break;
         default:
             suit_val = 0;
-            break;
     }
 
-    auto raw_val = static_cast<unsigned char>(suit_val * 13 + c.get_rank());
+    auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
     return hasher(raw_val);
 }
 
@@ -51,44 +47,95 @@ size_t hash_value(pile const& p) {
     return hash_range(begin(p.pile_vec), end(p.pile_vec));
 }
 
-size_t hash_value(std::vector<pile> const& piles) {
+size_t hash_value(game_state const& gs) {
+    boost::hash<pile> pile_hasher;
     size_t seed = 0;
 
     // Using addition for commutative hash
-    for (game_state::pile_ref pr : cache::init_gs.tableau_piles) {
-        seed += hash_value(piles[pr]);
+    for (game_state::pile_ref pr : game_state::tableau_piles) {
+        seed += pile_hasher(gs.piles[pr]);
     }
 
     // Using hash_combine for order-dependent hash
-    for (game_state::pile_ref pr : cache::init_gs.foundations) {
-        hash_combine(seed, piles[pr]);
+    for (game_state::pile_ref pr : game_state::foundations) {
+        hash_combine(seed, gs.piles[pr]);
     }
 
     // Commutative
-    for (game_state::pile_ref pr : cache::init_gs.reserve) {
-        seed += hash_value(piles[pr]);
+    for (game_state::pile_ref pr : game_state::reserve) {
+        seed += pile_hasher(gs.piles[pr]);
     }
 
-    if (cache::init_gs.rules.stock_size > 0) {
-        hash_combine(seed, piles[cache::init_gs.stock]);
+    if (game_state::rules.stock_size > 0) {
+        hash_combine(seed, gs.piles[game_state::stock]);
     }
 
-    if (cache::init_gs.rules.stock_deal_t == sdt::WASTE) {
-        hash_combine(seed, piles[cache::init_gs.waste]);
+    if (game_state::rules.stock_deal_t == sdt::WASTE) {
+        hash_combine(seed, gs.piles[game_state::waste]);
     }
 
-    if (cache::init_gs.rules.stock_deal_t == sdt::WASTE) {
-        hash_combine(seed, piles[cache::init_gs.waste]);
-    }
-
-    if (cache::init_gs.rules.hole) {
-        hash_combine(seed, piles[cache::init_gs.hole]);
+    if (game_state::rules.hole) {
+        hash_combine(seed, gs.piles[game_state::hole]);
     }
 
     // Commutative
-    for (game_state::pile_ref pr : cache::init_gs.cells) {
-        seed += hash_value(piles[pr]);
+    for (game_state::pile_ref pr : game_state::cells) {
+        seed += pile_hasher(gs.piles[pr]);
     }
 
     return seed;
+}
+
+bool global_cache::game_state_pred::comp_pile(const pile &x, const pile &y) {
+    // Largest piles first
+    if (x.size() != y.size()) {
+        return x.size() > y.size();
+    }
+    // Larger card values first
+    for (pile::size_type pile_idx = 0; pile_idx < x.size(); pile_idx++) {
+        auto x_val = static_cast<uint8_t>(x[pile_idx].get_suit()) * 13
+                     + x[pile_idx].get_rank();
+        auto y_val = static_cast<uint8_t>(y[pile_idx].get_suit()) * 13
+                     + y[pile_idx].get_rank();
+        if (x_val != y_val) {
+            return x_val > y_val;
+        }
+    }
+    // It is a requirement of std::sort that equal values return false
+    return false;
+}
+
+bool global_cache::game_state_pred::operator()(const game_state& x,
+                                const game_state& y) const {
+    if (x.piles.size() != y.piles.size()) return false;
+
+    vector<pile> x_piles = x.piles;
+    vector<pile> y_piles = y.piles;
+
+    sort(begin(x_piles), end(x_piles), comp_pile);
+    sort(begin(y_piles), end(y_piles), comp_pile);
+
+    for (vector<pile>::size_type pile_idx = 0; pile_idx < x_piles.size(); pile_idx++) {
+        if (x_piles[pile_idx].size() != y_piles[pile_idx].size()) return false;
+
+        for (auto card_idx = 0; card_idx < x_piles[pile_idx].size(); card_idx++) {
+            card cx = x_piles[pile_idx][card_idx];
+            card cy = y_piles[pile_idx][card_idx];
+
+            if (cx.get_rank() != cy.get_rank()) return false;
+
+            switch (game_state::rules.build_pol) {
+                case pol::SAME_SUIT:
+                    if (cx.get_suit() != cy.get_suit()) return false;
+                    break;
+                case pol::RED_BLACK:
+                    if (cx.get_colour() != cy.get_colour()) return false;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return true;
 }

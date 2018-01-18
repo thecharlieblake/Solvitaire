@@ -8,24 +8,27 @@
 #include <vector>
 #include <unordered_set>
 
-#include "../game/game_state.h"
-#include "../game/sol_rules.h"
+#include <boost/functional/hash.hpp>
+
+#include "sol_rules.h"
+#include "game_state.h"
 
 class global_cache {
 public:
-    explicit global_cache(game_state);
+    bool insert(const game_state&);
+    bool contains(const game_state&) const;
+    void clear();
 
-    bool insert(const std::vector<pile>&);
-    bool contains(const std::vector<pile>&);
-
-    friend std::size_t hash_value(card const&);
-    friend std::size_t hash_value(std::vector<pile> const&);
+    struct game_state_pred {
+        static bool comp_pile(const pile& x, const pile& y);
+        bool operator() (const game_state& x, const game_state& y)
+        const;
+    };
 private:
-    static game_state init_gs;
-
     std::unordered_set<
-            std::vector<pile>,
-            boost::hash<std::vector<pile>>
+            game_state,
+            boost::hash<game_state>,
+            game_state_pred
     > u_set;
 };
 
