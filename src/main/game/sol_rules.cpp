@@ -18,12 +18,12 @@ sol_rules::sol_rules() :
         two_decks(false),
         max_rank(13),
         hole(false),
-        foundations(true),
+        foundations(false),
         foundations_init_card(false),
         diagonal_deal(false),
         cells(0),
         stock_size(0),
-        stock_deal_t(sdt::WASTE),
+        stock_deal_t(sdt::TABLEAU_PILES),
         reserve_size(0),
         reserve_stacked(false) {
 }
