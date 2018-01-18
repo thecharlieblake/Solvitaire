@@ -9,7 +9,11 @@
 
 using namespace std;
 
-pile::pile(std::vector<card> pv) : pile_vec(pv) {}
+pile::pile(std::vector<card> pv) : pile_vec(pv) {
+}
+
+pile::pile(std::initializer_list<card> il) : pile_vec(il) {
+}
 
 card pile::top_card() const {
     assert(!empty());

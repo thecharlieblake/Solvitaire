@@ -13,8 +13,11 @@
 
 class pile {
 public:
-    pile(std::vector<card>);
     typedef uint8_t size_type;
+
+    pile() = default;
+    pile(std::vector<card>);
+    pile(std::initializer_list<card>);
 
     // Inspect
     card top_card() const;
