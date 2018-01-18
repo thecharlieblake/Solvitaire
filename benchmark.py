@@ -199,6 +199,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
                     + " ...")
+            summaryResults[rulesGen.name] = level
 
 # Prints results summary table
 t = PrettyTable(['Solitaire', 'Level'])
