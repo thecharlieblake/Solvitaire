@@ -13,17 +13,17 @@
 #include "sol_rules.h"
 #include "game_state.h"
 
+struct game_state_pred {
+    static bool comp_pile(const pile& x, const pile& y);
+    bool operator() (const game_state& x, const game_state& y)
+    const;
+};
+
 class global_cache {
 public:
     bool insert(const game_state&);
     bool contains(const game_state&) const;
     void clear();
-
-    struct game_state_pred {
-        static bool comp_pile(const pile& x, const pile& y);
-        bool operator() (const game_state& x, const game_state& y)
-        const;
-    };
 private:
     std::unordered_set<
             game_state,

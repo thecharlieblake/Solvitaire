@@ -15,13 +15,11 @@
 #include "pile.h"
 #include "sol_rules.h"
 
-//class deal_parser;
-
-// TODO make class
-struct game_state {
-    //friend class deal_parser;
+class game_state {
+    friend class deal_parser;
     friend class state_printer;
-//public:
+    friend class game_state_pred;
+public:
     // Defines types
     typedef uint8_t pile_ref;
     struct move {
@@ -53,7 +51,7 @@ struct game_state {
     friend std::size_t hash_value(card const&);
     friend std::size_t hash_value(game_state const&);
 
-//private:
+private:
     void static_reset();
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
 

@@ -86,7 +86,7 @@ size_t hash_value(game_state const& gs) {
     return seed;
 }
 
-bool global_cache::game_state_pred::comp_pile(const pile &x, const pile &y) {
+bool game_state_pred::comp_pile(const pile &x, const pile &y) {
     // Largest piles first
     if (x.size() != y.size()) {
         return x.size() > y.size();
@@ -105,7 +105,7 @@ bool global_cache::game_state_pred::comp_pile(const pile &x, const pile &y) {
     return false;
 }
 
-bool global_cache::game_state_pred::operator()(const game_state& x,
+bool game_state_pred::operator()(const game_state& x,
                                 const game_state& y) const {
     if (x.piles.size() != y.piles.size()) return false;
 
