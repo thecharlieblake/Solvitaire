@@ -14,7 +14,6 @@
 #include "game_state.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
 #include "../input-output/output/state_printer.h"
-#include "sol_rules.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -23,15 +22,15 @@ using namespace boost;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 
-
 //////////////////
 // CONSTRUCTORS //
 //////////////////
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules) :
-        rules(s_rules) {
+game_state::game_state(const sol_rules& s_rules) {
+    game_state::static_reset();
+    game_state::rules = s_rules;
 
     // If there is a hole, creates pile
     if (rules.hole) {
@@ -85,14 +84,14 @@ game_state::game_state(const sol_rules& s_rules) :
 }
 
 // Constructs an initial game state from a JSON doc
-game_state::game_state(const sol_rules& s_rules, const Document& doc) :
-        game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, const Document& doc)
+        : game_state(s_rules) {
     deal_parser::parse(*this, doc);
 }
 
 // Constructs an initial game state from a seed
-game_state::game_state(const sol_rules& s_rules, int seed) :
-        game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, int seed)
+        : game_state(s_rules) {
     vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
@@ -104,7 +103,7 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     // If the foundations begin filled, then fills them
     if (rules.foundations_init_card) {
         for (uint8_t f_idx = 0; f_idx < 4*(rules.two_decks ? 2:1); f_idx++) {
-            card c = card(card::to_suit(f_idx % uint8_t(4)), 1);
+            card c = card(f_idx % uint8_t(4), 1);
 
             deck.erase(find(begin(deck), end(deck), c));
             piles[foundations[f_idx]].place(c);
@@ -129,6 +128,9 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
             deck.pop_back();
         }
     }
+
+    // This only occurs during testing
+    if (rules.tableau_pile_count == 0) return;
 
     // Deals to the tableau piles (row-by-row)
     for (int t = 0; !deck.empty(); t++) {
@@ -163,6 +165,10 @@ game_state::game_state(const sol_rules& s_rules, int seed) :
     }
 }
 
+game_state::game_state(std::initializer_list<pile> il) {
+    piles = il;
+}
+
 // Generates a randomly ordered vector of cards
 vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
                                            bool two_decks) {
@@ -183,7 +189,7 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     vector<card> deck;
     for (uint8_t *i : v_ptrs) {
         auto r = static_cast<card::rank_t>(((*i) % max_rank) + 1);
-        card::suit_t s = card::to_suit((*i) / max_rank);
+        card::suit_t s = (*i) / max_rank;
         deck.emplace_back(card(s, r));
     }
 
@@ -194,6 +200,31 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
 game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
         : from(f), to(t), count(i) {
     assert(i >= 1);
+}
+
+
+////////////////////////////
+// SETUP STATIC VARIABLES //
+////////////////////////////
+
+sol_rules game_state::rules;
+std::vector<game_state::pile_ref> game_state::tableau_piles;
+std::vector<game_state::pile_ref> game_state::cells;
+game_state::pile_ref game_state::stock;
+game_state::pile_ref game_state::waste;
+std::vector<game_state::pile_ref> game_state::reserve;
+std::vector<game_state::pile_ref> game_state::foundations;
+game_state::pile_ref game_state::hole;
+
+
+void game_state::static_reset() {
+    tableau_piles.clear();
+    cells.clear();
+    stock = 0;
+    waste = 0;
+    reserve.clear();
+    foundations.clear();
+    hole = 0;
 }
 
 
@@ -308,12 +339,6 @@ bool game_state::is_solved() const {
 
 const vector<pile>& game_state::get_data() const {
     return piles;
-}
-
-bool operator==(const game_state& a, const game_state& b) {
-    return a.tableau_piles == b.tableau_piles
-           && a.foundations == b.foundations
-           && a.hole == b.hole;
 }
 
 
