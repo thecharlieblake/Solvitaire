@@ -50,6 +50,6 @@ Note: this doesn't have to (and probably shouldn't) be run from within the proje
 
 ## Profiling
 
-env CPUPROFILE=solv.prof cmake-build-debug/bin/solvitaire --type simple-spanish-patience --random 0 > /dev/null 2>&1
-pprof --callgrind src/ solv.prof > solv.callgrind
+env CPUPROFILE=solv.prof cmake-build-release/bin/solvitaire --type black-hole --random 8
+pprof --callgrind src/ solv.prof > solv.callgrind (ignore the warnings)
 kcachegrind solv.callgrind

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <gperftools/profiler.h>
+
 #include "solver.h"
 #include "../input-output/output/log_helper.h"
 
@@ -22,6 +24,7 @@ solver::node::node(const game_state::move m,
 }
 
 bool solver::run() {
+    ProfilerStart("solvitaire");
     game_state state = initial_state;
 
     states_searched++;
@@ -33,7 +36,10 @@ bool solver::run() {
         node& current = frontier.back();
 
         // If we have a solution, returns true
-        if (state.is_solved()) return true;
+        if (state.is_solved()) {
+            ProfilerStop();
+            return true;
+        }
 
         // If the current node has no unsearched children
         if (current.unsearched_children.empty()) {
@@ -69,6 +75,7 @@ bool solver::run() {
         }
     }
 
+    ProfilerStop();
     return false;
 }
 
