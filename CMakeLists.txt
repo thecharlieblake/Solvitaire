@@ -50,7 +50,7 @@ set(sources_test
         src/test/somerset_test.cpp
         src/test/alpha_star_test.cpp
         src/test/spider_test.cpp
-        src/test/gloabl_cache_test.cpp)
+        src/test/global_cache_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
@@ -148,7 +148,7 @@ add_executable(unit_tests ${sources_test} ${sources})
 # therefore we can inherit all compiler options and library dependencies
 set_target_properties(solvitaire PROPERTIES ENABLE_EXPORTS on)
 
-target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES})
+target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES} -lprofiler)
 
 ENABLE_TESTING()
 ADD_TEST(NAME unit_tests

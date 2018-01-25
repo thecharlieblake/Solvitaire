@@ -28,10 +28,7 @@ typedef sol_rules::stock_deal_type sdt;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules) {
-    game_state::static_reset();
-    game_state::rules = s_rules;
-
+game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
     // If there is a hole, creates pile
     if (rules.hole) {
         piles.emplace_back();
@@ -200,31 +197,6 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
 game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
         : from(f), to(t), count(i) {
     assert(i >= 1);
-}
-
-
-////////////////////////////
-// SETUP STATIC VARIABLES //
-////////////////////////////
-
-sol_rules game_state::rules;
-std::vector<game_state::pile_ref> game_state::tableau_piles;
-std::vector<game_state::pile_ref> game_state::cells;
-game_state::pile_ref game_state::stock;
-game_state::pile_ref game_state::waste;
-std::vector<game_state::pile_ref> game_state::reserve;
-std::vector<game_state::pile_ref> game_state::foundations;
-game_state::pile_ref game_state::hole;
-
-
-void game_state::static_reset() {
-    tableau_piles.clear();
-    cells.clear();
-    stock = 0;
-    waste = 0;
-    reserve.clear();
-    foundations.clear();
-    hole = 0;
 }
 
 

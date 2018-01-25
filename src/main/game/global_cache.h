@@ -8,27 +8,40 @@
 #include <vector>
 #include <unordered_set>
 
-#include <boost/functional/hash.hpp>
-
 #include "sol_rules.h"
 #include "game_state.h"
 
-struct game_state_pred {
-    static bool comp_pile(const pile& x, const pile& y);
-    bool operator() (const game_state& x, const game_state& y)
-    const;
+class predicate {
+public:
+    explicit predicate(const game_state&);
+    static bool comp_pile(const pile&, const pile&);
+    bool operator() (const std::vector<pile>&, const std::vector<pile>&) const;
+private:
+    const game_state& init_gs;
 };
 
-class global_cache {
-public:
-    bool insert(const game_state&);
-    bool contains(const game_state&) const;
+struct hasher {
+    explicit hasher(const game_state&);
+    std::size_t operator() (const std::vector<pile>&) const;
+
+    std::size_t hash_value(const card&) const;
+    std::size_t hash_value(const pile&) const;
+    std::size_t combine(std::size_t&, std::size_t) const;
+    std::size_t combine_commutative(std::size_t&, std::size_t) const;
+
+    const game_state& init_gs;
+};
+
+struct global_cache {
+    explicit global_cache(const game_state&);
+    bool insert(const std::vector<pile>&);
+    bool contains(const std::vector<pile>&) const;
     void clear();
-private:
+
     std::unordered_set<
-            game_state,
-            boost::hash<game_state>,
-            game_state_pred
+            std::vector<pile>,
+            hasher,
+            predicate
     > u_set;
 };
 

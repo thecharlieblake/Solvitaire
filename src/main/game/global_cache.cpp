@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include <boost/functional/hash.hpp>
+
 #include "global_cache.h"
 
 using namespace std;
@@ -12,26 +14,95 @@ using namespace boost;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 
-bool global_cache::insert(const game_state& gs) {
-    return u_set.insert(gs).second;
+
+bool global_cache::insert(const std::vector<pile>& piles) {
+    return u_set.insert(piles).second;
 }
 
-bool global_cache::contains(const game_state& gs) const {
-    return u_set.count(gs) > 0;
+bool global_cache::contains(const std::vector<pile>& piles) const {
+    return u_set.count(piles) > 0;
 }
 
 void global_cache::clear() {
     u_set.clear();
 }
 
-size_t hash_value(card const& c) {
-    boost::hash<uint8_t> hasher;
+global_cache::global_cache(const game_state& gs)
+        : u_set(0, hasher(gs), predicate(gs)) {
+}
+
+hasher::hasher(const game_state& gs) : init_gs(gs) {
+}
+
+size_t hasher::operator()(const vector<pile>& piles) const {
+    size_t seed = 0;
+
+#ifdef SIMPLE_HASH
+    for (game_state::pile_ref pr = 0; pr < piles.size(); pr++) {
+        seed += combine(hash_value(piles[pr]));
+    }
+#else
+    // Using addition for commutative hash
+    for (game_state::pile_ref pr : init_gs.tableau_piles) {
+        combine_commutative(seed, hash_value(piles[pr]));
+    }
+
+    // Using hash_combine for order-dependent hash
+    for (game_state::pile_ref pr : init_gs.foundations) {
+        combine(seed, hash_value(piles[pr]));
+    }
+
+    // Commutative
+    for (game_state::pile_ref pr : init_gs.reserve) {
+        combine_commutative(seed, hash_value(piles[pr]));
+    }
+
+    if (init_gs.rules.stock_size > 0) {
+        combine(seed, hash_value(piles[init_gs.stock]));
+    }
+
+    if (init_gs.rules.stock_deal_t == sdt::WASTE) {
+        combine(seed, hash_value(piles[init_gs.waste]));
+    }
+
+    if (init_gs.rules.hole) {
+        combine(seed, hash_value(piles[init_gs.hole]));
+    }
+
+    // Commutative
+    for (game_state::pile_ref pr : init_gs.cells) {
+        combine_commutative(seed, hash_value(piles[pr]));
+    }
+#endif
+
+    return seed;
+}
+
+size_t hasher::hash_value(pile const& p) const {
+    std::size_t seed = 0;
+
+    for(auto first = begin(p.pile_vec); first != end(p.pile_vec); ++first) {
+        combine(seed, hash_value(*first));
+    }
+    return seed;
+}
+
+std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
+    return seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
+}
+
+std::size_t hasher::combine_commutative(std::size_t& seed, std::size_t value) const {
+    return seed += value;
+}
+
+size_t hasher::hash_value(card const& c) const {
+    boost::hash<uint8_t> boost_hasher;
 
 #ifdef SIMPLE_HASH
     uint8_t suit_val = static_cast<uint8_t>(c.get_suit());
 #else
     uint8_t suit_val;
-    switch (game_state::rules.build_pol) {
+    switch (init_gs.rules.build_pol) {
         case pol::SAME_SUIT:
             suit_val = static_cast<uint8_t>(c.get_suit());
             break;
@@ -44,60 +115,10 @@ size_t hash_value(card const& c) {
 #endif
 
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
-    return hasher(raw_val);
+    return boost_hasher(raw_val);
 }
 
-size_t hash_value(pile const& p) {
-    return hash_range(begin(p.pile_vec), end(p.pile_vec));
-}
-
-size_t hash_value(game_state const& gs) {
-    size_t seed = 0;
-
-#ifdef SIMPLE_HASH
-    for (game_state::pile_ref pr = 0; pr < gs.piles.size(); pr++) {
-        hash_combine(seed, gs.piles[pr]);
-    }
-#else
-    boost::hash<pile> pile_hasher;
-
-    // Using addition for commutative hash
-    for (game_state::pile_ref pr : game_state::tableau_piles) {
-        seed += pile_hasher(gs.piles[pr]);
-    }
-
-    // Using hash_combine for order-dependent hash
-    for (game_state::pile_ref pr : game_state::foundations) {
-        hash_combine(seed, gs.piles[pr]);
-    }
-
-    // Commutative
-    for (game_state::pile_ref pr : game_state::reserve) {
-        seed += pile_hasher(gs.piles[pr]);
-    }
-
-    if (game_state::rules.stock_size > 0) {
-        hash_combine(seed, gs.piles[game_state::stock]);
-    }
-
-    if (game_state::rules.stock_deal_t == sdt::WASTE) {
-        hash_combine(seed, gs.piles[game_state::waste]);
-    }
-
-    if (game_state::rules.hole) {
-        hash_combine(seed, gs.piles[game_state::hole]);
-    }
-
-    // Commutative
-    for (game_state::pile_ref pr : game_state::cells) {
-        seed += pile_hasher(gs.piles[pr]);
-    }
-#endif
-
-    return seed;
-}
-
-bool game_state_pred::comp_pile(const pile &x, const pile &y) {
+bool predicate::comp_pile(const pile &x, const pile &y) {
     // Largest piles first
     if (x.size() != y.size()) {
         return x.size() > y.size();
@@ -116,12 +137,12 @@ bool game_state_pred::comp_pile(const pile &x, const pile &y) {
     return false;
 }
 
-bool game_state_pred::operator()(const game_state& x,
-                                const game_state& y) const {
-    if (x.piles.size() != y.piles.size()) return false;
+bool predicate::operator()(const std::vector<pile>& x,
+                                const std::vector<pile>& y) const {
+    if (x.size() != y.size()) return false;
 
-    vector<pile> x_piles = x.piles;
-    vector<pile> y_piles = y.piles;
+    vector<pile> x_piles = x;
+    vector<pile> y_piles = y;
 
     // Orders the piles from largest to smallest
     sort(begin(x_piles), end(x_piles), comp_pile);
@@ -140,7 +161,7 @@ bool game_state_pred::operator()(const game_state& x,
 #ifdef SIMPLE_HASH
             if (cx.get_suit() != cy.get_suit()) return false;
 #else
-            switch (game_state::rules.build_pol) {
+            switch (init_gs.rules.build_pol) {
                 case pol::SAME_SUIT:
                     if (cx.get_suit() != cy.get_suit()) return false;
                     break;
@@ -155,4 +176,7 @@ bool game_state_pred::operator()(const game_state& x,
     }
 
     return true;
+}
+
+predicate::predicate(const game_state& gs) : init_gs(gs) {
 }

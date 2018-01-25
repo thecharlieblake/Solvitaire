@@ -31,7 +31,7 @@ TEST(GlobalCache, CommutativeTableauPiles) {
     rules.tableau_pile_count = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, 0);
-    global_cache cache;
+    global_cache cache(gs);
 
     cache.insert               ({{card("AC")},{card("2D")},{card("3H")}});
     ASSERT_TRUE (cache.contains({{card("2D")},{card("3H")},{card("AC")}}));
@@ -48,9 +48,6 @@ TEST(GlobalCache, CommutativeTableauPiles) {
     cache.insert               ({{card("6C"),card("7D")},{card("8C")},{card("9D")}});
     ASSERT_TRUE (cache.contains({{card("8C")},{card("6C"),card("7D")},{card("9D")}}));
     ASSERT_FALSE(cache.contains({{card("8C")},{card("6C"),card("KD")},{card("9D")}}));
-
-    rules.tableau_pile_count = 0;
-    game_state _gs(rules, 0);
 }
 
 TEST(GlobalCache, CommutativeReserve) {
@@ -58,7 +55,7 @@ TEST(GlobalCache, CommutativeReserve) {
     rules.reserve_size = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, 0);
-    global_cache cache;
+    global_cache cache(gs);
 
     cache.insert               ({{card("AC")},{card("2D")},{card("3H")}});
     ASSERT_TRUE (cache.contains({{card("2D")},{card("3H")},{card("AC")}}));
@@ -75,9 +72,6 @@ TEST(GlobalCache, CommutativeReserve) {
     cache.insert               ({{card("6C"),card("7D")},{card("8C")},{card("9D")}});
     ASSERT_TRUE (cache.contains({{card("8C")},{card("6C"),card("7D")},{card("9D")}}));
     ASSERT_FALSE(cache.contains({{card("8C")},{card("6C"),card("KD")},{card("9D")}}));
-
-    rules.reserve_size = 0;
-    game_state _gs(rules, 0);
 }
 
 TEST(GlobalCache, CommutativeCells) {
@@ -85,7 +79,7 @@ TEST(GlobalCache, CommutativeCells) {
     rules.cells = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, 0);
-    global_cache cache;
+    global_cache cache(gs);
 
     cache.insert               ({{card("AC")},{card("2D")},{card("3H")}});
     ASSERT_TRUE (cache.contains({{card("2D")},{card("3H")},{card("AC")}}));
@@ -96,7 +90,4 @@ TEST(GlobalCache, CommutativeCells) {
     cache.insert               ({{card("4C")},{card("5D")},{}});
     ASSERT_TRUE (cache.contains({{},{card("4C")},{card("5D")}}));
     ASSERT_FALSE(cache.contains({{},{card("4C")},{}}));
-
-    rules.cells = 0;
-    game_state _gs(rules, 0);
 }

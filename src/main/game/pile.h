@@ -12,6 +12,7 @@
 #include "card.h"
 
 class pile {
+    friend class hasher;
 public:
     typedef uint8_t size_type;
 
@@ -33,7 +34,6 @@ public:
     card operator[] (size_type) const;
 
     friend bool operator==(const pile&, const pile&);
-    friend std::size_t hash_value(pile const&);
 private:
     // Underlying vector
     std::vector<card> pile_vec;
