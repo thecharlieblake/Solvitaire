@@ -39,7 +39,7 @@ size_t hasher::operator()(const vector<pile>& piles) const {
 
 #ifdef SIMPLE_HASH
     for (game_state::pile_ref pr = 0; pr < piles.size(); pr++) {
-        seed += combine(hash_value(piles[pr]));
+        seed += combine(seed, hash_value(piles[pr]));
     }
 #else
     // Using addition for commutative hash
