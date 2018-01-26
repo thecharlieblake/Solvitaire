@@ -59,10 +59,10 @@ size_t hasher::operator()(const vector<pile>& piles) const {
 
     if (init_gs.rules.stock_size > 0) {
         combine(seed, hash_value(piles[init_gs.stock]));
-    }
 
-    if (init_gs.rules.stock_deal_t == sdt::WASTE) {
-        combine(seed, hash_value(piles[init_gs.waste]));
+        if (init_gs.rules.stock_deal_t == sdt::WASTE) {
+            combine(seed, hash_value(piles[init_gs.waste]));
+        }
     }
 
     if (init_gs.rules.hole) {
