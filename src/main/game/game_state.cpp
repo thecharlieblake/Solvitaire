@@ -48,6 +48,7 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
         for (uint8_t i = 0; i < rules.cells; i++) {
             piles.emplace_back();
             cells.push_back(static_cast<pile_ref>(piles.size() - 1));
+            original_cells.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
     }
 
@@ -70,6 +71,7 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
         for (uint8_t i = 0; i < pile_count; i++) {
             piles.emplace_back();
             reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
+            original_reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
         }
     }
 
@@ -77,6 +79,7 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
     for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
         piles.emplace_back();
         tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
+        original_tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
     }
 }
 
@@ -210,8 +213,8 @@ void game_state::make_move(const move m) {
 
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
-        for (pile_ref tab_pr = tableau_piles.front();
-             tab_pr < tableau_piles.front() + m.count;
+        for (pile_ref tab_pr = original_tableau_piles.front();
+             tab_pr < original_tableau_piles.front() + m.count;
              tab_pr++) {
             piles[tab_pr].place(piles[stock].take());
         }
@@ -239,8 +242,8 @@ void game_state::undo_move(const move m) {
 
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
-        for (pile_ref tab_pr = tableau_piles.front() + m.count;
-             tab_pr-- > tableau_piles.front();
+        for (pile_ref tab_pr = original_tableau_piles.front() + m.count;
+             tab_pr-- > original_tableau_piles.front();
                 ) {
             piles[stock].place(piles[tab_pr].take());
         }

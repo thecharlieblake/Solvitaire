@@ -77,6 +77,12 @@ private:
     std::vector<pile_ref> foundations;
     pile_ref hole;
 
+    // Stores the original pile refs of the commutative piles so that they can
+    // be printed in the order the user expects
+    std::vector<pile_ref> original_tableau_piles;
+    std::vector<pile_ref> original_cells;
+    std::vector<pile_ref> original_reserve;
+
     // The core piles
     std::vector<pile> piles;
 };

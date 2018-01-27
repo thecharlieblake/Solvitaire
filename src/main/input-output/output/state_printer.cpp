@@ -15,11 +15,11 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
     }
     if (gs.rules.cells) {
         state_printer::print_header(stream, "Cells");
-        state_printer::print_piles(stream, gs.cells, gs);
+        state_printer::print_piles(stream, gs.original_cells, gs);
     }
     if (gs.rules.tableau_pile_count > 0) {
         state_printer::print_header(stream, "Tableau Piles");
-        state_printer::print_piles(stream, gs.tableau_piles, gs);
+        state_printer::print_piles(stream, gs.original_tableau_piles, gs);
     }
     if (gs.rules.reserve_size > 0) {
         if (gs.rules.reserve_stacked) {
@@ -27,7 +27,7 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         } else {
             state_printer::print_header(stream, "Reserve");
         }
-        state_printer::print_piles(stream, gs.reserve, gs);
+        state_printer::print_piles(stream, gs.original_reserve, gs);
     }
     if (gs.rules.stock_size > 0) {
         if (gs.rules.stock_deal_t == sdt::WASTE) {
