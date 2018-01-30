@@ -50,6 +50,8 @@ Note: this doesn't have to (and probably shouldn't) be run from within the proje
 
 ## Profiling
 
-env CPUPROFILE=solv.prof cmake-build-release/bin/solvitaire --type black-hole --random 8
-pprof --callgrind src/ solv.prof > solv.callgrind (ignore the warnings)
-kcachegrind solv.callgrind
+env CPUPROFILE=solvitaire.prof CPUPROFILESIGNAL=12 CPUPROFILE_FREQUENCY=1000 cmake-build-release/bin/solvitaire --type black-hole --random 4 &
+killall -12 solvitaire (start profiling)
+killall -12 solvitaire (stop profiling)
+pprof --callgrind src/ solvitaire.prof.0 > solvitaire.callgrind (ignore any warnings)
+kcachegrind solvitaire.callgrind
