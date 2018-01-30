@@ -14,13 +14,12 @@ using namespace boost;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 
-
-bool global_cache::insert(const std::vector<pile>& piles) {
-    return u_set.insert(piles).second;
+bool global_cache::insert(const game_state& gs) {
+    return u_set.emplace(get_ordered_vec(gs)).second;
 }
 
-bool global_cache::contains(const std::vector<pile>& piles) const {
-    return u_set.count(piles) > 0;
+bool global_cache::contains(const game_state& gs) const {
+    return u_set.count(get_ordered_vec(gs)) > 0;
 }
 
 void global_cache::clear() {
@@ -30,6 +29,60 @@ void global_cache::clear() {
 global_cache::global_cache(const game_state& gs)
         : u_set(0, hasher(gs), predicate(gs)) {
 }
+
+std::vector<pile> global_cache::get_ordered_vec(const game_state& gs) {
+    vector<pile> gs_vec = gs.get_data();
+    vector<pile> ordered_vec;
+
+    if (gs.rules.hole)
+        ordered_vec.push_back(gs_vec[gs.hole]);
+
+    for (game_state::pile_ref pr : gs.foundations)
+        ordered_vec.push_back(gs_vec[pr]);
+
+    for (game_state::pile_ref pr : gs.cells)
+        ordered_vec.push_back(gs_vec[pr]);
+
+    if (gs.rules.stock_size > 0) {
+        ordered_vec.push_back(gs_vec[gs.stock]);
+
+        if (gs.rules.stock_deal_t == sdt::WASTE) {
+            ordered_vec.push_back(gs_vec[gs.waste]);
+        }
+    }
+
+    for (game_state::pile_ref pr : gs.reserve)
+        ordered_vec.push_back(gs_vec[pr]);
+
+    for (game_state::pile_ref pr : gs.tableau_piles)
+        ordered_vec.push_back(gs_vec[pr]);
+
+#ifndef NDEBUG
+    // Makes sure the piles are in order
+    if (gs.original_cells.size() > 1) {
+        for (game_state::pile_ref pr : gs.original_cells) {
+            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
+            if (pr == gs.original_cells[gs.original_cells.size()-2]) break;
+        }
+    }
+    if (gs.original_reserve.size() > 1) {
+        for (game_state::pile_ref pr : gs.original_reserve) {
+            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
+            if (pr == gs.original_reserve[gs.original_reserve.size()-2]) break;
+        }
+    }
+    if (gs.original_tableau_piles.size() > 1) {
+        for (game_state::pile_ref pr : gs.original_tableau_piles) {
+            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
+            if (pr == gs.original_tableau_piles[gs.original_tableau_piles.size()-2]) break;
+        }
+    }
+#endif
+
+    return ordered_vec;
+}
+
+
 
 hasher::hasher(const game_state& gs) : init_gs(gs) {
 }
@@ -118,37 +171,11 @@ size_t hasher::hash_value(card const& c) const {
     return boost_hasher(raw_val);
 }
 
-bool predicate::comp_pile(const pile &x, const pile &y) {
-    // Largest piles first
-    if (x.size() != y.size()) {
-        return x.size() > y.size();
-    }
-    // Larger card values first
-    for (pile::size_type pile_idx = 0; pile_idx < x.size(); pile_idx++) {
-        auto x_val = static_cast<uint8_t>(x[pile_idx].get_suit()) * 13
-                     + x[pile_idx].get_rank();
-        auto y_val = static_cast<uint8_t>(y[pile_idx].get_suit()) * 13
-                     + y[pile_idx].get_rank();
-        if (x_val != y_val) {
-            return x_val > y_val;
-        }
-    }
-    // It is a requirement of std::sort that equal values return false
-    return false;
+predicate::predicate(const game_state& gs) : init_gs(gs) {
 }
 
-bool predicate::operator()(const std::vector<pile>& x,
-                                const std::vector<pile>& y) const {
-    if (x.size() != y.size()) return false;
-
-    vector<pile> x_piles = x;
-    vector<pile> y_piles = y;
-
-    // Orders the piles from largest to smallest
-    sort(begin(x_piles), end(x_piles), comp_pile);
-    sort(begin(y_piles), end(y_piles), comp_pile);
-
-    // Compares the two for equality
+bool predicate::operator()(const vector<pile>& x_piles,
+                           const vector<pile>& y_piles) const {
     for (vector<pile>::size_type pile_idx = 0; pile_idx < x_piles.size(); pile_idx++) {
         if (x_piles[pile_idx].size() != y_piles[pile_idx].size()) return false;
 
@@ -176,7 +203,4 @@ bool predicate::operator()(const std::vector<pile>& x,
     }
 
     return true;
-}
-
-predicate::predicate(const game_state& gs) : init_gs(gs) {
 }

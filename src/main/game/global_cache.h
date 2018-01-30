@@ -13,8 +13,7 @@
 
 class predicate {
 public:
-    explicit predicate(const game_state&);
-    static bool comp_pile(const pile&, const pile&);
+    predicate(const game_state&);
     bool operator() (const std::vector<pile>&, const std::vector<pile>&) const;
 private:
     const game_state& init_gs;
@@ -32,11 +31,15 @@ struct hasher {
     const game_state& init_gs;
 };
 
-struct global_cache {
+class global_cache {
+public:
     explicit global_cache(const game_state&);
-    bool insert(const std::vector<pile>&);
-    bool contains(const std::vector<pile>&) const;
+    bool insert(const game_state&);
+    bool contains(const game_state&) const;
     void clear();
+
+private:
+    static std::vector<pile> get_ordered_vec(const game_state&);
 
     std::unordered_set<
             std::vector<pile>,
