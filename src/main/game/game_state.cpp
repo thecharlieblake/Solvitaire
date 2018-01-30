@@ -97,7 +97,7 @@ game_state::game_state(const sol_rules& s_rules, int seed)
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
         deck.erase(find(begin(deck), end(deck), card("AS")));
-        piles[hole].place(card("AS"));
+        place_card(hole, card("AS"));
     }
 
     // If the foundations begin filled, then fills them
@@ -106,14 +106,14 @@ game_state::game_state(const sol_rules& s_rules, int seed)
             card c = card(f_idx % uint8_t(4), 1);
 
             deck.erase(find(begin(deck), end(deck), c));
-            piles[foundations[f_idx]].place(c);
+            place_card(foundations[f_idx], c);
         }
     }
 
     // If there is a stock, deals to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
-            piles[stock].place(deck.back());
+            place_card(stock, deck.back());
             deck.pop_back();
         }
     }
@@ -124,7 +124,7 @@ game_state::game_state(const sol_rules& s_rules, int seed)
     if (rules.reserve_size > 0) {
         for (unsigned int i = 0; i < rules.reserve_size; i++) {
             int idx = rules.reserve_stacked ? 0 : i;
-            piles[reserve[idx]].place(deck.back());
+            place_card(original_reserve[idx], deck.back());
             deck.pop_back();
         }
     }
@@ -137,22 +137,22 @@ game_state::game_state(const sol_rules& s_rules, int seed)
         card c = deck.back();
 
         // Add the randomly generated card to the tableau piles
-        auto p = t % tableau_piles.size();
+        auto p = t % original_tableau_piles.size();
 
         // If we are doing a diagonal deal, each row should have one fewer card.
         // Leftover cards are dealt normally in full rows.
-        auto row_idx = t / tableau_piles.size();
-        if (rules.diagonal_deal && row_idx < tableau_piles.size()) {
-            p = tableau_piles.size()-p-1;
-            pile_ref tableau_pile = tableau_piles[p];
+        auto row_idx = t / original_tableau_piles.size();
+        if (rules.diagonal_deal && row_idx < original_tableau_piles.size()) {
+            p = original_tableau_piles.size()-p-1;
+            pile_ref tableau_pile = original_tableau_piles[p];
 
             if (p >= row_idx) {
-                piles[tableau_pile].place(c);
+                place_card(tableau_pile, c);
                 deck.pop_back();
             }
         } else {
-            pile_ref tableau_pile = tableau_piles[p];
-            piles[tableau_pile].place(c);
+            pile_ref tableau_pile = original_tableau_piles[p];
+            place_card(tableau_pile, c);
             deck.pop_back();
         }
     }
@@ -165,8 +165,16 @@ game_state::game_state(const sol_rules& s_rules, int seed)
     }
 }
 
-game_state::game_state(std::initializer_list<pile> il) {
-    piles = il;
+game_state::game_state(const sol_rules& s_rules,
+                       std::initializer_list<pile> il)
+        : game_state(s_rules) {
+    pile_ref pr = 0;
+    for (const pile& p : il) {
+        for (const card c : p.pile_vec) {
+            place_card(pr, c);
+        }
+        pr++;
+    }
 }
 
 // Generates a randomly ordered vector of cards
@@ -216,22 +224,22 @@ void game_state::make_move(const move m) {
         for (pile_ref tab_pr = original_tableau_piles.front();
              tab_pr < original_tableau_piles.front() + m.count;
              tab_pr++) {
-            piles[tab_pr].place(piles[stock].take());
+            place_card(tab_pr, take_card(stock));
         }
     }
     // If this is not a built-pile move
     else if (m.count == 1) {
-        piles[m.to].place(piles[m.from].take());
+        place_card(m.to, take_card(m.from));
     } else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'to' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
-            piles[m.to].place(piles[m.from][pile_idx]);
+            place_card(m.to, piles[m.from][pile_idx]);
         }
 
         // Removes the cards from the 'from' pile
         for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
-            piles[m.from].take();
+            take_card(m.from);
         }
     }
 }
@@ -245,24 +253,108 @@ void game_state::undo_move(const move m) {
         for (pile_ref tab_pr = original_tableau_piles.front() + m.count;
              tab_pr-- > original_tableau_piles.front();
                 ) {
-            piles[stock].place(piles[tab_pr].take());
+            place_card(stock, take_card(tab_pr));
         }
     }
     // If this is not a built-pile move
     else if (m.count == 1) {
-        piles[m.from].place(piles[m.to].take());
+        place_card(m.from, take_card(m.to));
     } else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
-            piles[m.from].place(piles[m.to][pile_idx]);
+            place_card(m.from, piles[m.to][pile_idx]);
         }
 
         // Removes the cards from the 'to' pile
         for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
-            piles[m.to].take();
+            take_card(m.to);
         }
     }
+}
+
+// Places a card on a pile and if it is on a tableau, cell or reserve pile,
+// reorders the pile refs so that the largest pile is first
+void game_state::place_card(pile_ref pr, card c) {
+    piles[pr].place(c);
+    eval_pile_order(pr, true);
+}
+
+// Same as above but for taking cards
+card game_state::take_card(pile_ref pr) {
+    card c = piles[pr].take();
+    eval_pile_order(pr, false);
+    return c;
+}
+
+// Assesses whether the pile ref that was modified was a tableau, cell or
+// reserve pile, and if so makes the relevant function call
+void game_state::eval_pile_order(pile_ref pr, bool is_place) {
+    if (!original_tableau_piles.empty()
+        && pr >= original_tableau_piles[0]
+        && pr <= original_tableau_piles[0] + original_tableau_piles.size()) {
+
+        eval_pile_order(tableau_piles, pr, is_place);
+    } else if (!original_cells.empty()
+               && pr >= original_cells[0]
+               && pr <= original_cells[0] + original_cells.size()) {
+
+        eval_pile_order(cells, pr, is_place);
+    } else if (!original_reserve.empty()
+               && pr >= original_reserve[0]
+               && pr <= original_reserve[0] + original_reserve.size()) {
+
+        eval_pile_order(reserve, pr, is_place);
+    }
+}
+
+// Finds the pile ref in the list and evaluates whether it should be moved to
+// maintain the "pile order"
+void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
+                                 bool is_place) {
+    // Finds the first pile that is larger/smaller than the ref pile
+    // (the comp pile).
+    // If the card has been placed, search for the ref from the right hand side
+    // and if not from the lhs
+    if (is_place) {
+        auto changed_ref_iter = find(rbegin(pile_lst), rend(pile_lst), changed_pr);
+        auto comp_iter = changed_ref_iter;
+
+        while (++comp_iter != rend(pile_lst)
+               && piles[*comp_iter] < piles[*changed_ref_iter]);
+
+        if (comp_iter != ++changed_ref_iter) {
+            // Places the ref pile before the comp pile
+            pile_lst.insert(comp_iter.base(), changed_pr);
+            pile_lst.erase(changed_ref_iter.base());
+        }
+    } else {
+        auto changed_ref_iter = find(begin(pile_lst), end(pile_lst), changed_pr);
+        auto comp_iter = changed_ref_iter;
+
+        while (++comp_iter != end(pile_lst)
+               && piles[*comp_iter] > piles[*changed_ref_iter]);
+
+        if (comp_iter != ++changed_ref_iter) {
+            // Places the ref pile before the comp pile
+            pile_lst.insert(comp_iter, changed_pr);
+            pile_lst.erase(--changed_ref_iter);
+        }
+    }
+
+#ifndef NDEBUG
+    // Makes sure the piles are in order
+    if (pile_lst.size() > 1) {
+        auto prev = begin(pile_lst);
+        auto cur = begin(pile_lst);
+        cur++;
+
+        while (cur != end(pile_lst)) {
+            assert(piles[*prev] >= piles[*cur]);
+            prev++; cur++;
+        }
+    }
+#endif
 }
 
 

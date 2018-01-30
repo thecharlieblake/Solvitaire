@@ -6,6 +6,7 @@
 #define SOLVITAIRE_GAME_STATE_H
 
 #include <vector>
+#include <list>
 #include <string>
 
 #include <rapidjson/document.h>
@@ -20,6 +21,7 @@ class game_state {
     friend class state_printer;
     friend class predicate;
     friend class hasher;
+    friend class global_cache;
 public:
     // Defines types
     typedef uint8_t pile_ref;
@@ -31,15 +33,16 @@ public:
     // Constructors
     // Creates a game state representation from a JSON doc
     game_state(const sol_rules&, const rapidjson::Document&);
-    // Does the same from a 'rules' object
+    // Does the same from a seed
     game_state(const sol_rules&, int seed);
-
-    // For testing
-    game_state(std::initializer_list<pile>);
+    // Does the same but with an initialiser list (useful for testing)
+    game_state(const sol_rules&, std::initializer_list<pile>);
 
     // Alters state
     void make_move(move);
     void undo_move(move);
+    void place_card(pile_ref, card);
+    card take_card(pile_ref);
 
     std::vector<move> get_legal_moves() const;
 
@@ -55,6 +58,10 @@ private:
     // Private constructor
     explicit game_state(const sol_rules&);
 
+    // Used to maintain pile order invariant
+    void eval_pile_order(pile_ref, bool);
+    void eval_pile_order(std::list<pile_ref>&, pile_ref, bool);
+
     // Used in get_legal_moves()
     move get_stock_tableau_move() const;
     bool is_valid_tableau_move(pile_ref, pile_ref) const;
@@ -69,11 +76,11 @@ private:
 
     // References to piles
     const sol_rules rules;
-    std::vector<pile_ref> tableau_piles;
-    std::vector<pile_ref> cells;
+    std::list<pile_ref> tableau_piles;
+    std::list<pile_ref> cells;
     pile_ref stock;
     pile_ref waste;
-    std::vector<pile_ref> reserve;
+    std::list<pile_ref> reserve;
     std::vector<pile_ref> foundations;
     pile_ref hole;
 
