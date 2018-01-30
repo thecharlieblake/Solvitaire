@@ -24,13 +24,13 @@ solver::node::node(const game_state::move m,
 }
 
 bool solver::run() {
-    ProfilerStart("solvitaire");
+    //ProfilerStart("solvitaire");
     game_state state = initial_state;
 
     states_searched++;
     LOG_DEBUG (state);
     frontier.emplace_back(game_state::move(0,0), state.get_legal_moves());
-    cache.insert(state.get_data());
+    cache.insert(state);
 
     while (!frontier.empty()) {
         node& current = frontier.back();
@@ -47,7 +47,7 @@ bool solver::run() {
             // (unless it's the null first move)
             if (frontier.size() > 1) {
                 state.undo_move(current.move);
-                assert(cache.contains(state.get_data()));
+                assert(cache.contains(state));
                 LOG_DEBUG (state);
             }
             // Returns to the previous state
@@ -60,7 +60,7 @@ bool solver::run() {
             state.make_move(next_move);
 
             // Insert the state into the global cache
-            bool is_new_state = cache.insert(state.get_data());
+            bool is_new_state = cache.insert(state);
             if (is_new_state) {
                 states_searched++;
                 LOG_DEBUG (state);
@@ -70,7 +70,7 @@ bool solver::run() {
             } else {
                 // If we've seen the state before, undoes the move
                 state.undo_move(next_move);
-                assert(cache.contains(state.get_data()));
+                assert(cache.contains(state));
             }
         }
     }
