@@ -207,7 +207,7 @@ for rulesGen in [SpanishPatienceRulesGen(),
             + " within time constraint\n")
             print("Game description at level " + str(level) + ":")
             print(str(rulesGen) + "\n")
-            summaryResults[rulesGen.name] = level
+            summaryResults[rulesGen.name] = level-1
             break
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
