@@ -52,14 +52,13 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
         json_helper::json_parse_err("Incorrect number of tableau piles");
     }
 
-    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.tableau_piles));
-         p.second != end(gs.tableau_piles);
+    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.original_tableau_piles));
+         p.second != end(gs.original_tableau_piles);
          ++p.first, ++p.second) {
 
-        assert(p.first->IsArray());
         for (auto& json_card : p.first->GetArray()) {
             assert(json_card.IsString());
-            gs.piles[*p.second].place(card(json_card.GetString()));
+            gs.place_card(*p.second, card(json_card.GetString()));
         }
     }
 }
@@ -69,7 +68,7 @@ void deal_parser::parse_hole(game_state &gs, const Document& doc) {
         const Value &json_hole = doc["hole"];
         assert(json_hole.IsString());
 
-        gs.piles[gs.hole].place(card(json_hole.GetString()));
+        gs.place_card(gs.hole, card(json_hole.GetString()));
     }
 }
 
@@ -85,13 +84,13 @@ void deal_parser::parse_cells(game_state &gs, const Document& doc) {
             json_helper::json_parse_err("Incorrect number of cells");
         }
 
-        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.cells));
-             p.second != end(gs.cells);
+        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.original_cells));
+             p.second != end(gs.original_cells);
              ++p.first, ++p.second) {
 
             auto json_card = p.first;
             assert(json_card->IsString());
-            gs.piles[*p.second].place(card(json_card->GetString()));
+            gs.place_card(*p.second, card(json_card->GetString()));
         }
     }
 }
@@ -107,7 +106,7 @@ void deal_parser::parse_stock(game_state &gs, const Document& doc) {
 
         for (const Value& json_card : json_stock.GetArray()) {
             assert(json_card.IsString());
-            gs.piles[gs.stock].place(card(json_card.GetString()));
+            gs.place_card(gs.stock, card(json_card.GetString()));
         }
     }
 }
@@ -127,9 +126,9 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
 
     for (game_state::pile_ref i = 0; i < json_card_arr.Size(); i++) {
         assert(json_card_arr[i].IsString());
-        game_state::pile_ref pr = gs.reserve[0];
+        game_state::pile_ref pr = gs.original_reserve[0];
         if (!gs.rules.reserve_stacked) pr += i;
-        gs.piles[pr].place(card(json_card_arr[i].GetString()));
+        gs.place_card(pr, card(json_card_arr[i].GetString()));
     }
 }
 
@@ -138,8 +137,6 @@ void deal_parser::fill_foundations(game_state &gs) {
     assert(gs.foundations.size() == foundations_count);
 
     for (uint8_t f_idx = 0; f_idx < foundations_count; f_idx++) {
-        gs.piles[gs.foundations[f_idx]].place(
-                card(f_idx % uint8_t(4), 1)
-        );
+        gs.place_card(gs.foundations[f_idx], card(f_idx % uint8_t(4), 1));
     }
 }
