@@ -58,9 +58,11 @@ private:
     // Private constructor
     explicit game_state(const sol_rules&);
 
+#ifndef ORDER_ON_CACHE
     // Used to maintain pile order invariant
     void eval_pile_order(pile_ref, bool);
     void eval_pile_order(std::list<pile_ref>&, pile_ref, bool);
+#endif
 
     // Used in get_legal_moves()
     move get_stock_tableau_move() const;
