@@ -13,6 +13,7 @@
 
 class pile {
     friend class hasher;
+    friend class game_state;
 public:
     typedef uint8_t size_type;
 
@@ -25,16 +26,20 @@ public:
     bool empty() const;
     size_type size() const;
 
-    // Modify
-    void place(card);
-    card take();
-
     // Indexes the vector, with the top card as index 0
     card& operator[] (size_type);
     card operator[] (size_type) const;
 
     friend bool operator==(const pile&, const pile&);
+    friend bool operator<(const pile&, const pile&);
+    friend bool operator>(const pile&, const pile&);
+    friend bool operator<=(const pile&, const pile&);
+    friend bool operator>=(const pile&, const pile&);
 private:
+    // Modify
+    void place(card);
+    card take();
+
     // Underlying vector
     std::vector<card> pile_vec;
 };
