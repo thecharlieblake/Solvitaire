@@ -48,6 +48,10 @@ private:
 
 bool operator==(const card&, const card&);
 bool operator!=(const card&, const card&);
+bool operator<(const card&, const card&);
+bool operator>(const card&, const card&);
+bool operator<=(const card&, const card&);
+bool operator>=(const card&, const card&);
 
 
 #endif //SOLITAIRE_PIP_CARD_H

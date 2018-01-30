@@ -23,6 +23,12 @@ if (len(sys.argv) >= 2
     flag = "-simple-hash"
     print("Running in simple-hash mode...")
 
+flag = ""
+if (len(sys.argv) >= 2
+    and (sys.argv[1] == "--order-on-cache" or sys.argv[1] == "-oc")):
+    flag = "-order-on-cache"
+    print("Running in order-on-cache mode...")
+
 class SolitaireRulesGen(metaclass=ABCMeta):
 
     def __init__(self, name):

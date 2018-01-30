@@ -13,32 +13,32 @@ typedef sol_rules::build_policy pol;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     // Construct tableau piles
-    if (game_state::rules.tableau_pile_count > 0) {
+    if (gs.rules.tableau_pile_count > 0) {
         parse_tableau_piles(gs, doc);
     }
 
     // Construct hole card
-    if (game_state::rules.hole) {
+    if (gs.rules.hole) {
         parse_hole(gs, doc);
     }
 
     // Construct filled cells
-    if (game_state::rules.cells) {
+    if (gs.rules.cells) {
         parse_cells(gs, doc);
     }
 
     // Construct stock
-    if (game_state::rules.stock_size > 0) {
+    if (gs.rules.stock_size > 0) {
         parse_stock(gs, doc);
     }
 
     // Construct reserve
-    if (game_state::rules.reserve_size > 0) {
+    if (gs.rules.reserve_size > 0) {
         parse_reserve(gs, doc);
     }
 
     // If the foundations begin with cards in them, fill them
-    if (game_state::rules.foundations_init_card) {
+    if (gs.rules.foundations_init_card) {
         fill_foundations(gs);
     }
 }
@@ -48,18 +48,17 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
     const Value& json_tab_piles = doc["tableau piles"];
     assert(json_tab_piles.IsArray());
 
-    if (json_tab_piles.Size() != game_state::rules.tableau_pile_count ) {
+    if (json_tab_piles.Size() != gs.rules.tableau_pile_count ) {
         json_helper::json_parse_err("Incorrect number of tableau piles");
     }
 
-    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.tableau_piles));
-         p.second != end(gs.tableau_piles);
+    for (auto p = std::make_pair(begin(json_tab_piles.GetArray()), begin(gs.original_tableau_piles));
+         p.second != end(gs.original_tableau_piles);
          ++p.first, ++p.second) {
 
-        assert(p.first->IsArray());
         for (auto& json_card : p.first->GetArray()) {
             assert(json_card.IsString());
-            gs.piles[*p.second].place(card(json_card.GetString()));
+            gs.place_card(*p.second, card(json_card.GetString()));
         }
     }
 }
@@ -69,7 +68,7 @@ void deal_parser::parse_hole(game_state &gs, const Document& doc) {
         const Value &json_hole = doc["hole"];
         assert(json_hole.IsString());
 
-        gs.piles[gs.hole].place(card(json_hole.GetString()));
+        gs.place_card(gs.hole, card(json_hole.GetString()));
     }
 }
 
@@ -81,17 +80,17 @@ void deal_parser::parse_cells(game_state &gs, const Document& doc) {
         const auto json_cell_arr = json_cells.GetArray();
 
         if (json_cell_arr.Empty()) return;
-        else if (json_cell_arr.Size() != game_state::rules.cells) {
+        else if (json_cell_arr.Size() != gs.rules.cells) {
             json_helper::json_parse_err("Incorrect number of cells");
         }
 
-        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.cells));
-             p.second != end(gs.cells);
+        for (auto p = std::make_pair(begin(json_cell_arr), begin(gs.original_cells));
+             p.second != end(gs.original_cells);
              ++p.first, ++p.second) {
 
             auto json_card = p.first;
             assert(json_card->IsString());
-            gs.piles[*p.second].place(card(json_card->GetString()));
+            gs.place_card(*p.second, card(json_card->GetString()));
         }
     }
 }
@@ -101,13 +100,13 @@ void deal_parser::parse_stock(game_state &gs, const Document& doc) {
         const Value &json_stock = doc["stock"];
         assert(json_stock.IsArray());
 
-        if (json_stock.Size() != game_state::rules.stock_size) {
+        if (json_stock.Size() != gs.rules.stock_size) {
             json_helper::json_parse_err("Incorrect stock size");
         }
 
         for (const Value& json_card : json_stock.GetArray()) {
             assert(json_card.IsString());
-            gs.piles[gs.stock].place(card(json_card.GetString()));
+            gs.place_card(gs.stock, card(json_card.GetString()));
         }
     }
 }
@@ -121,25 +120,23 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
 
     // We treat a regular reserve like multiple single-card piles,
     // but a stacked reserve as a single multiple-card pile
-    if (json_reserve_piles.Size() != game_state::rules.reserve_size) {
+    if (json_reserve_piles.Size() != gs.rules.reserve_size) {
         json_helper::json_parse_err("Incorrect reserve size");
     }
 
     for (game_state::pile_ref i = 0; i < json_card_arr.Size(); i++) {
         assert(json_card_arr[i].IsString());
-        game_state::pile_ref pr = gs.reserve[0];
-        if (!game_state::rules.reserve_stacked) pr += i;
-        gs.piles[pr].place(card(json_card_arr[i].GetString()));
+        game_state::pile_ref pr = gs.original_reserve[0];
+        if (!gs.rules.reserve_stacked) pr += i;
+        gs.place_card(pr, card(json_card_arr[i].GetString()));
     }
 }
 
 void deal_parser::fill_foundations(game_state &gs) {
-    auto foundations_count = uint8_t(4 * (game_state::rules.two_decks ? 2:1));
+    auto foundations_count = uint8_t(4 * (gs.rules.two_decks ? 2:1));
     assert(gs.foundations.size() == foundations_count);
 
     for (uint8_t f_idx = 0; f_idx < foundations_count; f_idx++) {
-        gs.piles[gs.foundations[f_idx]].place(
-                card(f_idx % uint8_t(4), 1)
-        );
+        gs.place_card(gs.foundations[f_idx], card(f_idx % uint8_t(4), 1));
     }
 }

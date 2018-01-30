@@ -16,7 +16,7 @@ using namespace std;
 using namespace boost;
 
 solver::solver(const game_state& gs)
-        : initial_state(gs), states_searched(0) {}
+        : cache(gs), initial_state(gs), states_searched(0) {}
 
 solver::node::node(const game_state::move m,
                    vector<game_state::move> uc)
@@ -24,7 +24,7 @@ solver::node::node(const game_state::move m,
 }
 
 bool solver::run() {
-    ProfilerStart("solvitaire");
+    //ProfilerStart("solvitaire");
     game_state state = initial_state;
 
     states_searched++;

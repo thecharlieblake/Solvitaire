@@ -82,3 +82,31 @@ bool operator==(const card& l, const card& r) {
 bool operator!=(const card& l, const card& r) {
     return !(l == r);
 }
+
+bool operator<(const card& l, const card& r) {
+    if (l.get_rank() == r.get_rank())
+        return l.get_suit() < r.get_suit();
+    else
+        return l.get_rank() < r.get_rank();
+}
+
+bool operator>(const card& l, const card& r) {
+    if (l.get_rank() == r.get_rank())
+        return l.get_suit() > r.get_suit();
+    else
+        return l.get_rank() > r.get_rank();
+}
+
+bool operator<=(const card& l, const card& r) {
+    if (l.get_rank() == r.get_rank())
+        return l.get_suit() <= r.get_suit();
+    else
+        return l.get_rank() <= r.get_rank();
+}
+
+bool operator>=(const card& l, const card& r) {
+    if (l.get_rank() == r.get_rank())
+        return l.get_suit() >= r.get_suit();
+    else
+        return l.get_rank() >= r.get_rank();
+}

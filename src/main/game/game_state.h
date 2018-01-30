@@ -6,6 +6,7 @@
 #define SOLVITAIRE_GAME_STATE_H
 
 #include <vector>
+#include <list>
 #include <string>
 
 #include <rapidjson/document.h>
@@ -18,7 +19,9 @@
 class game_state {
     friend class deal_parser;
     friend class state_printer;
-    friend class game_state_pred;
+    friend class predicate;
+    friend class hasher;
+    friend class global_cache;
 public:
     // Defines types
     typedef uint8_t pile_ref;
@@ -30,15 +33,16 @@ public:
     // Constructors
     // Creates a game state representation from a JSON doc
     game_state(const sol_rules&, const rapidjson::Document&);
-    // Does the same from a 'rules' object
+    // Does the same from a seed
     game_state(const sol_rules&, int seed);
-
-    // For testing
-    game_state(std::initializer_list<pile>);
+    // Does the same but with an initialiser list (useful for testing)
+    game_state(const sol_rules&, std::initializer_list<pile>);
 
     // Alters state
     void make_move(move);
     void undo_move(move);
+    void place_card(pile_ref, card);
+    card take_card(pile_ref);
 
     std::vector<move> get_legal_moves() const;
 
@@ -48,15 +52,17 @@ public:
 
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
-    friend std::size_t hash_value(card const&);
-    friend std::size_t hash_value(game_state const&);
-
 private:
-    void static_reset();
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
 
     // Private constructor
     explicit game_state(const sol_rules&);
+
+#ifndef ORDER_ON_CACHE
+    // Used to maintain pile order invariant
+    void eval_pile_order(pile_ref, bool);
+    void eval_pile_order(std::list<pile_ref>&, pile_ref, bool);
+#endif
 
     // Used in get_legal_moves()
     move get_stock_tableau_move() const;
@@ -71,14 +77,20 @@ private:
                                      card) const;
 
     // References to piles
-    static sol_rules rules;
-    static std::vector<pile_ref> tableau_piles;
-    static std::vector<pile_ref> cells;
-    static pile_ref stock;
-    static pile_ref waste;
-    static std::vector<pile_ref> reserve;
-    static std::vector<pile_ref> foundations;
-    static pile_ref hole;
+    const sol_rules rules;
+    std::list<pile_ref> tableau_piles;
+    std::list<pile_ref> cells;
+    pile_ref stock;
+    pile_ref waste;
+    std::list<pile_ref> reserve;
+    std::vector<pile_ref> foundations;
+    pile_ref hole;
+
+    // Stores the original pile refs of the commutative piles so that they can
+    // be printed in the order the user expects
+    std::vector<pile_ref> original_tableau_piles;
+    std::vector<pile_ref> original_cells;
+    std::vector<pile_ref> original_reserve;
 
     // The core piles
     std::vector<pile> piles;
