@@ -32,54 +32,44 @@ void test_helper::run_card_cache_test(sol_rules::build_policy bp,
     sol_rules rules;
     rules.tableau_pile_count = 1;
     rules.build_pol = bp;
-    game_state gs(rules, 0);
 
     for (uint8_t suit_idx = 0; suit_idx < 4; suit_idx++) {
         for (card::rank_t rank = 1; rank <= 13; rank++) {
-            global_cache cache(gs);
-
             // c2 is the same as c_ but with a different suit
             const card c = card(suit_idx, rank);
             const card c_dif_col = card(uint8_t((suit_idx + 1) % 4), rank);
             const card c_same_col = card(uint8_t((suit_idx + 2) % 4), rank);
             const card c_dif_rank = card(suit_idx, card::rank_t((rank % 13) + 1));
 
-            const game_state s = {{c}};
-            const game_state s_dif_suit = {{c_dif_col}};
-            const game_state s_same_col = {{c_same_col}};
-            const game_state s_dif_rank = {{c_dif_rank}};
+            const game_state s = game_state(rules, initializer_list<pile>{{c}});
+            const game_state s_dif_suit(rules, initializer_list<pile>{{c_dif_col}});
+            const game_state s_same_col(rules, initializer_list<pile>{{c_same_col}});
+            const game_state s_dif_rank(rules, initializer_list<pile>{{c_dif_rank}});
 
-            cache.insert(s.get_data());
+            global_cache cache(s);
 
-            ASSERT_TRUE(cache.contains(s.get_data())) << "Contains self";
+            cache.insert(s);
 
-            ASSERT_(assert_dif_col, hasher(gs)(s.get_data()) == hasher(gs)(s_dif_suit.get_data()))
+            ASSERT_TRUE(cache.contains(s)) << "Contains self";
+
+            ASSERT_(assert_dif_col, hasher(s)(s.get_data()) == hasher(s)(s_dif_suit.get_data()))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_col.to_string();
-            ASSERT_(assert_dif_col, predicate(gs)(s.get_data(), s_dif_suit.get_data()))
-                    << "Insert: " << c.to_string()
-                    << ", Comp: " << c_dif_col.to_string();
-            ASSERT_(assert_dif_col, cache.contains(s_dif_suit.get_data()))
+            ASSERT_(assert_dif_col, cache.contains(s_dif_suit))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_col.to_string();
 
-            ASSERT_(assert_same_col, hasher(gs)(s.get_data()) == hasher(gs)(s_same_col.get_data()))
+            ASSERT_(assert_same_col, hasher(s)(s.get_data()) == hasher(s)(s_same_col.get_data()))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_same_col.to_string();
-            ASSERT_(assert_same_col, predicate(gs)(s.get_data(), s_same_col.get_data()))
-                    << "Insert: " << c.to_string()
-                    << ", Comp: " << c_same_col.to_string();
-            ASSERT_(assert_same_col, cache.contains(s_same_col.get_data()))
+            ASSERT_(assert_same_col, cache.contains(s_same_col))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_same_col.to_string();
 
-            ASSERT_FALSE(hasher(gs)(s.get_data()) == hasher(gs)(s_dif_rank.get_data()))
+            ASSERT_FALSE(hasher(s)(s.get_data()) == hasher(s)(s_dif_rank.get_data()))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_rank.to_string();
-            ASSERT_FALSE(predicate(gs)(s.get_data(), s_dif_rank.get_data()))
-                    << "Insert: " << c.to_string()
-                    << ", Comp: " << c_dif_rank.to_string();
-            ASSERT_FALSE(cache.contains(s_dif_rank.get_data()))
+            ASSERT_FALSE(cache.contains(s_dif_rank))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_rank.to_string();
         }
