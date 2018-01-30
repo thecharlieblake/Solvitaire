@@ -31,8 +31,24 @@ global_cache::global_cache(const game_state& gs)
 }
 
 std::vector<pile> global_cache::get_ordered_vec(const game_state& gs) {
-    vector<pile> gs_vec = gs.get_data();
+#ifdef ORDER_ON_CACHE
+    vector<pile> ordered_vec = gs.get_data();
+    if (gs.rules.cells > 0) {
+        sort(begin(ordered_vec) + gs.original_cells[0],
+             begin(ordered_vec) + gs.original_cells[0] + gs.original_cells.size());
+    }
+    if (gs.rules.reserve_size > 0) {
+        sort(begin(ordered_vec) + gs.original_reserve[0],
+             begin(ordered_vec) + gs.original_reserve[0] + gs.original_reserve.size());
+    }
+    if (gs.rules.tableau_pile_count > 0) {
+        sort(begin(ordered_vec) + gs.original_tableau_piles[0],
+             begin(ordered_vec) + gs.original_tableau_piles[0] + gs.original_tableau_piles.size());
+    }
+#else
+    const vector<pile>& gs_vec = gs.get_data();
     vector<pile> ordered_vec;
+    ordered_vec.reserve(gs_vec.size());
 
     if (gs.rules.hole)
         ordered_vec.push_back(gs_vec[gs.hole]);
@@ -77,6 +93,7 @@ std::vector<pile> global_cache::get_ordered_vec(const game_state& gs) {
             if (pr == gs.original_tableau_piles[gs.original_tableau_piles.size()-2]) break;
         }
     }
+#endif
 #endif
 
     return ordered_vec;

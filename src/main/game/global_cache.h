@@ -13,7 +13,7 @@
 
 class predicate {
 public:
-    predicate(const game_state&);
+    explicit predicate(const game_state&);
     bool operator() (const std::vector<pile>&, const std::vector<pile>&) const;
 private:
     const game_state& init_gs;
