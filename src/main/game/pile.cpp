@@ -52,17 +52,33 @@ bool operator==(const pile& a, const pile& b) {
 }
 
 bool operator<(const pile& a, const pile& b) {
-    return a.pile_vec < b.pile_vec;
+    if (a.size() == b.size()) {
+        return a.pile_vec < b.pile_vec;
+    } else {
+        return a.size() < b.size();
+    }
 }
 
 bool operator>(const pile& a, const pile& b) {
-    return a.pile_vec > b.pile_vec;
+    if (a.size() == b.size()) {
+        return a.pile_vec > b.pile_vec;
+    } else {
+        return a.size() > b.size();
+    }
 }
 
 bool operator<=(const pile& a, const pile& b) {
-    return a.pile_vec <= b.pile_vec;
+    if (a.size() == b.size()) {
+        return a.pile_vec <= b.pile_vec;
+    } else {
+        return a.size() <= b.size();
+    }
 }
 
 bool operator>=(const pile& a, const pile& b) {
-    return a.pile_vec >= b.pile_vec;
+    if (a.size() == b.size()) {
+        return a.pile_vec >= b.pile_vec;
+    } else {
+        return a.size() >= b.size();
+    }
 }
