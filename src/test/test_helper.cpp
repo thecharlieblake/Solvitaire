@@ -52,21 +52,24 @@ void test_helper::run_card_cache_test(sol_rules::build_policy bp,
 
             ASSERT_TRUE(cache.contains(s)) << "Contains self";
 
-            ASSERT_(assert_dif_col, hasher(s)(s.get_data()) == hasher(s)(s_dif_suit.get_data()))
+            ASSERT_(assert_dif_col, hasher(s)(cached_game_state(s))
+                                    == hasher(s)(cached_game_state(s_dif_suit)))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_col.to_string();
             ASSERT_(assert_dif_col, cache.contains(s_dif_suit))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_col.to_string();
 
-            ASSERT_(assert_same_col, hasher(s)(s.get_data()) == hasher(s)(s_same_col.get_data()))
+            ASSERT_(assert_same_col, hasher(s)(cached_game_state(s))
+                                     == hasher(s)(cached_game_state(s_same_col)))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_same_col.to_string();
             ASSERT_(assert_same_col, cache.contains(s_same_col))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_same_col.to_string();
 
-            ASSERT_FALSE(hasher(s)(s.get_data()) == hasher(s)(s_dif_rank.get_data()))
+            ASSERT_FALSE(hasher(s)(cached_game_state(s))
+                         == hasher(s)(cached_game_state(s_dif_rank)))
                     << "Insert: " << c.to_string()
                     << ", Comp: " << c_dif_rank.to_string();
             ASSERT_FALSE(cache.contains(s_dif_rank))
