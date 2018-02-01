@@ -25,9 +25,9 @@ if (len(sys.argv) >= 2
 
 flag = ""
 if (len(sys.argv) >= 2
-    and (sys.argv[1] == "--order-on-cache" or sys.argv[1] == "-oc")):
-    flag = "-order-on-cache"
-    print("Running in order-on-cache mode...")
+    and (sys.argv[1] == "--no-reduced-state" or sys.argv[1] == "-nrc")):
+    flag = "-no-reduced-state"
+    print("Running in no-reduced-state mode...")
 
 class SolitaireRulesGen(metaclass=ABCMeta):
 
