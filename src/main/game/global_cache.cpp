@@ -15,11 +15,11 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 
 bool global_cache::insert(const game_state& gs) {
-    return u_set.emplace(get_ordered_vec(gs)).second;
+    return u_set.emplace(gs).second;
 }
 
 bool global_cache::contains(const game_state& gs) const {
-    return u_set.count(get_ordered_vec(gs)) > 0;
+    return u_set.count(cached_game_state(gs)) > 0;
 }
 
 void global_cache::clear() {
@@ -30,121 +30,21 @@ global_cache::global_cache(const game_state& gs)
         : u_set(0, hasher(gs), predicate(gs)) {
 }
 
-std::vector<pile> global_cache::get_ordered_vec(const game_state& gs) {
-#ifdef ORDER_ON_CACHE
-    vector<pile> ordered_vec = gs.get_data();
-    if (gs.rules.cells > 0) {
-        sort(begin(ordered_vec) + gs.original_cells[0],
-             begin(ordered_vec) + gs.original_cells[0] + gs.original_cells.size());
-    }
-    if (gs.rules.reserve_size > 0) {
-        sort(begin(ordered_vec) + gs.original_reserve[0],
-             begin(ordered_vec) + gs.original_reserve[0] + gs.original_reserve.size());
-    }
-    if (gs.rules.tableau_pile_count > 0) {
-        sort(begin(ordered_vec) + gs.original_tableau_piles[0],
-             begin(ordered_vec) + gs.original_tableau_piles[0] + gs.original_tableau_piles.size());
-    }
-#else
-    const vector<pile>& gs_vec = gs.get_data();
-    vector<pile> ordered_vec;
-    ordered_vec.reserve(gs_vec.size());
-
-    if (gs.rules.hole)
-        ordered_vec.push_back(gs_vec[gs.hole]);
-
-    for (game_state::pile_ref pr : gs.foundations)
-        ordered_vec.push_back(gs_vec[pr]);
-
-    for (game_state::pile_ref pr : gs.cells)
-        ordered_vec.push_back(gs_vec[pr]);
-
-    if (gs.rules.stock_size > 0) {
-        ordered_vec.push_back(gs_vec[gs.stock]);
-
-        if (gs.rules.stock_deal_t == sdt::WASTE) {
-            ordered_vec.push_back(gs_vec[gs.waste]);
-        }
-    }
-
-    for (game_state::pile_ref pr : gs.reserve)
-        ordered_vec.push_back(gs_vec[pr]);
-
-    for (game_state::pile_ref pr : gs.tableau_piles)
-        ordered_vec.push_back(gs_vec[pr]);
-
-#ifndef NDEBUG
-    // Makes sure the piles are in order
-    if (gs.original_cells.size() > 1) {
-        for (game_state::pile_ref pr : gs.original_cells) {
-            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
-            if (pr == gs.original_cells[gs.original_cells.size()-2]) break;
-        }
-    }
-    if (gs.original_reserve.size() > 1) {
-        for (game_state::pile_ref pr : gs.original_reserve) {
-            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
-            if (pr == gs.original_reserve[gs.original_reserve.size()-2]) break;
-        }
-    }
-    if (gs.original_tableau_piles.size() > 1) {
-        for (game_state::pile_ref pr : gs.original_tableau_piles) {
-            assert(ordered_vec[pr] >= ordered_vec[pr+1]);
-            if (pr == gs.original_tableau_piles[gs.original_tableau_piles.size()-2]) break;
-        }
-    }
-#endif
-#endif
-
-    return ordered_vec;
-}
-
 
 
 hasher::hasher(const game_state& gs) : init_gs(gs) {
 }
 
-size_t hasher::operator()(const vector<pile>& piles) const {
+size_t hasher::operator()(const cached_game_state& cgs) const {
     size_t seed = 0;
 
-#ifdef SIMPLE_HASH
-    for (game_state::pile_ref pr = 0; pr < piles.size(); pr++) {
-        seed += combine(seed, hash_value(piles[pr]));
-    }
+#ifdef NO_REDUCED_STATE
+    for (const pile& d : cgs.data) {
 #else
-    // Using addition for commutative hash
-    for (game_state::pile_ref pr : init_gs.tableau_piles) {
-        combine_commutative(seed, hash_value(piles[pr]));
-    }
-
-    // Using hash_combine for order-dependent hash
-    for (game_state::pile_ref pr : init_gs.foundations) {
-        combine(seed, hash_value(piles[pr]));
-    }
-
-    // Commutative
-    for (game_state::pile_ref pr : init_gs.reserve) {
-        combine_commutative(seed, hash_value(piles[pr]));
-    }
-
-    if (init_gs.rules.stock_size > 0) {
-        combine(seed, hash_value(piles[init_gs.stock]));
-
-        if (init_gs.rules.stock_deal_t == sdt::WASTE) {
-            combine(seed, hash_value(piles[init_gs.waste]));
-        }
-    }
-
-    if (init_gs.rules.hole) {
-        combine(seed, hash_value(piles[init_gs.hole]));
-    }
-
-    // Commutative
-    for (game_state::pile_ref pr : init_gs.cells) {
-        combine_commutative(seed, hash_value(piles[pr]));
-    }
+    for (card d : cgs.data) {
 #endif
-
+        combine(seed, hash_value(d));
+    }
     return seed;
 }
 
@@ -159,10 +59,6 @@ size_t hasher::hash_value(pile const& p) const {
 
 std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
     return seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
-}
-
-std::size_t hasher::combine_commutative(std::size_t& seed, std::size_t value) const {
-    return seed += value;
 }
 
 size_t hasher::hash_value(card const& c) const {
@@ -191,20 +87,21 @@ size_t hasher::hash_value(card const& c) const {
 predicate::predicate(const game_state& gs) : init_gs(gs) {
 }
 
-bool predicate::operator()(const vector<pile>& x_piles,
-                           const vector<pile>& y_piles) const {
-    for (vector<pile>::size_type pile_idx = 0; pile_idx < x_piles.size(); pile_idx++) {
-        if (x_piles[pile_idx].size() != y_piles[pile_idx].size()) return false;
+bool predicate::operator()(const cached_game_state& a,
+                           const cached_game_state& b) const {
+#ifdef NO_REDUCED_STATE
+    for (vector<pile>::size_type pile_idx = 0; pile_idx < a.data.size(); pile_idx++) {
+        if (a.data[pile_idx].size() != b.data[pile_idx].size()) return false;
 
-        for (auto card_idx = 0; card_idx < x_piles[pile_idx].size(); card_idx++) {
-            card cx = x_piles[pile_idx][card_idx];
-            card cy = y_piles[pile_idx][card_idx];
+        for (auto card_idx = 0; card_idx < a.data[pile_idx].size(); card_idx++) {
+            card cx = a.data[pile_idx][card_idx];
+            card cy = b.data[pile_idx][card_idx];
 
             if (cx.get_rank() != cy.get_rank()) return false;
 
-#ifdef SIMPLE_HASH
+# ifdef SIMPLE_HASH
             if (cx.get_suit() != cy.get_suit()) return false;
-#else
+# else
             switch (init_gs.rules.build_pol) {
                 case pol::SAME_SUIT:
                     if (cx.get_suit() != cy.get_suit()) return false;
@@ -215,9 +112,111 @@ bool predicate::operator()(const vector<pile>& x_piles,
                 default:
                     break;
             }
-#endif
+# endif
         }
     }
+#else
+    for (cached_game_state::size_type i = 0; i < a.data.size(); i++) {
+        if (a.data[i] != b.data[i]) return false;
+    }
+#endif
 
     return true;
 }
+
+cached_game_state::cached_game_state(const game_state& gs) {
+#ifdef NO_REDUCED_STATE
+    const vector<pile>& gs_vec = gs.get_data();
+
+    if (gs.rules.hole)
+        data.push_back(gs_vec[gs.hole]);
+
+    for (game_state::pile_ref pr : gs.foundations)
+        data.push_back(gs_vec[pr]);
+
+    for (game_state::pile_ref pr : gs.cells)
+        data.push_back(gs_vec[pr]);
+
+    if (gs.rules.stock_size > 0) {
+        data.push_back(gs_vec[gs.stock]);
+
+        if (gs.rules.stock_deal_t == sdt::WASTE) {
+            data.push_back(gs_vec[gs.waste]);
+        }
+    }
+
+    for (game_state::pile_ref pr : gs.reserve)
+        data.push_back(gs_vec[pr]);
+
+    for (game_state::pile_ref pr : gs.tableau_piles)
+        data.push_back(gs_vec[pr]);
+#else
+    if (gs.rules.hole) {
+        add_card(gs.piles[gs.hole].top_card(), gs);
+    }
+
+    // No need to add foundations, as they are implicit in the other piles
+
+    for (game_state::pile_ref pr : gs.cells) {
+        add_pile(gs.piles[pr], gs);
+    }
+    if (gs.rules.cells > 0) {
+        add_card_divider();
+    }
+
+    if (gs.rules.stock_size > 0) {
+        add_pile(gs.piles[gs.stock], gs);
+        add_card_divider();
+
+        if (gs.rules.stock_deal_t == sdt::WASTE) {
+            add_pile(gs.piles[gs.waste], gs);
+            add_card_divider();
+        }
+    }
+
+    for (game_state::pile_ref pr : gs.reserve) {
+        add_pile(gs.piles[pr], gs);
+    }
+    if (gs.rules.reserve_size > 0) {
+        add_card_divider();
+    }
+
+    for (game_state::pile_ref pr : gs.tableau_piles) {
+        add_pile(gs.piles[pr], gs);
+        add_card_divider();
+    }
+#endif
+}
+
+
+#ifndef NO_REDUCED_STATE
+void cached_game_state::add_pile(const pile& p, const game_state& gs) {
+    for (card c : p.pile_vec) {
+        add_card(c, gs);
+    }
+}
+
+void cached_game_state::add_card(card c, const game_state& gs) {
+    switch (gs.rules.build_pol) {
+# ifdef SIMPLE_HASH
+        default:
+            data.emplace_back(c);
+            break;
+# else
+        case pol::SAME_SUIT:
+            data.emplace_back(c);
+            break;
+        case pol::RED_BLACK:
+            data.emplace_back(c.get_colour(), c.get_rank());
+            break;
+        default:
+            data.emplace_back(0, c.get_rank());
+            break;
+# endif
+    }
+}
+
+void cached_game_state::add_card_divider() {
+    data.emplace_back(0, 0);
+}
+#endif

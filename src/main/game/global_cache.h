@@ -7,26 +7,47 @@
 
 #include <vector>
 #include <unordered_set>
+#include <boost/pool/pool.hpp>
+#include <boost/pool/pool_alloc.hpp>
 
 #include "sol_rules.h"
 #include "game_state.h"
 
+struct cached_game_state {
+    typedef std::vector<
+#ifdef NO_REDUCED_STATE
+            pile
+#else
+            card
+#endif
+    > state_data;
+    typedef state_data::size_type size_type;
+
+    explicit cached_game_state(const game_state&);
+#ifndef NO_REDUCED_STATE
+    void add_pile(const pile&, const game_state&);
+    void add_card(card, const game_state&);
+    void add_card_divider();
+#endif
+
+    state_data data;
+};
+
 class predicate {
 public:
     explicit predicate(const game_state&);
-    bool operator() (const std::vector<pile>&, const std::vector<pile>&) const;
+    bool operator() (const cached_game_state&, const cached_game_state&) const;
 private:
     const game_state& init_gs;
 };
 
 struct hasher {
     explicit hasher(const game_state&);
-    std::size_t operator() (const std::vector<pile>&) const;
+    std::size_t operator() (const cached_game_state&) const;
 
     std::size_t hash_value(const card&) const;
     std::size_t hash_value(const pile&) const;
     std::size_t combine(std::size_t&, std::size_t) const;
-    std::size_t combine_commutative(std::size_t&, std::size_t) const;
 
     const game_state& init_gs;
 };
@@ -39,10 +60,8 @@ public:
     void clear();
 
 private:
-    static std::vector<pile> get_ordered_vec(const game_state&);
-
     std::unordered_set<
-            std::vector<pile>,
+            cached_game_state,
             hasher,
             predicate
     > u_set;
