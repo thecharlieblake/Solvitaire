@@ -277,21 +277,16 @@ void game_state::undo_move(const move m) {
 // reorders the pile refs so that the largest pile is first
 void game_state::place_card(pile_ref pr, card c) {
     piles[pr].place(c);
-#ifndef ORDER_ON_CACHE
     eval_pile_order(pr, true);
-#endif
 }
 
 // Same as above but for taking cards
 card game_state::take_card(pile_ref pr) {
     card c = piles[pr].take();
-#ifndef ORDER_ON_CACHE
     eval_pile_order(pr, false);
-#endif
     return c;
 }
 
-#ifndef ORDER_ON_CACHE
 // Assesses whether the pile ref that was modified was a tableau, cell or
 // reserve pile, and if so makes the relevant function call
 void game_state::eval_pile_order(pile_ref pr, bool is_place) {
@@ -361,7 +356,6 @@ void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
     }
 #endif
 }
-#endif
 
 
 ////////////////////////
