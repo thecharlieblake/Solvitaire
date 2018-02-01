@@ -27,10 +27,13 @@ public:
         static const colour_t Red = 1;
     };
 
+    const static card divider;
+
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
     card(suit_t, rank_t);
     explicit card(const char*);
+    card();
 
     suit_t get_suit() const;
     colour_t get_colour() const;
