@@ -137,6 +137,16 @@ add_executable(solvitaire-no-card-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-card-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 set_target_properties(solvitaire-no-card-symmetry PROPERTIES COMPILE_FLAGS -DNO_CARD_SYMMETRY)
 
+# add a separete executable for the 'no pile symmetry' version of the solver
+add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
+target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-no-pile-symmetry PROPERTIES COMPILE_FLAGS -DNO_PILE_SYMMETRY)
+
+# add a separete executable for the 'no symmetry' version of the solver
+add_executable(solvitaire-no-symmetry ${main} ${sources})
+target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_CARD_SYMMETRY -DNO_PILE_SYMMETRY")
+
 # add a separete executable for the 'no reduced state' version of the solver
 add_executable(solvitaire-no-reduced-state ${main} ${sources})
 target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)

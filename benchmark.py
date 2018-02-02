@@ -19,9 +19,19 @@ if (len(sys.argv) >= 2
 
 flag = ""
 if (len(sys.argv) >= 2
-    and (sys.argv[1] == "--no-card-symmetry" or sys.argv[1] == "-ps")):
+    and (sys.argv[1] == "--no-card-symmetry" or sys.argv[1] == "-cs")):
     flag = "-no-card-symmetry"
     print("Running in no-card-symmetry mode...")
+
+if (len(sys.argv) >= 2
+    and (sys.argv[1] == "--no-pile-symmetry" or sys.argv[1] == "-ps")):
+    flag = "-no-pile-symmetry"
+    print("Running in no-pile-symmetry mode...")
+
+if (len(sys.argv) >= 2
+    and (sys.argv[1] == "--no-symmetry" or sys.argv[1] == "-ps")):
+    flag = "-no-symmetry"
+    print("Running in no-symmetry mode...")
 
 if (len(sys.argv) >= 2
     and (sys.argv[1] == "--no-reduced-state" or sys.argv[1] == "-rc")):
