@@ -277,13 +277,17 @@ void game_state::undo_move(const move m) {
 // reorders the pile refs so that the largest pile is first
 void game_state::place_card(pile_ref pr, card c) {
     piles[pr].place(c);
+#ifndef NO_PILE_SYMMETRY
     eval_pile_order(pr, true);
+#endif
 }
 
 // Same as above but for taking cards
 card game_state::take_card(pile_ref pr) {
     card c = piles[pr].take();
+#ifndef NO_PILE_SYMMETRY
     eval_pile_order(pr, false);
+#endif
     return c;
 }
 
