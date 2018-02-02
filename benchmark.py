@@ -19,12 +19,12 @@ if (len(sys.argv) >= 2
 
 flag = ""
 if (len(sys.argv) >= 2
-    and (sys.argv[1] == "--simple-hash" or sys.argv[1] == "-sh")):
-    flag = "-simple-hash"
-    print("Running in simple-hash mode...")
+    and (sys.argv[1] == "--no-card-symmetry" or sys.argv[1] == "-ps")):
+    flag = "-no-card-symmetry"
+    print("Running in no-card-symmetry mode...")
 
 if (len(sys.argv) >= 2
-    and (sys.argv[1] == "--no-reduced-state" or sys.argv[1] == "-nrc")):
+    and (sys.argv[1] == "--no-reduced-state" or sys.argv[1] == "-rc")):
     flag = "-no-reduced-state"
     print("Running in no-reduced-state mode...")
 

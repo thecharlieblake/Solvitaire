@@ -84,7 +84,7 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 #endif
 
     switch (gs.rules.build_pol) {
-#ifdef SIMPLE_HASH
+#ifdef NO_CARD_SYMMETRY
         default:
             target.emplace_back(c);
             break;
@@ -152,7 +152,7 @@ std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
 size_t hasher::hash_value(card const& c) const {
     boost::hash<uint8_t> boost_hasher;
 
-#ifdef SIMPLE_HASH
+#ifdef NO_CARD_SYMMETRY
     uint8_t suit_val = c.get_suit();
 #else
     uint8_t suit_val;
