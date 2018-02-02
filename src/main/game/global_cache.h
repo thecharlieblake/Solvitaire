@@ -24,29 +24,22 @@ struct cached_game_state {
     typedef state_data::size_type size_type;
 
     explicit cached_game_state(const game_state&);
-#ifndef NO_REDUCED_STATE
-    void add_pile(const pile&, const game_state&);
+    void add_pile(game_state::pile_ref, const game_state&);
     void add_card(card, const game_state&);
     void add_card_divider();
-#endif
 
     state_data data;
 };
-
-class predicate {
-public:
-    explicit predicate(const game_state&);
-    bool operator() (const cached_game_state&, const cached_game_state&) const;
-private:
-    const game_state& init_gs;
-};
+bool operator==(const cached_game_state&, const cached_game_state&);
 
 struct hasher {
     explicit hasher(const game_state&);
     std::size_t operator() (const cached_game_state&) const;
 
     std::size_t hash_value(const card&) const;
+#ifdef NO_REDUCED_STATE
     std::size_t hash_value(const pile&) const;
+#endif
     std::size_t combine(std::size_t&, std::size_t) const;
 
     const game_state& init_gs;
@@ -62,8 +55,7 @@ public:
 private:
     std::unordered_set<
             cached_game_state,
-            hasher,
-            predicate
+            hasher
     > u_set;
 };
 
