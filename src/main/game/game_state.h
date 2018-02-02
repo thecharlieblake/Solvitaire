@@ -49,7 +49,6 @@ public:
 
     // Inspects state
     bool is_solved() const;
-    const std::vector<pile>& get_data() const;
 
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 

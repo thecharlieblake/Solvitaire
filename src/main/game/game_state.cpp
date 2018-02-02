@@ -404,10 +404,6 @@ bool game_state::is_solved() const {
     return solved;
 }
 
-const vector<pile>& game_state::get_data() const {
-    return piles;
-}
-
 
 ///////////
 // PRINT //
