@@ -14,6 +14,7 @@
 class pile {
     friend class hasher;
     friend class game_state;
+    friend class cached_game_state;
 public:
     typedef uint8_t size_type;
 

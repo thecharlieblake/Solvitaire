@@ -18,6 +18,8 @@ card::card(suit_t s, rank_t r) : suit(s), rank(r) {}
 
 card::card(const char* c) : suit(suit_from_str(c)), rank(rank_from_str(c)) {}
 
+card::card() : card(0, 0) {}
+
 card::suit_t card::suit_from_str(const char* c) {
     switch(tolower(c[strlen(c) - 1])) {
         case 'c': return suit::Clubs;
@@ -74,6 +76,8 @@ std::string card::to_string() const {
     }
     return s;
 }
+
+const card card::divider = card(0, 0);
 
 bool operator==(const card& l, const card& r) {
     return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();

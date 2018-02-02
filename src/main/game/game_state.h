@@ -22,6 +22,7 @@ class game_state {
     friend class predicate;
     friend class hasher;
     friend class global_cache;
+    friend class cached_game_state;
 public:
     // Defines types
     typedef uint8_t pile_ref;
@@ -48,7 +49,6 @@ public:
 
     // Inspects state
     bool is_solved() const;
-    const std::vector<pile>& get_data() const;
 
     friend std::ostream& operator<< (std::ostream&, const game_state&);
 
@@ -58,11 +58,9 @@ private:
     // Private constructor
     explicit game_state(const sol_rules&);
 
-#ifndef ORDER_ON_CACHE
     // Used to maintain pile order invariant
     void eval_pile_order(pile_ref, bool);
     void eval_pile_order(std::list<pile_ref>&, pile_ref, bool);
-#endif
 
     // Used in get_legal_moves()
     move get_stock_tableau_move() const;

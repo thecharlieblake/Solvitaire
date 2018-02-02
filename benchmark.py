@@ -23,11 +23,10 @@ if (len(sys.argv) >= 2
     flag = "-simple-hash"
     print("Running in simple-hash mode...")
 
-flag = ""
 if (len(sys.argv) >= 2
-    and (sys.argv[1] == "--order-on-cache" or sys.argv[1] == "-oc")):
-    flag = "-order-on-cache"
-    print("Running in order-on-cache mode...")
+    and (sys.argv[1] == "--no-reduced-state" or sys.argv[1] == "-nrc")):
+    flag = "-no-reduced-state"
+    print("Running in no-reduced-state mode...")
 
 class SolitaireRulesGen(metaclass=ABCMeta):
 
@@ -153,19 +152,21 @@ def cleanup():
 
 atexit.register(cleanup)
 
-summaryResults = {}
+summaryResults = []
 
 # Loops through each canonical solitaire
-for rulesGen in [SpanishPatienceRulesGen(),
-                 FreeCellRulesGen(),
-                 BlackHoleRulesGen(),
-                 BakersDozenRulesGen(),
-                 FortunesFavorRulesGen(),
-                 FlowerGardenRulesGen(),
-                 CanfieldRulesGen(),
-                 SomersetRulesGen(),
-                 AlphaStarRulesGen(),
-                 SpiderRulesGen()]:
+for rulesGen in [
+    BlackHoleRulesGen()
+    ,SpanishPatienceRulesGen()
+    ,FreeCellRulesGen()
+    ,SomersetRulesGen()
+    ,FortunesFavorRulesGen()
+    ,FlowerGardenRulesGen()
+    ,CanfieldRulesGen()
+    ,BakersDozenRulesGen()
+    ,AlphaStarRulesGen()
+    ,SpiderRulesGen()
+]:
 
     # Loops through the levels
     for level in range(1, 14):
@@ -207,15 +208,16 @@ for rulesGen in [SpanishPatienceRulesGen(),
             + " within time constraint\n")
             print("Game description at level " + str(level) + ":")
             print(str(rulesGen) + "\n")
-            summaryResults[rulesGen.name] = level-1
+            summaryResults.append((rulesGen.name, level-1))
             break
         else:
             print("Solved " + rulesGen.name + " at level " + str(level)
                     + " ...")
-            summaryResults[rulesGen.name] = level
+            if level == 13:
+                summaryResults.append((rulesGen.name, level))
 
 # Prints results summary table
-t = PrettyTable(['Solitaire', 'Level'])
-for name, level in summaryResults.items():
-    t.add_row([name, level])
+t = PrettyTable(['Level', 'Solitaire'])
+for (name, level) in summaryResults:
+    t.add_row([level, name])
 print(t)

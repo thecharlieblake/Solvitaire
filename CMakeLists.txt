@@ -137,10 +137,10 @@ add_executable(solvitaire-simple-hash ${main} ${sources})
 target_link_libraries(solvitaire-simple-hash LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 set_target_properties(solvitaire-simple-hash PROPERTIES COMPILE_FLAGS -DSIMPLE_HASH)
 
-# add a separete executable for the 'order on cache' version of the solver
-add_executable(solvitaire-order-on-cache ${main} ${sources})
-target_link_libraries(solvitaire-order-on-cache LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
-set_target_properties(solvitaire-order-on-cache PROPERTIES COMPILE_FLAGS -DORDER_ON_CACHE)
+# add a separete executable for the 'no reduced state' version of the solver
+add_executable(solvitaire-no-reduced-state ${main} ${sources})
+target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_REDUCED_STATE)
 
 
 ###############################################################################
