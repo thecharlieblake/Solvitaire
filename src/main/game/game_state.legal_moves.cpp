@@ -24,6 +24,14 @@ vector<game_state::move> game_state::get_legal_moves() const {
         // Never removes a card from the hole, the waste, or an empty pile
         if (rem_ref == hole || piles[rem_ref].empty()) continue;
 
+        // If the foundations aren't removable, also skip them
+        if (rules.foundations
+            && !rules.foundations_removable
+            && rem_ref >= foundations.front()
+            && rem_ref <= foundations.back()) {
+            continue;
+        }
+
         // Stock cards can only be moved to the waste (assuming there is a waste)
         if (rules.stock_size > 0 && rem_ref == stock) {
             if (rules.stock_deal_t == sdt::WASTE) {
