@@ -196,9 +196,9 @@ std::map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 6
   },
-  "reserve size": 16
-},
+  "reserve size": 16,
   "foundations removable": true
+}
 )"
 
         },
@@ -211,9 +211,9 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 3
   },
   "max rank": 3,
-  "reserve size": 3
-},
+  "reserve size": 3,
   "foundations removable": true
+}
 )"
 
         },
