@@ -32,6 +32,7 @@ std::map<string, string> sol_preset_types::mp = {
   "hole": false,
   "foundations": true,
   "foundations initial card": false,
+  "foundations removable": false,
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",
@@ -48,7 +49,8 @@ std::map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 13
-  }
+  },
+  "foundations removable": true
 }
 )"
 
@@ -61,7 +63,8 @@ std::map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3
   },
-  "max rank": 2
+  "max rank": 2,
+  "foundations removable": true
 }
 )"
 
@@ -102,7 +105,8 @@ std::map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 13,
     "spaces policy": "no-build"
-  }
+  },
+  "foundations removable": true
 }
 )"
 
@@ -116,7 +120,8 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 3,
     "spaces policy": "no-build"
   },
-  "max rank": 3
+  "max rank": 3,
+  "foundations removable": true
 }
 )"
 
@@ -192,7 +197,8 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 6
   },
   "reserve size": 16
-}
+},
+  "foundations removable": true
 )"
 
         },
@@ -206,7 +212,8 @@ std::map<string, string> sol_preset_types::mp = {
   },
   "max rank": 3,
   "reserve size": 3
-}
+},
+  "foundations removable": true
 )"
 
         },
@@ -252,7 +259,8 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 10,
     "build policy": "red-black",
     "diagonal deal": true
-  }
+  },
+  "foundations removable": true
 }
 )"
 
@@ -267,7 +275,8 @@ std::map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "diagonal deal": true
   },
-  "max rank": 2
+  "max rank": 2,
+  "foundations removable": true
 }
 )"
 

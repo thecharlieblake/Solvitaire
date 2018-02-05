@@ -3,5 +3,6 @@
     "count": 3
   },
   "max rank": 3,
-  "reserve size": 3
+  "reserve size": 3,
+  "foundations removable": true
 }

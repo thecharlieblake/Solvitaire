@@ -3,5 +3,6 @@
     "count": 10,
     "build policy": "red-black",
     "diagonal deal": true
-  }
+  },
+  "foundations removable": true
 }

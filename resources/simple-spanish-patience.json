@@ -2,5 +2,6 @@
   "tableau piles": {
     "count": 3
   },
-  "max rank": 2
+  "max rank": 2,
+  "foundations removable": true
 }

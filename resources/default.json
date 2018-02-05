@@ -12,6 +12,7 @@
   "hole": false,
   "foundations": true,
   "foundations initial card": false,
+  "foundations removable": false,
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",

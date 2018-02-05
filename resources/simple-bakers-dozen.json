@@ -3,5 +3,6 @@
     "count": 3,
     "spaces policy": "no-build"
   },
-  "max rank": 3
+  "max rank": 3,
+  "foundations removable": true
 }
