@@ -37,6 +37,7 @@ struct sol_rules {
     bool hole;
     bool foundations;
     bool foundations_init_card;
+    bool foundations_removable;
     bool diagonal_deal;
     uint8_t cells;
     uint8_t stock_size;

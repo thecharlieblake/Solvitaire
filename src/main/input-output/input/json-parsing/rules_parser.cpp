@@ -181,6 +181,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("foundations removable")) {
+        if (d["foundations removable"].IsBool()) {
+            sr.foundations_removable = d["foundations removable"].GetBool();
+        } else {
+            json_helper::json_parse_err("[foundations removable] must be a boolean");
+        }
+    }
+
     if (d.HasMember("cells")) {
         if (d["cells"].IsInt()) {
             sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
