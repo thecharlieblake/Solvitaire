@@ -6,6 +6,7 @@
 #define SOLVITAIRE_SOLVER_H
 
 #include <string>
+#include <list>
 #include <vector>
 
 #include "../game/global_cache.h"
@@ -16,20 +17,30 @@ public:
     global_cache cache;
 
     struct node {
-        explicit node(game_state::move, std::vector<game_state::move>);
+        node(node*, game_state::move);
+        node* parent;
         const game_state::move move;
-        std::vector<game_state::move> unsearched_children;
+        std::list<node> children;
     };
 
     explicit solver(const game_state&);
 
     bool run();
     void print_solution() const;
+    int get_states_searched() const;
+    const node& get_search_tree() const;
 
 private:
-    const game_state initial_state;
-    std::vector<node> frontier;
+    bool revert_to_last_node_with_children();
+    void add_children(std::vector<game_state::move>&);
+    void add_child(game_state::move);
+
+    const game_state init_state;
+    game_state state;
     int states_searched;
+
+    node root;
+    node* current_node;
 };
 
 

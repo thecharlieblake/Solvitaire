@@ -7,8 +7,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <gperftools/profiler.h>
-
 #include "solver.h"
 #include "../input-output/output/log_helper.h"
 
@@ -16,86 +14,133 @@ using namespace std;
 using namespace boost;
 
 solver::solver(const game_state& gs)
-        : cache(gs), initial_state(gs), states_searched(0) {}
+        : cache(gs)
+        , init_state(gs)
+        , state(gs)
+        , states_searched(1)
+        , root(nullptr, game_state::move(0, 0))
+        , current_node(&root) {
+}
 
-solver::node::node(const game_state::move m,
-                   vector<game_state::move> uc)
-        : move(m), unsearched_children(std::move(uc)) {
+solver::node::node(node* p, const game_state::move m)
+        : parent(p), move(m) {
 }
 
 bool solver::run() {
-    //ProfilerStart("solvitaire");
-    game_state state = initial_state;
+    bool states_exhausted = false;
+    while(!state.is_solved() && !states_exhausted) {
+#ifndef NDEBUG
+        if (current_node->move.is_dominance())
+            LOG_DEBUG("(dominance move)");
+        LOG_DEBUG(state);
+#endif
 
-    states_searched++;
-    LOG_DEBUG (state);
-    frontier.emplace_back(game_state::move(0,0), state.get_legal_moves());
-    cache.insert(state);
-
-    while (!frontier.empty()) {
-        node& current = frontier.back();
-
-        // If we have a solution, returns true
-        if (state.is_solved()) {
-            ProfilerStop();
-            return true;
-        }
-
-        // If the current node has no unsearched children
-        if (current.unsearched_children.empty()) {
-            // Undoes the move that led to this state
-            // (unless it's the null first move)
-            if (frontier.size() > 1) {
-                state.undo_move(current.move);
-                assert(cache.contains(state));
-                LOG_DEBUG (state);
-            }
-            // Returns to the previous state
-            frontier.pop_back();
+        // If there is a dominance move available, adds it to the search tree
+        // and repeats. Doesn't cache the state.
+        optional<game_state::move> dominance_move = state.get_dominance_move();
+        if (dominance_move) {
+            // Adds the dominance move as a child of the current search node
+            add_child(*dominance_move);
         } else {
-            game_state::move next_move = current.unsearched_children.back();
-            current.unsearched_children.pop_back();
-
-            // Applies the first possible move in this state
-            state.make_move(next_move);
-
-            // Insert the state into the global cache
+            // Caches the current state
             bool is_new_state = cache.insert(state);
             if (is_new_state) {
-                states_searched++;
-                LOG_DEBUG (state);
-                // If the state is new, creates a new node in the frontier to
-                // represent the move just made, and those that are now possible
-                frontier.emplace_back(next_move, state.get_legal_moves());
-            } else {
-                // If we've seen the state before, undoes the move
-                state.undo_move(next_move);
-                assert(cache.contains(state));
+                // Gets the legal moves in the current state
+                vector<game_state::move> next_moves = state.get_legal_moves();
+
+                // If there are none, reverts to the last node with children
+                if (state.get_legal_moves().empty()) {
+                    states_exhausted = revert_to_last_node_with_children();
+                } else {
+                    add_children(next_moves);
+                }
+            }
+            // If the state is not a new one, reverts to the last node with children
+            else {
+                states_exhausted = revert_to_last_node_with_children();
             }
         }
+
+        // Sets the current node to one of its children
+        assert(states_exhausted == current_node->children.empty());
+        if (!states_exhausted) {
+            current_node = &current_node->children.back();
+            state.make_move(current_node->move);
+        }
+
+        states_searched++;
     }
 
-    ProfilerStop();
-    return false;
+    return state.is_solved();
+}
+
+void solver::add_children(std::vector<game_state::move>& moves) {
+    for (auto move : moves) {
+        add_child(move);
+    }
+}
+
+void solver::add_child(game_state::move move) {
+    current_node->children.emplace_back(current_node, move);
+}
+
+// Called when the current node's children have been exhausted. Travels back up
+// the search tree until it finds a node which still has children. Returns true
+// unless all children have been exhausted.
+bool solver::revert_to_last_node_with_children() {
+    if (!current_node->parent)
+        return true;
+
+    state.undo_move(current_node->move);
+
+#ifndef NDEBUG
+    // Checks that the state after the undo is in the cache
+    // (as long as the move wasn't a dominance move)
+
+    if (!current_node->move.is_dominance()) {
+        assert(cache.contains(state));
+        LOG_DEBUG("(undo move)");
+    } else {
+        LOG_DEBUG("(undo dominance move)");
+    }
+    LOG_DEBUG(state);
+#endif
+
+    // Reverts the current node to its parent and removes it
+    current_node = current_node->parent;
+    current_node->children.pop_back();
+
+    // If the current node now has no children, repeat
+    if (current_node->children.empty()) {
+        return revert_to_last_node_with_children();
+    } else {
+        return false;
+    }
 }
 
 void solver::print_solution() const {
     std::flush(clog);
     std::flush(cout);
-    game_state state = initial_state;
+
+    const node* n = &root.children.back();
+    game_state state_copy = init_state;
 
     cout << "Solution:\n";
-    cout << state << "\n";
+    cout << state_copy << "\n";
     // Ignores first move which is
-    bool first = true;
-    for (auto f_node : frontier) {
-        if (first) {
-            first = false;
-            continue;
-        }
+    while (!n->children.empty()) {
         // TODO print move as well
-        state.make_move(f_node.move);
-        cout << state << "\n";
+        state_copy.make_move(n->move);
+        cout << state_copy << "\n";
+        n = &n->children.back();
     }
     cout << "States Searched: " << states_searched << "\n";
+}
+
+int solver::get_states_searched() const {
+    return states_searched;
+}
+
+const solver::node& solver::get_search_tree() const {
+    return root;
 }
