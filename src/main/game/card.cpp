@@ -11,12 +11,20 @@
 using namespace std;
 using namespace boost;
 
+const card::suit_t card::suit::Clubs = 0;
+const card::suit_t card::suit::Hearts = 1;
+const card::suit_t card::suit::Spades = 2;
+const card::suit_t card::suit::Diamonds = 3;
+
+const card::colour_t card::colour::Black = 0;
+const card::colour_t card::colour::Red = 1;
+
 // A card can either be created using two int values (rank & suit), or
 // using a string (e.g. "AS")
 
-card::card(suit_t s, rank_t r) : suit(s), rank(r) {}
+card::card(suit_t s, rank_t r) : card_suit(s), card_rank(r) {}
 
-card::card(const char* c) : suit(suit_from_str(c)), rank(rank_from_str(c)) {}
+card::card(const char* c) : card_suit(suit_from_str(c)), card_rank(rank_from_str(c)) {}
 
 card::card() : card(0, 0) {}
 
@@ -44,11 +52,11 @@ card::rank_t card::rank_from_str(const char* c) {
 }
 
 card::suit_t card::get_suit() const {
-    return suit;
+    return card_suit;
 }
 
 card::colour_t card::get_colour() const {
-    switch (suit) {
+    switch (card_suit) {
         case card::suit::Spades  :
         case card::suit::Clubs   : return card::colour::Black;
         default :                    return card::colour::Red;
@@ -56,19 +64,19 @@ card::colour_t card::get_colour() const {
 }
 
 card::rank_t card::get_rank() const {
-    return rank;
+    return card_rank;
 }
 
 std::string card::to_string() const {
     string s;
-    switch(rank) {
+    switch(card_rank) {
         case 1 : s += "A"; break;
         case 11: s += "J"; break;
         case 12: s += "Q"; break;
         case 13: s += "K"; break;
-        default: s += std::to_string(rank);
+        default: s += std::to_string(card_rank);
     }
-    switch(suit) {
+    switch(card_suit) {
         case card::suit::Spades  : s += "S"; break;
         case card::suit::Hearts  : s += "H"; break;
         case card::suit::Clubs   : s += "C"; break;
