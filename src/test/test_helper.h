@@ -8,11 +8,15 @@
 #include <string>
 
 #include "../main/game/sol_rules.h"
+#include "../main/game/card.h"
 
 class test_helper {
 public:
     static bool is_solvable(const std::string&, const std::string&);
     static void run_card_cache_test(sol_rules::build_policy, bool, bool);
+
+    static void run_foundations_dominance_test(sol_rules::build_policy policy,
+                                               std::vector<card> cards);
 };
 
 
