@@ -38,11 +38,16 @@ if (len(sys.argv) >= 2
     flag = "-no-reduced-state"
     print("Running in no-reduced-state mode...")
 
+if (len(sys.argv) >= 2
+    and (sys.argv[1] == "--no-auto-foundations" or sys.argv[1] == "-af")):
+    flag = "-no-auto-foundations"
+    print("Running in no-auto-foundations mode...")
+
 class SolitaireRulesGen(metaclass=ABCMeta):
 
     def __init__(self, name):
         self.name = name
-        self.baseJson = json.load(open('resources/' + name + '.json'))
+        self.baseJson = json.load(open('resources/rules-presets' + name + '.json'))
 
     def genRules(self, level):
         self.alterFieldsToChange(level)
