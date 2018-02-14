@@ -2,9 +2,12 @@
 // Created by thecharlesblake on 1/3/18.
 //
 
+#include <boost/optional.hpp>
+
 #include "game_state.h"
 
 using namespace std;
+using namespace boost;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
@@ -278,4 +281,46 @@ void game_state::add_empty_built_group_moves(vector<move>& moves,
                 rem_ref, add_ref, static_cast<pile_ref>(card_idx + 1)
         );
     } while (piles[rem_ref][card_idx++] != bg_high);
+}
+
+/////////////////////
+// Dominance Moves //
+/////////////////////
+
+// Returns a dominance move if one is available
+optional<game_state::move> game_state::get_dominance_move() const {
+#ifndef NO_AUTO_FOUNDATIONS
+    // If there are 2 decks or no foundations, return
+    if (!rules.foundations || rules.two_decks || rules.foundations_removable)
+        return none;
+
+    // Cycles through the piles and sees if any cards can be automatically moved
+    // to the foundations
+    for (pile_ref pr = 0; pr < piles.size(); pr++) {
+        // Don't move foundation cards, hole or stock cards to the foundations
+        if ((pr >= foundations.front() && pr <= foundations.back())
+            || (rules.hole && pr == hole)
+            || (rules.stock_size > 0 && pr == stock)
+            || (piles[pr].empty())) {
+            continue;
+        }
+
+        card c = piles[pr].top_card();
+        pile_ref target_foundation = foundations[c.get_suit()];
+
+        // If the card is the right rank and the auto-move boolean is true, then
+        // makes the move and restarts the search
+        card::rank_t target_rank = piles[target_foundation].empty()
+                                   ? card::rank_t(1) :
+                                   piles[target_foundation].top_card().get_rank()
+                                   + card::rank_t(1);
+        if (target_rank == c.get_rank() &&
+            auto_foundation_moves[c.get_suit()]) {
+
+            return move(pr, target_foundation, move::dominance_flag);
+        }
+    }
+#endif
+
+    return none;
 }

@@ -9,6 +9,8 @@
 
 using namespace std;
 
+const pile::size_type pile::max_size_type = 255;
+
 pile::pile(std::vector<card> pv) : pile_vec(pv) {
 }
 

@@ -14,6 +14,7 @@
 #include "game_state.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
 #include "../input-output/output/state_printer.h"
+#include "../input-output/output/log_helper.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -40,6 +41,7 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
         for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
             foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
+            auto_foundation_moves.push_back(true);
         }
     }
 
@@ -205,9 +207,16 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     return deck;
 }
 
+const pile::size_type game_state::move::dominance_flag = pile::max_size_type;
+
 game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
         : from(f), to(t), count(i) {
     assert(i >= 1);
+}
+
+// Returns true is the move has been flagged as a special 'dominance' move
+bool game_state::move::is_dominance() const {
+    return count == dominance_flag;
 }
 
 
@@ -222,15 +231,20 @@ void game_state::make_move(const move m) {
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
         for (pile_ref tab_pr = original_tableau_piles.front();
-             tab_pr < original_tableau_piles.front() + m.count;
+             tab_pr < pile_ref(original_tableau_piles.front() + m.count);
              tab_pr++) {
             place_card(tab_pr, take_card(stock));
         }
     }
     // If this is not a built-pile move
-    else if (m.count == 1) {
+    else if (m.count == 1 || m.is_dominance()) {
         place_card(m.to, take_card(m.from));
-    } else {
+#ifndef NO_AUTO_FOUNDATIONS
+        assess_auto_foundation_moves(m.to);
+#endif
+    }
+    // If this is a built-pile move
+    else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'to' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
@@ -257,8 +271,11 @@ void game_state::undo_move(const move m) {
         }
     }
     // If this is not a built-pile move
-    else if (m.count == 1) {
+    else if (m.count == 1 || m.is_dominance()) {
         place_card(m.from, take_card(m.to));
+#ifndef NO_AUTO_FOUNDATIONS
+        assess_auto_foundation_moves(m.from);
+#endif
     } else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile
@@ -361,6 +378,100 @@ void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
 #endif
 }
 
+// Decides which 'auto foundation' booleans should be 'true' currently
+void game_state::assess_auto_foundation_moves(pile_ref target_pile) {
+    // If there are no foundations, or this is not a foundation move, do nothing
+    if (!rules.foundations
+        || target_pile < foundations.front()
+        || target_pile > foundations.back()
+        || rules.foundations_removable) {
+        return;
+    }
+
+    // Turns the 'auto' boolean for the target foundation false
+    auto_foundation_moves[target_pile - foundations.front()] = false;
+
+    // Repeats the cycle which attempts to turn one of the auto_foundation_move
+    // bools true for each foundation, until no change is made in a full scan
+    bool change_made = true;
+    while (change_made) {
+        change_made = false;
+        // Cycles through each of the foundations with a false 'auto' boolean,
+        // attempting to turn them true
+        for (card::suit_t suit = 0; suit < 4; suit++) {
+            if (auto_foundation_moves[suit]) continue;
+
+            pile_ref foundation_ref = *(begin(foundations) + suit);
+
+            // Empty foundations are automatically true
+            if(piles[foundation_ref].empty()) {
+                auto_foundation_moves[suit] = true;
+                // Restarts the loop
+                change_made = true;
+                break;
+            }
+            card::rank_t foundation_rank = piles[foundation_ref].top_card().get_rank();
+
+            // Creates the 'reliant' set. These are the cards that rely on the
+            // foundation's 'next' card to be able to move in the tableau piles
+            vector<card> reliant_set;
+            switch (rules.build_pol) {
+                case pol::SAME_SUIT:
+                    reliant_set.emplace_back(suit, foundation_rank);
+                    break;
+                case pol::RED_BLACK:
+                    if (suit == card::suit::Clubs || suit == card::suit::Spades) {
+                        reliant_set.emplace_back(card::suit::Hearts, foundation_rank);
+                        reliant_set.emplace_back(card::suit::Diamonds, foundation_rank);
+                    } else {
+                        reliant_set.emplace_back(card::suit::Clubs, foundation_rank);
+                        reliant_set.emplace_back(card::suit::Spades, foundation_rank);
+                    }
+                    break;
+                case pol::ANY_SUIT:
+                    reliant_set.emplace_back(card::suit::Hearts, foundation_rank);
+                    reliant_set.emplace_back(card::suit::Diamonds, foundation_rank);
+                    reliant_set.emplace_back(card::suit::Clubs, foundation_rank);
+                    reliant_set.emplace_back(card::suit::Spades, foundation_rank);
+                    break;
+                case pol::NO_BUILD:
+                    break;
+            }
+
+            // For each card in the reliant set, the foundation can only be
+            // true if the reliant card is already up, or legally could be put
+            // up
+            bool change_auto_foundation = true;
+            for (card reliant_card : reliant_set) {
+                pile_ref reliant_foundation =
+                        *(begin(foundations) + reliant_card.get_suit());
+                card::rank_t reliant_found_rank =
+                        piles[reliant_foundation].empty()
+                        ? card::rank_t(0)
+                        : piles[reliant_foundation].top_card().get_rank();
+
+                bool reliant_card_already_up = reliant_found_rank
+                                               >= reliant_card.get_rank();
+                bool reliant_card_auto_up =
+                        reliant_found_rank == reliant_card.get_rank() - 1
+                        && auto_foundation_moves[reliant_card.get_suit()];
+
+                if (!reliant_card_already_up && !reliant_card_auto_up) {
+                    change_auto_foundation = false;
+                    break;
+                }
+            }
+
+            if (change_auto_foundation) {
+                auto_foundation_moves[suit] = true;
+                // Restarts the loop
+                change_made = true;
+                break;
+            }
+        }
+    }
+}
+
 
 ////////////////////////
 // INSPECT GAME STATE //
@@ -406,6 +517,10 @@ bool game_state::is_solved() const {
 #endif
 
     return solved;
+}
+
+const std::vector<pile>& game_state::get_data() const {
+    return piles;
 }
 
 
