@@ -2,6 +2,8 @@
 #include <boost/optional.hpp>
 #include <rapidjson/document.h>
 
+#include <gperftools/profiler.h>
+
 #include "input-output/input/command_line_helper.h"
 #include "input-output/input/json-parsing/json_helper.h"
 #include "input-output/input/json-parsing/rules_parser.h"
@@ -92,10 +94,12 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules)
 void solve_game(const game_state& gs) {
     solver solv(gs);
     bool solution = solv.run();
+    ProfilerStop();
 
     if (solution) {
         solv.print_solution();
     } else {
-        cout << "Deal:\n" << gs << "\nNo Possible Solution\n";
+        cout << "Deal:\n" << gs << "\nNo Possible Solution\nStates Searched: "
+             << solv.get_states_searched() << "\n";
     }
 }

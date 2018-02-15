@@ -17,6 +17,7 @@ class pile {
     friend class cached_game_state;
 public:
     typedef uint8_t size_type;
+    const static size_type max_size_type;
 
     pile() = default;
     pile(std::vector<card>);

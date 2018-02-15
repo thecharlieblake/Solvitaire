@@ -50,7 +50,8 @@ set(sources_test
         src/test/somerset_test.cpp
         src/test/alpha_star_test.cpp
         src/test/spider_test.cpp
-        src/test/global_cache_test.cpp)
+        src/test/global_cache_test.cpp
+        src/test/foundations_dominance_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
@@ -151,6 +152,11 @@ set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_CARD
 add_executable(solvitaire-no-reduced-state ${main} ${sources})
 target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_REDUCED_STATE)
+
+# add a separete executable for the 'no auto foundations' version of the solver
+add_executable(solvitaire-no-auto-foundations ${main} ${sources})
+target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
 
 
 ###############################################################################

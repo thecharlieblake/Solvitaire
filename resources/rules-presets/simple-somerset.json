@@ -4,5 +4,6 @@
     "build policy": "red-black",
     "diagonal deal": true
   },
-  "max rank": 2
+  "max rank": 2,
+  "foundations removable": true
 }

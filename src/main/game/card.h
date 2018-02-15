@@ -16,15 +16,15 @@ public:
     typedef uint8_t colour_t;
 
     struct suit {
-        static const suit_t Clubs = 0;
-        static const suit_t Hearts = 1;
-        static const suit_t Spades = 2;
-        static const suit_t Diamonds = 3;
+        static const suit_t Clubs;
+        static const suit_t Hearts;
+        static const suit_t Spades;
+        static const suit_t Diamonds;
     };
 
     struct colour {
-        static const colour_t Black = 0;
-        static const colour_t Red = 1;
+        static const colour_t Black;
+        static const colour_t Red;
     };
 
     const static card divider;
@@ -32,7 +32,7 @@ public:
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
     card(suit_t, rank_t);
-    explicit card(const char*);
+    card(const char*);
     card();
 
     suit_t get_suit() const;
@@ -45,8 +45,8 @@ private:
     static suit_t suit_from_str(const char* c);
     static rank_t rank_from_str(const char* c);
 
-    suit_t suit : 4;
-    rank_t rank : 4;
+    suit_t card_suit : 4;
+    rank_t card_rank : 4;
 };
 
 bool operator==(const card&, const card&);

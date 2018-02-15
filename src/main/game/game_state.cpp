@@ -14,6 +14,7 @@
 #include "game_state.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
 #include "../input-output/output/state_printer.h"
+#include "../input-output/output/log_helper.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -28,7 +29,10 @@ typedef sol_rules::stock_deal_type sdt;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
+game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
+                                                   stock(255),
+                                                   waste(255),
+                                                   hole(255) {
     // If there is a hole, creates pile
     if (rules.hole) {
         piles.emplace_back();
@@ -40,6 +44,7 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules) {
         for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
             foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
+            auto_foundation_moves.push_back(true);
         }
     }
 
@@ -205,9 +210,16 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     return deck;
 }
 
+const pile::size_type game_state::move::dominance_flag = pile::max_size_type;
+
 game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
         : from(f), to(t), count(i) {
     assert(i >= 1);
+}
+
+// Returns true is the move has been flagged as a special 'dominance' move
+bool game_state::move::is_dominance() const {
+    return count == dominance_flag;
 }
 
 
@@ -222,15 +234,20 @@ void game_state::make_move(const move m) {
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
         for (pile_ref tab_pr = original_tableau_piles.front();
-             tab_pr < original_tableau_piles.front() + m.count;
+             tab_pr < pile_ref(original_tableau_piles.front() + m.count);
              tab_pr++) {
             place_card(tab_pr, take_card(stock));
         }
     }
     // If this is not a built-pile move
-    else if (m.count == 1) {
+    else if (m.count == 1 || m.is_dominance()) {
         place_card(m.to, take_card(m.from));
-    } else {
+#ifndef NO_AUTO_FOUNDATIONS
+        update_auto_foundation_moves(m.to);
+#endif
+    }
+    // If this is a built-pile move
+    else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'to' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
@@ -257,8 +274,11 @@ void game_state::undo_move(const move m) {
         }
     }
     // If this is not a built-pile move
-    else if (m.count == 1) {
+    else if (m.count == 1 || m.is_dominance()) {
         place_card(m.from, take_card(m.to));
+#ifndef NO_AUTO_FOUNDATIONS
+        update_auto_foundation_moves(m.from);
+#endif
     } else {
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile
@@ -361,6 +381,52 @@ void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
 #endif
 }
 
+// Decides which 'auto foundation' booleans should be 'true' currently
+void game_state::update_auto_foundation_moves(pile_ref target_pile) {
+    // If there are no foundations, or this is not a foundation move, do nothing
+    if (!rules.foundations
+        || target_pile < foundations.front()
+        || target_pile > foundations.back()) {
+        return;
+    }
+
+    // Turns the 'auto' boolean for the target foundation false
+
+    for (pile_ref pr : foundations) {
+        auto_foundation_moves[pr] = is_valid_auto_foundation_move(pr);
+    }
+}
+
+bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
+    if (rules.build_pol == pol::ANY_SUIT || rules.build_pol == pol::RED_BLACK) {
+        card::suit_t target_suit(target_pile - foundations.front());
+        card::rank_t target_rank = piles[target_pile].empty() ? card::rank_t(0)
+                                   : piles[target_pile].top_card().get_rank();
+        card target_card = card(target_suit, target_rank);
+
+        for (pile_ref pr : foundations) {
+            if (pr == target_pile) continue;
+
+            card::suit_t foundation_suit(pr - foundations.front());
+            card::rank_t foundation_rank = piles[pr].empty() ? card::rank_t(0)
+                                       : piles[pr].top_card().get_rank();
+            card foundation_card = card(foundation_suit, foundation_rank);
+            int rank_diff = int(target_rank)
+                            - int(foundation_card.get_rank());
+
+            if (rules.build_pol == pol::RED_BLACK
+                && foundation_card.get_colour() == target_card.get_colour()) {
+                if (rank_diff >= 3) {
+                    return false;
+                }
+            } else if (rank_diff >= 2) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 ////////////////////////
 // INSPECT GAME STATE //
@@ -406,6 +472,10 @@ bool game_state::is_solved() const {
 #endif
 
     return solved;
+}
+
+const std::vector<pile>& game_state::get_data() const {
+    return piles;
 }
 
 
