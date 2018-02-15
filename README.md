@@ -62,10 +62,14 @@ searching states in which certain moves/states
 'dominate' others.
 - Implement and evaluate more than one different
 type of search (e.g. best first, iterative
-deepening).
+deepening). **Objective adjusted:** This is no
+longer deemed essential, as the focus in on
+exhaustive search, but it may be interesting
+to explore how iterative deepening performs.
 - Experiment with and evaluate different designs
 for the general heuristic for best-first search,
 that works across a variety of games.
+**Objective adjusted:** This is no longer relevant.
 
 ### Tertiary Objectives
 
@@ -78,8 +82,13 @@ be taken:
 - An extension of the algorithm that aims to
 provide shortened solutions (i.e. ones that
 minimise the number of moves taken).
+**Objective adjusted:** This may be done in
+tandem with the iterative deepening objective.
 - Calculating the solvability ratio for some the
 games my application can solve.
+**Objective adjusted:** Because of good progress
+made, this is now very much a target for the
+project.
 
 ## Supervisor
 
