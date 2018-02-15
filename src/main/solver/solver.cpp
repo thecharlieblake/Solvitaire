@@ -6,6 +6,7 @@
 #include <ostream>
 #include <iostream>
 #include <algorithm>
+#include <list>
 
 #include "solver.h"
 #include "../input-output/output/log_helper.h"
@@ -23,15 +24,16 @@ solver::solver(const game_state& gs)
 }
 
 solver::node::node(node* p, const game_state::move m)
-        : parent(p), move(m) {
+        : parent(p), move(m), children() {
 }
 
 bool solver::run() {
     bool states_exhausted = false;
     while(!state.is_solved() && !states_exhausted) {
 #ifndef NDEBUG
-        if (current_node->move.is_dominance())
+        if (current_node->move.is_dominance()) {
             LOG_DEBUG("(dominance move)");
+        }
         LOG_DEBUG(state);
 #endif
 
@@ -127,12 +129,14 @@ void solver::print_solution() const {
 
     cout << "Solution:\n";
     cout << state_copy << "\n";
-    // Ignores first move which is
-    while (!n->children.empty()) {
-        // TODO print move as well
-        state_copy.make_move(n->move);
-        cout << state_copy << "\n";
-        n = &n->children.back();
+
+    if (states_searched > 1) {
+        while (!n->children.empty()) {
+            // TODO print move as well
+            state_copy.make_move(n->move);
+            cout << state_copy << "\n";
+            n = &n->children.back();
+        }
     }
     cout << "States Searched: " << states_searched << "\n";
 }
