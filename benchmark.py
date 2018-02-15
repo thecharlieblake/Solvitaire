@@ -47,7 +47,7 @@ class SolitaireRulesGen(metaclass=ABCMeta):
 
     def __init__(self, name):
         self.name = name
-        self.baseJson = json.load(open('resources/rules-presets' + name + '.json'))
+        self.baseJson = json.load(open('resources/rules-presets/' + name + '.json'))
 
     def genRules(self, level):
         self.alterFieldsToChange(level)
