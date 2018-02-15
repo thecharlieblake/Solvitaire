@@ -49,7 +49,7 @@ public:
     void place_card(pile_ref, card);
     card take_card(pile_ref);
 
-    std::vector<move> get_legal_moves() const;
+    std::vector<move> get_legal_moves();
 
     // Inspects state
     bool is_solved() const;
@@ -79,8 +79,10 @@ private:
     void add_built_group_move(std::vector<move>&, pile_ref, pile_ref) const;
     void add_empty_built_group_moves(std::vector<move>&, pile_ref, pile_ref,
                                      card) const;
+    bool dominance_blocks_foundation_move(pile_ref);
 
-    void assess_auto_foundation_moves(pile_ref);
+    void update_auto_foundation_moves(pile_ref);
+    bool is_valid_auto_foundation_move(pile_ref) const;
 
     // References to piles
     const sol_rules rules;

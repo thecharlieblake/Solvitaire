@@ -13,7 +13,7 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 
-vector<game_state::move> game_state::get_legal_moves() const {
+vector<game_state::move> game_state::get_legal_moves() {
     // The next legal moves
     vector<move> moves;
 
@@ -25,14 +25,22 @@ vector<game_state::move> game_state::get_legal_moves() const {
     // Cycles through each pile which we may be able to remove a card from
     for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
         // Never removes a card from the hole, the waste, or an empty pile
-        if (rem_ref == hole || piles[rem_ref].empty()) continue;
+        if ((rules.hole && rem_ref == hole) || piles[rem_ref].empty()) continue;
 
-        // If the foundations aren't removable, also skip them
+        // If we have a foundations card as the rem_ref
         if (rules.foundations
-            && !rules.foundations_removable
             && rem_ref >= foundations.front()
             && rem_ref <= foundations.back()) {
-            continue;
+
+            // If the foundations are removable, checks to see if a dominance
+            // prevents us from removing from it. Otherwise, skips the pile ref
+            if (!rules.foundations_removable
+#ifndef NO_AUTO_FOUNDATIONS
+                || dominance_blocks_foundation_move(rem_ref)
+#endif
+                    ) {
+                continue;
+            }
         }
 
         // Stock cards can only be moved to the waste (assuming there is a waste)
@@ -291,7 +299,7 @@ void game_state::add_empty_built_group_moves(vector<move>& moves,
 optional<game_state::move> game_state::get_dominance_move() const {
 #ifndef NO_AUTO_FOUNDATIONS
     // If there are 2 decks or no foundations, return
-    if (!rules.foundations || rules.two_decks || rules.foundations_removable)
+    if (!rules.foundations || rules.two_decks)
         return none;
 
     // Cycles through the piles and sees if any cards can be automatically moved
@@ -309,18 +317,32 @@ optional<game_state::move> game_state::get_dominance_move() const {
         pile_ref target_foundation = foundations[c.get_suit()];
 
         // If the card is the right rank and the auto-move boolean is true, then
-        // makes the move and restarts the search
+        // returns the move
         card::rank_t target_rank = piles[target_foundation].empty()
                                    ? card::rank_t(1) :
                                    piles[target_foundation].top_card().get_rank()
                                    + card::rank_t(1);
         if (target_rank == c.get_rank() &&
             auto_foundation_moves[c.get_suit()]) {
-
             return move(pr, target_foundation, move::dominance_flag);
         }
     }
 #endif
 
     return none;
+}
+
+// For games where the foundations can be removed from, this dominance blocks
+// the foundations being removed from if the card that were to be removed would
+// go 'automatically' up
+bool game_state::dominance_blocks_foundation_move(pile_ref target_pile) {
+    assert(!piles[target_pile].empty());
+
+    card target_card = piles[target_pile].top_card();
+    piles[target_pile].take();
+
+    bool blocked = is_valid_auto_foundation_move(target_pile);
+    piles[target_pile].place(target_card);
+
+    return blocked;
 }
