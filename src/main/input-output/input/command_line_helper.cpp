@@ -29,7 +29,9 @@ command_line_helper::command_line_helper()
                      "to be solved. Must supply either 'type' or 'rules' file")
             ("random", po::value<int>(), "create and solve a random solitaire "
                     "deal based on a seed. Must supply either 'random' or list "
-                    "of deals to be sold.");
+                    "of deals to be sold.")
+            ("classify", "outputs a simple 'solvable/not solvable' "
+                    "classification");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -59,6 +61,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     // Converts the variables map into flags and values
 
     help = (vm.count("help") != 0);
+
+    classify = (vm.count("classify") != 0);
 
     if (vm.count("input-files")) {
         input_files = vm["input-files"].as<vector<string>>();
@@ -167,4 +171,8 @@ int command_line_helper::get_random_deal() {
 
 bool command_line_helper::get_help() {
     return help;
+}
+
+bool command_line_helper::get_classify() {
+    return classify;
 }
