@@ -12,19 +12,11 @@
 
 class test_helper {
 public:
-    enum class optimisation {
-        AUTO_FOUNDATION_MOVES
-    };
-
     static bool is_solvable(const std::string&, const std::string&);
     static void run_card_cache_test(sol_rules::build_policy, bool, bool);
 
     static void run_foundations_dominance_test(sol_rules::build_policy policy,
                                                std::vector<card> cards);
-
-    static void optimisation_validity_test(optimisation);
-
-    static std::vector<bool> run_many_games(std::string);
 };
 
 

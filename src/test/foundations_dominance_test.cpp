@@ -27,8 +27,3 @@ TEST(FoundationsDominance, AnySuit) {
             "AC","2C","AH","2H","AS","2S","AD","3C","3H","3S","2D","4C","4H",
             "4S","3D","4D"});
 }
-
-TEST(FoundationsDominance, NoSolutionChange) {
-    test_helper::optimisation_validity_test(
-            test_helper::optimisation::AUTO_FOUNDATION_MOVES);
-}
