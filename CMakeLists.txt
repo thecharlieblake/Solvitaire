@@ -133,20 +133,15 @@ endif()
 add_executable(solvitaire ${main} ${sources})
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 
-# add a separete executable for the 'no card symmetry' version of the solver
-add_executable(solvitaire-no-card-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-card-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
-set_target_properties(solvitaire-no-card-symmetry PROPERTIES COMPILE_FLAGS -DNO_CARD_SYMMETRY)
+# add a separete executable for the 'suit reduction streamliner' version of the solver
+add_executable(solvitaire-suit-reduction-streamliner ${main} ${sources})
+target_link_libraries(solvitaire-suit-reduction-streamliner LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-suit-reduction-streamliner PROPERTIES COMPILE_FLAGS -DSUIT_REDUCTION_STREAMLINER)
 
 # add a separete executable for the 'no pile symmetry' version of the solver
 add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 set_target_properties(solvitaire-no-pile-symmetry PROPERTIES COMPILE_FLAGS -DNO_PILE_SYMMETRY)
-
-# add a separete executable for the 'no symmetry' version of the solver
-add_executable(solvitaire-no-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
-set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_CARD_SYMMETRY -DNO_PILE_SYMMETRY")
 
 # add a separete executable for the 'no reduced state' version of the solver
 add_executable(solvitaire-no-reduced-state ${main} ${sources})

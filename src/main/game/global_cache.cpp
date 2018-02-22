@@ -82,13 +82,9 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 #else
     auto& target = data;
 #endif
-
+    
     switch (gs.rules.build_pol) {
-#ifdef NO_CARD_SYMMETRY
-        default:
-            target.emplace_back(c);
-            break;
-#else
+#ifdef SUIT_REDUCTION_STREAMLINER
         case pol::SAME_SUIT:
             target.emplace_back(c);
             break;
@@ -97,6 +93,10 @@ void cached_game_state::add_card(card c, const game_state& gs) {
             break;
         default:
             target.emplace_back(0, c.get_rank());
+            break;
+#else
+        default:
+            target.emplace_back(c);
             break;
 #endif
     }
@@ -152,9 +152,7 @@ std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
 size_t hasher::hash_value(card const& c) const {
     boost::hash<uint8_t> boost_hasher;
 
-#ifdef NO_CARD_SYMMETRY
-    uint8_t suit_val = c.get_suit();
-#else
+#ifdef SUIT_REDUCTION_STREAMLINER
     uint8_t suit_val;
     switch (init_gs.rules.build_pol) {
         case pol::SAME_SUIT:
@@ -166,6 +164,8 @@ size_t hasher::hash_value(card const& c) const {
         default:
             suit_val = 0;
     }
+#else
+    uint8_t suit_val = c.get_suit();
 #endif
 
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
