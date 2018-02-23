@@ -10,22 +10,6 @@
 
 typedef sol_rules::build_policy pol;
 
-TEST(GlobalCache, BuildSameSuit) {
-    test_helper::run_card_cache_test(pol::SAME_SUIT, false, false);
-}
-
-TEST(GlobalCache, BuildRedBlack) {
-    test_helper::run_card_cache_test(pol::RED_BLACK, false, true);
-}
-
-TEST(GlobalCache, BuildAny) {
-    test_helper::run_card_cache_test(pol::ANY_SUIT, true, true);
-}
-
-TEST(GlobalCache, BuildNone) {
-    test_helper::run_card_cache_test(pol::NO_BUILD, true, true);
-}
-
 TEST(GlobalCache, CommutativeTableauPiles) {
     sol_rules rules;
     rules.tableau_pile_count = 3;
