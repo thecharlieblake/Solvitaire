@@ -77,6 +77,7 @@ bool solver::run() {
 }
 
 void solver::add_children(std::vector<game_state::move>& moves) {
+    current_node->children.reserve(moves.size());
     for (auto move : moves) {
         add_child(move);
     }
