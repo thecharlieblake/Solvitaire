@@ -48,10 +48,11 @@ bool solver::run() {
             bool is_new_state = cache.insert(state);
             if (is_new_state) {
                 // Gets the legal moves in the current state
-                vector<game_state::move> next_moves = state.get_legal_moves();
+                vector<game_state::move> next_moves =
+                        state.get_legal_moves();
 
                 // If there are none, reverts to the last node with children
-                if (state.get_legal_moves().empty()) {
+                if (next_moves.empty()) {
                     states_exhausted = revert_to_last_node_with_children();
                 } else {
                     add_children(next_moves);
