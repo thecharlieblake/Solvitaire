@@ -82,24 +82,28 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 #else
     auto& target = data;
 #endif
-    
-    switch (gs.rules.build_pol) {
-#ifdef SUIT_REDUCTION_STREAMLINER
-        case pol::SAME_SUIT:
-            target.emplace_back(c);
-            break;
-        case pol::RED_BLACK:
-            target.emplace_back(c.get_colour(), c.get_rank());
-            break;
-        default:
-            target.emplace_back(0, c.get_rank());
-            break;
-#else
-        default:
-            target.emplace_back(c);
-            break;
+
+    // If the game is a 'hole-based' game, or suit-reduction is on, reduces
+    // the cached suit of the card where possible
+#ifndef SUIT_REDUCTION_STREAMLINER
+    if (gs.rules.hole) {
 #endif
+        switch (gs.rules.build_pol) {
+            case pol::SAME_SUIT:
+                target.emplace_back(c);
+                break;
+            case pol::RED_BLACK:
+                target.emplace_back(c.get_colour(), c.get_rank());
+                break;
+            default:
+                target.emplace_back(0, c.get_rank());
+                break;
+        }
+#ifndef SUIT_REDUCTION_STREAMLINER
+    } else {
+        target.emplace_back(c);
     }
+#endif
 }
 
 void cached_game_state::add_card_divider() {
@@ -152,20 +156,26 @@ std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
 size_t hasher::hash_value(card const& c) const {
     boost::hash<uint8_t> boost_hasher;
 
-#ifdef SUIT_REDUCTION_STREAMLINER
+    // If the game is a 'hole-based' game, or suit-reduction is enabled, hash
+    // the reduced suit
     uint8_t suit_val;
-    switch (init_gs.rules.build_pol) {
-        case pol::SAME_SUIT:
-            suit_val = c.get_suit();
-            break;
-        case pol::RED_BLACK:
-            suit_val = c.get_colour();
-            break;
-        default:
-            suit_val = 0;
+#ifndef SUIT_REDUCTION_STREAMLINER
+    if (init_gs.rules.hole) {
+#endif
+        switch (init_gs.rules.build_pol) {
+            case pol::SAME_SUIT:
+                suit_val = c.get_suit();
+                break;
+            case pol::RED_BLACK:
+                suit_val = c.get_colour();
+                break;
+            default:
+                suit_val = 0;
+        }
+#ifndef SUIT_REDUCTION_STREAMLINER
+    } else {
+        suit_val = c.get_suit();
     }
-#else
-    uint8_t suit_val = c.get_suit();
 #endif
 
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
