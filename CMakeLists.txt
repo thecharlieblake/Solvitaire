@@ -153,6 +153,11 @@ add_executable(solvitaire-no-auto-foundations ${main} ${sources})
 target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
 set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
 
+# add a separete executable for the 'no card just moved' version of the solver
+add_executable(solvitaire-no-card-just-moved ${main} ${sources})
+target_link_libraries(solvitaire-no-card-just-moved LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+set_target_properties(solvitaire-no-card-just-moved PROPERTIES COMPILE_FLAGS -DNO_CARD_JUST_MOVED)
+
 
 ###############################################################################
 ## testing ####################################################################
