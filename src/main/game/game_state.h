@@ -49,7 +49,11 @@ public:
     void place_card(pile_ref, card);
     card take_card(pile_ref);
 
-    std::vector<move> get_legal_moves();
+    std::vector<move> get_legal_moves(
+#ifndef NO_CARD_JUST_MOVED
+            move
+#endif
+    );
 
     // Inspects state
     bool is_solved() const;

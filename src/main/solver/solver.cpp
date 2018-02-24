@@ -19,7 +19,7 @@ solver::solver(const game_state& gs)
         , init_state(gs)
         , state(gs)
         , states_searched(1)
-        , root(nullptr, game_state::move(0, 0))
+        , root(nullptr, game_state::move(255, 255, 255))
         , current_node(&root) {
 }
 
@@ -48,8 +48,7 @@ bool solver::run() {
             bool is_new_state = cache.insert(state);
             if (is_new_state) {
                 // Gets the legal moves in the current state
-                vector<game_state::move> next_moves =
-                        state.get_legal_moves();
+                vector<game_state::move> next_moves = get_next_moves();
 
                 // If there are none, reverts to the last node with children
                 if (next_moves.empty()) {
@@ -82,6 +81,14 @@ void solver::add_children(std::vector<game_state::move>& moves) {
     for (auto move : moves) {
         add_child(move);
     }
+}
+
+vector<game_state::move> solver::get_next_moves() {
+#ifndef NO_CARD_JUST_MOVED
+    return state.get_legal_moves(current_node->move);
+#else
+    return state.get_legal_moves();
+#endif
 }
 
 void solver::add_child(game_state::move move) {
