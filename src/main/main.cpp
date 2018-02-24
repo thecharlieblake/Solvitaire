@@ -21,6 +21,7 @@ const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&, bool);
 void solve_input_files(vector<string>, const sol_rules&, bool);
 void solve_game(const game_state&, bool);
+void calculate_solvability_percentage(const sol_rules&);
 
 int main(int argc, const char* argv[]) {
 
@@ -34,16 +35,21 @@ int main(int argc, const char* argv[]) {
     const optional<sol_rules> rules = gen_rules(clh);
     if (!rules) return EXIT_FAILURE;
 
-    // Retrieves the input files to be solved
-    const vector<string> input_files = clh.get_input_files();
-
-    // If there are no input files, solve a random deal based on the
-    // supplied seed
-    if (input_files.empty()) {
+    // If the user has asked for a solvability percentage, calculates it
+    if (clh.get_solvability()) {
+        calculate_solvability_percentage(*rules);
+    }
+    // If a random deal seed has been supplied, solves it
+    else if (clh.get_random_deal() != -1) {
         solve_random_game(clh.get_random_deal(), *rules, clh.get_classify());
     }
-    // Otherwise, solve the input files
+    // Otherwise there are supplied input files which should be solved
     else {
+        const vector<string> input_files = clh.get_input_files();
+
+        // If there are no input files, solve a random deal based on the
+        // supplied seed
+        assert (!input_files.empty());
         solve_input_files(input_files, *rules, clh.get_classify());
     }
 
@@ -112,4 +118,9 @@ void solve_game(const game_state& gs, bool classify) {
                  << solv.get_states_searched() << "\n";
         }
     }
+}
+
+void calculate_solvability_percentage(const sol_rules& rules) {
+    cout << "TODO: calculate solvability percentage";
+    cout << rules.hole;
 }

@@ -18,14 +18,15 @@ public:
     int get_random_deal();
     bool get_help();
     bool get_classify();
+    bool get_solvability();
 
 private:
     bool assess_errors();
     bool assess_sol_type();
     void print_help();
-    void print_no_input_error();
     void print_sol_type_rules_error();
-    void print_rand_plus_input_err();
+    void print_no_opts_error();
+    void print_too_many_opts_error();
 
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
@@ -37,6 +38,7 @@ private:
     int random_deal;
     bool help;
     bool classify;
+    bool solvability;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H
