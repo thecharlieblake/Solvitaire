@@ -13,7 +13,11 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 
-vector<game_state::move> game_state::get_legal_moves() {
+vector<game_state::move> game_state::get_legal_moves(
+#ifndef NO_CARD_JUST_MOVED
+        move parent_move
+#endif
+) {
     // The next legal moves
     vector<move> moves;
 
@@ -24,8 +28,16 @@ vector<game_state::move> game_state::get_legal_moves() {
 
     // Cycles through each pile which we may be able to remove a card from
     for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
-        // Never removes a card from the hole, the waste, or an empty pile
-        if ((rules.hole && rem_ref == hole) || piles[rem_ref].empty()) continue;
+        // Never removes a card from the hole, an empty pile, or the pile we
+        // just moved a card to
+        if ((rules.hole && rem_ref == hole)
+            || piles[rem_ref].empty()
+#ifndef NO_CARD_JUST_MOVED
+            || (rem_ref == parent_move.to
+                && parent_move.count <= 1
+                && parent_move.from != stock)
+#endif
+                ) continue;
 
         // If we have a foundations card as the rem_ref
         if (rules.foundations
@@ -100,7 +112,7 @@ game_state::move game_state::get_stock_tableau_move() const {
             : piles[stock].size();
 
     assert(stock_moves > 0 && stock_moves <= piles[stock].size());
-    return {stock, 0, stock_moves};
+    return {stock, 255, stock_moves};
 }
 
 // If a tableau pile is empty and the space policy is

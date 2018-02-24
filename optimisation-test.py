@@ -1,13 +1,17 @@
 import sys
 from subprocess import run, CalledProcessError, DEVNULL, PIPE, Popen
 
-runCount = 7500
+runCount = 1000
 
 # Loops through each canonical solitaire
 
-for optimisation in ["-no-reduced-state",
-                     "-no-pile-symmetry",
-                     "-no-auto-foundations"]:
+for optimisation in [
+#    "-no-reduced-state",
+#    "-no-pile-symmetry",
+#    "-no-auto-foundations",
+    "-no-card-just-moved"
+]:
+
     for preset in [
         "simple-alpha-star",
         "simple-bakers-dozen",
@@ -58,8 +62,8 @@ for optimisation in ["-no-reduced-state",
             except CalledProcessError:
                 print("Error running " + preset + " with seed " + str(attempt) + "!")
                 sys.exit()
-            except:
-                print("Unknown error in script")
+            except Exception as e:
+                print("Unknown error in script: ", e)
                 sys.exit()
 
             run("pkill solvitaire", shell=True)

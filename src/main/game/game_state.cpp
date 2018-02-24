@@ -228,11 +228,11 @@ bool game_state::move::is_dominance() const {
 /////////////////////////
 
 void game_state::make_move(const move m) {
-    assert(m.from < piles.size());
-    assert(m.to < piles.size());
-
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
+        assert(m.from  == stock);
+        assert(m.count == 255  );
+
         for (pile_ref tab_pr = original_tableau_piles.front();
              tab_pr < pile_ref(original_tableau_piles.front() + m.count);
              tab_pr++) {
@@ -241,6 +241,9 @@ void game_state::make_move(const move m) {
     }
     // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
+        assert(m.from < piles.size());
+        assert(m.to   < piles.size());
+
         place_card(m.to, take_card(m.from));
 #ifndef NO_AUTO_FOUNDATIONS
         update_auto_foundation_moves(m.to);
@@ -248,7 +251,10 @@ void game_state::make_move(const move m) {
     }
     // If this is a built-pile move
     else {
+        assert(m.from  <  piles.size()  );
+        assert(m.to    <  piles.size()  );
         assert(m.count <= rules.max_rank);
+
         // Adds the cards to the 'to' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
             place_card(m.to, piles[m.from][pile_idx]);

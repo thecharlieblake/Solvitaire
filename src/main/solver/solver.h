@@ -6,7 +6,6 @@
 #define SOLVITAIRE_SOLVER_H
 
 #include <string>
-#include <list>
 #include <vector>
 
 #include "../game/global_cache.h"
@@ -20,7 +19,7 @@ public:
         node(node*, game_state::move);
         node* parent;
         const game_state::move move;
-        std::list<node> children;
+        std::vector<node> children;
     };
 
     explicit solver(const game_state&);
@@ -34,6 +33,7 @@ private:
     bool revert_to_last_node_with_children();
     void add_children(std::vector<game_state::move>&);
     void add_child(game_state::move);
+    std::vector<game_state::move> get_next_moves();
 
     const game_state init_state;
     game_state state;
