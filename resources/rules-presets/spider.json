@@ -1,8 +1,10 @@
 {
   "tableau piles": {
-    "count": 10
+    "count": 10,
+    "move built group": false
   },
+  "ordered-tableau-sol": true,
   "two decks": true,
-  "stock size": 60,
+  "stock size": 50,
   "stock deal type": "tableau piles"
 }
