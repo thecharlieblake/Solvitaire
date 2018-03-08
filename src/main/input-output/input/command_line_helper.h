@@ -19,6 +19,7 @@ public:
     bool get_help();
     bool get_classify();
     bool get_solvability();
+    bool get_short_sols();
 
 private:
     bool assess_errors();
@@ -27,6 +28,7 @@ private:
     void print_sol_type_rules_error();
     void print_no_opts_error();
     void print_too_many_opts_error();
+    void print_shortest_sols_error();
 
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
@@ -39,6 +41,7 @@ private:
     bool help;
     bool classify;
     bool solvability;
+    bool shortest_sols;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H

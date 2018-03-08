@@ -21,9 +21,9 @@ using namespace boost;
 namespace po = boost::program_options;
 
 const optional<sol_rules> gen_rules(command_line_helper&);
-void solve_random_game(int, const sol_rules&, bool);
-void solve_input_files(vector<string>, const sol_rules&, bool);
-void solve_game(const game_state&, bool);
+void solve_random_game(int, const sol_rules&, bool, bool);
+void solve_input_files(vector<string>, const sol_rules&, bool, bool);
+void solve_game(const game_state&, bool, bool);
 void calculate_solvability_percentage(const sol_rules&);
 double sol_lower_bound(int, int, int);
 double sol_upper_bound(int, int, int);
@@ -47,7 +47,8 @@ int main(int argc, const char* argv[]) {
     }
     // If a random deal seed has been supplied, solves it
     else if (clh.get_random_deal() != -1) {
-        solve_random_game(clh.get_random_deal(), *rules, clh.get_classify());
+        solve_random_game(clh.get_random_deal(), *rules, clh.get_short_sols(),
+                          clh.get_classify());
     }
     // Otherwise there are supplied input files which should be solved
     else {
@@ -56,7 +57,8 @@ int main(int argc, const char* argv[]) {
         // If there are no input files, solve a random deal based on the
         // supplied seed
         assert (!input_files.empty());
-        solve_input_files(input_files, *rules, clh.get_classify());
+        solve_input_files(input_files, *rules, clh.get_short_sols(),
+                          clh.get_classify());
     }
 
     return EXIT_SUCCESS;
@@ -77,14 +79,15 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
     }
 }
 
-void solve_random_game(int seed, const sol_rules& rules, bool classify) {
+void solve_random_game(int seed, const sol_rules& rules, bool short_sol,
+                       bool classify) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state gs(rules, seed);
-    solve_game(gs, classify);
+    solve_game(gs, short_sol, classify);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules,
-                       bool classify) {
+                       bool short_sol, bool classify) {
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
@@ -94,7 +97,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
             game_state gs(rules, in_doc);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, classify);
+            solve_game(gs, short_sol, classify);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -104,26 +107,35 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, bool classify) {
-    solver solv(gs);
-    bool solution = solv.run();
+void solve_game(const game_state& gs, bool short_sol, bool classify) {
+    solver s(gs);
+    solver* solv = &s;
+    bool solution;
+    if (short_sol) {
+        uint bound = 1;
+        solver::sol_state ss;
+        do {
+            LOG_INFO("Depth: " << bound);
+            solver s_(gs);
+            solv = &s_;
+            ss = s_.run_with_cutoff(none, bound++);
+        } while (ss == solver::sol_state::cutoff);
+        solution = ss == solver::sol_state::solved;
+    } else {
+        solution = solv->run() == solver::sol_state::solved;
+    }
     ProfilerStop();
 
-    if (classify) {
-        if (solution) {
-            cout << "Solved\n";
-        } else {
-            cout << "No solution\n";
-        }
+    if (solution) {
+        if (!classify) solv->print_solution();
+        cout << "Solved\n";
     } else {
-        if (solution) {
-            solv.print_solution();
-        } else {
-            cout << "Deal:\n" << gs
-                 << "\nNo Possible Solution\nStates Searched: "
-                 << solv.get_states_searched() << "\n";
-        }
+        if (!classify) cout << "Deal:\n" << gs << "\n";
+        cout << "No Possible Solution\n";
     }
+
+    cout << "States Searched: " << solv->get_states_searched() << "\n";
+    cout << "Final Depth: " << solv->get_final_depth() << "\n";
 }
 
 void calculate_solvability_percentage(const sol_rules& rules) {
@@ -143,7 +155,7 @@ void calculate_solvability_percentage(const sol_rules& rules) {
 
         future<bool> future = std::async(launch::async,
                                          [&sol, &terminate_solver](){
-            return sol.run(terminate_solver);
+            return sol.run(terminate_solver) == solver::sol_state::solved;
         });
 
         future_status status;

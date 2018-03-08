@@ -19,6 +19,7 @@ solver::solver(const game_state& gs)
         , init_state(gs)
         , state(gs)
         , states_searched(1)
+        , depth(0)
         , root(nullptr, game_state::move(255, 255, 255))
         , current_node(&root) {
 }
@@ -36,12 +37,19 @@ solver::node::node(node* p, const game_state::move m)
         : parent(p), move(m), children() {
 }
 
-bool solver::run(optional<atomic<bool> &> terminate_solver) {
+solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
+    return run_with_cutoff(terminate_solver, none);
+}
+
+solver::sol_state solver::run_with_cutoff(
+        boost::optional<std::atomic<bool> &> terminate_solver,
+        boost::optional<uint> cutoff_depth) {
+    bool cutoff_triggered = false;
     bool states_exhausted = false;
-    while(!state.is_solved() && !states_exhausted) {
+    while(!(state.is_solved() || states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
         if (terminate_solver && *terminate_solver) {
-            return false;
+            return sol_state::cutoff;
         }
 
 #ifndef NDEBUG
@@ -51,29 +59,34 @@ bool solver::run(optional<atomic<bool> &> terminate_solver) {
         LOG_DEBUG(state);
 #endif
 
-        // If there is a dominance move available, adds it to the search tree
-        // and repeats. Doesn't cache the state.
-        optional<game_state::move> dominance_move = state.get_dominance_move();
-        if (dominance_move) {
-            // Adds the dominance move as a child of the current search node
-            add_child(*dominance_move);
+        if (cutoff_depth && depth >= *cutoff_depth) {
+            cutoff_triggered = true;
+            states_exhausted = revert_to_last_node_with_children();//TODO-
         } else {
-            // Caches the current state
-            bool is_new_state = cache.insert(state);
-            if (is_new_state) {
-                // Gets the legal moves in the current state
-                vector<game_state::move> next_moves = get_next_moves();
+            // If there is a dominance move available, adds it to the search tree
+            // and repeats. Doesn't cache the state.
+            optional<game_state::move> dominance_move = state.get_dominance_move();
+            if (dominance_move) {
+                // Adds the dominance move as a child of the current search node
+                add_child(*dominance_move);//TODO+
+            } else {
+                // Caches the current state
+                bool is_new_state = cache.insert(state);
+                if (is_new_state) {
+                    // Gets the legal moves in the current state
+                    vector<game_state::move> next_moves = get_next_moves();
 
-                // If there are none, reverts to the last node with children
-                if (next_moves.empty()) {
-                    states_exhausted = revert_to_last_node_with_children();
-                } else {
-                    add_children(next_moves);
+                    // If there are none, reverts to the last node with children
+                    if (next_moves.empty()) {
+                        states_exhausted = revert_to_last_node_with_children();//TODO-
+                    } else {
+                        add_children(next_moves);//TODO+
+                    }
                 }
-            }
-            // If the state is not a new one, reverts to the last node with children
-            else {
-                states_exhausted = revert_to_last_node_with_children();
+                    // If the state is not a new one, reverts to the last node with children
+                else {
+                    states_exhausted = revert_to_last_node_with_children();//TODO-
+                }
             }
         }
 
@@ -82,12 +95,18 @@ bool solver::run(optional<atomic<bool> &> terminate_solver) {
         if (!states_exhausted) {
             current_node = &current_node->children.back();
             state.make_move(current_node->move);
+            depth++;
         }
 
         states_searched++;
     }
 
-    return state.is_solved();
+    if (state.is_solved()) {
+        return sol_state::solved;
+    } else {
+        assert(states_exhausted);
+        return cutoff_triggered ? sol_state::cutoff : sol_state::unsolvable;
+    }
 }
 
 void solver::add_children(std::vector<game_state::move>& moves) {
@@ -117,6 +136,7 @@ bool solver::revert_to_last_node_with_children() {
         return true;
 
     state.undo_move(current_node->move);
+    depth--;
 
 #ifndef NDEBUG
     // Checks that the state after the undo is in the cache
@@ -161,11 +181,15 @@ void solver::print_solution() const {
             n = &n->children.back();
         }
     }
-    cout << "States Searched: " << states_searched << "\n";
+    cout << "\n";
 }
 
 int solver::get_states_searched() const {
     return states_searched;
+}
+
+int solver::get_final_depth() const {
+    return depth;
 }
 
 const solver::node& solver::get_search_tree() const {
