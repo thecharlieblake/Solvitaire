@@ -14,6 +14,7 @@
 
 class solver {
 public:
+    enum class sol_state {solved, unsolvable, cutoff};
     global_cache cache;
 
     struct node {
@@ -26,9 +27,13 @@ public:
     explicit solver(const game_state&);
     ~solver();
 
-    bool run(boost::optional<std::atomic<bool> &> = boost::none);
+    sol_state run(boost::optional<std::atomic<bool> &> = boost::none);
+    sol_state run_with_cutoff(boost::optional<std::atomic<bool> &>,
+                              boost::optional<uint> = boost::none);
+
     void print_solution() const;
     int get_states_searched() const;
+    int get_final_depth() const;
     const node& get_search_tree() const;
 
 private:
@@ -40,6 +45,7 @@ private:
     const game_state init_state;
     game_state state;
     int states_searched;
+    uint depth;
 
     node root;
     node* current_node;

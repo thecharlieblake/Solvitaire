@@ -30,6 +30,8 @@ command_line_helper::command_line_helper()
             ("random", po::value<int>(), "create and solve a random solitaire "
                     "deal based on a seed. Must supply either 'random',"
                     "'solvability' or list of deals to be solved.")
+            ("shortest-sols", "for each instance returns the shortest possible "
+                    "solution. cannot be supplied alongside '--solvability'")
             ("solvability", "calculates the solvability "
                     "percentage of the supplied solitaire game. Must supply "
                     "either 'random', 'solvability' or list of deals to be "
@@ -88,6 +90,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     solvability = (vm.count("solvability") != 0);
 
+    shortest_sols = (vm.count("shortest-sols") != 0);
+
     // Handle logic error scenarios
     return assess_errors();
 }
@@ -114,6 +118,11 @@ bool command_line_helper::assess_errors() {
     if ((solitaire_type.empty() && rules_file.empty())
             || (!solitaire_type.empty() && !rules_file.empty())) {
         print_sol_type_rules_error();
+        return false;
+    }
+
+    if (shortest_sols && solvability) {
+        print_shortest_sols_error();
         return false;
     }
 
@@ -159,6 +168,11 @@ void command_line_helper::print_too_many_opts_error() {
     print_help();
 }
 
+void command_line_helper::print_shortest_sols_error() {
+    LOG_ERROR ("Error: User cannot supply '--shortest-sols' and '--solvability'");
+    print_help();
+}
+
 const vector<string> command_line_helper::get_input_files() {
     return input_files;
 }
@@ -185,4 +199,8 @@ bool command_line_helper::get_classify() {
 
 bool command_line_helper::get_solvability() {
     return solvability;
+}
+
+bool command_line_helper::get_short_sols() {
+    return shortest_sols;
 }
