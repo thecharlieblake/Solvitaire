@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <atomic>
 
 #include "../game/global_cache.h"
 #include "../game/sol_rules.h"
@@ -23,8 +24,9 @@ public:
     };
 
     explicit solver(const game_state&);
+    ~solver();
 
-    bool run();
+    bool run(boost::optional<std::atomic<bool> &> = boost::none);
     void print_solution() const;
     int get_states_searched() const;
     const node& get_search_tree() const;
