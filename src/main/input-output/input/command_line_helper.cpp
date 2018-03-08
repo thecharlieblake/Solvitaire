@@ -28,8 +28,12 @@ command_line_helper::command_line_helper()
              "the path to a JSON file describing the rules of the solitaire "
                      "to be solved. Must supply either 'type' or 'rules' file")
             ("random", po::value<int>(), "create and solve a random solitaire "
-                    "deal based on a seed. Must supply either 'random' or list "
-                    "of deals to be sold.")
+                    "deal based on a seed. Must supply either 'random',"
+                    "'solvability' or list of deals to be solved.")
+            ("solvability", "calculates the solvability "
+                    "percentage of the supplied solitaire game. Must supply "
+                    "either 'random', 'solvability' or list of deals to be "
+                    "solved.")
             ("classify", "outputs a simple 'solvable/not solvable' "
                     "classification");
 
@@ -82,6 +86,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         random_deal = -1;
     }
 
+    solvability = (vm.count("solvability") != 0);
+
     // Handle logic error scenarios
     return assess_errors();
 }
@@ -92,15 +98,15 @@ bool command_line_helper::assess_errors() {
         return false;
     }
 
-    // The user must either supply input files or a random seed
+    // The user must either supply input files, a random seed, or ask for the
+    // solvability percentage
+    int opt_count = (random_deal != -1) + !input_files.empty() + solvability;
 
-    if (random_deal != -1 && !input_files.empty()) {
-        print_rand_plus_input_err();
+    if (opt_count > 1) {
+        print_too_many_opts_error();
         return false;
-    }
-
-    if (input_files.empty() && random_deal == -1) {
-        print_no_input_error();
+    } else if (opt_count < 1) {
+        print_no_opts_error();
         return false;
     }
 
@@ -135,9 +141,9 @@ void command_line_helper::print_help() {
             << main_options);
 }
 
-void command_line_helper::print_no_input_error() {
-    LOG_ERROR ("Error: User must supply input file(s) or the '--random' "
-            "option");
+void command_line_helper::print_no_opts_error() {
+    LOG_ERROR ("Error: User must supply input file(s), the '--random' "
+            "option, or the '--solvability' option");
     print_help();
 }
 
@@ -147,9 +153,9 @@ void command_line_helper::print_sol_type_rules_error() {
     print_help();
 }
 
-void command_line_helper::print_rand_plus_input_err() {
-    LOG_ERROR ("Error: User must supply input file(s) or the '--random' option, "
-            "not both");
+void command_line_helper::print_too_many_opts_error() {
+    LOG_ERROR ("Error: User must supply input file(s), the '--random' option, "
+                       "or the '--solvability' option, not multiple");
     print_help();
 }
 
@@ -175,4 +181,8 @@ bool command_line_helper::get_help() {
 
 bool command_line_helper::get_classify() {
     return classify;
+}
+
+bool command_line_helper::get_solvability() {
+    return solvability;
 }

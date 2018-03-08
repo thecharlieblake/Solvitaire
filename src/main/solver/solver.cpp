@@ -23,13 +23,27 @@ solver::solver(const game_state& gs)
         , current_node(&root) {
 }
 
+solver::~solver() {
+    // This code looks to be unnecessary, but on alpha-star 6212 without it,
+    // for reasons that I cannot fathom, it segfaults.
+    while (current_node != nullptr) {
+        current_node->children.clear();
+        current_node = current_node->parent;
+    }
+}
+
 solver::node::node(node* p, const game_state::move m)
         : parent(p), move(m), children() {
 }
 
-bool solver::run() {
+bool solver::run(optional<atomic<bool> &> terminate_solver) {
     bool states_exhausted = false;
     while(!state.is_solved() && !states_exhausted) {
+        // If the terminate flag was supplied and has been set to true, return
+        if (terminate_solver && *terminate_solver) {
+            return false;
+        }
+
 #ifndef NDEBUG
         if (current_node->move.is_dominance()) {
             LOG_DEBUG("(dominance move)");
