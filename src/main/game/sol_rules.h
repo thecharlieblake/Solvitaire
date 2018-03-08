@@ -38,6 +38,7 @@ struct sol_rules {
     bool foundations;
     bool foundations_init_card;
     bool foundations_removable;
+    bool solve_ord_tab;
     bool diagonal_deal;
     uint8_t cells;
     uint8_t stock_size;

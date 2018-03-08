@@ -3,7 +3,7 @@
     "count": 4,
     "move built group": false
   },
-  "ordered-tableau-sol": true,
+  "solve by ordered tableau": true,
   "two decks": true,
   "max rank": 3,
   "stock size": 12,

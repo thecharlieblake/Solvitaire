@@ -3,7 +3,7 @@
     "count": 10,
     "move built group": false
   },
-  "ordered-tableau-sol": true,
+  "solve by ordered tableau": true,
   "two decks": true,
   "stock size": 50,
   "stock deal type": "tableau piles"

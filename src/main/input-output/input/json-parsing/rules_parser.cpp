@@ -56,6 +56,7 @@ sol_rules rules_parser::get_default() {
 }
 
 void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
+    int solution_types = 0;
 
     if (!d.IsObject()) {
         json_helper::json_parse_err("JSON doc must be object");
@@ -156,6 +157,7 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (d.HasMember("hole")) {
         if (d["hole"].IsBool()) {
             sr.hole = d["hole"].GetBool();
+            solution_types++;
         } else {
             json_helper::json_parse_err("[hole] must be a boolean");
         }
@@ -164,13 +166,10 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (d.HasMember("foundations")) {
         if (d["foundations"].IsBool()) {
             sr.foundations = d["foundations"].GetBool();
+            solution_types++;
         } else {
             json_helper::json_parse_err("[foundations] must be a boolean");
         }
-    }
-
-    if (!sr.hole && !sr.foundations) {
-        json_helper::json_parse_err("one of [hole] and [foundations] must be true");
     }
 
     if (d.HasMember("foundations initial card")) {
@@ -186,6 +185,15 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             sr.foundations_removable = d["foundations removable"].GetBool();
         } else {
             json_helper::json_parse_err("[foundations removable] must be a boolean");
+        }
+    }
+
+    if (d.HasMember("solve by ordered tableau")) {
+        if (d["solve by ordered tableau"].IsBool()) {
+            sr.solve_ord_tab = d["solve by ordered tableau"].GetBool();
+            solution_types++;
+        } else {
+            json_helper::json_parse_err("[solve by ordered tableau] must be a boolean");
         }
     }
 
@@ -231,5 +239,10 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         } else {
             json_helper::json_parse_err("[reserve stacked] must be a boolean");
         }
+    }
+
+    if (solution_types != 1)
+        json_helper::json_parse_err("one and only one of [hole], [foundations] "
+                                    "and [solve by ordered tableau] must be true");
     }
 }

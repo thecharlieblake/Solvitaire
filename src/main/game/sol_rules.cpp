@@ -20,6 +20,7 @@ sol_rules::sol_rules() :
         hole(false),
         foundations(false),
         foundations_init_card(false),
+        solve_ord_tab(false),
         diagonal_deal(false),
         cells(0),
         stock_size(0),

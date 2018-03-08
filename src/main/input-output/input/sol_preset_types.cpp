@@ -33,7 +33,7 @@ std::map<string, string> sol_preset_types::mp = {
   "foundations": true,
   "foundations initial card": false,
   "foundations removable": false,
-  "ordered-tableau-sol": false,
+  "solve by ordered tableau": false,
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",
@@ -322,7 +322,7 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 10,
     "move built group": false
   },
-  "ordered-tableau-sol": true,
+  "solve by ordered tableau": true,
   "two decks": true,
   "stock size": 50,
   "stock deal type": "tableau piles"
@@ -339,7 +339,7 @@ std::map<string, string> sol_preset_types::mp = {
     "count": 4,
     "move built group": false
   },
-  "ordered-tableau-sol": true,
+  "solve by ordered tableau": true,
   "two decks": true,
   "max rank": 3,
   "stock size": 12,
