@@ -21,9 +21,19 @@ vector<game_state::move> game_state::get_legal_moves(
     // The next legal moves
     vector<move> moves;
 
-    // If we have a stock that can deal to the tableau piles, add this move
+    // If we have a stock that can deal to the tableau piles, adds this move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && !piles[stock].empty()) {
-        moves.emplace_back(get_stock_tableau_move());
+        // Only does this if all the tableau piles are empty
+        bool no_tableau_empty = true;
+        for (auto tab_ref : tableau_piles) {
+            if (piles[tab_ref].empty()) {
+                no_tableau_empty = false;
+                break;
+            }
+        }
+        if (no_tableau_empty) {
+            moves.emplace_back(get_stock_tableau_move());
+        }
     }
 
     // Cycles through each pile which we may be able to remove a card from
