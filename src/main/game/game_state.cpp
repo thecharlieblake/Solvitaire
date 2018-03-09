@@ -440,10 +440,18 @@ bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
 
 bool game_state::is_solved() const {
     bool solved = true;
-    if (rules.hole) {
+    if (rules.solve_ord_tab) {
+        for (pile_ref tab_pr : tableau_piles) {
+            if (is_ordered_pile(tab_pr)) {
+                solved = false;
+                break;
+            }
+        }
+    } else if (rules.hole) {
         solved = piles[hole].size()
                == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
+        assert(rules.foundations);
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
                 solved = false;
@@ -478,6 +486,16 @@ bool game_state::is_solved() const {
 #endif
 
     return solved;
+}
+
+bool game_state::is_ordered_pile(pile_ref pr) const {
+    if (piles[pr].size() != rules.max_rank) return false;
+
+    card::suit_t s = piles[pr][0].get_suit();
+    for (card::rank_t r = rules.max_rank; r >= 1; r--) {
+        if (piles[pr][r] != card(s, r)) return false;
+    }
+    return true;
 }
 
 const std::vector<pile>& game_state::get_data() const {
