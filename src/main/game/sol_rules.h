@@ -32,13 +32,14 @@ struct sol_rules {
     build_policy build_pol;
     spaces_policy spaces_pol;
     bool move_built_group;
+    build_policy built_group_pol;
     bool two_decks;
     uint8_t max_rank;
     bool hole;
     bool foundations;
     bool foundations_init_card;
     bool foundations_removable;
-    bool solve_ord_tab;
+    bool foundations_comp_piles;
     bool diagonal_deal;
     uint8_t cells;
     uint8_t stock_size;
