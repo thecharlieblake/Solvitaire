@@ -56,8 +56,6 @@ sol_rules rules_parser::get_default() {
 }
 
 void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
-    int solution_types = 0;
-
     if (!d.IsObject()) {
         json_helper::json_parse_err("JSON doc must be object");
     }
@@ -110,7 +108,7 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     }
 
                 } else {
-                    json_helper::json_parse_err("[tableau piles][spaces policy] must be an string");
+                    json_helper::json_parse_err("[tableau piles][spaces policy] must be a string");
                 }
             }
 
@@ -119,6 +117,28 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     sr.move_built_group = d["tableau piles"]["move built group"].GetBool();
                 } else {
                     json_helper::json_parse_err("[tableau piles][move built group] must be a boolean");
+                }
+            }
+
+            if (d["tableau piles"].HasMember("move built group policy")) {
+                if (d["tableau piles"]["move built group policy"].IsString()) {
+                    string mbgp_str = d["tableau piles"]["move built group policy"].GetString();
+
+                    if (mbgp_str == "same-as-build") {
+                        sr.built_group_pol = sr.build_pol;
+                    } else if (mbgp_str == "any-suit") {
+                        sr.built_group_pol = pol::ANY_SUIT;
+                    } else if (mbgp_str == "red-black") {
+                        sr.built_group_pol = pol::RED_BLACK;
+                    } else if (mbgp_str == "same-suit") {
+                        sr.built_group_pol = pol::SAME_SUIT;
+                    } else if (mbgp_str == "no-build") {
+                        sr.built_group_pol = pol::NO_BUILD;
+                    } else {
+                        json_helper::json_parse_err("[tableau piles][move built group policy] is invalid");
+                    }
+                } else {
+                    json_helper::json_parse_err("[tableau piles][move built group policy] must be a string");
                 }
             }
 
@@ -157,7 +177,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (d.HasMember("hole")) {
         if (d["hole"].IsBool()) {
             sr.hole = d["hole"].GetBool();
-            solution_types++;
         } else {
             json_helper::json_parse_err("[hole] must be a boolean");
         }
@@ -166,7 +185,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (d.HasMember("foundations")) {
         if (d["foundations"].IsBool()) {
             sr.foundations = d["foundations"].GetBool();
-            solution_types++;
         } else {
             json_helper::json_parse_err("[foundations] must be a boolean");
         }
@@ -188,12 +206,11 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
-    if (d.HasMember("solve by ordered tableau")) {
-        if (d["solve by ordered tableau"].IsBool()) {
-            sr.solve_ord_tab = d["solve by ordered tableau"].GetBool();
-            solution_types++;
+    if (d.HasMember("foundations complete piles")) {
+        if (d["foundations complete piles"].IsBool()) {
+            sr.foundations_comp_piles = d["foundations complete piles"].GetBool();
         } else {
-            json_helper::json_parse_err("[solve by ordered tableau] must be a boolean");
+            json_helper::json_parse_err("[foundations complete piles] must be a boolean");
         }
     }
 
@@ -241,8 +258,11 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
-    if (solution_types != 1)
-        json_helper::json_parse_err("one and only one of [hole], [foundations] "
-                                    "and [solve by ordered tableau] must be true");
+    int solution_types = 0;
+    if (sr.hole) solution_types++;
+    if (sr.foundations) solution_types++;
+    if (solution_types != 1) {
+        json_helper::json_parse_err("one and only one of [hole] and [foundations] "
+                                    "must be true");
     }
 }
