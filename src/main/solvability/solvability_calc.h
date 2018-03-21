@@ -11,14 +11,24 @@ class solvability_calc {
 public:
     explicit solvability_calc(const sol_rules&);
 
-    void calculate_solvability_percentage() const;
+    void calculate_solvability_percentage();
 
 private:
-    static double sol_lower_bound(int, int, int);
-    static double sol_upper_bound(int, int, int);
+    void print_header() const;
+    void print_row(double, double) const;
+    void solve_seed();
+    void reset();
+
+    double sol_lower_bound();
+    double sol_upper_bound();
     static double agrestiCoull(int, int, double, bool);
 
     const sol_rules& rules;
+    int current_seed;
+    std::chrono::milliseconds timeout;
+    int solvable;
+    int unsolvable;
+    int intractable;
 };
 
 
