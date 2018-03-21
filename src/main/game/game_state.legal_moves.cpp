@@ -109,6 +109,22 @@ vector<game_state::move> game_state::get_legal_moves(
         get_built_group_moves(moves);
     }
 
+    // If only complete built piles can be moved to the foundations,
+    if (rules.foundations_comp_piles) {
+        for (pile_ref tab_pr : tableau_piles) {
+            if (is_ordered_pile(tab_pr)) {
+
+                for (pile_ref found_pr : foundations) {
+                    if (piles[found_pr].empty()) {
+                        moves.emplace_back(tab_pr, found_pr, rules.max_rank);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
     return moves;
 }
 
@@ -163,7 +179,7 @@ bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
 
 bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
                                            const pile_ref add_ref) const {
-    if (rem_ref == add_ref) return false;
+    if (rules.foundations_comp_piles || rem_ref == add_ref) return false;
 
     card rem_c = piles[rem_ref].top_card();
 
@@ -198,7 +214,7 @@ bool game_state::is_valid_hole_move(const pile_ref rem_ref) const {
 ///////////////////////
 
 void game_state::get_built_group_moves(vector<move>& moves) const {
-    assert(rules.build_pol != pol::NO_BUILD);
+    assert(rules.built_group_pol != pol::NO_BUILD);
 
     // Cycles through each pile to see if it contains a built group of size > 1
     for (auto rem_ref : tableau_piles) {
@@ -247,13 +263,13 @@ pile::size_type game_state::get_built_group_height(pile_ref ref) const {
         card c = piles[ref][group_card_idx];
 
         // If the build policy is same suit, makes sure group has same suit
-        if (rules.build_pol == sol_rules::build_policy::SAME_SUIT
+        if (rules.built_group_pol == pol::SAME_SUIT
             && c.get_suit() != prev_c.get_suit()) {
             built_group = false;
         }
             // If the build policy is red black, makes sure group alternates
             // in correct phase
-        else if (rules.build_pol == sol_rules::build_policy::RED_BLACK
+        else if (rules.built_group_pol == pol::RED_BLACK
                  && c.get_colour() == prev_c.get_colour()) {
             built_group = false;
         }
@@ -281,11 +297,11 @@ const {
     }
 
     // Checks to see if the suits are correct
-    switch (rules.build_pol) {
-        case sol_rules::build_policy::SAME_SUIT:
+    switch (rules.built_group_pol) {
+        case pol::SAME_SUIT:
             return bg_low.get_suit() == add_card.get_suit();
 
-        case sol_rules::build_policy::RED_BLACK: {
+        case pol::RED_BLACK: {
             bool same_suit = bg_low.get_suit() == add_card.get_suit();
             bool even_diff = (add_card.get_rank() - bg_low.get_rank()) % 2 == 0;
             return (same_suit && even_diff) || (!same_suit && !even_diff);
@@ -352,6 +368,16 @@ optional<game_state::move> game_state::get_dominance_move() const {
 #endif
 
     return none;
+}
+
+bool game_state::is_ordered_pile(pile_ref pr) const {
+    if (piles[pr].size() != rules.max_rank) return false;
+
+    card::suit_t s = piles[pr][0].get_suit();
+    for (card::rank_t r = 0; r < rules.max_rank; r++) {
+        if (piles[pr][r] != card(s, card::rank_t(r + 1))) return false;
+    }
+    return true;
 }
 
 // For games where the foundations can be removed from, this dominance blocks

@@ -231,7 +231,7 @@ void game_state::make_move(const move m) {
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
         assert(m.from  == stock);
-        assert(m.count == 255  );
+        assert(m.to    == 255  );
 
         for (pile_ref tab_pr = original_tableau_piles.front();
              tab_pr < pile_ref(original_tableau_piles.front() + m.count);
@@ -269,7 +269,6 @@ void game_state::make_move(const move m) {
 
 void game_state::undo_move(const move m) {
     assert(m.from < piles.size());
-    assert(m.to < piles.size());
 
     // Handles special stock-to-tableau-piles move
     if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
@@ -281,11 +280,13 @@ void game_state::undo_move(const move m) {
     }
     // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
+        assert(m.to < piles.size());
         place_card(m.from, take_card(m.to));
 #ifndef NO_AUTO_FOUNDATIONS
         update_auto_foundation_moves(m.from);
 #endif
     } else {
+        assert(m.to < piles.size());
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile
         for (auto pile_idx = m.count; pile_idx-- > 0;) {
@@ -304,7 +305,10 @@ void game_state::undo_move(const move m) {
 void game_state::place_card(pile_ref pr, card c) {
     piles[pr].place(c);
 #ifndef NO_PILE_SYMMETRY
-    eval_pile_order(pr, true);
+    // If the stock deals to the tableau piles, there is no pile symmetry
+    if (rules.stock_size == 0 || rules.stock_deal_t != sdt::TABLEAU_PILES) {
+        eval_pile_order(pr, true);
+    }
 #endif
 }
 
@@ -312,7 +316,10 @@ void game_state::place_card(pile_ref pr, card c) {
 card game_state::take_card(pile_ref pr) {
     card c = piles[pr].take();
 #ifndef NO_PILE_SYMMETRY
-    eval_pile_order(pr, false);
+    // If the stock deals to the tableau piles, there is no pile symmetry
+    if (rules.stock_size == 0 || rules.stock_deal_t != sdt::TABLEAU_PILES) {
+        eval_pile_order(pr, false);
+    }
 #endif
     return c;
 }
@@ -440,14 +447,7 @@ bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
 
 bool game_state::is_solved() const {
     bool solved = true;
-    if (rules.solve_ord_tab) {
-        for (pile_ref tab_pr : tableau_piles) {
-            if (is_ordered_pile(tab_pr)) {
-                solved = false;
-                break;
-            }
-        }
-    } else if (rules.hole) {
+    if (rules.hole) {
         solved = piles[hole].size()
                == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
@@ -486,16 +486,6 @@ bool game_state::is_solved() const {
 #endif
 
     return solved;
-}
-
-bool game_state::is_ordered_pile(pile_ref pr) const {
-    if (piles[pr].size() != rules.max_rank) return false;
-
-    card::suit_t s = piles[pr][0].get_suit();
-    for (card::rank_t r = rules.max_rank; r >= 1; r--) {
-        if (piles[pr][r] != card(s, r)) return false;
-    }
-    return true;
 }
 
 const std::vector<pile>& game_state::get_data() const {
