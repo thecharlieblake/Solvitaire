@@ -25,7 +25,8 @@ std::map<string, string> sol_preset_types::mp = {
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
-    "move built group": false
+    "move built group": false,
+    "move built group policy": "same-as-build"
   },
   "max rank": 13,
   "two decks": false,
@@ -33,6 +34,7 @@ std::map<string, string> sol_preset_types::mp = {
   "foundations": true,
   "foundations initial card": false,
   "foundations removable": false,
+  "foundations complete piles": false,
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",
@@ -318,10 +320,14 @@ std::map<string, string> sol_preset_types::mp = {
                 R"(
 {
   "tableau piles": {
-    "count": 10
+    "count": 10,
+    "build policy": "any-suit",
+    "move built group": true,
+    "move built group policy": "same-suit"
   },
+  "foundations complete piles": true,
   "two decks": true,
-  "stock size": 60,
+  "stock size": 50,
   "stock deal type": "tableau piles"
 }
 )"
@@ -333,8 +339,12 @@ std::map<string, string> sol_preset_types::mp = {
                 R"(
 {
   "tableau piles": {
-    "count": 4
+    "count": 4,
+    "build policy": "any-suit",
+    "move built group": true,
+    "move built group policy": "same-suit"
   },
+  "foundations complete piles": true,
   "two decks": true,
   "max rank": 3,
   "stock size": 12,

@@ -84,6 +84,7 @@ private:
     void add_empty_built_group_moves(std::vector<move>&, pile_ref, pile_ref,
                                      card) const;
     bool dominance_blocks_foundation_move(pile_ref);
+    bool is_ordered_pile(pile_ref) const;
 
     void update_auto_foundation_moves(pile_ref);
     bool is_valid_auto_foundation_move(pile_ref) const;

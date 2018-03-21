@@ -1,8 +1,12 @@
 {
   "tableau piles": {
-    "count": 10
+    "count": 10,
+    "build policy": "any-suit",
+    "move built group": true,
+    "move built group policy": "same-suit"
   },
+  "foundations complete piles": true,
   "two decks": true,
-  "stock size": 60,
+  "stock size": 50,
   "stock deal type": "tableau piles"
 }

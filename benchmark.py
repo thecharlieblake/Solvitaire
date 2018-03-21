@@ -159,7 +159,7 @@ class SpiderRulesGen(SolitaireRulesGen):
     def alterFieldsToChange(self, level):
         self.baseJson["max rank"] = level
         self.baseJson["tableau piles"]["count"] = math.ceil(10*level/13)
-        self.baseJson["stock size"] = math.ceil(60*level/13)
+        self.baseJson["stock size"] = math.ceil(50*level/13)
 
 def cleanup():
     os.remove(tempRulesFilename)
