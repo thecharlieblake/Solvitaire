@@ -5,7 +5,8 @@
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
-    "move built group": false
+    "move built group": false,
+    "move built group policy": "same-as-build"
   },
   "max rank": 13,
   "two decks": false,
@@ -13,7 +14,7 @@
   "foundations": true,
   "foundations initial card": false,
   "foundations removable": false,
-  "solve by ordered tableau": false,
+  "foundations complete piles": false,
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",
