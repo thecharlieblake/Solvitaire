@@ -196,7 +196,7 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     }
 
     // Randomly shuffle the pointers
-    auto rng = default_random_engine(seed);
+    auto rng = default_random_engine(seed+1);
     shuffle(begin(v_ptrs), end(v_ptrs), rng);
 
     vector<card> deck;
