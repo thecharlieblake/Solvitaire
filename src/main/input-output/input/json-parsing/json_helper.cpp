@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <rapidjson/stringbuffer.h>
 
 #include "json_helper.h"
 #include "../../output/log_helper.h"
@@ -39,4 +40,19 @@ void json_helper::json_parse_err(const string& msg) {
 
 void json_helper::json_parse_warning(const string& msg) {
     LOG_WARNING("Error in JSON doc: " + msg);
+}
+
+const string json_helper::schema_err_str(const SchemaValidator& validator) {
+    string ret = "Input JSON failed to match the required schema. Schema Validator Error = ";
+
+    StringBuffer sb;
+    validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
+    ret += validator.GetInvalidSchemaKeyword();
+    ret += ": ";
+
+    sb.Clear();
+    validator.GetInvalidDocumentPointer().StringifyUriFragment(sb);
+
+    ret += sb.GetString();
+    return ret;
 }

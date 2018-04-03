@@ -12,6 +12,12 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
+    // There are two stages to reading in the supplied deal. It is both put
+    // through the deal schema validator, and also parsed into
+    // the game state object (with some further checking done). The parsing is
+    // done first because the errors it detects tend to give clearer error
+    // messages than the schema validator
+
     // Construct tableau piles
     if (gs.rules.tableau_pile_count > 0) {
         parse_tableau_piles(gs, doc);
@@ -40,6 +46,44 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     // If the foundations begin with cards in them, fill them
     if (gs.rules.foundations_init_card) {
         fill_foundations(gs);
+    }
+
+    apply_deal_schema(doc); // Throws an error if it fails
+}
+
+void deal_parser::apply_deal_schema(const rapidjson::Document &doc) {
+    const char* schema_json = R"(
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "JSON Schema representing a solitaire game state to solve",
+
+  "definitions": {
+    "card": {"type": "string", "pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K)(c|C|d|D|h|H|s|S))$"},
+    "cardarray": {"type": "array", "items": {"$ref": "#/definitions/card"}}
+  },
+
+  "type": "object", "properties": {
+
+    "tableau piles": {
+      "type": "array", "items": {"$ref": "#/definitions/cardarray"}
+    },
+    "hole": {"$ref": "#/definitions/card"},
+    "stock": {"$ref": "#/definitions/cardarray"},
+    "waste": {"$ref": "#/definitions/cardarray"},
+    "reserve": {"$ref": "#/definitions/cardarray"}
+
+  }, "additionalProperties": false
+}
+)";
+
+    Document d;
+    d.Parse(schema_json);
+    assert(!d.HasParseError());
+    SchemaDocument schema(d);
+    SchemaValidator validator(schema);
+
+    if(!doc.Accept(validator)) {
+        throw runtime_error(json_helper::schema_err_str(validator));
     }
 }
 

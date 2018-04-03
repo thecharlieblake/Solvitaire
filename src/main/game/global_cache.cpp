@@ -20,6 +20,8 @@ typedef sol_rules::stock_deal_type sdt;
 ///////////////////////
 
 cached_game_state::cached_game_state(const game_state& gs) {
+    data.reserve(52+18);  // Enough for each card and up to 18 piles
+
     if (gs.rules.hole) {
 #ifdef NO_REDUCED_STATE
         add_pile(gs.hole, gs);

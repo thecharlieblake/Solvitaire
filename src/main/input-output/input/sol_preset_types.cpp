@@ -21,7 +21,6 @@ std::map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 8,
-    "build order": "descending",
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
