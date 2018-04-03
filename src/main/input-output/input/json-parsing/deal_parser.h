@@ -23,6 +23,7 @@ private:
     static void parse_stock(game_state&, const rapidjson::Document&);
     static void parse_reserve(game_state&, const rapidjson::Document&);
     static void fill_foundations(game_state&);
+    static void apply_deal_schema(const rapidjson::Document &);
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H

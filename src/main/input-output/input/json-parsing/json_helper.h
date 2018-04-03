@@ -14,6 +14,7 @@ public:
     static rapidjson::Document get_file_json(const std::string&);
     static void json_parse_warning(const std::string& msg);
     static void json_parse_err(const std::string& msg);
+    static const std::string schema_err_str(const rapidjson::SchemaValidator&);
 };
 
 

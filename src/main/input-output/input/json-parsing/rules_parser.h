@@ -15,6 +15,7 @@ public:
 private:
     static sol_rules get_default();
     static void modify_sol_rules(sol_rules&, rapidjson::Document&);
+    static void apply_rules_schema(const rapidjson::Document&);
 };
 
 

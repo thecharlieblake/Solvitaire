@@ -56,6 +56,12 @@ sol_rules rules_parser::get_default() {
 }
 
 void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
+    // There are two stages to reading in a rules document. It is both put
+    // through the rule schema validator, and also parsed into
+    // the game rules object (with some further checking done). The parsing is
+    // done first because the errors it detects tend to give clearer error
+    // messages than the schema validator
+
     if (!d.IsObject()) {
         json_helper::json_parse_err("JSON doc must be object");
     }
@@ -264,5 +270,53 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (solution_types != 1) {
         json_helper::json_parse_err("one and only one of [hole] and [foundations] "
                                     "must be true");
+    }
+
+    apply_rules_schema(d); // Throws an error if it fails
+}
+
+void rules_parser::apply_rules_schema(const rapidjson::Document &doc) {
+    const char* schema_json = R"(
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "JSON Schema representing a generic solitaire game",
+
+  "type": "object", "properties": {
+
+    "tableau piles": {
+      "type": "object", "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "build policy": {"type": "string", "enum": ["any-suit", "red-black", "same-suit", "no-build"]},
+        "spaces policy": {"type": "string", "enum": ["any", "no-build"]},
+        "diagonal deal": {"type": "boolean"},
+        "move built group": {"type": "boolean"},
+        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]}
+      }, "additionalProperties": false
+    },
+    "max rank": {"type": "integer", "minimum": 1, "maximum": 13},
+    "two decks": {"type": "boolean"},
+    "hole": {"type": "boolean"},
+    "foundations": {"type": "boolean"},
+    "foundations initial card": {"type": "boolean"},
+    "foundations removable": {"type": "boolean"},
+    "foundations complete piles": {"type": "boolean"},
+    "cells": {"type": "integer", "minimum": 0},
+    "stock size": {"type": "integer", "minimum": 0},
+    "stock deal type": {"type": "string", "enum": ["waste", "tableau piles"]},
+    "reserve size": {"type": "integer", "minimum": 0},
+    "reserve stacked": {"type": "boolean"}
+
+  }, "additionalProperties": false
+}
+)";
+
+    Document d;
+    d.Parse(schema_json);
+    assert(!d.HasParseError());
+    SchemaDocument schema(d);
+    SchemaValidator validator(schema);
+
+    if(!doc.Accept(validator)) {
+        throw runtime_error(json_helper::schema_err_str(validator));
     }
 }
