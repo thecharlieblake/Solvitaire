@@ -54,7 +54,8 @@ set(sources_test
         src/test/foundations_dominance_test.cpp
         src/test/deal_parser_test.cpp
         src/test/rules_parser_test.cpp
-        src/test/card_test.cpp)
+        src/test/card_test.cpp
+        src/test/pile_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
