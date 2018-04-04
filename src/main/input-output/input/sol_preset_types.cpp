@@ -37,6 +37,8 @@ std::map<string, string> sol_preset_types::mp = {
   "cells": 0,
   "stock size": 0,
   "stock deal type": "waste",
+  "stock deal count": 1,
+  "stock redeal": false,
   "reserve size": 0,
   "reserve stacked": false
 }
@@ -368,6 +370,84 @@ std::map<string, string> sol_preset_types::mp = {
   "reserve size": 6,
   "foundations removable": true,
   "foundations initial card": true
+}
+)"
+
+        },
+
+        {
+                "klondike",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "diagonal deal": true
+  },
+  "stock size": 24,
+  "stock deal count": 1,
+  "stock redeal": false
+}
+)"
+
+        },
+
+        {
+                "klondike-built-group",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": true,
+    "diagonal deal": true
+  },
+  "stock size": 24,
+  "stock deal count": 1,
+  "stock redeal": false
+}
+)"
+
+        },
+
+        {
+                "klondike-deal-3",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "diagonal deal": true
+  },
+  "stock size": 24,
+  "stock deal count": 3,
+  "stock redeal": true
+}
+)"
+
+        },
+
+        {
+                "klondike-deal-3-built-group",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": true,
+    "diagonal deal": true
+  },
+  "stock size": 24,
+  "stock deal count": 3,
+  "stock redeal": true
 }
 )"
 

@@ -37,6 +37,16 @@ vector<game_state::move> game_state::get_legal_moves(
             moves.emplace_back(get_stock_tableau_move());
         }
     }
+    
+    // If the stock is empty and we are allowed to re-deal, move the waste
+    // back onto the stock
+    if (rules.stock_size > 0
+        && rules.stock_redeal
+        && rules.stock_deal_t == sdt::WASTE
+        && piles[stock].empty()
+        && !piles[waste].empty()) {
+        moves.emplace_back(stock, waste);
+    }
 
     // Cycles through each pile which we may be able to remove a card from
     for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
@@ -70,7 +80,9 @@ vector<game_state::move> game_state::get_legal_moves(
         // Stock cards can only be moved to the waste (assuming there is a waste)
         if (rules.stock_size > 0 && rem_ref == stock) {
             if (rules.stock_deal_t == sdt::WASTE) {
-                moves.emplace_back(stock, waste);
+                uint8_t cards_to_move =
+                        min(rules.stock_deal_count, piles[stock].size());
+                moves.emplace_back(stock, waste, cards_to_move);
             }
             continue;
         }
@@ -148,12 +160,19 @@ game_state::move game_state::get_stock_tableau_move() const {
 // suit/rank can be moved to a tableau
 bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
                                        const pile_ref add_ref) const {
-    if (rem_ref == add_ref) return false;
-
-    else if (rules.build_pol == pol::NO_BUILD) return false;
-
-    else if (piles[add_ref].empty()) {
-        return rules.spaces_pol == s_pol::ANY;
+    if (rem_ref == add_ref) {
+        return false;
+    } else if (rules.build_pol == pol::NO_BUILD) {
+        return false;
+    } else if (piles[add_ref].empty()) {
+        switch(rules.spaces_pol) {
+            case sol_rules::spaces_policy::NO_BUILD:
+                return false;
+            case sol_rules::spaces_policy::KINGS:
+                return piles[rem_ref].top_card().get_rank() == 13;
+            case sol_rules::spaces_policy::ANY:
+                return true;
+        }
     }
 
     card rem_c = piles[rem_ref].top_card();
@@ -235,7 +254,9 @@ void game_state::get_built_group_moves(vector<move>& moves) const {
 
             // If the pile is empty, and we can move to empty piles, does so
             if (piles[add_ref].empty()) {
-                if (rules.spaces_pol == s_pol::ANY) {
+                if (rules.spaces_pol == s_pol::ANY ||
+                        (rules.spaces_pol == s_pol::KINGS
+                         && bg_high.get_rank() == 13)) {
                     add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
                 }
             }

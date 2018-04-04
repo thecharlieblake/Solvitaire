@@ -26,6 +26,7 @@ sol_rules::sol_rules() :
         cells(0),
         stock_size(0),
         stock_deal_t(sdt::TABLEAU_PILES),
+        stock_deal_count(1),
         reserve_size(0),
         reserve_stacked(false) {
 }

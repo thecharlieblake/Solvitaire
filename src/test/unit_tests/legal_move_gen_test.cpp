@@ -124,6 +124,25 @@ TEST(LegalMoveGen, SpacesPolAny) {
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
 }
 
+TEST(LegalMoveGen, SpacesPolKings) {
+    sol_rules sr;
+    sr.spaces_pol = s_pol::KINGS;
+    sr.tableau_pile_count = 3;
+
+    game_state gs(sr, initializer_list<pile>{
+            {},
+            {"AC"},
+            {"KD"}
+    });
+    vector<mv> actual_moves = gs.get_legal_moves();
+
+    vector<mv> exp_moves = {
+            mv(2, 0)
+    };
+
+    ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
 TEST(LegalMoveGen, SpacesPolNoBuild) {
     sol_rules sr;
     sr.spaces_pol = s_pol::NO_BUILD;
