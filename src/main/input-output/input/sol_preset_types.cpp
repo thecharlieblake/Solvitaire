@@ -351,5 +351,26 @@ std::map<string, string> sol_preset_types::mp = {
 }
 )"
 
-        }
+        },
+
+        // --- END OF 'CANONICAL' GAMES ---
+
+        {
+                "raglan",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "reserve size": 6,
+  "foundations removable": true,
+  "foundations initial card": true
+}
+)"
+
+        },
+
 };
