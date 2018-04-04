@@ -11,11 +11,11 @@ class rules_parser {
 public:
     static const sol_rules from_file(std::string);
     static const sol_rules from_preset(std::string);
+    static std::string rules_schema_json();
 
 private:
     static sol_rules get_default();
     static void modify_sol_rules(sol_rules&, rapidjson::Document&);
-    static void apply_rules_schema(const rapidjson::Document&);
 };
 
 

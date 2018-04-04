@@ -272,11 +272,19 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                                     "must be true");
     }
 
-    apply_rules_schema(d); // Throws an error if it fails
+    rules_schema_json(); // Throws an error if it fails
+    Document vd;
+    vd.Parse(rules_schema_json().c_str());
+    assert(!vd.HasParseError());
+    SchemaDocument sd(vd);
+    SchemaValidator validator(sd);
+    if(!d.Accept(validator)) {
+        throw runtime_error(json_helper::schema_err_str(validator));
+    }
 }
 
-void rules_parser::apply_rules_schema(const rapidjson::Document &doc) {
-    const char* schema_json = R"(
+string rules_parser::rules_schema_json() {
+    string schema_json = R"(
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "JSON Schema representing a generic solitaire game",
@@ -309,14 +317,5 @@ void rules_parser::apply_rules_schema(const rapidjson::Document &doc) {
   }, "additionalProperties": false
 }
 )";
-
-    Document d;
-    d.Parse(schema_json);
-    assert(!d.HasParseError());
-    SchemaDocument schema(d);
-    SchemaValidator validator(schema);
-
-    if(!doc.Accept(validator)) {
-        throw runtime_error(json_helper::schema_err_str(validator));
-    }
+    return schema_json;
 }
