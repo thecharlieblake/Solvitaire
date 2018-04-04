@@ -48,11 +48,18 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
         fill_foundations(gs);
     }
 
-    apply_deal_schema(doc); // Throws an error if it fails
+    Document d;
+    d.Parse(deal_schema_json().c_str());
+    assert(!d.HasParseError());
+    SchemaDocument sd(d);
+    SchemaValidator validator(sd);
+    if(!doc.Accept(validator)) {
+        throw runtime_error(json_helper::schema_err_str(validator));
+    }
 }
 
-void deal_parser::apply_deal_schema(const rapidjson::Document &doc) {
-    const char* schema_json = R"(
+string deal_parser::deal_schema_json() {
+    string schema_json = R"(
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "JSON Schema representing a solitaire game state to solve",
@@ -75,16 +82,7 @@ void deal_parser::apply_deal_schema(const rapidjson::Document &doc) {
   }, "additionalProperties": false
 }
 )";
-
-    Document d;
-    d.Parse(schema_json);
-    assert(!d.HasParseError());
-    SchemaDocument schema(d);
-    SchemaValidator validator(schema);
-
-    if(!doc.Accept(validator)) {
-        throw runtime_error(json_helper::schema_err_str(validator));
-    }
+    return schema_json;
 }
 
 void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document& doc) {

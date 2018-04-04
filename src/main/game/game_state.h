@@ -30,6 +30,7 @@ public:
     struct move {
         move(pile_ref, pile_ref, pile::size_type = 1);
         bool is_dominance() const;
+        friend bool operator==(const move&, const move&);
 
         const static pile::size_type dominance_flag;
         pile_ref from; pile_ref to; pile::size_type count;
@@ -51,7 +52,7 @@ public:
 
     std::vector<move> get_legal_moves(
 #ifndef NO_CARD_JUST_MOVED
-            move
+            move = move(255, 255, 255)
 #endif
     );
 

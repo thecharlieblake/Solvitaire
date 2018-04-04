@@ -22,8 +22,10 @@ vector<game_state::move> game_state::get_legal_moves(
     vector<move> moves;
 
     // If we have a stock that can deal to the tableau piles, adds this move
-    if (rules.stock_deal_t == sdt::TABLEAU_PILES && !piles[stock].empty()) {
-        // Only does this if all the tableau piles are empty
+    if (rules.stock_size > 0
+        && rules.stock_deal_t == sdt::TABLEAU_PILES
+        && !piles[stock].empty()) {
+        // Only does this if none of the tableau piles are empty
         bool no_tableau_empty = true;
         for (auto tab_ref : tableau_piles) {
             if (piles[tab_ref].empty()) {
@@ -393,4 +395,10 @@ bool game_state::dominance_blocks_foundation_move(pile_ref target_pile) {
     piles[target_pile].place(target_card);
 
     return blocked;
+}
+
+bool operator==(const game_state::move& a, const game_state::move& b) {
+    return    (a.from  == b.from )
+           && (a.to    == b.to   )
+           && (a.count == b.count);
 }

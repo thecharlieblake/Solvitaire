@@ -16,14 +16,13 @@ class game_state;
 class deal_parser {
 public:
     static void parse(game_state&, const rapidjson::Document&);
-private:
     static void parse_tableau_piles(game_state&, const rapidjson::Document&);
     static void parse_hole(game_state&, const rapidjson::Document&);
     static void parse_cells(game_state&, const rapidjson::Document&);
     static void parse_stock(game_state&, const rapidjson::Document&);
     static void parse_reserve(game_state&, const rapidjson::Document&);
     static void fill_foundations(game_state&);
-    static void apply_deal_schema(const rapidjson::Document &);
+    static std::string deal_schema_json();
 };
 
 #endif //SOLVITAIRE_DEAL_PARSER_H

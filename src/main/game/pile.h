@@ -33,15 +33,17 @@ public:
     card operator[] (size_type) const;
 
     friend bool operator==(const pile&, const pile&);
+    friend bool operator!=(const pile&, const pile&);
     friend bool operator<(const pile&, const pile&);
     friend bool operator>(const pile&, const pile&);
     friend bool operator<=(const pile&, const pile&);
     friend bool operator>=(const pile&, const pile&);
-private:
+
     // Modify
     void place(card);
     card take();
 
+private:
     // Underlying vector
     std::vector<card> pile_vec;
 };

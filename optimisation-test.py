@@ -1,14 +1,14 @@
 import sys
 from subprocess import run, CalledProcessError, DEVNULL, PIPE, Popen
 
-runCount = 1000
+runCount = 100
 
 # Loops through each canonical solitaire
 
 for optimisation in [
 #    "-no-reduced-state",
-#    "-no-pile-symmetry",
-#    "-no-auto-foundations",
+    "-no-pile-symmetry",
+    "-no-auto-foundations",
     "-no-card-just-moved"
 ]:
 
@@ -37,7 +37,7 @@ for optimisation in [
                 out_str = op_p.stdout.readline()
                 if out_str == b'Solved\n':
                     op_res = True
-                elif out_str == b'No solution\n':
+                elif out_str == b'No Possible Solution\n':
                     op_res = False
                 else:
                     raise Exception('Invalid return value!')
@@ -51,7 +51,7 @@ for optimisation in [
                 out_str = no_op_p.stdout.readline()
                 if out_str == b'Solved\n':
                     no_op_res = True
-                elif out_str == b'No solution\n':
+                elif out_str == b'No Possible Solution\n':
                     no_op_res = False
                 else:
                     raise Exception('Invalid return value!')
