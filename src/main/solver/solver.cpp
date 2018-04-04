@@ -61,14 +61,14 @@ solver::sol_state solver::run_with_cutoff(
 
         if (cutoff_depth && depth >= *cutoff_depth) {
             cutoff_triggered = true;
-            states_exhausted = revert_to_last_node_with_children();//TODO-
+            states_exhausted = revert_to_last_node_with_children();
         } else {
             // If there is a dominance move available, adds it to the search tree
             // and repeats. Doesn't cache the state.
             optional<game_state::move> dominance_move = state.get_dominance_move();
             if (dominance_move) {
                 // Adds the dominance move as a child of the current search node
-                add_child(*dominance_move);//TODO+
+                add_child(*dominance_move);
             } else {
                 // Caches the current state
                 bool is_new_state = cache.insert(state);
@@ -78,14 +78,14 @@ solver::sol_state solver::run_with_cutoff(
 
                     // If there are none, reverts to the last node with children
                     if (next_moves.empty()) {
-                        states_exhausted = revert_to_last_node_with_children();//TODO-
+                        states_exhausted = revert_to_last_node_with_children();
                     } else {
-                        add_children(next_moves);//TODO+
+                        add_children(next_moves);
                     }
                 }
                     // If the state is not a new one, reverts to the last node with children
                 else {
-                    states_exhausted = revert_to_last_node_with_children();//TODO-
+                    states_exhausted = revert_to_last_node_with_children();
                 }
             }
         }
@@ -175,7 +175,6 @@ void solver::print_solution() const {
 
     if (states_searched > 1) {
         while (!n->children.empty()) {
-            // TODO print move as well
             state_copy.make_move(n->move);
             cout << state_copy << "\n";
             n = &n->children.back();

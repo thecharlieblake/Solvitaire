@@ -7,8 +7,8 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>
 
-#include "../main/input-output/input/json-parsing/deal_parser.h"
-#include "../main/input-output/input/json-parsing/json_helper.h"
+#include "../../main/input-output/input/json-parsing/deal_parser.h"
+#include "../../main/input-output/input/json-parsing/json_helper.h"
 
 using namespace std;
 using namespace rapidjson;

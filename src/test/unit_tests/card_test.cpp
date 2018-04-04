@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "test_helper.h"
-#include "../main/game/card.h"
+#include "../test_helper.h"
+#include "../../main/game/card.h"
 
 TEST(Card, Rank) {
     for (card::rank_t r = 1; r <= 13; r++) {

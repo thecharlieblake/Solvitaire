@@ -4,27 +4,25 @@
 
 #include <gtest/gtest.h>
 
-#include "test_helper.h"
+#include "../test_helper.h"
 
 typedef test_helper th;
 
-const static std::string path = "resources/spider/";
-const static std::string type = "simple-spider";
+const static std::string path = "resources/somerset/";
+const static std::string type = "simple-somerset";
 
-TEST(Spider, SimpleSolvable) {
+TEST(Somerset, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));
 }
 
-TEST(Spider, ComplexSolvable) {
+TEST(Somerset, ComplexSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "ComplexSolvable.json", type));
 }
 
-TEST(Spider, SimpleUnsolvable) {
+TEST(Somerset, SimpleUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "SimpleUnsolvable.json", type));
 }
 
-/* Taking too long so removed, at least for now
-TEST(Spider, ComplexUnsolvable) {
+TEST(Somerset, ComplexUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "ComplexUnsolvable.json", type));
 }
-*/

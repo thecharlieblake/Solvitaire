@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "test_helper.h"
-#include "../main/game/pile.h"
+#include "../test_helper.h"
+#include "../../main/game/pile.h"
 
 TEST(Pile, Size) {
     pile p = {};

@@ -40,22 +40,23 @@ set(sources src/main/input-output/input/command_line_helper.cpp
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
-        src/test/spanish_patience_test.cpp
-        src/test/black_hole_test.cpp
-        src/test/free_cell_test.cpp
-        src/test/bakers_dozen_test.cpp
-        src/test/fortunes_favor_test.cpp
-        src/test/flower_garden_test.cpp
-        src/test/canfield_test.cpp
-        src/test/somerset_test.cpp
-        src/test/alpha_star_test.cpp
-        src/test/spider_test.cpp
-        src/test/global_cache_test.cpp
-        src/test/foundations_dominance_test.cpp
-        src/test/deal_parser_test.cpp
-        src/test/rules_parser_test.cpp
-        src/test/card_test.cpp
-        src/test/pile_test.cpp)
+        src/test/integration_tests/spanish_patience_test.cpp
+        src/test/integration_tests/black_hole_test.cpp
+        src/test/integration_tests/free_cell_test.cpp
+        src/test/integration_tests/bakers_dozen_test.cpp
+        src/test/integration_tests/fortunes_favor_test.cpp
+        src/test/integration_tests/flower_garden_test.cpp
+        src/test/integration_tests/canfield_test.cpp
+        src/test/integration_tests/somerset_test.cpp
+        src/test/integration_tests/alpha_star_test.cpp
+        src/test/integration_tests/spider_test.cpp
+        src/test/unit_tests/global_cache_test.cpp
+        src/test/unit_tests/foundations_dominance_test.cpp
+        src/test/unit_tests/deal_parser_test.cpp
+        src/test/unit_tests/rules_parser_test.cpp
+        src/test/unit_tests/card_test.cpp
+        src/test/unit_tests/pile_test.cpp
+        src/test/unit_tests/legal_move_gen_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
