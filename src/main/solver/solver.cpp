@@ -19,6 +19,7 @@ solver::solver(const game_state& gs)
         , init_state(gs)
         , state(gs)
         , states_searched(1)
+        , backtracks(0)
         , depth(0)
         , root(nullptr, game_state::move(255, 255, 255))
         , current_node(&root) {
@@ -137,6 +138,7 @@ bool solver::revert_to_last_node_with_children() {
 
     state.undo_move(current_node->move);
     depth--;
+    backtracks++;
 
 #ifndef NDEBUG
     // Checks that the state after the undo is in the cache
@@ -193,4 +195,8 @@ int solver::get_final_depth() const {
 
 const solver::node& solver::get_search_tree() const {
     return root;
+}
+
+int solver::get_backtrack_count() {
+    return backtracks;
 }

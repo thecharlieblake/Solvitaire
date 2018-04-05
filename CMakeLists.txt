@@ -36,7 +36,11 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/game/game_state.legal_moves.cpp
         src/main/game/global_cache.cpp
         src/main/game/global_cache.h
-        src/main/game/sol_rules.cpp src/main/solvability/solvability_calc.cpp src/main/solvability/solvability_calc.h)
+        src/main/game/sol_rules.cpp
+        src/main/evaluation/solvability_calc.cpp
+        src/main/evaluation/solvability_calc.h
+        src/main/evaluation/benchmark.cpp
+        src/main/evaluation/benchmark.h)
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
