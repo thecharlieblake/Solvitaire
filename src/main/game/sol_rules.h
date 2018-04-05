@@ -21,6 +21,7 @@ struct sol_rules {
     };
     enum class spaces_policy {
         NO_BUILD,
+        KINGS,
         ANY
     };
     enum class stock_deal_type {
@@ -44,6 +45,8 @@ struct sol_rules {
     uint8_t cells;
     uint8_t stock_size;
     stock_deal_type stock_deal_t;
+    uint8_t stock_deal_count;
+    bool stock_redeal;
     uint8_t reserve_size;
     bool reserve_stacked;
 };

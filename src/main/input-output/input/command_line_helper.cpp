@@ -22,11 +22,17 @@ command_line_helper::command_line_helper()
     main_options.add_options()
             ("help", "produce help message")
             ("type", po::value<string>(),
-             "specify the type of the solitaire game to be solved. Must supply "
-                     "either 'type' or 'rules' file")
-            ("rules", po::value<string>(),
+             "specify the type of the solitaire game to be solved from the list "
+                     "of preset games. Must supply either this 'type' option, "
+                     "or the 'custom-rules' option")
+            ("available-game-types", "outputs a list of the different preset "
+                    "game types that can be solved")
+            ("describe-game-rules", po::value<string>(),
+                    "outputs the JSON that describes the rules of the supplied "
+                    "preset game type")
+            ("custom-rules", po::value<string>(),
              "the path to a JSON file describing the rules of the solitaire "
-                     "to be solved. Must supply either 'type' or 'rules' file")
+                     "to be solved. Must supply either 'type' or 'custom-rules' option")
             ("random", po::value<int>(), "create and solve a random solitaire "
                     "deal based on a seed. Must supply either 'random',"
                     "'solvability' or list of deals to be solved.")
@@ -68,6 +74,12 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     help = (vm.count("help") != 0);
 
+    available_game_types = (vm.count("available-game-types") != 0);
+
+    if (vm.count("describe-game-rules")) {
+        describe_game_rules = vm["describe-game-rules"].as<string>();
+    }
+
     classify = (vm.count("classify") != 0);
 
     if (vm.count("input-files")) {
@@ -101,6 +113,8 @@ bool command_line_helper::assess_errors() {
         print_help();
         return false;
     }
+
+    if (available_game_types || !describe_game_rules.empty()) return true;
 
     // The user must either supply input files, a random seed, or ask for the
     // solvability percentage
@@ -146,8 +160,8 @@ bool command_line_helper::assess_sol_type() {
 }
 
 void command_line_helper::print_help() {
-    LOG_ERROR ("Usage: solvitaire [options] input-file1 input-file2 ...\n"
-            << main_options);
+    cerr <<  "Usage: solvitaire [options] input-file1 input-file2 ...\n"
+            << main_options << "\n";
 }
 
 void command_line_helper::print_no_opts_error() {
@@ -199,6 +213,14 @@ bool command_line_helper::get_classify() {
 
 bool command_line_helper::get_solvability() {
     return solvability;
+}
+
+bool command_line_helper::get_available_game_types() {
+    return available_game_types;
+}
+
+string command_line_helper::get_describe_game_rules() {
+    return describe_game_rules;
 }
 
 bool command_line_helper::get_short_sols() {

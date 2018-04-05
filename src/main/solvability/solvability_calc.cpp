@@ -81,7 +81,7 @@ void solvability_calc::print_end_re_eval_msg() const {
 /////////////////////
 
 void solvability_calc::calculate_solvability_percentage() {
-    int current_seed = 0;
+    int current_seed = 10; // TODO:change
     millisec timeout(10);
     inc_t_coeffs coeffs(0.4, 0.0, 1.0);
 

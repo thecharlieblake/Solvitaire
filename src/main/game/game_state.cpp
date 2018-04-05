@@ -228,17 +228,35 @@ bool game_state::move::is_dominance() const {
 /////////////////////////
 
 void game_state::make_move(const move m) {
-    // Handles special stock-to-tableau-piles move
-    if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
-        assert(m.from  == stock);
-        assert(m.to    == 255  );
+    // Handles stock moves
+    if (m.from == stock) {
+        // Handles special stock-to-tableau-piles move
+        if (rules.stock_deal_t == sdt::TABLEAU_PILES) {
+            assert(m.from == stock);
+            assert(m.to == 255);
 
-        for (pile_ref tab_pr = original_tableau_piles.front();
-             tab_pr < pile_ref(original_tableau_piles.front() + m.count);
-             tab_pr++) {
-            place_card(tab_pr, take_card(stock));
+            for (pile_ref tab_pr = original_tableau_piles.front();
+                 tab_pr < pile_ref(original_tableau_piles.front() + m.count);
+                 tab_pr++) {
+                place_card(tab_pr, take_card(stock));
+            }
+        }
+        // Handles stock-to-waste moves
+        else {
+            if (piles[stock].empty()) {
+                // Re-deal waste back to stock
+                while (!piles[waste].empty()) {
+                    place_card(stock, take_card(waste));
+                }
+            } else {
+                assert(m.to == waste);
+                for (int i = 0; i < m.count; i++) {
+                    place_card(waste, take_card(stock));
+                }
+            }
         }
     }
+
     // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
         assert(m.from < piles.size());
@@ -249,6 +267,7 @@ void game_state::make_move(const move m) {
         update_auto_foundation_moves(m.to);
 #endif
     }
+
     // If this is a built-pile move
     else {
         assert(m.from  <  piles.size()  );
@@ -270,14 +289,31 @@ void game_state::make_move(const move m) {
 void game_state::undo_move(const move m) {
     assert(m.from < piles.size());
 
-    // Handles special stock-to-tableau-piles move
-    if (rules.stock_deal_t == sdt::TABLEAU_PILES && m.from == stock) {
-        for (pile_ref tab_pr = original_tableau_piles.front() + m.count;
-             tab_pr-- > original_tableau_piles.front();
-                ) {
-            place_card(stock, take_card(tab_pr));
+    // Handles stock moves
+    if (m.from == stock) {
+        // Handles special stock-to-tableau-piles move
+        if (rules.stock_deal_t == sdt::TABLEAU_PILES) {
+            for (pile_ref tab_pr = original_tableau_piles.front() + m.count;
+                 tab_pr-- > original_tableau_piles.front();
+                    ) {
+                place_card(stock, take_card(tab_pr));
+            }
+        }
+        // Handles stock-to-waste moves
+        else {
+            if (piles[waste].empty()) {
+                // Re-deal waste back to stock
+                while (!piles[stock].empty()) {
+                    place_card(waste, take_card(stock));
+                }
+            } else {
+                for (int i = 0; i < m.count; i++) {
+                    place_card(stock, take_card(waste));
+                }
+            }
         }
     }
+
     // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
         assert(m.to < piles.size());
@@ -285,7 +321,10 @@ void game_state::undo_move(const move m) {
 #ifndef NO_AUTO_FOUNDATIONS
         update_auto_foundation_moves(m.from);
 #endif
-    } else {
+    }
+
+    // If this is a built-pile move
+    else {
         assert(m.to < piles.size());
         assert(m.count <= rules.max_rank);
         // Adds the cards to the 'from' pile

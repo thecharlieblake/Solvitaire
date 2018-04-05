@@ -109,6 +109,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.spaces_pol = s_pol::ANY;
                     } else if (sp_str == "no-build") {
                         sr.spaces_pol = s_pol::NO_BUILD;
+                    } else if (sp_str == "kings") {
+                        sr.spaces_pol = s_pol::KINGS;
                     } else {
                         json_helper::json_parse_err("[tableau piles][spaces policy] is invalid");
                     }
@@ -248,6 +250,22 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("stock deal count")) {
+        if (d["stock deal count"].IsInt()) {
+            sr.stock_deal_count = static_cast<uint8_t>(d["stock deal count"].GetInt());
+        } else {
+            json_helper::json_parse_err("[stock deal count] must be an integer");
+        }
+    }
+
+    if (d.HasMember("stock redeal")) {
+        if (d["stock redeal"].IsBool()) {
+            sr.stock_redeal = static_cast<uint8_t>(d["stock redeal"].GetBool());
+        } else {
+            json_helper::json_parse_err("[stock redeal] must be a boolean");
+        }
+    }
+
     if (d.HasMember("reserve size")) {
         if (d["reserve size"].IsInt()) {
             sr.reserve_size = static_cast<uint8_t>(d["reserve size"].GetInt());
@@ -295,7 +313,7 @@ string rules_parser::rules_schema_json() {
       "type": "object", "properties": {
         "count": {"type": "integer", "minimum": 0},
         "build policy": {"type": "string", "enum": ["any-suit", "red-black", "same-suit", "no-build"]},
-        "spaces policy": {"type": "string", "enum": ["any", "no-build"]},
+        "spaces policy": {"type": "string", "enum": ["any", "no-build", "kings"]},
         "diagonal deal": {"type": "boolean"},
         "move built group": {"type": "boolean"},
         "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]}
@@ -311,6 +329,8 @@ string rules_parser::rules_schema_json() {
     "cells": {"type": "integer", "minimum": 0},
     "stock size": {"type": "integer", "minimum": 0},
     "stock deal type": {"type": "string", "enum": ["waste", "tableau piles"]},
+    "stock deal count": {"type": "integer", "minimum": 1},
+    "stock redeal": {"type": "boolean"},
     "reserve size": {"type": "integer", "minimum": 0},
     "reserve stacked": {"type": "boolean"}
 

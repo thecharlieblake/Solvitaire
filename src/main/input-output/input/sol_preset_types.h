@@ -12,6 +12,9 @@ class sol_preset_types {
 public:
     static std::string get(const std::string& s);
     static bool is_valid_preset(const std::string& s);
+    static void print_available_games();
+    static void describe_game_rules(std::string);
+
 private:
     static std::map<std::string, std::string> mp;
 };
