@@ -4,6 +4,7 @@
 #include <gperftools/profiler.h>
 
 #include "input-output/input/command_line_helper.h"
+#include "input-output/input/sol_preset_types.h"
 #include "input-output/input/json-parsing/json_helper.h"
 #include "input-output/input/json-parsing/rules_parser.h"
 #include "input-output/output/log_helper.h"
@@ -28,6 +29,17 @@ int main(int argc, const char* argv[]) {
     command_line_helper clh;
     if (!clh.parse(argc, argv)) {
         return EXIT_FAILURE;
+    }
+
+    // If the user has asked for the list of preset game types, prints it
+    if (clh.get_available_game_types()) {
+        sol_preset_types::print_available_games();
+        return EXIT_SUCCESS;
+    }
+    string game_rule_str = clh.get_describe_game_rules();
+    if (!game_rule_str.empty()) {
+        sol_preset_types::describe_game_rules(game_rule_str);
+        return EXIT_SUCCESS;
     }
 
     // Generates the rules of the solitaire from the game type

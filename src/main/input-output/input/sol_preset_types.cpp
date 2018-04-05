@@ -2,6 +2,7 @@
 // Created by thecharlesblake on 11/14/17.
 //
 
+#include <iostream>
 #include "sol_preset_types.h"
 using namespace std;
 
@@ -13,7 +14,7 @@ bool sol_preset_types::is_valid_preset(const string& s) {
     return mp.count(s) > 0;
 }
 
-std::map<string, string> sol_preset_types::mp = {
+map<string, string> sol_preset_types::mp = {
         {
                 "default",
 
@@ -898,3 +899,30 @@ std::map<string, string> sol_preset_types::mp = {
 
         }
 };
+
+void sol_preset_types::print_available_games() {
+    cout << "The following game types can be supplied to solvitaire using the "
+            "'--type [name of game]' option:\n\n";
+    for (auto const& x : mp) {
+        cout << x.first << "\n";
+    }
+    cout << "\nUse the '--describe-game-rules [name of game]' option for an "
+            "overview of the rules of each game:\n";
+}
+
+void sol_preset_types::describe_game_rules(string game) {
+    auto rules_it = mp.find(game);
+    if (rules_it == end(mp)) {
+        cout << "'" << game << "' is not a valid game type. "
+                "Enter '--available-game-types' for a "
+                "list of the games presets that can be solved\n";
+    } else {
+        cout << "The rules of '" << game << "' are as follows:"
+             << rules_it->second;
+
+        if (game != "default") {
+            cout << "\nTo see the default values of the JSON fields not covered "
+                    "here, enter '--describe-game-rules default'\n";
+        }
+    }
+}

@@ -20,6 +20,8 @@ public:
     bool get_classify();
     bool get_solvability();
     bool get_short_sols();
+    bool get_available_game_types();
+    std::string get_describe_game_rules();
 
 private:
     bool assess_errors();
@@ -37,11 +39,13 @@ private:
     std::vector<std::string> input_files;
     std::string solitaire_type;
     std::string rules_file;
+    std::string describe_game_rules;
     int random_deal;
     bool help;
     bool classify;
     bool solvability;
     bool shortest_sols;
+    bool available_game_types;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H
