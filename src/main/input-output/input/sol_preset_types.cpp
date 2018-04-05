@@ -452,5 +452,449 @@ std::map<string, string> sol_preset_types::mp = {
 )"
 
         },
+        {
+                "alina",
 
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "any-suit",
+    "spaces policy": "no-build"
+  },
+  "foundations removable": true,
+  "cells": 1
+}
+)"
+
+        },
+        {
+                "castles-of-spain",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "red-black"
+  },
+  "foundations removable": true
+}
+)"
+
+        },
+        {
+                "delta-star",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "same-suit"
+  },
+  "foundations initial card": true
+}
+)"
+
+        },
+        {
+                "martha",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "red-black"
+  },
+  "foundations removable": true,
+  "foundations initial card": true
+}
+)"
+
+        },
+        {
+                "one-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "red-black"
+  },
+  "foundations removable": true,
+  "foundations initial card": true,
+  "cells": 1
+}
+)"
+
+        },
+        {
+                "two-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "red-black"
+  },
+  "foundations removable": true,
+  "foundations initial card": true,
+  "cells": 2
+}
+)"
+
+        },
+        {
+                "free-cell-3-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black"
+  },
+  "cells": 3
+}
+)"
+
+        },
+        {
+                "free-cell-2-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black"
+  },
+  "cells": 2
+}
+)"
+
+        },
+        {
+                "free-cell-1-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black"
+  },
+  "cells": 1
+}
+)"
+
+        },
+        {
+                "free-cell-0-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black"
+  },
+  "cells": 1
+}
+)"
+
+        },
+        {
+                "free-cell-7-pile",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
+                "free-cell-6-pile",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 6,
+    "build policy": "red-black"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
+                "free-cell-5-pile",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 5,
+    "build policy": "red-black"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
+                "bakers-game",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "same-suit",
+    "move built group": true,
+    "spaces policy": "kings"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
+                "eight-off",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "same-suit"
+  },
+  "cells": 8
+}
+)"
+
+        },
+        {
+                "fore-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black",
+    "spaces policy": "kings"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
+                "penguin",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "same-suit",
+    "move built group": true,
+    "spaces policy": "kings"
+  },
+  "cells": 7,
+  "foundations initial card": true
+}
+)"
+
+        },
+        {
+                "sea-towers",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "same-suit",
+    "move built group": true,
+    "spaces policy": "kings"
+  },
+  "cells": 4,
+}
+)"
+
+        },
+        {
+                "duchess",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": true
+  },
+  "reserve size": 12,
+  "foundations initial card": true,
+  "stock size": 36
+}
+)"
+
+        },
+        {
+                "chamelion",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "any-suit",
+    "move built group": true
+  },
+  "reserve size": 13,
+  "reserve stacked": true,
+  "stock size": 36
+}
+)"
+
+        },
+        {
+                "fan",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 18,
+    "build policy": "same-suit",
+    "spaces policy": "kings"
+  },
+  "foundations removable": true
+}
+)"
+
+        },
+        {
+                "scotch-patience",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 18,
+    "build policy": "red-black",
+    "spaces policy": "no-build"
+  },
+  "foundations removable": true
+}
+)"
+
+        },
+        {
+                "blind-alleys",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 6,
+    "build policy": "red-black",
+    "move built group": true
+  },
+  "stock size": 30,
+  "foundations initial card": true,
+  "foundations removable": true
+}
+)"
+
+        },
+        {
+                "east-haven",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "move built group": true
+  },
+  "foundations removable": true,
+  "stock size": 31,
+  "stock deal type": "tableau piles"
+}
+)"
+
+        },
+        {
+                "northwest-territory",
+                R"(
+
+{
+  "tableau piles": {
+    "build policy": "red-black",
+    "move built group": true,
+    "spaces policy": "kings",
+    "diagonal deal": true
+  },
+  "foundations removable": true,
+  "reserve size": 16
+}
+)"
+
+        },
+        {
+                "king-albert",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "foundations removable": true,
+  "reserve size": 7
+}
+)"
+
+        },
+        {
+                "king-albert-kings-in-spaces",
+                R"(
+
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "diagonal deal": true
+  },
+  "foundations removable": true,
+  "reserve size": 7
+}
+)"
+
+        },
+        {
+                "spiderette",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "any-suit",
+    "move built group": true,
+    "move built group policy": "same-suit",
+    "diagonal deal": true
+  },
+  "foundations complete piles": true,
+  "stock size": 24,
+  "stock deal type": "tableau piles"
+}
+)"
+
+        },
+        {
+                "will-o-the-wisp",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "any-suit",
+    "move built group": true,
+    "move built group policy": "same-suit"
+  },
+  "foundations complete piles": true,
+  "stock size": 31,
+  "stock deal type": "tableau piles"
+}
+)"
+
+        }
 };
