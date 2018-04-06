@@ -40,7 +40,10 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/evaluation/solvability_calc.cpp
         src/main/evaluation/solvability_calc.h
         src/main/evaluation/benchmark.cpp
-        src/main/evaluation/benchmark.h)
+        src/main/evaluation/benchmark.h
+				lib/rapidjson/document.h
+				lib/rapidjson/schema.h
+				lib/rapidjson/stringbuffer.h)
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
@@ -66,7 +69,7 @@ set(sources_test
 ## Rapid JSON setup ###########################################################
 ###############################################################################
 
-find_package(RapidJSON)
+include_directories(lib/rapidjson)
 
 ###############################################################################
 ## Boost setup ################################################################
@@ -125,7 +128,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread
 -Wcast-align -Wcast-qual -Wformat=2 -Winit-self \
 -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
 -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow \
--Wstrict-null-sentinel -Wstrict-overflow=5 -Werror")
+-Wstrict-null-sentinel -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
 
@@ -140,31 +143,31 @@ endif()
 
 # add the data to the target, so it becomes visible in some IDE
 add_executable(solvitaire ${main} ${sources})
-target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
 # add a separete executable for the 'suit reduction streamliner' version of the solver
 add_executable(solvitaire-suit-reduction-streamliner ${main} ${sources})
-target_link_libraries(solvitaire-suit-reduction-streamliner LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire-suit-reduction-streamliner LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-suit-reduction-streamliner PROPERTIES COMPILE_FLAGS -DSUIT_REDUCTION_STREAMLINER)
 
 # add a separete executable for the 'no pile symmetry' version of the solver
 add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-pile-symmetry PROPERTIES COMPILE_FLAGS -DNO_PILE_SYMMETRY)
 
 # add a separete executable for the 'no reduced state' version of the solver
 add_executable(solvitaire-no-reduced-state ${main} ${sources})
-target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_REDUCED_STATE)
 
 # add a separete executable for the 'no auto foundations' version of the solver
 add_executable(solvitaire-no-auto-foundations ${main} ${sources})
-target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
 
 # add a separete executable for the 'no card just moved' version of the solver
 add_executable(solvitaire-no-card-just-moved ${main} ${sources})
-target_link_libraries(solvitaire-no-card-just-moved LINK_PUBLIC ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(solvitaire-no-card-just-moved LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-card-just-moved PROPERTIES COMPILE_FLAGS -DNO_CARD_JUST_MOVED)
 
 
@@ -178,7 +181,7 @@ add_executable(unit_tests ${sources_test} ${sources})
 # therefore we can inherit all compiler options and library dependencies
 set_target_properties(solvitaire PROPERTIES ENABLE_EXPORTS on)
 
-target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES} -lprofiler)
+target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES})
 
 ENABLE_TESTING()
 ADD_TEST(NAME unit_tests

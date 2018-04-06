@@ -4,9 +4,9 @@
 
 #include <fstream>
 #include <sstream>
-#include <rapidjson/stringbuffer.h>
 
 #include "json_helper.h"
+#include "../../../../../lib/rapidjson/stringbuffer.h"
 #include "../../output/log_helper.h"
 
 using namespace std;

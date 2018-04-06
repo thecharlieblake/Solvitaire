@@ -1,8 +1,7 @@
 #include <boost/program_options.hpp>
 #include <boost/optional.hpp>
-#include <rapidjson/document.h>
-#include <gperftools/profiler.h>
 
+#include "../../lib/rapidjson/document.h"
 #include "input-output/input/command_line_helper.h"
 #include "input-output/input/sol_preset_types.h"
 #include "input-output/input/json-parsing/json_helper.h"
@@ -135,7 +134,6 @@ void solve_game(const game_state& gs, bool short_sol, bool classify) {
     } else {
         solution = solv->run() == solver::sol_state::solved;
     }
-    ProfilerStop();
 
     if (solution) {
         if (!classify) solv->print_solution();

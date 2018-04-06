@@ -9,10 +9,10 @@
 #include <list>
 #include <string>
 
-#include <rapidjson/document.h>
 #include <boost/functional/hash.hpp>
 #include <boost/optional/optional.hpp>
 
+#include "../../../lib/rapidjson/document.h"
 #include "card.h"
 #include "pile.h"
 #include "sol_rules.h"

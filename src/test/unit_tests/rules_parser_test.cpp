@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/document.h>
+#include "../../../lib/rapidjson/stringbuffer.h"
+#include "../../../lib/rapidjson/document.h"
 
 #include "../../main/input-output/input/json-parsing/rules_parser.h"
 #include "../../main/input-output/input/json-parsing/json_helper.h"
