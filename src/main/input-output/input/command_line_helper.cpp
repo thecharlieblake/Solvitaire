@@ -94,8 +94,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         solitaire_type = vm["type"].as<string>();
     }
 
-    if (vm.count("rules")) {
-        rules_file = vm["rules"].as<string>();
+    if (vm.count("custom-rules")) {
+        rules_file = vm["custom-rules"].as<string>();
     }
 
     if (vm.count("random")) {
