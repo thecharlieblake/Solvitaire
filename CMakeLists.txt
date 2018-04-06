@@ -41,9 +41,9 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/evaluation/solvability_calc.h
         src/main/evaluation/benchmark.cpp
         src/main/evaluation/benchmark.h
-				lib/rapidjson/document.h
-				lib/rapidjson/schema.h
-				lib/rapidjson/stringbuffer.h)
+		lib/rapidjson/document.h
+		lib/rapidjson/schema.h
+		lib/rapidjson/stringbuffer.h)
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
@@ -150,6 +150,16 @@ add_executable(solvitaire-suit-reduction-streamliner ${main} ${sources})
 target_link_libraries(solvitaire-suit-reduction-streamliner LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-suit-reduction-streamliner PROPERTIES COMPILE_FLAGS -DSUIT_REDUCTION_STREAMLINER)
 
+# add a separete executable for the 'auto foundations streamliner' version of the solver
+add_executable(solvitaire-auto-foundations-streamliner ${main} ${sources})
+target_link_libraries(solvitaire-auto-foundations-streamliner LINK_PUBLIC ${Boost_LIBRARIES})
+set_target_properties(solvitaire-auto-foundations-streamliner PROPERTIES COMPILE_FLAGS -DAUTO_FOUNDATIONS_STREAMLINER)
+
+# add a separete executable for the 'both streamliners' version of the solver
+add_executable(solvitaire-both-streamliners ${main} ${sources})
+target_link_libraries(solvitaire-both-streamliners LINK_PUBLIC ${Boost_LIBRARIES})
+set_target_properties(solvitaire-both-streamliners PROPERTIES COMPILE_FLAGS "-DSUIT_REDUCTION_STREAMLINER -DAUTO_FOUNDATIONS_STREAMLINER")
+
 # add a separete executable for the 'no pile symmetry' version of the solver
 add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
@@ -164,11 +174,6 @@ set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_
 add_executable(solvitaire-no-auto-foundations ${main} ${sources})
 target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
-
-# add a separete executable for the 'no card just moved' version of the solver
-add_executable(solvitaire-no-card-just-moved ${main} ${sources})
-target_link_libraries(solvitaire-no-card-just-moved LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-card-just-moved PROPERTIES COMPILE_FLAGS -DNO_CARD_JUST_MOVED)
 
 
 ###############################################################################

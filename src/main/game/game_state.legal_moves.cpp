@@ -13,11 +13,7 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 
-vector<game_state::move> game_state::get_legal_moves(
-#ifndef NO_CARD_JUST_MOVED
-        move parent_move
-#endif
-) {
+vector<game_state::move> game_state::get_legal_moves(move parent_move) {
     // The next legal moves
     vector<move> moves;
 
@@ -45,11 +41,9 @@ vector<game_state::move> game_state::get_legal_moves(
         // just moved a card to
         if ((rules.hole && rem_ref == hole)
             || piles[rem_ref].empty()
-#ifndef NO_CARD_JUST_MOVED
             || (rem_ref == parent_move.to
                 && parent_move.count <= 1
                 && parent_move.from != stock)
-#endif
                 ) continue;
 
         // If we have a foundations card as the rem_ref

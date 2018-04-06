@@ -450,33 +450,48 @@ void game_state::update_auto_foundation_moves(pile_ref target_pile) {
 }
 
 bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
-    if (rules.build_pol == pol::ANY_SUIT || rules.build_pol == pol::RED_BLACK) {
-        card::suit_t target_suit(target_pile - foundations.front());
-        card::rank_t target_rank = piles[target_pile].empty() ? card::rank_t(0)
-                                   : piles[target_pile].top_card().get_rank();
-        card target_card = card(target_suit, target_rank);
+#ifndef AUTO_FOUNDATIONS_STREAMLINER
+    if (rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
+#endif
+        return true;
 
-        for (pile_ref pr : foundations) {
-            if (pr == target_pile) continue;
+    card::suit_t target_suit(target_pile - foundations.front());
+    card::rank_t target_rank = piles[target_pile].empty()
+                               ? card::rank_t(0)
+                               : piles[target_pile].top_card().get_rank();
+    // The card to be moved up
+    card move_up_card(target_suit, card::rank_t(target_rank + 1));
 
-            card::suit_t foundation_suit(pr - foundations.front());
-            card::rank_t foundation_rank = piles[pr].empty() ? card::rank_t(0)
-                                       : piles[pr].top_card().get_rank();
-            card foundation_card = card(foundation_suit, foundation_rank);
-            int rank_diff = int(target_rank)
-                            - int(foundation_card.get_rank());
+    // The max difference between the 'move up' card and the foundations of the
+    // same colour and the other colour
+    int same_col_rank_diff = 0;
+    int other_col_rank_diff = 0;
+    for (pile_ref pr : foundations) {
+        if (pr == target_pile) continue;
 
-            if (rules.build_pol == pol::RED_BLACK
-                && foundation_card.get_colour() == target_card.get_colour()) {
-                if (rank_diff >= 3) {
-                    return false;
-                }
-            } else if (rank_diff >= 2) {
-                return false;
-            }
+        card::suit_t s(pr - foundations.front());
+        card::rank_t r = piles[pr].empty() ? card::rank_t(0)
+                                           : piles[pr].top_card().get_rank();
+        card c(s, r);
+
+        auto rank_diff = int(move_up_card.get_rank() - r);
+        if (move_up_card.get_colour() == c.get_colour()) {
+            same_col_rank_diff = rank_diff;
+        } else {
+            other_col_rank_diff = max(other_col_rank_diff, rank_diff);
         }
     }
-    return true;
+
+    bool other_col_within_1 = other_col_rank_diff <= 1;
+    bool other_col_within_2 = other_col_rank_diff <= 2;
+    bool same_col_within_3 = same_col_rank_diff <= 3;
+
+    if (rules.build_pol == pol::RED_BLACK) {
+        return other_col_within_1 || (other_col_within_2 && same_col_within_3);
+    } else {
+        assert(rules.build_pol == pol::ANY_SUIT);
+        return other_col_within_2;
+    }
 }
 
 
