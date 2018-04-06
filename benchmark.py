@@ -195,7 +195,7 @@ for rulesGen in [
         for attempt in range(20):
             try:
                 run("./cmake-build-" + runtype + "/bin/solvitaire" + flag
-                    + " --rules " + tempRulesFilename + " --random "
+                    + " --custom-rules " + tempRulesFilename + " --random "
                     + str(attempt + 1),
                     shell=True,
                     check=True,
