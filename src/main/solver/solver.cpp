@@ -118,11 +118,7 @@ void solver::add_children(std::vector<game_state::move>& moves) {
 }
 
 vector<game_state::move> solver::get_next_moves() {
-#ifndef NO_CARD_JUST_MOVED
     return state.get_legal_moves(current_node->move);
-#else
-    return state.get_legal_moves();
-#endif
 }
 
 void solver::add_child(game_state::move move) {

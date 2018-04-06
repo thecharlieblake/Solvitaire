@@ -623,6 +623,20 @@ map<string, string> sol_preset_types::mp = {
                 R"(
 {
   "tableau piles": {
+    "build policy": "same-suit",
+    "spaces policy": "kings"
+  },
+  "cells": 8
+}
+)"
+
+        },
+        {
+                "eight-off-any-card-spaces",
+
+                R"(
+{
+  "tableau piles": {
     "build policy": "same-suit"
   },
   "cells": 8
