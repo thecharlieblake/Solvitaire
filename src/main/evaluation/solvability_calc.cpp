@@ -81,8 +81,9 @@ void solvability_calc::print_end_re_eval_msg() const {
 /////////////////////
 
 void solvability_calc::calculate_solvability_percentage() {
-    int current_seed = 10; // TODO:change
-    millisec timeout(10);
+    int current_seed = 0;
+    millisec timeout(500);
+    millisec max_timeout(200000);
     inc_t_coeffs coeffs(0.4, 0.0, 1.0);
 
     print_header(timeout.count());
@@ -94,7 +95,9 @@ void solvability_calc::calculate_solvability_percentage() {
         double reeval_ci_sz = inc_timeout_ci_size(coeffs, seed_res);
         print_row(seed_res, current_seed, cont_ci_sz, reeval_ci_sz);
 
-        while (seed_res.intractables() == 0 || cont_ci_sz < reeval_ci_sz) {
+        while (seed_res.intractables() == 0
+               || cont_ci_sz < reeval_ci_sz
+               || timeout == max_timeout) {
             solve_seed(current_seed, timeout, seed_res);
 
             cont_ci_sz = continue_ci_size(coeffs, seed_res, timeout);
@@ -104,7 +107,7 @@ void solvability_calc::calculate_solvability_percentage() {
             current_seed++;
         }
 
-        timeout *= 2;
+        timeout = min(timeout * 2, max_timeout);
 
         seed_results intract_seed_res;
         print_begin_re_eval_msg(timeout.count());

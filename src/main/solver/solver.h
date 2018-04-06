@@ -35,6 +35,7 @@ public:
     int get_states_searched() const;
     int get_final_depth() const;
     const node& get_search_tree() const;
+    int get_backtrack_count();
 
 private:
     bool revert_to_last_node_with_children();
@@ -45,6 +46,7 @@ private:
     const game_state init_state;
     game_state state;
     int states_searched;
+    int backtracks;
     uint depth;
 
     node root;

@@ -228,7 +228,8 @@ map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 4,
-    "build policy": "red-black"
+    "build policy": "red-black",
+    "move built group": true
   },
   "stock size": 34,
   "reserve size": 14,
@@ -244,7 +245,8 @@ map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 3,
-    "build policy": "red-black"
+    "build policy": "red-black",
+    "move built group": true
   },
   "max rank": 3,
   "stock size": 1,
@@ -377,26 +379,7 @@ map<string, string> sol_preset_types::mp = {
         },
 
         {
-                "klondike",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 7,
-    "build policy": "red-black",
-    "spaces policy": "kings",
-    "diagonal deal": true
-  },
-  "stock size": 24,
-  "stock deal count": 1,
-  "stock redeal": false
-}
-)"
-
-        },
-
-        {
-                "klondike-built-group",
+                "klondike-deal-1",
 
                 R"(
 {
@@ -416,26 +399,7 @@ map<string, string> sol_preset_types::mp = {
         },
 
         {
-                "klondike-deal-3",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 7,
-    "build policy": "red-black",
-    "spaces policy": "kings",
-    "diagonal deal": true
-  },
-  "stock size": 24,
-  "stock deal count": 3,
-  "stock redeal": true
-}
-)"
-
-        },
-
-        {
-                "klondike-deal-3-built-group",
+                "klondike",
 
                 R"(
 {
@@ -708,7 +672,7 @@ map<string, string> sol_preset_types::mp = {
     "move built group": true,
     "spaces policy": "kings"
   },
-  "cells": 4,
+  "cells": 4
 }
 )"
 
@@ -731,7 +695,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "chamelion",
+                "chameleon",
                 R"(
 
 {
@@ -836,23 +800,6 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 9,
     "build policy": "red-black",
-    "diagonal deal": true
-  },
-  "foundations removable": true,
-  "reserve size": 7
-}
-)"
-
-        },
-        {
-                "king-albert-kings-in-spaces",
-                R"(
-
-{
-  "tableau piles": {
-    "count": 9,
-    "build policy": "red-black",
-    "spaces policy": "kings",
     "diagonal deal": true
   },
   "foundations removable": true,

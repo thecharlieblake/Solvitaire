@@ -21,6 +21,7 @@ public:
     bool get_solvability();
     bool get_short_sols();
     bool get_available_game_types();
+    bool get_benchmark();
     std::string get_describe_game_rules();
 
 private:
@@ -46,6 +47,7 @@ private:
     bool solvability;
     bool shortest_sols;
     bool available_game_types;
+    bool benchmark;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H

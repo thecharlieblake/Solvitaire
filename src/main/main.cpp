@@ -9,7 +9,8 @@
 #include "input-output/input/json-parsing/rules_parser.h"
 #include "input-output/output/log_helper.h"
 #include "solver/solver.h"
-#include "solvability/solvability_calc.h"
+#include "evaluation/solvability_calc.h"
+#include "evaluation/benchmark.h"
 
 using namespace rapidjson;
 
@@ -51,10 +52,14 @@ int main(int argc, const char* argv[]) {
         solvability_calc solv_c(*rules);
         solv_c.calculate_solvability_percentage();
     }
-    // If a random deal seed has been supplied, solves it
+        // If a random deal seed has been supplied, solves it
     else if (clh.get_random_deal() != -1) {
         solve_random_game(clh.get_random_deal(), *rules, clh.get_short_sols(),
                           clh.get_classify());
+    }
+    // If the benchmark option has been supplied, generates it
+    else if (clh.get_benchmark()) {
+        benchmark::run(*rules);
     }
     // Otherwise there are supplied input files which should be solved
     else {
@@ -141,5 +146,6 @@ void solve_game(const game_state& gs, bool short_sol, bool classify) {
     }
 
     cout << "States Searched: " << solv->get_states_searched() << "\n";
+    cout << "Backtracks: " << solv->get_backtrack_count() << "\n";
     cout << "Final Depth: " << solv->get_final_depth() << "\n";
 }

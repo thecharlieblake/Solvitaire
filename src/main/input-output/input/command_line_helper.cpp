@@ -35,15 +35,19 @@ command_line_helper::command_line_helper()
                      "to be solved. Must supply either 'type' or 'custom-rules' option")
             ("random", po::value<int>(), "create and solve a random solitaire "
                     "deal based on a seed. Must supply either 'random',"
-                    "'solvability' or list of deals to be solved.")
+                    "'solvability', 'benchmark' or list of deals to be solved.")
+            ("classify", "outputs a simple 'solvable/not solvable' "
+                    "classification")
             ("shortest-sols", "for each instance returns the shortest possible "
                     "solution. cannot be supplied alongside '--solvability'")
             ("solvability", "calculates the solvability "
                     "percentage of the supplied solitaire game. Must supply "
-                    "either 'random', 'solvability' or list of deals to be "
+                    "either 'random', 'benchmark', 'solvability' or list of deals to be "
                     "solved.")
-            ("classify", "outputs a simple 'solvable/not solvable' "
-                    "classification");
+            ("benchmark", "outputs performance statistics for the solver on the "
+                    "supplied solitaire game. Must supply "
+                    "either 'random', 'benchmark', 'solvability' or list of deals to be "
+                    "solved.");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -102,6 +106,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     solvability = (vm.count("solvability") != 0);
 
+    benchmark = (vm.count("benchmark") != 0);
+
     shortest_sols = (vm.count("shortest-sols") != 0);
 
     // Handle logic error scenarios
@@ -117,8 +123,8 @@ bool command_line_helper::assess_errors() {
     if (available_game_types || !describe_game_rules.empty()) return true;
 
     // The user must either supply input files, a random seed, or ask for the
-    // solvability percentage
-    int opt_count = (random_deal != -1) + !input_files.empty() + solvability;
+    // solvability percentage, or benchmark
+    int opt_count = (random_deal != -1) + !input_files.empty() + solvability + benchmark;
 
     if (opt_count > 1) {
         print_too_many_opts_error();
@@ -166,7 +172,7 @@ void command_line_helper::print_help() {
 
 void command_line_helper::print_no_opts_error() {
     LOG_ERROR ("Error: User must supply input file(s), the '--random' "
-            "option, or the '--solvability' option");
+            "option, the 'benchmark' option, or the '--solvability' option");
     print_help();
 }
 
@@ -177,7 +183,7 @@ void command_line_helper::print_sol_type_rules_error() {
 }
 
 void command_line_helper::print_too_many_opts_error() {
-    LOG_ERROR ("Error: User must supply input file(s), the '--random' option, "
+    LOG_ERROR ("Error: User must supply input file(s), the '--random' option, the 'benchmark' option,, "
                        "or the '--solvability' option, not multiple");
     print_help();
 }
@@ -225,4 +231,8 @@ string command_line_helper::get_describe_game_rules() {
 
 bool command_line_helper::get_short_sols() {
     return shortest_sols;
+}
+
+bool command_line_helper::get_benchmark() {
+    return benchmark;
 }
