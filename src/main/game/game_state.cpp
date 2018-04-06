@@ -8,10 +8,10 @@
 #include <algorithm>
 #include <functional>
 
-#include <rapidjson/document.h>
 #include <boost/functional/hash.hpp>
 
 #include "game_state.h"
+#include "../../../lib/rapidjson/document.h"
 #include "../input-output/input/json-parsing/deal_parser.h"
 #include "../input-output/output/state_printer.h"
 #include "../input-output/output/log_helper.h"

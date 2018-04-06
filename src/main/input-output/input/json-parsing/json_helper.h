@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include <rapidjson/schema.h>
+#include "../../../../../lib/rapidjson/schema.h"
 
 class json_helper {
 public:

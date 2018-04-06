@@ -25,11 +25,11 @@ solvability_calc::solvability_calc(const sol_rules& r) : rules(r) {
 //////////////////////
 
 void solvability_calc::print_header(long t) const {
-    cout << "Calculating solvability percentage...\n\n"
+    cerr << "Calculating solvability percentage...\n\n"
             "[Lower Bound, Upper Bound] | Solvable/Unsolvable/Intractable "
             "| Current seed | (Est. Confidence Interval: Continue/Re-eval)"
             "\n--- Timeout = " << t << " milliseconds ---";
-    cout << fixed << setprecision(3);
+    cerr << fixed << setprecision(3);
 }
 
 void solvability_calc::print_row(const seed_results& seed_res, int seed,
@@ -42,7 +42,7 @@ void solvability_calc::print_row(const seed_results& seed_res, int seed,
                                          seed_res.intractables());
 
     if (cont != -1 && re_eval !=-1) {
-        cout << "\n"
+        cerr << "\n"
              << "["    << lower_bound * 100
              << ", "   << upper_bound * 100
              << "] | " << seed_res.solvables()
@@ -51,14 +51,14 @@ void solvability_calc::print_row(const seed_results& seed_res, int seed,
              << " | "  << seed
              << " | (";
         if (seed_res.intractables() == 0) {
-            cout << "N/A";
+            cerr << "N/A";
         } else {
-            cout  << cont * 100
+            cerr  << cont * 100
                   << ", " << re_eval * 100;
         }
-        cout << ")";
+        cerr << ")";
     } else {
-        cout << "\n"
+        cerr << "\n"
              << "[-- re-eval --] | " << seed_res.solvables()
              << "/"    << seed_res.unsolvables()
              << "/"    << seed_res.intractables()
@@ -67,12 +67,12 @@ void solvability_calc::print_row(const seed_results& seed_res, int seed,
 }
 
 void solvability_calc::print_begin_re_eval_msg(long t) const {
-    cout << "\n--- Timeout doubled to " << t
+    cerr << "\n--- Timeout doubled to " << t
          << " ms. Re-evaluating intractable seeds ---";
 }
 
 void solvability_calc::print_end_re_eval_msg() const {
-    cout << "\n--- Re-evaluation complete ---";
+    cerr << "\n--- Re-evaluation complete ---";
 }
 
 

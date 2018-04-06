@@ -2,7 +2,6 @@
 // Created by thecharlesblake on 12/26/17.
 //
 
-#include <rapidjson/document.h>
 #include <gtest/gtest.h>
 
 #include "test_helper.h"
@@ -10,6 +9,7 @@
 #include "../main/solver/solver.h"
 #include "../main/input-output/input/json-parsing/json_helper.h"
 #include "../main/input-output/input/json-parsing/rules_parser.h"
+#include "../../lib/rapidjson/document.h"
 
 #define ASSERT_(t_f, statement) ASSERT_TRUE((statement) == (t_f))
 

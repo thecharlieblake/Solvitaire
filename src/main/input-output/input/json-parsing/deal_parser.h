@@ -8,8 +8,9 @@
 #include <vector>
 
 #include <boost/optional.hpp>
-#include <rapidjson/document.h>
-#include <rapidjson/schema.h>
+
+#include "../../../../../lib/rapidjson/document.h"
+#include "../../../../../lib/rapidjson/schema.h"
 
 class game_state;
 
