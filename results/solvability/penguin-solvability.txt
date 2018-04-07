@@ -238,5 +238,3 @@ Calculating solvability percentage...
 [97.827, 100.000] | 209/0/0 | 208 | (N/A)
 [97.837, 100.000] | 210/0/0 | 209 | (N/A)
 [97.847, 100.000] | 211/0/0 | 210 | (N/A)
-[97.105, 100.000] | 211/0/1 | 211 | (5.522, 2.153)
---- Timeout doubled to 64000 ms. Re-evaluating intractable seeds ---
