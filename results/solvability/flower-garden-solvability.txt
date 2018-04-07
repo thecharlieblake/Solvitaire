@@ -1,0 +1,73 @@
+Calculating solvability percentage...
+
+[Lower Bound, Upper Bound] | Solvable/Unsolvable/Intractable | Current seed | (Est. Confidence Interval: Continue/Re-eval)
+--- Timeout = 500 milliseconds ---
+[0.000, 100.000] | 0/0/0 | 0 | (N/A)
+[0.000, 100.000] | 0/0/1 | 0 | (88.745, 83.251)
+--- Timeout doubled to 1000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/1 | 1 | (88.745, 100.000)
+[0.000, 100.000] | 0/0/2 | 1 | (95.936, 88.745)
+--- Timeout doubled to 2000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/2 | 2 | (95.936, 88.745)
+--- Timeout doubled to 4000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/2 | 2 | (95.936, 88.745)
+--- Timeout doubled to 8000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/2 | 2 | (95.936, 90.547)
+--- Timeout doubled to 16000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/2 | 2 | (95.936, 100.000)
+[5.627, 100.000] | 1/0/2 | 2 | (82.929, 90.547)
+[3.408, 100.000] | 1/0/3 | 3 | (82.951, 86.370)
+[2.032, 100.000] | 1/0/4 | 4 | (83.255, 86.370)
+[1.136, 98.864] | 1/1/4 | 5 | (81.906, 81.496)
+--- Timeout doubled to 32000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+[-- re-eval --] | 0/0/3 | 3
+[-- re-eval --] | 0/0/4 | 4
+--- Re-evaluation complete ---
+[1.136, 98.864] | 1/1/4 | 6 | (81.906, 81.496)
+--- Timeout doubled to 64000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+[-- re-eval --] | 0/0/3 | 3
+[-- re-eval --] | 1/0/3 | 4
+--- Re-evaluation complete ---
+[9.252, 98.864] | 2/1/3 | 6 | (89.612, 76.685)
+--- Timeout doubled to 128000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+[-- re-eval --] | 0/0/3 | 3
+--- Re-evaluation complete ---
+[9.252, 98.864] | 2/1/3 | 6 | (78.175, 76.685)
+--- Timeout doubled to 200000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+[-- re-eval --] | 0/0/2 | 1
+[-- re-eval --] | 0/0/3 | 3
+--- Re-evaluation complete ---
+[9.252, 98.864] | 2/1/3 | 6 | (78.175, 76.685)
+[15.752, 99.468] | 3/1/3 | 6 | (74.906, 72.173)
+[21.521, 99.887] | 4/1/3 | 7 | (71.130, 68.028)
+[26.629, 100.000] | 5/1/3 | 8 | (66.994, 64.251)
+[31.160, 100.000] | 6/1/3 | 9 | (62.580, 60.820)
+[27.989, 100.000] | 6/1/4 | 10 | (66.382, 60.820)
+[25.378, 100.000] | 6/1/5 | 11 | (66.050, 64.615)
+[23.193, 100.000] | 6/1/6 | 12 | (68.948, 64.615)
+[26.799, 100.000] | 7/1/6 | 13 | (65.393, 61.495)
+[30.108, 100.000] | 8/1/6 | 14 | (63.735, 58.639)
+[27.999, 100.000] | 8/1/7 | 15 | (64.772, 58.668)
+[26.159, 100.000] | 8/1/8 | 16 | (67.056, 58.668)
+[24.540, 98.144] | 8/2/8 | 17 | (65.391, 57.837)

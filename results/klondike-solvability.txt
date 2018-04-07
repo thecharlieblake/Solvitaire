@@ -1,0 +1,5 @@
+Calculating solvability percentage...
+
+[Lower Bound, Upper Bound] | Solvable/Unsolvable/Intractable | Current seed | (Est. Confidence Interval: Continue/Re-eval)
+--- Timeout = 500000 milliseconds ---
+[0.000, 100.000] | 0/0/0 | 0 | (N/A)
