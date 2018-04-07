@@ -6,9 +6,10 @@ runCount = 500
 # Loops through each canonical solitaire
 
 for optimisation in [
-    "-no-reduced-state",
-    "-no-pile-symmetry",
-    "-no-auto-foundations"
+#    "-no-reduced-state",
+#    "-no-pile-symmetry",
+#    "-no-auto-foundations",
+    "-no-symmetry"
 ]:
 
     for preset in [

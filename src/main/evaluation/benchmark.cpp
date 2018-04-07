@@ -27,7 +27,7 @@ void benchmark::run(const sol_rules &rules) {
     int total_solvable = 0;
     int total_unsolvable = 0;
 
-    for(int seed = 1; seed < INT_MAX; seed++) {
+    for(int seed = 1; seed <= 1000; seed++) {
         game_state gs(rules, seed);
         solver sol(gs);
 

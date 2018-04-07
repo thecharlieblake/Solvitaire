@@ -555,7 +555,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "red-black"
   },
-  "cells": 1
+  "cells": 0
 }
 )"
 
@@ -603,14 +603,26 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
+                "free-cell-4-pile",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black"
+  },
+  "cells": 4
+}
+)"
+
+        },
+        {
                 "bakers-game",
 
                 R"(
 {
   "tableau piles": {
-    "build policy": "same-suit",
-    "move built group": true,
-    "spaces policy": "kings"
+    "build policy": "same-suit"
   },
   "cells": 4
 }
