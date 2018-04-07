@@ -10,14 +10,14 @@
 #include "../solver/solver.h"
 
 using namespace std;
-typedef chrono::milliseconds millisec;
+typedef chrono::microseconds microsec;
 
 void benchmark::run(const sol_rules &rules) {
     cout << "Seed "
-          "| Median Solution Time(ms) "
+          "| Median Solution Time(μs) "
           "| Median States Searched "
-          "| Median (Non-Zero) Solution Depth "
           "| Median Backtracks "
+          "| Median (Non-Zero) Solution Depth "
           "| Solvable/Unsolvable ";
 
     multiset<int> sol_times;
@@ -34,10 +34,10 @@ void benchmark::run(const sol_rules &rules) {
         auto start = chrono::steady_clock::now();
         solver::sol_state result = sol.run();
         auto end = chrono::steady_clock::now();
-        millisec elapsed_millis =
-                chrono::duration_cast<chrono::milliseconds>(end - start);
+        microsec elapsed_micros =
+                chrono::duration_cast<chrono::microseconds>(end - start);
 
-        sol_times.insert(static_cast<int>(elapsed_millis.count()));
+        sol_times.insert(static_cast<int>(elapsed_micros.count()));
         states_searched.insert(sol.get_states_searched());
         if (sol.get_final_depth() != 0) sol_depths.insert(sol.get_final_depth());
         backtracks.insert(sol.get_backtrack_count());
@@ -56,8 +56,8 @@ void benchmark::run(const sol_rules &rules) {
         cout << "\n"  << seed
              << " | " << *next(begin(sol_times), (sol_times.size())/2)
              << " | " << *next(begin(states_searched), (states_searched.size())/2)
-             << " | " << *next(begin(sol_depths), (sol_depths.size())/2)
              << " | " << *next(begin(backtracks), (backtracks.size())/2)
+             << " | " << *next(begin(sol_depths), (sol_depths.size())/2)
              << " | " << total_solvable
              <<  "/"  << total_unsolvable;
     }
