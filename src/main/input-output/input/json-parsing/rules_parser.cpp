@@ -128,26 +128,28 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
+            string mbgp_str;
             if (d["tableau piles"].HasMember("move built group policy")) {
                 if (d["tableau piles"]["move built group policy"].IsString()) {
-                    string mbgp_str = d["tableau piles"]["move built group policy"].GetString();
-
-                    if (mbgp_str == "same-as-build") {
-                        sr.built_group_pol = sr.build_pol;
-                    } else if (mbgp_str == "any-suit") {
-                        sr.built_group_pol = pol::ANY_SUIT;
-                    } else if (mbgp_str == "red-black") {
-                        sr.built_group_pol = pol::RED_BLACK;
-                    } else if (mbgp_str == "same-suit") {
-                        sr.built_group_pol = pol::SAME_SUIT;
-                    } else if (mbgp_str == "no-build") {
-                        sr.built_group_pol = pol::NO_BUILD;
-                    } else {
-                        json_helper::json_parse_err("[tableau piles][move built group policy] is invalid");
-                    }
+                    mbgp_str = d["tableau piles"]["move built group policy"].GetString();
                 } else {
                     json_helper::json_parse_err("[tableau piles][move built group policy] must be a string");
                 }
+            } else {
+                mbgp_str = "same-as-build";
+            }
+            if (mbgp_str == "same-as-build") {
+                sr.built_group_pol = sr.build_pol;
+            } else if (mbgp_str == "any-suit") {
+                sr.built_group_pol = pol::ANY_SUIT;
+            } else if (mbgp_str == "red-black") {
+                sr.built_group_pol = pol::RED_BLACK;
+            } else if (mbgp_str == "same-suit") {
+                sr.built_group_pol = pol::SAME_SUIT;
+            } else if (mbgp_str == "no-build") {
+                sr.built_group_pol = pol::NO_BUILD;
+            } else {
+                json_helper::json_parse_err("[tableau piles][move built group policy] is invalid");
             }
 
             if (d["tableau piles"].HasMember("diagonal deal")) {
