@@ -87,9 +87,16 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 
     // If the game is a 'hole-based' game, or suit-reduction is on, reduces
     // the cached suit of the card where possible
-#ifndef SUIT_REDUCTION_STREAMLINER
-    if (gs.rules.hole) {
+
+    bool is_suit_symmetry = gs.rules.hole;
+#ifdef SUIT_REDUCTION_STREAMLINER
+    is_suit_symmetry = true;
 #endif
+#ifdef NO_SUIT_SYMMETRY
+    is_suit_symmetry = false;
+#endif
+
+    if (is_suit_symmetry) {
         switch (gs.rules.build_pol) {
             case pol::SAME_SUIT:
                 target.emplace_back(c);
@@ -101,11 +108,9 @@ void cached_game_state::add_card(card c, const game_state& gs) {
                 target.emplace_back(0, c.get_rank());
                 break;
         }
-#ifndef SUIT_REDUCTION_STREAMLINER
     } else {
         target.emplace_back(c);
     }
-#endif
 }
 
 void cached_game_state::add_card_divider() {
@@ -160,10 +165,16 @@ size_t hasher::hash_value(card const& c) const {
 
     // If the game is a 'hole-based' game, or suit-reduction is enabled, hash
     // the reduced suit
-    uint8_t suit_val;
-#ifndef SUIT_REDUCTION_STREAMLINER
-    if (init_gs.rules.hole) {
+    bool is_suit_symmetry = init_gs.rules.hole;
+#ifdef SUIT_REDUCTION_STREAMLINER
+    is_suit_symmetry = true;
 #endif
+#ifdef NO_SUIT_SYMMETRY
+    is_suit_symmetry = false;
+#endif
+    
+    uint8_t suit_val;
+    if (is_suit_symmetry) {
         switch (init_gs.rules.build_pol) {
             case pol::SAME_SUIT:
                 suit_val = c.get_suit();
@@ -174,11 +185,9 @@ size_t hasher::hash_value(card const& c) const {
             default:
                 suit_val = 0;
         }
-#ifndef SUIT_REDUCTION_STREAMLINER
     } else {
         suit_val = c.get_suit();
     }
-#endif
 
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
     return boost_hasher(raw_val);

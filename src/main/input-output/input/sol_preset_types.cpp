@@ -858,6 +858,94 @@ map<string, string> sol_preset_types::mp = {
 }
 )"
 
+        },
+        {
+                "test-game-black-hole",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "no-build"
+  },
+  "max rank": 8,
+  "hole": true,
+  "foundations": false
+}
+)"
+        },
+        {
+                "test-game-any-suit",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 5,
+    "build policy": "any-suit"
+  },
+  "max rank": 6
+}
+)"
+        },
+        {
+                "test-game-red-black",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black"
+  },
+  "max rank": 8
+}
+)"
+        },
+        {
+                "test-game-same-suit",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "same-suit"
+  },
+  "max rank": 9
+}
+)"
+        },
+        {
+                "test-game-founds-removable",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black"
+  },
+  "max rank": 8,
+  "foundations removable": true
+}
+)"
+        },
+        {
+                "test-game-diagonal-deal",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "max rank": 8
+}
+)"
         }
 };
 
