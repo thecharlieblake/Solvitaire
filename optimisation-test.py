@@ -1,15 +1,14 @@
 import sys
 from subprocess import run, CalledProcessError, DEVNULL, PIPE, Popen
 
-runCount = 100
+runCount = 500
 
 # Loops through each canonical solitaire
 
 for optimisation in [
-#    "-no-reduced-state",
+    "-no-reduced-state",
     "-no-pile-symmetry",
-    "-no-auto-foundations",
-    "-no-card-just-moved"
+    "-no-auto-foundations"
 ]:
 
     for preset in [
@@ -21,8 +20,8 @@ for optimisation in [
         "simple-fortunes-favor",
         "simple-free-cell",
         "simple-somerset",
-        "simple-spanish-patience",
-        "simple-spider"]:
+        "simple-spanish-patience"
+    ]:
 
         differs = []
 
