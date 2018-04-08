@@ -1,14 +1,14 @@
 import sys
 from subprocess import run, CalledProcessError, DEVNULL, PIPE, Popen
 
-runCount = 500
+runCount = 100
 
 # Loops through each canonical solitaire
 
 for optimisation in [
-#    "-no-reduced-state",
-#    "-no-pile-symmetry",
-#    "-no-auto-foundations",
+    "-no-reduced-state",
+    "-no-pile-symmetry",
+    "-no-auto-foundations",
     "-no-symmetry"
 ]:
 
