@@ -368,17 +368,17 @@ card game_state::take_card(pile_ref pr) {
 void game_state::eval_pile_order(pile_ref pr, bool is_place) {
     if (!original_tableau_piles.empty()
         && pr >= original_tableau_piles[0]
-        && pr <= original_tableau_piles[0] + original_tableau_piles.size()) {
+        && pr < original_tableau_piles[0] + original_tableau_piles.size()) {
 
         eval_pile_order(tableau_piles, pr, is_place);
     } else if (!original_cells.empty()
                && pr >= original_cells[0]
-               && pr <= original_cells[0] + original_cells.size()) {
+               && pr < original_cells[0] + original_cells.size()) {
 
         eval_pile_order(cells, pr, is_place);
     } else if (!original_reserve.empty()
                && pr >= original_reserve[0]
-               && pr <= original_reserve[0] + original_reserve.size()) {
+               && pr < original_reserve[0] + original_reserve.size()) {
 
         eval_pile_order(reserve, pr, is_place);
     }

@@ -1,14 +1,28 @@
-Calculating solvability percentage...
-
 [Lower Bound, Upper Bound] | Solvable/Unsolvable/Intractable | Current seed | (Est. Confidence Interval: Continue/Re-eval)
 --- Timeout = 500 milliseconds ---
 [0.000, 100.000] | 0/0/0 | 0 | (N/A)
 [0.000, 100.000] | 0/0/1 | 0 | (88.745, 83.251)
 --- Timeout doubled to 1000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+--- Re-evaluation complete ---
+[0.000, 100.000] | 0/0/1 | 1 | (88.745, 100.000)
+[9.453, 100.000] | 1/0/1 | 1 | (86.370, 83.251)
+--- Timeout doubled to 2000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+--- Re-evaluation complete ---
+[9.453, 100.000] | 1/0/1 | 2 | (86.370, 83.251)
+--- Timeout doubled to 4000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+--- Re-evaluation complete ---
+[9.453, 100.000] | 1/0/1 | 2 | (86.370, 83.251)
+--- Timeout doubled to 8000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 0
+--- Re-evaluation complete ---
+[9.453, 100.000] | 1/0/1 | 2 | (86.370, 83.251)
+--- Timeout doubled to 16000 ms. Re-evaluating intractable seeds ---
 [-- re-eval --] | 1/0/0 | 0
 --- Re-evaluation complete ---
-[16.749, 100.000] | 1/0/0 | 1 | (N/A)
-[29.022, 100.000] | 2/0/0 | 1 | (N/A)
+[29.022, 100.000] | 2/0/0 | 2 | (N/A)
 [38.252, 100.000] | 3/0/0 | 2 | (N/A)
 [45.404, 100.000] | 4/0/0 | 3 | (N/A)
 [51.094, 100.000] | 5/0/0 | 4 | (N/A)
@@ -16,7 +30,15 @@ Calculating solvability percentage...
 [59.555, 100.000] | 7/0/0 | 6 | (N/A)
 [62.782, 100.000] | 8/0/0 | 7 | (N/A)
 [65.535, 100.000] | 9/0/0 | 8 | (N/A)
-[67.910, 100.000] | 10/0/0 | 9 | (N/A)
+[57.403, 100.000] | 9/0/1 | 9 | (60.768, 34.465)
+--- Timeout doubled to 32000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 0/0/1 | 9
+--- Re-evaluation complete ---
+[57.403, 100.000] | 9/0/1 | 10 | (50.564, 34.465)
+--- Timeout doubled to 64000 ms. Re-evaluating intractable seeds ---
+[-- re-eval --] | 1/0/0 | 9
+--- Re-evaluation complete ---
+[67.910, 100.000] | 10/0/0 | 10 | (N/A)
 [69.981, 100.000] | 11/0/0 | 10 | (N/A)
 [71.801, 100.000] | 12/0/0 | 11 | (N/A)
 [73.413, 100.000] | 13/0/0 | 12 | (N/A)
@@ -32,19 +54,7 @@ Calculating solvability percentage...
 [83.093, 100.000] | 23/0/0 | 22 | (N/A)
 [83.687, 100.000] | 24/0/0 | 23 | (N/A)
 [84.241, 100.000] | 25/0/0 | 24 | (N/A)
-[79.551, 100.000] | 25/0/1 | 25 | (33.132, 15.759)
---- Timeout doubled to 2000 ms. Re-evaluating intractable seeds ---
-[-- re-eval --] | 0/0/1 | 25
---- Re-evaluation complete ---
-[79.551, 100.000] | 25/0/1 | 26 | (26.414, 15.759)
---- Timeout doubled to 4000 ms. Re-evaluating intractable seeds ---
-[-- re-eval --] | 0/0/1 | 25
---- Re-evaluation complete ---
-[79.551, 100.000] | 25/0/1 | 26 | (26.414, 15.759)
---- Timeout doubled to 8000 ms. Re-evaluating intractable seeds ---
-[-- re-eval --] | 1/0/0 | 25
---- Re-evaluation complete ---
-[84.758, 100.000] | 26/0/0 | 26 | (N/A)
+[84.758, 100.000] | 26/0/0 | 25 | (N/A)
 [85.243, 100.000] | 27/0/0 | 26 | (N/A)
 [85.698, 100.000] | 28/0/0 | 27 | (N/A)
 [86.126, 100.000] | 29/0/0 | 28 | (N/A)
@@ -174,17 +184,9 @@ Calculating solvability percentage...
 [97.054, 100.000] | 153/0/0 | 152 | (N/A)
 [97.073, 100.000] | 154/0/0 | 153 | (N/A)
 [97.091, 100.000] | 155/0/0 | 154 | (N/A)
-[96.096, 100.000] | 155/0/1 | 155 | (7.430, 2.909)
---- Timeout doubled to 16000 ms. Re-evaluating intractable seeds ---
-[-- re-eval --] | 1/0/0 | 155
---- Re-evaluation complete ---
-[97.109, 100.000] | 156/0/0 | 156 | (N/A)
+[97.109, 100.000] | 156/0/0 | 155 | (N/A)
 [97.127, 100.000] | 157/0/0 | 156 | (N/A)
-[96.144, 100.000] | 157/0/1 | 157 | (7.340, 2.873)
---- Timeout doubled to 32000 ms. Re-evaluating intractable seeds ---
-[-- re-eval --] | 1/0/0 | 157
---- Re-evaluation complete ---
-[97.145, 100.000] | 158/0/0 | 158 | (N/A)
+[97.145, 100.000] | 158/0/0 | 157 | (N/A)
 [97.162, 100.000] | 159/0/0 | 158 | (N/A)
 [97.179, 100.000] | 160/0/0 | 159 | (N/A)
 [97.196, 100.000] | 161/0/0 | 160 | (N/A)
@@ -238,5 +240,22 @@ Calculating solvability percentage...
 [97.827, 100.000] | 209/0/0 | 208 | (N/A)
 [97.837, 100.000] | 210/0/0 | 209 | (N/A)
 [97.847, 100.000] | 211/0/0 | 210 | (N/A)
-[97.105, 100.000] | 211/0/1 | 211 | (5.522, 2.153)
---- Timeout doubled to 64000 ms. Re-evaluating intractable seeds ---
+[97.857, 100.000] | 212/0/0 | 211 | (N/A)
+[97.867, 100.000] | 213/0/0 | 212 | (N/A)
+[97.877, 100.000] | 214/0/0 | 213 | (N/A)
+[97.886, 100.000] | 215/0/0 | 214 | (N/A)
+[97.896, 100.000] | 216/0/0 | 215 | (N/A)
+[97.906, 100.000] | 217/0/0 | 216 | (N/A)
+[97.915, 100.000] | 218/0/0 | 217 | (N/A)
+[97.924, 100.000] | 219/0/0 | 218 | (N/A)
+[97.934, 100.000] | 220/0/0 | 219 | (N/A)
+[97.943, 100.000] | 221/0/0 | 220 | (N/A)
+[97.952, 100.000] | 222/0/0 | 221 | (N/A)
+[97.961, 100.000] | 223/0/0 | 222 | (N/A)
+[97.970, 100.000] | 224/0/0 | 223 | (N/A)
+[97.979, 100.000] | 225/0/0 | 224 | (N/A)
+[97.987, 100.000] | 226/0/0 | 225 | (N/A)
+[97.996, 100.000] | 227/0/0 | 226 | (N/A)
+[98.005, 100.000] | 228/0/0 | 227 | (N/A)
+[98.013, 100.000] | 229/0/0 | 228 | (N/A)
+
