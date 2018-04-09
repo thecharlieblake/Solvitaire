@@ -894,10 +894,10 @@ map<string, string> sol_preset_types::mp = {
 
 {
   "tableau piles": {
-    "count": 5,
+    "count": 4,
     "build policy": "any-suit"
   },
-  "max rank": 6
+  "max rank": 5
 }
 )"
         },
@@ -908,10 +908,10 @@ map<string, string> sol_preset_types::mp = {
 
 {
   "tableau piles": {
-    "count": 7,
+    "count": 6,
     "build policy": "red-black"
   },
-  "max rank": 8
+  "max rank": 7
 }
 )"
         },
@@ -926,36 +926,6 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "max rank": 9
-}
-)"
-        },
-        {
-                "test-game-founds-removable",
-
-                R"(
-
-{
-  "tableau piles": {
-    "count": 7,
-    "build policy": "red-black"
-  },
-  "max rank": 8,
-  "foundations removable": true
-}
-)"
-        },
-        {
-                "test-game-diagonal-deal",
-
-                R"(
-
-{
-  "tableau piles": {
-    "count": 7,
-    "build policy": "red-black",
-    "diagonal deal": true
-  },
-  "max rank": 8
 }
 )"
         }

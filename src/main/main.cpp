@@ -120,27 +120,38 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
 void solve_game(const game_state& gs, bool short_sol, bool classify) {
     solver s(gs);
     solver* solv = &s;
-    bool solution;
     if (short_sol) {
         uint bound = 1;
         solver::sol_state ss;
+        bool solution = false;
         do {
             LOG_INFO("Depth: " << bound);
             solver s_(gs);
             solv = &s_;
             ss = s_.run_with_cutoff(none, bound++);
-        } while (ss == solver::sol_state::cutoff);
-        solution = ss == solver::sol_state::solved;
-    } else {
-        solution = solv->run() == solver::sol_state::solved;
-    }
 
-    if (solution) {
-        if (!classify) solv->print_solution();
-        cout << "Solved\n";
+            if (ss == solver::sol_state::solved) {
+                if (!classify) solv->print_solution();
+                cout << "Solved\n";
+                solution = true;
+            }
+        } while (ss == solver::sol_state::cutoff);
+
+        if (!solution) {
+            if (!classify) cout << "Deal:\n" << gs << "\n";
+            cout << "No Possible Solution\n";
+        }
+
     } else {
-        if (!classify) cout << "Deal:\n" << gs << "\n";
-        cout << "No Possible Solution\n";
+        bool solution = solv->run() == solver::sol_state::solved;
+
+        if (solution) {
+            if (!classify) solv->print_solution();
+            cout << "Solved\n";
+        } else {
+            if (!classify) cout << "Deal:\n" << gs << "\n";
+            cout << "No Possible Solution\n";
+        }
     }
 
     cout << "States Searched: " << solv->get_states_searched() << "\n";

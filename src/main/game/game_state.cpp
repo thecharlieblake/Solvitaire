@@ -464,8 +464,8 @@ bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
 
     // The max difference between the 'move up' card and the foundations of the
     // same colour and the other colour
-    int same_col_rank_diff = 0;
-    int other_col_rank_diff = 0;
+    int same_rank_diff = 0;
+    int other_rank_diff = 0;
     for (pile_ref pr : foundations) {
         if (pr == target_pile) continue;
 
@@ -475,22 +475,24 @@ bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
         card c(s, r);
 
         auto rank_diff = int(move_up_card.get_rank() - r);
-        if (move_up_card.get_colour() == c.get_colour()) {
-            same_col_rank_diff = rank_diff;
+        if (move_up_card.get_suit() == c.get_suit()
+            || (rules.build_pol == pol::RED_BLACK
+                && move_up_card.get_colour() == c.get_colour())) {
+            same_rank_diff = rank_diff;
         } else {
-            other_col_rank_diff = max(other_col_rank_diff, rank_diff);
+            other_rank_diff = max(other_rank_diff, rank_diff);
         }
     }
 
-    bool other_col_within_1 = other_col_rank_diff <= 1;
-    bool other_col_within_2 = other_col_rank_diff <= 2;
-    bool same_col_within_3 = same_col_rank_diff <= 3;
+    bool other_within_1 = other_rank_diff <= 1;
+    bool other_within_2 = other_rank_diff <= 2;
+    bool same_within_3 = same_rank_diff <= 3;
 
     if (rules.build_pol == pol::RED_BLACK) {
-        return other_col_within_1 || (other_col_within_2 && same_col_within_3);
+        return other_within_1 || (other_within_2 && same_within_3);
     } else {
         assert(rules.build_pol == pol::ANY_SUIT);
-        return other_col_within_2;
+        return other_within_2;
     }
 }
 
