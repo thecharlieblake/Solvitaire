@@ -14,13 +14,7 @@
 #include "game_state.h"
 
 struct cached_game_state {
-    typedef std::vector<
-#ifdef NO_REDUCED_STATE
-            pile
-#else
-            card
-#endif
-    > state_data;
+    typedef std::vector<card> state_data;
     typedef state_data::size_type size_type;
 
     explicit cached_game_state(const game_state&);
@@ -37,9 +31,6 @@ struct hasher {
     std::size_t operator() (const cached_game_state&) const;
 
     std::size_t hash_value(const card&) const;
-#ifdef NO_REDUCED_STATE
-    std::size_t hash_value(const pile&) const;
-#endif
     std::size_t combine(std::size_t&, std::size_t) const;
 
     const game_state& init_gs;

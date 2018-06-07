@@ -131,6 +131,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread
 -Wstrict-null-sentinel -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -g -Wl,-O1") # uncomment for profiling
 
 ###############################################################################
 ## target definitions #########################################################
@@ -174,12 +175,7 @@ set_target_properties(solvitaire-no-suit-symmetry PROPERTIES COMPILE_FLAGS -DNO_
 add_executable(solvitaire-no-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_SUIT_SYMMETRY -DNO_PILE_SYMMETRY")
-
-# add a separete executable for the 'no reduced state' version of the solver
-add_executable(solvitaire-no-reduced-state ${main} ${sources})
-target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_REDUCED_STATE)
-
+ 
 # add a separete executable for the 'no auto foundations' version of the solver
 add_executable(solvitaire-no-auto-foundations ${main} ${sources})
 target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES})

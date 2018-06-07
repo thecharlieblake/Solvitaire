@@ -23,19 +23,8 @@ cached_game_state::cached_game_state(const game_state& gs) {
     data.reserve(52+18);  // Enough for each card and up to 18 piles
 
     if (gs.rules.hole) {
-#ifdef NO_REDUCED_STATE
-        add_pile(gs.hole, gs);
-#else
         add_card(gs.piles[gs.hole].top_card(), gs);
-#endif
     }
-
-    // No need to add foundations for reduced state, as they are implicit in the
-    // other piles
-#ifdef NO_REDUCED_STATE
-    for (game_state::pile_ref pr : gs.foundations)
-        add_pile(pr, gs);
-#endif
 
     for (game_state::pile_ref pr : gs.cells) {
         add_pile(pr, gs);
@@ -69,21 +58,13 @@ cached_game_state::cached_game_state(const game_state& gs) {
 
 
 void cached_game_state::add_pile(game_state::pile_ref pr, const game_state& gs) {
-#ifdef NO_REDUCED_STATE
-    data.emplace_back(pile());
-#endif
     for (card c : gs.piles[pr].pile_vec) {
         add_card(c, gs);
     }
 }
 
 void cached_game_state::add_card(card c, const game_state& gs) {
-
-#ifdef NO_REDUCED_STATE
-    auto& target = data.back().pile_vec;
-#else
     auto& target = data;
-#endif
 
     // If the game is a 'hole-based' game, or suit-reduction is on, reduces
     // the cached suit of the card where possible
@@ -114,9 +95,7 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 }
 
 void cached_game_state::add_card_divider() {
-#ifndef NO_REDUCED_STATE
     data.emplace_back(0, 0);
-#endif
 }
 
 bool operator==(const cached_game_state& a, const cached_game_state& b) {
@@ -135,26 +114,11 @@ hasher::hasher(const game_state& gs) : init_gs(gs) {
 size_t hasher::operator()(const cached_game_state& cgs) const {
     size_t seed = 0;
 
-#ifdef NO_REDUCED_STATE
-    for (const pile& d : cgs.data) {
-#else
     for (card d : cgs.data) {
-#endif
         combine(seed, hash_value(d));
     }
     return seed;
 }
-
-#ifdef NO_REDUCED_STATE
-size_t hasher::hash_value(pile const& p) const {
-    std::size_t seed = 0;
-
-    for(auto first = begin(p.pile_vec); first != end(p.pile_vec); ++first) {
-        combine(seed, hash_value(*first));
-    }
-    return seed;
-}
-#endif
 
 std::size_t hasher::combine(std::size_t& seed, std::size_t value) const {
     return seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
