@@ -45,8 +45,8 @@ private:
     static suit_t suit_from_str(const char* c);
     static rank_t rank_from_str(const char* c);
 
-    suit_t card_suit : 4;
     rank_t card_rank : 4;
+    suit_t card_suit : 4;
 };
 
 bool operator==(const card&, const card&);

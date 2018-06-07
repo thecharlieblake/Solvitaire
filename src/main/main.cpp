@@ -19,10 +19,11 @@ using namespace boost;
 namespace po = boost::program_options;
 
 const optional<sol_rules> gen_rules(command_line_helper&);
-void solve_random_game(int, const sol_rules&, bool, bool);
-void solve_input_files(vector<string>, const sol_rules&, bool, bool);
-void solve_game(const game_state&, bool, bool);
+void solve_random_game(int, const sol_rules&, bool);
+void solve_input_files(vector<string>, const sol_rules&, bool);
+void solve_game(const game_state&, bool);
 
+// Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
 
     // Parses the command-line options
@@ -36,6 +37,7 @@ int main(int argc, const char* argv[]) {
         sol_preset_types::print_available_games();
         return EXIT_SUCCESS;
     }
+
     string game_rule_str = clh.get_describe_game_rules();
     if (!game_rule_str.empty()) {
         sol_preset_types::describe_game_rules(game_rule_str);
@@ -53,8 +55,7 @@ int main(int argc, const char* argv[]) {
     }
         // If a random deal seed has been supplied, solves it
     else if (clh.get_random_deal() != -1) {
-        solve_random_game(clh.get_random_deal(), *rules, clh.get_short_sols(),
-                          clh.get_classify());
+        solve_random_game(clh.get_random_deal(), *rules, clh.get_classify());
     }
     // If the benchmark option has been supplied, generates it
     else if (clh.get_benchmark()) {
@@ -67,13 +68,13 @@ int main(int argc, const char* argv[]) {
         // If there are no input files, solve a random deal based on the
         // supplied seed
         assert (!input_files.empty());
-        solve_input_files(input_files, *rules, clh.get_short_sols(),
-                          clh.get_classify());
+        solve_input_files(input_files, *rules, clh.get_classify());
     }
 
     return EXIT_SUCCESS;
 }
 
+// Generates the game rules given the command line options
 const optional<sol_rules> gen_rules(command_line_helper& clh) {
     try {
         if (!clh.get_solitaire_type().empty()) {
@@ -89,15 +90,13 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
     }
 }
 
-void solve_random_game(int seed, const sol_rules& rules, bool short_sol,
-                       bool classify) {
+void solve_random_game(int seed, const sol_rules& rules, bool classify) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state gs(rules, seed);
-    solve_game(gs, short_sol, classify);
+    solve_game(gs, classify);
 }
 
-void solve_input_files(const vector<string> input_files, const sol_rules& rules,
-                       bool short_sol, bool classify) {
+void solve_input_files(const vector<string> input_files, const sol_rules& rules, bool classify) {
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
@@ -107,7 +106,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
             game_state gs(rules, in_doc);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, short_sol, classify);
+            solve_game(gs, classify);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -117,44 +116,20 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, bool short_sol, bool classify) {
-    solver s(gs);
-    solver* solv = &s;
-    if (short_sol) {
-        uint bound = 1;
-        solver::sol_state ss;
-        bool solution = false;
-        do {
-            LOG_INFO("Depth: " << bound);
-            solver s_(gs);
-            solv = &s_;
-            ss = s_.run_with_cutoff(none, bound++);
+void solve_game(const game_state& gs, bool classify) {
+    solver solv(gs);
 
-            if (ss == solver::sol_state::solved) {
-                if (!classify) solv->print_solution();
-                cout << "Solved\n";
-                solution = true;
-            }
-        } while (ss == solver::sol_state::cutoff);
+    bool solution = solv.run() == solver::sol_state::solved;
 
-        if (!solution) {
-            if (!classify) cout << "Deal:\n" << gs << "\n";
-            cout << "No Possible Solution\n";
-        }
-
+    if (solution) {
+        if (!classify) solv.print_solution();
+        cout << "Solved\n";
     } else {
-        bool solution = solv->run() == solver::sol_state::solved;
-
-        if (solution) {
-            if (!classify) solv->print_solution();
-            cout << "Solved\n";
-        } else {
-            if (!classify) cout << "Deal:\n" << gs << "\n";
-            cout << "No Possible Solution\n";
-        }
+        if (!classify) cout << "Deal:\n" << gs << "\n";
+        cout << "No Possible Solution\n";
     }
 
-    cout << "States Searched: " << solv->get_states_searched() << "\n";
-    cout << "Backtracks: " << solv->get_backtrack_count() << "\n";
-    cout << "Final Depth: " << solv->get_final_depth() << "\n";
+    cout << "States Searched: " << solv.get_states_searched() << "\n";
+    cout << "Backtracks: " << solv.get_backtrack_count() << "\n";
+    cout << "Final Depth: " << solv.get_final_depth() << "\n";
 }
