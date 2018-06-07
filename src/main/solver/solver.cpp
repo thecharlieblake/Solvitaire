@@ -39,14 +39,8 @@ solver::node::node(node* p, const game_state::move m)
 }
 
 solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
-    return run_with_cutoff(terminate_solver, none);
-}
-
-solver::sol_state solver::run_with_cutoff(
-        boost::optional<std::atomic<bool> &> terminate_solver,
-        boost::optional<uint> cutoff_depth) {
-    bool cutoff_triggered = false;
     bool states_exhausted = false;
+
     while(!(state.is_solved() || states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
         if (terminate_solver && *terminate_solver) {
@@ -60,34 +54,29 @@ solver::sol_state solver::run_with_cutoff(
         LOG_DEBUG(state);
 #endif
 
-        if (cutoff_depth && depth >= *cutoff_depth) {
-            cutoff_triggered = true;
-            states_exhausted = revert_to_last_node_with_children();
+        // If there is a dominance move available, adds it to the search tree
+        // and repeats. Doesn't cache the state.
+        optional<game_state::move> dominance_move = state.get_dominance_move();
+        if (dominance_move) {
+            // Adds the dominance move as a child of the current search node
+            add_child(*dominance_move);
         } else {
-            // If there is a dominance move available, adds it to the search tree
-            // and repeats. Doesn't cache the state.
-            optional<game_state::move> dominance_move = state.get_dominance_move();
-            if (dominance_move) {
-                // Adds the dominance move as a child of the current search node
-                add_child(*dominance_move);
-            } else {
-                // Caches the current state
-                bool is_new_state = cache.insert(state);
-                if (is_new_state) {
-                    // Gets the legal moves in the current state
-                    vector<game_state::move> next_moves = get_next_moves();
+            // Caches the current state
+            bool is_new_state = cache.insert(state);
+            if (is_new_state) {
+                // Gets the legal moves in the current state
+                vector<game_state::move> next_moves = get_next_moves();
 
-                    // If there are none, reverts to the last node with children
-                    if (next_moves.empty()) {
-                        states_exhausted = revert_to_last_node_with_children();
-                    } else {
-                        add_children(next_moves);
-                    }
-                }
-                    // If the state is not a new one, reverts to the last node with children
-                else {
+                // If there are none, reverts to the last node with children
+                if (next_moves.empty()) {
                     states_exhausted = revert_to_last_node_with_children();
+                } else {
+                    add_children(next_moves);
                 }
+            }
+                // If the state is not a new one, reverts to the last node with children
+            else {
+                states_exhausted = revert_to_last_node_with_children();
             }
         }
 
@@ -106,7 +95,7 @@ solver::sol_state solver::run_with_cutoff(
         return sol_state::solved;
     } else {
         assert(states_exhausted);
-        return cutoff_triggered ? sol_state::cutoff : sol_state::unsolvable;
+        return sol_state::unsolvable;
     }
 }
 

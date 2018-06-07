@@ -28,8 +28,6 @@ public:
     ~solver();
 
     sol_state run(boost::optional<std::atomic<bool> &> = boost::none);
-    sol_state run_with_cutoff(boost::optional<std::atomic<bool> &>,
-                              boost::optional<uint> = boost::none);
 
     void print_solution() const;
     int get_states_searched() const;
