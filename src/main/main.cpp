@@ -129,7 +129,5 @@ void solve_game(const game_state& gs, bool classify) {
         cout << "No Possible Solution\n";
     }
 
-    cout << "States Searched: " << solv.get_states_searched() << "\n";
-    cout << "Backtracks: " << solv.get_backtrack_count() << "\n";
-    cout << "Final Depth: " << solv.get_final_depth() << "\n";
+    solv.print_solution_info();
 }

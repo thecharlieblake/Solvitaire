@@ -19,7 +19,9 @@ solver::solver(const game_state& gs)
         , init_state(gs)
         , state(gs)
         , states_searched(1)
+        , unique_states_searched(1)
         , backtracks(0)
+        , dominance_moves(0)
         , depth(0)
         , root(nullptr, game_state::move(255, 255, 255))
         , current_node(&root) {
@@ -44,7 +46,7 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
     while(!(state.is_solved() || states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
         if (terminate_solver && *terminate_solver) {
-            return sol_state::cutoff;
+            return sol_state::timed_out;
         }
 
 #ifndef NDEBUG
@@ -76,6 +78,7 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
             }
                 // If the state is not a new one, reverts to the last node with children
             else {
+                unique_states_searched--;
                 states_exhausted = revert_to_last_node_with_children();
             }
         }
@@ -86,9 +89,11 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
             current_node = &current_node->children.back();
             state.make_move(current_node->move);
             depth++;
+            if (current_node->move.is_dominance()) dominance_moves++;
         }
 
         states_searched++;
+        unique_states_searched++;
     }
 
     if (state.is_solved()) {
@@ -170,18 +175,18 @@ void solver::print_solution() const {
     cout << "\n";
 }
 
-int solver::get_states_searched() const {
-    return states_searched;
-}
-
-int solver::get_final_depth() const {
-    return depth;
+void solver::print_solution_info() const {
+    cout << "States Searched: "         << states_searched          << "\n"
+         << "Unique States Searched: "  << unique_states_searched   << "\n"
+         << "Backtracks: "              << backtracks               << "\n"
+         << "Dominance Moves: "         << dominance_moves          << "\n"
+         << "Final Search Depth: "      << depth                    << "\n";
 }
 
 const solver::node& solver::get_search_tree() const {
     return root;
 }
 
-int solver::get_backtrack_count() {
-    return backtracks;
+int solver::get_states_searched() const {
+    return states_searched;
 }

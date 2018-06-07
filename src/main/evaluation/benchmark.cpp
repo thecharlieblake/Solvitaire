@@ -47,7 +47,7 @@ void benchmark::run(const sol_rules &rules) {
             case solver::sol_state::unsolvable:
                 total_unsolvable++;
                 break;
-            case solver::sol_state::cutoff:
+            case solver::sol_state::timed_out:
                 assert(false);
                 break;
         }

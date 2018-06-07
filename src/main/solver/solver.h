@@ -14,7 +14,7 @@
 
 class solver {
 public:
-    enum class sol_state {solved, unsolvable, cutoff};
+    enum class sol_state {solved, unsolvable, timed_out};
     global_cache cache;
 
     struct node {
@@ -30,10 +30,9 @@ public:
     sol_state run(boost::optional<std::atomic<bool> &> = boost::none);
 
     void print_solution() const;
+    void print_solution_info() const;
     int get_states_searched() const;
-    int get_final_depth() const;
     const node& get_search_tree() const;
-    int get_backtrack_count();
 
 private:
     bool revert_to_last_node_with_children();
@@ -43,9 +42,12 @@ private:
 
     const game_state init_state;
     game_state state;
+
     int states_searched;
+    int unique_states_searched;
     int backtracks;
-    uint depth;
+    int dominance_moves;
+    int depth;
 
     node root;
     node* current_node;
