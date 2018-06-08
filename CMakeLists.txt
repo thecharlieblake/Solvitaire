@@ -42,7 +42,11 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/evaluation/benchmark.h
 		lib/rapidjson/document.h
 		lib/rapidjson/schema.h
-		lib/rapidjson/stringbuffer.h src/main/game/search-state/game_state.legal_moves.cpp src/main/game/move.cpp src/main/game/move.h)
+		lib/rapidjson/stringbuffer.h
+        src/main/game/search-state/game_state.legal_moves.cpp
+        src/main/game/search-state/game_state.pile_order.cpp
+        src/main/game/move.cpp
+        src/main/game/move.h)
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
