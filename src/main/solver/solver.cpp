@@ -9,10 +9,13 @@
 #include <list>
 
 #include "solver.h"
+#include "../game/move.h"
 #include "../input-output/output/log_helper.h"
 
-using namespace std;
-using namespace boost;
+using std::atomic;
+using std::vector;
+using std::cout;
+using std::clog;
 
 solver::solver(const game_state& gs)
         : cache(gs)
@@ -23,7 +26,7 @@ solver::solver(const game_state& gs)
         , backtracks(0)
         , dominance_moves(0)
         , depth(0)
-        , root(nullptr, game_state::move(255, 255, 255))
+        , root(nullptr, move(255, 255, 255))
         , current_node(&root) {
 }
 
@@ -36,11 +39,11 @@ solver::~solver() {
     }
 }
 
-solver::node::node(node* p, const game_state::move m)
-        : parent(p), move(m), children() {
+solver::node::node(node* p, const move m)
+        : parent(p), mv(m), children() {
 }
 
-solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
+solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) {
     bool states_exhausted = false;
 
     while(!(state.is_solved() || states_exhausted)) {
@@ -50,7 +53,7 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
         }
 
 #ifndef NDEBUG
-        if (current_node->move.is_dominance()) {
+        if (current_node->mv.is_dominance()) {
             LOG_DEBUG("(dominance move)");
         }
         LOG_DEBUG(state);
@@ -58,7 +61,7 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
 
         // If there is a dominance move available, adds it to the search tree
         // and repeats. Doesn't cache the state.
-        optional<game_state::move> dominance_move = state.get_dominance_move();
+        boost::optional<move> dominance_move = state.get_dominance_move();
         if (dominance_move) {
             // Adds the dominance move as a child of the current search node
             add_child(*dominance_move);
@@ -67,7 +70,7 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
             bool is_new_state = cache.insert(state);
             if (is_new_state) {
                 // Gets the legal moves in the current state
-                vector<game_state::move> next_moves = get_next_moves();
+                vector<move> next_moves = get_next_moves();
 
                 // If there are none, reverts to the last node with children
                 if (next_moves.empty()) {
@@ -87,9 +90,9 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
         assert(states_exhausted == current_node->children.empty());
         if (!states_exhausted) {
             current_node = &current_node->children.back();
-            state.make_move(current_node->move);
+            state.make_move(current_node->mv);
             depth++;
-            if (current_node->move.is_dominance()) dominance_moves++;
+            if (current_node->mv.is_dominance()) dominance_moves++;
         }
 
         states_searched++;
@@ -104,19 +107,19 @@ solver::sol_state solver::run(optional<atomic<bool> &> terminate_solver) {
     }
 }
 
-void solver::add_children(std::vector<game_state::move>& moves) {
+void solver::add_children(std::vector<move>& moves) {
     current_node->children.reserve(moves.size());
     for (auto move : moves) {
         add_child(move);
     }
 }
 
-vector<game_state::move> solver::get_next_moves() {
-    return state.get_legal_moves(current_node->move);
+vector<move> solver::get_next_moves() {
+    return state.get_legal_moves(current_node->mv);
 }
 
-void solver::add_child(game_state::move move) {
-    current_node->children.emplace_back(current_node, move);
+void solver::add_child(move m) {
+    current_node->children.emplace_back(current_node, m);
 }
 
 // Called when the current node's children have been exhausted. Travels back up
@@ -126,7 +129,7 @@ bool solver::revert_to_last_node_with_children() {
     if (!current_node->parent)
         return true;
 
-    state.undo_move(current_node->move);
+    state.undo_move(current_node->mv);
     depth--;
     backtracks++;
 
@@ -134,7 +137,7 @@ bool solver::revert_to_last_node_with_children() {
     // Checks that the state after the undo is in the cache
     // (as long as the move wasn't a dominance move)
 
-    if (!current_node->move.is_dominance()) {
+    if (!current_node->mv.is_dominance()) {
         assert(cache.contains(state));
         LOG_DEBUG("(undo move)");
     } else {
@@ -167,7 +170,7 @@ void solver::print_solution() const {
 
     if (states_searched > 1) {
         while (!n->children.empty()) {
-            state_copy.make_move(n->move);
+            state_copy.make_move(n->mv);
             cout << state_copy << "\n";
             n = &n->children.back();
         }

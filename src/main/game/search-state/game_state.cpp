@@ -9,16 +9,27 @@
 #include <functional>
 
 #include <boost/functional/hash.hpp>
+#include <boost/optional.hpp>
 
 #include "game_state.h"
-#include "../../../lib/rapidjson/document.h"
-#include "../input-output/input/json-parsing/deal_parser.h"
-#include "../input-output/output/state_printer.h"
-#include "../input-output/output/log_helper.h"
+#include "document.h"
+#include "../../input-output/input/json-parsing/deal_parser.h"
+#include "../../input-output/output/state_printer.h"
+#include "../../input-output/output/log_helper.h"
+#include "../move.h"
 
-using namespace std;
 using namespace rapidjson;
-using namespace boost;
+using std::vector;
+using std::list;
+using std::find;
+using std::begin;
+using std::end;
+using std::rbegin;
+using std::rend;
+using std::runtime_error;
+using std::default_random_engine;
+using std::max;
+using std::ostream;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -36,14 +47,14 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
     // If there is a hole, creates pile
     if (rules.hole) {
         piles.emplace_back();
-        hole = static_cast<pile_ref>(piles.size() - 1);
+        hole = static_cast<pile::ref>(piles.size() - 1);
     }
 
     // If there are foundation piles, creates the relevant pile vectors
     if (rules.foundations) {
         for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
-            foundations.push_back(static_cast<pile_ref>(piles.size() - 1));
+            foundations.push_back(static_cast<pile::ref>(piles.size() - 1));
             auto_foundation_moves.push_back(true);
         }
     }
@@ -52,20 +63,20 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
     if (rules.cells > 0) {
         for (uint8_t i = 0; i < rules.cells; i++) {
             piles.emplace_back();
-            cells.push_back(static_cast<pile_ref>(piles.size() - 1));
-            original_cells.push_back(static_cast<pile_ref>(piles.size() - 1));
+            cells.push_back(static_cast<pile::ref>(piles.size() - 1));
+            original_cells.push_back(static_cast<pile::ref>(piles.size() - 1));
         }
     }
 
     // If there is a stock, creates a pile
     if (rules.stock_size > 0) {
         piles.emplace_back();
-        stock = static_cast<pile_ref>(piles.size() - 1);
+        stock = static_cast<pile::ref>(piles.size() - 1);
 
         // If the stock deals to a waste, create the waste
         if (rules.stock_deal_t == sdt::WASTE) {
             piles.emplace_back();
-            waste = static_cast<pile_ref>(piles.size() - 1);
+            waste = static_cast<pile::ref>(piles.size() - 1);
         }
     }
 
@@ -75,16 +86,16 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
                              uint8_t(1) : rules.reserve_size;
         for (uint8_t i = 0; i < pile_count; i++) {
             piles.emplace_back();
-            reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
-            original_reserve.push_back(static_cast<pile_ref>(piles.size() - 1));
+            reserve.push_back(static_cast<pile::ref>(piles.size() - 1));
+            original_reserve.push_back(static_cast<pile::ref>(piles.size() - 1));
         }
     }
 
     // Creates the tableau piles
     for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
         piles.emplace_back();
-        tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
-        original_tableau_piles.push_back(static_cast<pile_ref>(piles.size() - 1));
+        tableau_piles.push_back(static_cast<pile::ref>(piles.size() - 1));
+        original_tableau_piles.push_back(static_cast<pile::ref>(piles.size() - 1));
     }
 }
 
@@ -149,14 +160,14 @@ game_state::game_state(const sol_rules& s_rules, int seed)
         auto row_idx = t / original_tableau_piles.size();
         if (rules.diagonal_deal && row_idx < original_tableau_piles.size()) {
             p = original_tableau_piles.size()-p-1;
-            pile_ref tableau_pile = original_tableau_piles[p];
+            pile::ref tableau_pile = original_tableau_piles[p];
 
             if (p >= row_idx) {
                 place_card(tableau_pile, c);
                 deck.pop_back();
             }
         } else {
-            pile_ref tableau_pile = original_tableau_piles[p];
+            pile::ref tableau_pile = original_tableau_piles[p];
             place_card(tableau_pile, c);
             deck.pop_back();
         }
@@ -173,7 +184,7 @@ game_state::game_state(const sol_rules& s_rules, int seed)
 game_state::game_state(const sol_rules& s_rules,
                        std::initializer_list<pile> il)
         : game_state(s_rules) {
-    pile_ref pr = 0;
+    pile::ref pr = 0;
     for (const pile& p : il) {
         for (const card c : p.pile_vec) {
             place_card(pr, c);
@@ -210,18 +221,6 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     return deck;
 }
 
-const pile::size_type game_state::move::dominance_flag = pile::max_size_type;
-
-game_state::move::move(pile_ref f, pile_ref t, pile::size_type i)
-        : from(f), to(t), count(i) {
-    assert(i >= 1);
-}
-
-// Returns true is the move has been flagged as a special 'dominance' move
-bool game_state::move::is_dominance() const {
-    return count == dominance_flag;
-}
-
 
 /////////////////////////
 // MODIFYING FUNCTIONS //
@@ -235,13 +234,13 @@ void game_state::make_move(const move m) {
             assert(m.from == stock);
             assert(m.to == 255);
 
-            for (pile_ref tab_pr = original_tableau_piles.front();
-                 tab_pr < pile_ref(original_tableau_piles.front() + m.count);
+            for (pile::ref tab_pr = original_tableau_piles.front();
+                 tab_pr < pile::ref(original_tableau_piles.front() + m.count);
                  tab_pr++) {
                 place_card(tab_pr, take_card(stock));
             }
         }
-        // Handles stock-to-waste moves
+            // Handles stock-to-waste moves
         else {
             if (piles[stock].empty()) {
                 // Re-deal waste back to stock
@@ -257,7 +256,7 @@ void game_state::make_move(const move m) {
         }
     }
 
-    // If this is not a built-pile move
+        // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
         assert(m.from < piles.size());
         assert(m.to   < piles.size());
@@ -268,7 +267,7 @@ void game_state::make_move(const move m) {
 #endif
     }
 
-    // If this is a built-pile move
+        // If this is a built-pile move
     else {
         assert(m.from  <  piles.size()  );
         assert(m.to    <  piles.size()  );
@@ -293,13 +292,13 @@ void game_state::undo_move(const move m) {
     if (m.from == stock) {
         // Handles special stock-to-tableau-piles move
         if (rules.stock_deal_t == sdt::TABLEAU_PILES) {
-            for (pile_ref tab_pr = original_tableau_piles.front() + m.count;
+            for (pile::ref tab_pr = original_tableau_piles.front() + m.count;
                  tab_pr-- > original_tableau_piles.front();
                     ) {
                 place_card(stock, take_card(tab_pr));
             }
         }
-        // Handles stock-to-waste moves
+            // Handles stock-to-waste moves
         else {
             if (piles[waste].empty()) {
                 // Re-deal waste back to stock
@@ -314,7 +313,7 @@ void game_state::undo_move(const move m) {
         }
     }
 
-    // If this is not a built-pile move
+        // If this is not a built-pile move
     else if (m.count == 1 || m.is_dominance()) {
         assert(m.to < piles.size());
         place_card(m.from, take_card(m.to));
@@ -323,7 +322,7 @@ void game_state::undo_move(const move m) {
 #endif
     }
 
-    // If this is a built-pile move
+        // If this is a built-pile move
     else {
         assert(m.to < piles.size());
         assert(m.count <= rules.max_rank);
@@ -341,7 +340,7 @@ void game_state::undo_move(const move m) {
 
 // Places a card on a pile and if it is on a tableau, cell or reserve pile,
 // reorders the pile refs so that the largest pile is first
-void game_state::place_card(pile_ref pr, card c) {
+void game_state::place_card(pile::ref pr, card c) {
     piles[pr].place(c);
 #ifndef NO_PILE_SYMMETRY
     // If the stock deals to the tableau piles, there is no pile symmetry
@@ -352,7 +351,7 @@ void game_state::place_card(pile_ref pr, card c) {
 }
 
 // Same as above but for taking cards
-card game_state::take_card(pile_ref pr) {
+card game_state::take_card(pile::ref pr) {
     card c = piles[pr].take();
 #ifndef NO_PILE_SYMMETRY
     // If the stock deals to the tableau piles, there is no pile symmetry
@@ -365,7 +364,7 @@ card game_state::take_card(pile_ref pr) {
 
 // Assesses whether the pile ref that was modified was a tableau, cell or
 // reserve pile, and if so makes the relevant function call
-void game_state::eval_pile_order(pile_ref pr, bool is_place) {
+void game_state::eval_pile_order(pile::ref pr, bool is_place) {
     if (!original_tableau_piles.empty()
         && pr >= original_tableau_piles[0]
         && pr < original_tableau_piles[0] + original_tableau_piles.size()) {
@@ -386,7 +385,7 @@ void game_state::eval_pile_order(pile_ref pr, bool is_place) {
 
 // Finds the pile ref in the list and evaluates whether it should be moved to
 // maintain the "pile order"
-void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
+void game_state::eval_pile_order(list<pile::ref>& pile_lst, pile::ref changed_pr,
                                  bool is_place) {
     // Finds the first pile that is larger/smaller than the ref pile
     // (the comp pile).
@@ -434,7 +433,7 @@ void game_state::eval_pile_order(list<pile_ref>& pile_lst, pile_ref changed_pr,
 }
 
 // Decides which 'auto foundation' booleans should be 'true' currently
-void game_state::update_auto_foundation_moves(pile_ref target_pile) {
+void game_state::update_auto_foundation_moves(pile::ref target_pile) {
     // If there are no foundations, or this is not a foundation move, do nothing
     if (!rules.foundations
         || target_pile < foundations.front()
@@ -444,12 +443,12 @@ void game_state::update_auto_foundation_moves(pile_ref target_pile) {
 
     // Turns the 'auto' boolean for the target foundation false
 
-    for (pile_ref pr : foundations) {
+    for (pile::ref pr : foundations) {
         auto_foundation_moves[pr] = is_valid_auto_foundation_move(pr);
     }
 }
 
-bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
+bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 #ifndef AUTO_FOUNDATIONS_STREAMLINER
     if (rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
 #endif
@@ -466,7 +465,7 @@ bool game_state::is_valid_auto_foundation_move(pile_ref target_pile) const {
     // same colour and the other colour
     int same_rank_diff = 0;
     int other_rank_diff = 0;
-    for (pile_ref pr : foundations) {
+    for (pile::ref pr : foundations) {
         if (pr == target_pile) continue;
 
         card::suit_t s(pr - foundations.front());
@@ -505,7 +504,7 @@ bool game_state::is_solved() const {
     bool solved = true;
     if (rules.hole) {
         solved = piles[hole].size()
-               == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
+                 == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
         assert(rules.foundations);
         for (auto f : foundations) {
@@ -519,7 +518,7 @@ bool game_state::is_solved() const {
     // is consistent
 #ifndef NDEBUG
     bool rest_empty = true;
-    for (pile_ref pr = 0; pr < piles.size(); pr++) {
+    for (pile::ref pr = 0; pr < piles.size(); pr++) {
         // All piles other than the hole must be empty
         if (rules.hole) {
             if (pr != hole && !piles[pr].empty()) {
@@ -556,3 +555,4 @@ const std::vector<pile>& game_state::get_data() const {
 ostream& operator<< (ostream& str, const game_state& gs) {
     return state_printer::print(str, gs);
 }
+

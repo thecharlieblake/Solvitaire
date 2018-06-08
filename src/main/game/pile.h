@@ -18,6 +18,7 @@ class pile {
 public:
     typedef uint8_t size_type;
     const static size_type max_size_type;
+    typedef uint8_t ref;
 
     pile() = default;
     pile(std::vector<card>);

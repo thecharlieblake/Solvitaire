@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "test_helper.h"
-#include "../main/game/game_state.h"
+#include "../main/game/search-state/game_state.h"
 #include "../main/solver/solver.h"
 #include "../main/input-output/input/json-parsing/json_helper.h"
 #include "../main/input-output/input/json-parsing/rules_parser.h"
@@ -50,10 +50,10 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
     solver::node const *n = &sol.get_search_tree();
     for (card c : cards) {
         n = &n->children.back();
-        ASSERT_TRUE(n->move.is_dominance());
-        ASSERT_TRUE(gs.get_data()[n->move.from].top_card() == c);
-        ASSERT_TRUE(n->move.to >= 0 && n->move.to <= 4);
-        gs.make_move(n->move);
+        ASSERT_TRUE(n->mv.is_dominance());
+        ASSERT_TRUE(gs.get_data()[n->mv.from].top_card() == c);
+        ASSERT_TRUE(n->mv.to >= 0 && n->mv.to <= 4);
+        gs.make_move(n->mv);
     }
     ASSERT_TRUE(n->children.empty());
 }

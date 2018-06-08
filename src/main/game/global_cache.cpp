@@ -26,7 +26,7 @@ cached_game_state::cached_game_state(const game_state& gs) {
         add_card(gs.piles[gs.hole].top_card(), gs);
     }
 
-    for (game_state::pile_ref pr : gs.cells) {
+    for (pile::ref pr : gs.cells) {
         add_pile(pr, gs);
     }
     if (gs.rules.cells > 0) {
@@ -43,21 +43,21 @@ cached_game_state::cached_game_state(const game_state& gs) {
         }
     }
 
-    for (game_state::pile_ref pr : gs.reserve) {
+    for (pile::ref pr : gs.reserve) {
         add_pile(pr, gs);
     }
     if (gs.rules.reserve_size > 0) {
         add_card_divider();
     }
 
-    for (game_state::pile_ref pr : gs.tableau_piles) {
+    for (pile::ref pr : gs.tableau_piles) {
         add_pile(pr, gs);
         add_card_divider();
     }
 }
 
 
-void cached_game_state::add_pile(game_state::pile_ref pr, const game_state& gs) {
+void cached_game_state::add_pile(pile::ref pr, const game_state& gs) {
     for (card c : gs.piles[pr].pile_vec) {
         add_card(c, gs);
     }

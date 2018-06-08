@@ -5,19 +5,20 @@
 #include <gtest/gtest.h>
 
 #include "../test_helper.h"
-#include "../../main/game/game_state.h"
+#include "../../main/game/search-state/game_state.h"
 #include "../../main/game/sol_rules.h"
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
-typedef game_state::move mv;
 
-using namespace std;
+using std::vector;
+using std::ostream;
+using std::initializer_list;
 
-bool moves_eq(vector<mv>&, vector<mv>&);
-ostream& operator <<(ostream&, const mv&);
-ostream& operator <<(ostream&, const vector<mv>&);
+bool moves_eq(vector<move>&, vector<move>&);
+ostream& operator <<(ostream&, const move&);
+ostream& operator <<(ostream&, const vector<move>&);
 
 TEST(LegalMoveGen, BuildPolAnySuit) {
     sol_rules sr;
@@ -31,13 +32,13 @@ TEST(LegalMoveGen, BuildPolAnySuit) {
             {"2S"},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4,0),
-            mv(4,1),
-            mv(4,2),
-            mv(4,3)
+    vector<move> exp_moves = {
+            move(4,0),
+            move(4,1),
+            move(4,2),
+            move(4,3)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -55,11 +56,11 @@ TEST(LegalMoveGen, BuildPolRedBlack) {
             {"2D"},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4,1),
-            mv(4,3)
+    vector<move> exp_moves = {
+            move(4,1),
+            move(4,3)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -77,10 +78,10 @@ TEST(LegalMoveGen, BuildPolSameSuit) {
             {"2D"},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4,0)
+    vector<move> exp_moves = {
+            move(4,0)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -98,9 +99,9 @@ TEST(LegalMoveGen, BuildPolNoBuild) {
             {"2D"},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
+    vector<move> exp_moves = {
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -115,10 +116,10 @@ TEST(LegalMoveGen, SpacesPolAny) {
             {},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(1, 0)
+    vector<move> exp_moves = {
+            move(1, 0)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -134,10 +135,10 @@ TEST(LegalMoveGen, SpacesPolKings) {
             {"AC"},
             {"KD"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(2, 0)
+    vector<move> exp_moves = {
+            move(2, 0)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -152,9 +153,9 @@ TEST(LegalMoveGen, SpacesPolNoBuild) {
             {},
             {"AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
+    vector<move> exp_moves = {
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -169,11 +170,11 @@ TEST(LegalMoveGen, MoveBuiltGroupTrue) {
             {},
             {"2C", "AC"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(1, 0, 1),
-            mv(1, 0, 2)
+    vector<move> exp_moves = {
+            move(1, 0, 1),
+            move(1, 0, 2)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -188,10 +189,10 @@ TEST(LegalMoveGen, MoveBuiltGroupFalse) {
             {},
             {"AC", "2C"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(1, 0, 1)
+    vector<move> exp_moves = {
+            move(1, 0, 1)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -209,13 +210,13 @@ TEST(LegalMoveGen, Foundations) {
             {"AS"},
             {"AD"},
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4, 0),
-            mv(5, 1),
-            mv(6, 2),
-            mv(7, 3)
+    vector<move> exp_moves = {
+            move(4, 0),
+            move(5, 1),
+            move(6, 2),
+            move(7, 3)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -234,10 +235,10 @@ TEST(LegalMoveGen, FoundationsRemovable) {
             {},
             {}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(0, 4)
+    vector<move> exp_moves = {
+            move(0, 4)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -252,12 +253,12 @@ TEST(LegalMoveGen, Cells) {
             {"3D"}, {}, // The cells
             {"4H"}
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(0, 1),
-            mv(0, 2),
-            mv(2, 1)
+    vector<move> exp_moves = {
+            move(0, 1),
+            move(0, 2),
+            move(2, 1)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -276,10 +277,10 @@ TEST(LegalMoveGen, StockDealToWaste) {
             {}, // The waste
             {}, {}, {} // The tableau piles
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4, 5)
+    vector<move> exp_moves = {
+            move(4, 5)
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -297,10 +298,10 @@ TEST(LegalMoveGen, StockDealToTableau) {
             {"AC", "AD"}, // The stock
             {"3H"}, {"5D"}, {"7C"} // The tableau piles
     });
-    vector<mv> actual_moves = gs.get_legal_moves();
+    vector<move> actual_moves = gs.get_legal_moves();
 
-    vector<mv> exp_moves = {
-            mv(4, 255, 2) // Special stock-to-tableau syntax
+    vector<move> exp_moves = {
+            move(4, 255, 2) // Special stock-to-tableau syntax
     };
 
     ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -308,10 +309,10 @@ TEST(LegalMoveGen, StockDealToTableau) {
 
 
 
-bool moves_eq(vector<mv>& exp_moves, vector<mv>& actual_moves) {
+bool moves_eq(vector<move>& exp_moves, vector<move>& actual_moves) {
     if (exp_moves.size() != actual_moves.size()) return false;
 
-    for (mv m : actual_moves) {
+    for (move m : actual_moves) {
         auto it = find(begin(exp_moves), end(exp_moves), m);
         bool found = it != end(exp_moves);
 
@@ -322,15 +323,15 @@ bool moves_eq(vector<mv>& exp_moves, vector<mv>& actual_moves) {
     return true;
 }
 
-ostream& operator <<(ostream& os, const mv& m) {
+ostream& operator <<(ostream& os, const move& m) {
     return os << "move:(" << int(m.from)
               << ","    << int(m.to)
               << ","     << int(m.count)
               << ")";
 }
 
-ostream& operator <<(ostream& os, const vector<mv>& moves) {
-    for (const mv m : moves) {
+ostream& operator <<(ostream& os, const vector<move>& moves) {
+    for (const move m : moves) {
         os << m << ",\n";
     }
     return os;

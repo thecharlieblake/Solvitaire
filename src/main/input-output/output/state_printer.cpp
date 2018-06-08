@@ -55,7 +55,7 @@ void state_printer::print_header(ostream& stream, const char* header) {
 }
 
 void state_printer::print_piles(ostream& stream,
-                                const vector<game_state::pile_ref>& pile_rs,
+                                const vector<pile::ref>& pile_rs,
                                 const game_state& gs) {
     bool empty_row = false;
     pile::size_type row_idx = 0;
@@ -65,7 +65,7 @@ void state_printer::print_piles(ostream& stream,
     while (!empty_row) {
         // Loops through the current row to determine if it is empty
         empty_row = true;
-        for (const game_state::pile_ref pile_r : pile_rs) {
+        for (const pile::ref pile_r : pile_rs) {
             if (gs.piles[pile_r].size() > row_idx) {
                 empty_row = false;
                 break;
@@ -73,7 +73,7 @@ void state_printer::print_piles(ostream& stream,
         }
         if (!empty_row || row_idx == 0) {
             // Loops through the current (non-empty) row, and outputs the values
-            for (const game_state::pile_ref pile_r : pile_rs) {
+            for (const pile::ref pile_r : pile_rs) {
                 const pile& p = gs.piles[pile_r];
                 if (p.size() > row_idx) {
                     print_card(stream, p[p.size() - 1 - row_idx]);
@@ -90,11 +90,11 @@ void state_printer::print_piles(ostream& stream,
 }
 
 void state_printer::print_top_of_piles(ostream& stream,
-                                       const vector<game_state::pile_ref>& vp,
+                                       const vector<pile::ref>& vp,
                                        const game_state& gs) {
-    vector<game_state::pile_ref> top(vp);
+    vector<pile::ref> top(vp);
 
-    for (game_state::pile_ref p : top) {
+    for (pile::ref p : top) {
         if (gs.piles[p].empty()) {
             stream << "[]";
         } else {
@@ -106,7 +106,7 @@ void state_printer::print_top_of_piles(ostream& stream,
 }
 
 void state_printer::print_top_of_pile(ostream& stream,
-                                      const game_state::pile_ref pile_r,
+                                      const pile::ref pile_r,
                                       const game_state& gs) {
     print_top_of_piles(stream, {pile_r}, gs);
 }

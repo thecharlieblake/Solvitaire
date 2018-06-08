@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "../test_helper.h"
-#include "../../main/game/game_state.h"
+#include "../../main/game/search-state/game_state.h"
 #include "../../main/game/global_cache.h"
 
 typedef sol_rules::build_policy pol;

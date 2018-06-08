@@ -1,32 +1,34 @@
 //
-// Created by thecharlesblake on 1/3/18.
+// Created by thecharlesblake on 07/06/18.
 //
-
-#include <boost/optional.hpp>
 
 #include "game_state.h"
 
-using namespace std;
-using namespace boost;
+#include <boost/optional/optional.hpp>
+
+using std::vector;
+using std::min;
+using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 
-vector<game_state::move> game_state::get_legal_moves(move parent_move) {
-    // The next legal moves
+
+vector<move> game_state::get_legal_moves(move parent_move) {
+// The next legal moves
     vector<move> moves;
 
-    // If we have a stock that can deal to the tableau piles, adds this move
+// If we have a stock that can deal to the tableau piles, adds this move
     if (rules.stock_size > 0
         && rules.stock_deal_t == sdt::TABLEAU_PILES
         && !piles[stock].empty()) {
-        
+
         moves.emplace_back(get_stock_tableau_move());
     }
-    
-    // If the stock is empty and we are allowed to re-deal, move the waste
-    // back onto the stock
+
+// If the stock is empty and we are allowed to re-deal, move the waste
+// back onto the stock
     if (rules.stock_size > 0
         && rules.stock_redeal
         && rules.stock_deal_t == sdt::WASTE
@@ -35,10 +37,10 @@ vector<game_state::move> game_state::get_legal_moves(move parent_move) {
         moves.emplace_back(stock, waste);
     }
 
-    // Cycles through each pile which we may be able to remove a card from
-    for (pile_ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
-        // Never removes a card from the hole, an empty pile, or the pile we
-        // just moved a card to
+// Cycles through each pile which we may be able to remove a card from
+    for (pile::ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
+// Never removes a card from the hole, an empty pile, or the pile we
+// just moved a card to
         if ((rules.hole && rem_ref == hole)
             || piles[rem_ref].empty()
             || (rem_ref == parent_move.to
@@ -46,15 +48,15 @@ vector<game_state::move> game_state::get_legal_moves(move parent_move) {
                 && parent_move.from != stock)
                 ) continue;
 
-        // If we have a foundations card as the rem_ref
+// If we have a foundations card as the rem_ref
         if (rules.foundations
             && rem_ref >= foundations.front()
             && rem_ref <= foundations.back()) {
 
-            // If the foundations are removable, checks to see if a dominance
-            // prevents us from removing from it. Otherwise, skips the pile ref
+// If the foundations are removable, checks to see if a dominance
+// prevents us from removing from it. Otherwise, skips the pile ref
             if (!rules.foundations_removable
-#ifndef NO_AUTO_FOUNDATIONS
+                #ifndef NO_AUTO_FOUNDATIONS
                 || dominance_blocks_foundation_move(rem_ref)
 #endif
                     ) {
@@ -62,7 +64,7 @@ vector<game_state::move> game_state::get_legal_moves(move parent_move) {
             }
         }
 
-        // Stock cards can only be moved to the waste (assuming there is a waste)
+// Stock cards can only be moved to the waste (assuming there is a waste)
         if (rules.stock_size > 0 && rem_ref == stock) {
             if (rules.stock_deal_t == sdt::WASTE) {
                 uint8_t cards_to_move =
@@ -72,48 +74,48 @@ vector<game_state::move> game_state::get_legal_moves(move parent_move) {
             continue;
         }
 
-        // For each tableau pile, check if moving from the rem pile is a valid
-        // tableau move according to the rules
+// For each tableau pile, check if moving from the rem pile is a valid
+// tableau move according to the rules
         for (auto add_ref : tableau_piles) {
             if (is_valid_tableau_move(rem_ref, add_ref)) {
                 moves.emplace_back(rem_ref, add_ref);
             }
         }
 
-        // Any card can be moved to a cell, so long as the cell isn't full
+// Any card can be moved to a cell, so long as the cell isn't full
         for (auto add_ref : cells) {
             if (add_ref != rem_ref && piles[add_ref].empty()) {
                 moves.emplace_back(rem_ref, add_ref);
             }
         }
 
-        // For each foundation pile, check if moving from the rem pile is a valid
-        // move according to the rules
+// For each foundation pile, check if moving from the rem pile is a valid
+// move according to the rules
         for (auto add_ref : foundations) {
             if (is_valid_foundations_move(rem_ref, add_ref)) {
                 moves.emplace_back(rem_ref, add_ref);
             }
         }
 
-        // Does the same for the hole
+// Does the same for the hole
         if (rules.hole && is_valid_hole_move(rem_ref)) {
             moves.emplace_back(rem_ref, hole);
         }
 
-        // Note that the stock and the reserve aren't mentioned here, as
-        // they cannot be added to
+// Note that the stock and the reserve aren't mentioned here, as
+// they cannot be added to
     }
 
     if (rules.move_built_group) {
         get_built_group_moves(moves);
     }
 
-    // If only complete built piles can be moved to the foundations,
+// If only complete built piles can be moved to the foundations,
     if (rules.foundations_comp_piles) {
-        for (pile_ref tab_pr : tableau_piles) {
+        for (pile::ref tab_pr : tableau_piles) {
             if (is_ordered_pile(tab_pr)) {
 
-                for (pile_ref found_pr : foundations) {
+                for (pile::ref found_pr : foundations) {
                     if (piles[found_pr].empty()) {
                         moves.emplace_back(tab_pr, found_pr, rules.max_rank);
                         break;
@@ -130,7 +132,7 @@ vector<game_state::move> game_state::get_legal_moves(move parent_move) {
 // This is a special kind of move which the solver handles differently. Hence
 // the arbitrary second param. We must supply the number of stock cards
 // that we will deal, so that the move can be undone in backtracking
-game_state::move game_state::get_stock_tableau_move() const {
+move game_state::get_stock_tableau_move() const {
     pile::size_type stock_moves =
             piles[stock].size() >= tableau_piles.size()
             ? pile::size_type(tableau_piles.size())
@@ -143,8 +145,8 @@ game_state::move game_state::get_stock_tableau_move() const {
 // If a tableau pile is empty and the space policy is
 // no-build, do not add. Otherwise any card with the right
 // suit/rank can be moved to a tableau
-bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
-                                       const pile_ref add_ref) const {
+bool game_state::is_valid_tableau_move(const pile::ref rem_ref,
+                                       const pile::ref add_ref) const {
     if (rem_ref == add_ref) {
         return false;
     } else if (rules.build_pol == pol::NO_BUILD) {
@@ -183,8 +185,8 @@ bool game_state::is_valid_tableau_move(const pile_ref rem_ref,
     }
 }
 
-bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
-                                           const pile_ref add_ref) const {
+bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
+                                           const pile::ref add_ref) const {
     if (rules.foundations_comp_piles || rem_ref == add_ref) return false;
 
     card rem_c = piles[rem_ref].top_card();
@@ -204,7 +206,7 @@ bool game_state::is_valid_foundations_move(const pile_ref rem_ref,
     }
 }
 
-bool game_state::is_valid_hole_move(const pile_ref rem_ref) const {
+bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {
     if (rem_ref == hole) return false;
     card::rank_t rank = piles[rem_ref].top_card().get_rank();
     card::rank_t hole_rank = piles[hole].top_card().get_rank();
@@ -240,8 +242,8 @@ void game_state::get_built_group_moves(vector<move>& moves) const {
             // If the pile is empty, and we can move to empty piles, does so
             if (piles[add_ref].empty()) {
                 if (rules.spaces_pol == s_pol::ANY ||
-                        (rules.spaces_pol == s_pol::KINGS
-                         && bg_high.get_rank() == 13)) {
+                    (rules.spaces_pol == s_pol::KINGS
+                     && bg_high.get_rank() == 13)) {
                     add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
                 }
             }
@@ -259,7 +261,7 @@ void game_state::get_built_group_moves(vector<move>& moves) const {
 }
 
 // Finds the size of the built group at the top of a pile
-pile::size_type game_state::get_built_group_height(pile_ref ref) const {
+pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 
     // The index of the currently examined card, the current card, previous card
     // and whether we currently have a valid built group.
@@ -318,21 +320,21 @@ const {
     }
 }
 
-void game_state::add_built_group_move(vector<move>& moves, pile_ref rem_ref,
-                                      pile_ref add_ref) const {
+void game_state::add_built_group_move(vector<move>& moves, pile::ref rem_ref,
+                                      pile::ref add_ref) const {
     moves.emplace_back(rem_ref, add_ref, 2);
 }
 
 void game_state::add_empty_built_group_moves(vector<move>& moves,
-                                             pile_ref rem_ref,
-                                             pile_ref add_ref,
+                                             pile::ref rem_ref,
+                                             pile::ref add_ref,
                                              card bg_high) const {
     // Loops through each possible built group move to an empty pile and adds it
     // to the list
     pile::size_type card_idx = 1;
     do {
         moves.emplace_back(
-                rem_ref, add_ref, static_cast<pile_ref>(card_idx + 1)
+                rem_ref, add_ref, static_cast<pile::ref>(card_idx + 1)
         );
     } while (piles[rem_ref][card_idx++] != bg_high);
 }
@@ -342,15 +344,15 @@ void game_state::add_empty_built_group_moves(vector<move>& moves,
 /////////////////////
 
 // Returns a dominance move if one is available
-optional<game_state::move> game_state::get_dominance_move() const {
+boost::optional<move> game_state::get_dominance_move() const {
 #ifndef NO_AUTO_FOUNDATIONS
     // If there are 2 decks or no foundations, return
     if (!rules.foundations || rules.two_decks)
-        return none;
+        return boost::none;
 
     // Cycles through the piles and sees if any cards can be automatically moved
     // to the foundations
-    for (pile_ref pr = 0; pr < piles.size(); pr++) {
+    for (pile::ref pr = 0; pr < piles.size(); pr++) {
         // Don't move foundation cards, hole or stock cards to the foundations
         if ((pr >= foundations.front() && pr <= foundations.back())
             || (rules.hole && pr == hole)
@@ -360,7 +362,7 @@ optional<game_state::move> game_state::get_dominance_move() const {
         }
 
         card c = piles[pr].top_card();
-        pile_ref target_foundation = foundations[c.get_suit()];
+        pile::ref target_foundation = foundations[c.get_suit()];
 
         // If the card is the right rank and the auto-move boolean is true, then
         // returns the move
@@ -375,10 +377,10 @@ optional<game_state::move> game_state::get_dominance_move() const {
     }
 #endif
 
-    return none;
+    return boost::none;
 }
 
-bool game_state::is_ordered_pile(pile_ref pr) const {
+bool game_state::is_ordered_pile(pile::ref pr) const {
     if (piles[pr].size() != rules.max_rank) return false;
 
     card::suit_t s = piles[pr][0].get_suit();
@@ -391,7 +393,7 @@ bool game_state::is_ordered_pile(pile_ref pr) const {
 // For games where the foundations can be removed from, this dominance blocks
 // the foundations being removed from if the card that were to be removed would
 // go 'automatically' up
-bool game_state::dominance_blocks_foundation_move(pile_ref target_pile) {
+bool game_state::dominance_blocks_foundation_move(pile::ref target_pile) {
     assert(!piles[target_pile].empty());
 
     card target_card = piles[target_pile].top_card();
@@ -401,10 +403,4 @@ bool game_state::dominance_blocks_foundation_move(pile_ref target_pile) {
     piles[target_pile].place(target_card);
 
     return blocked;
-}
-
-bool operator==(const game_state::move& a, const game_state::move& b) {
-    return    (a.from  == b.from )
-           && (a.to    == b.to   )
-           && (a.count == b.count);
 }

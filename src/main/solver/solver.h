@@ -18,9 +18,9 @@ public:
     global_cache cache;
 
     struct node {
-        node(node*, game_state::move);
+        node(node*, move);
         node* parent;
-        const game_state::move move;
+        const move mv;
         std::vector<node> children;
     };
 
@@ -36,9 +36,9 @@ public:
 
 private:
     bool revert_to_last_node_with_children();
-    void add_children(std::vector<game_state::move>&);
-    void add_child(game_state::move);
-    std::vector<game_state::move> get_next_moves();
+    void add_children(std::vector<move>&);
+    void add_child(move);
+    std::vector<move> get_next_moves();
 
     const game_state init_state;
     game_state state;

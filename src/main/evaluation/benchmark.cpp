@@ -7,7 +7,7 @@
 #include <numeric>
 
 #include "benchmark.h"
-#include "../game/game_state.h"
+#include "../game/search-state/game_state.h"
 #include "../solver/solver.h"
 
 using namespace std;

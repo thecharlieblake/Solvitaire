@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "../../game/game_state.h"
+#include "../../game/search-state/game_state.h"
 
 class state_printer {
 public:
@@ -16,12 +16,12 @@ public:
 private:
     static void print_header(std::ostream&, const char*);
     static void print_piles(std::ostream&,
-                            const std::vector<game_state::pile_ref>&,
+                            const std::vector<pile::ref>&,
                             const game_state&);
     static void print_top_of_piles(std::ostream&,
-                                   const std::vector<game_state::pile_ref>&,
+                                   const std::vector<pile::ref>&,
                                    const game_state&);
-    static void print_top_of_pile(std::ostream&, game_state::pile_ref,
+    static void print_top_of_pile(std::ostream&, pile::ref,
                                   const game_state&);
     static void print_card(std::ostream&, card);
 };

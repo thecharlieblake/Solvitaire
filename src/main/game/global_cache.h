@@ -11,14 +11,14 @@
 #include <boost/pool/pool_alloc.hpp>
 
 #include "sol_rules.h"
-#include "game_state.h"
+#include "search-state/game_state.h"
 
 struct cached_game_state {
     typedef std::vector<card> state_data;
     typedef state_data::size_type size_type;
 
     explicit cached_game_state(const game_state&);
-    void add_pile(game_state::pile_ref, const game_state&);
+    void add_pile(pile::ref, const game_state&);
     void add_card(card, const game_state&);
     void add_card_divider();
 
