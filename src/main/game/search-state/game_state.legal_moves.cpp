@@ -178,11 +178,7 @@ bool game_state::is_valid_tableau_move(const pile::ref rem_ref,
     }
 
         // Checks rank
-    else if (rem_c.get_rank() + 1 != add_c.get_rank()) {
-        return false;
-    } else {
-        return true;
-    }
+    else return rem_c.get_rank() + 1 == add_c.get_rank();
 }
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
@@ -253,7 +249,8 @@ void game_state::get_built_group_moves(vector<move>& moves) const {
 
                 // Adds the move to the list of moves, as a special built group move
                 if (valid_built_group_move(bg_low, bg_high, add_card)) {
-                    add_built_group_move(moves, rem_ref, add_ref);
+
+                    moves.emplace_back(rem_ref, add_ref, built_group_height);
                 }
             }
         }
@@ -298,31 +295,17 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 
 bool game_state::valid_built_group_move(card bg_low, card bg_high, card add_card)
 const {
-    // The rank of the card we're moving the built group to must be greater than
-    // the second-from-top card of the built group, and less than or equal to the
-    // card that would come next at the top of the built pile
-    if (add_card.get_rank() <= bg_low.get_rank() + 1
-        || add_card.get_rank() > bg_high.get_rank() + 1) {
-        return false;
-    }
+    if (add_card.get_rank() != bg_high.get_rank() + 1) return false;
 
     // Checks to see if the suits are correct
     switch (rules.built_group_pol) {
         case pol::SAME_SUIT:
             return bg_low.get_suit() == add_card.get_suit();
-
         case pol::RED_BLACK: {
-            bool same_suit = bg_low.get_suit() == add_card.get_suit();
-            bool even_diff = (add_card.get_rank() - bg_low.get_rank()) % 2 == 0;
-            return (same_suit && even_diff) || (!same_suit && !even_diff);
+            return bg_high.get_colour() != add_card.get_colour();
         }
         default: return true;
     }
-}
-
-void game_state::add_built_group_move(vector<move>& moves, pile::ref rem_ref,
-                                      pile::ref add_ref) const {
-    moves.emplace_back(rem_ref, add_ref, 2);
 }
 
 void game_state::add_empty_built_group_moves(vector<move>& moves,
@@ -334,7 +317,7 @@ void game_state::add_empty_built_group_moves(vector<move>& moves,
     pile::size_type card_idx = 1;
     do {
         moves.emplace_back(
-                rem_ref, add_ref, static_cast<pile::ref>(card_idx + 1)
+                rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1)
         );
     } while (piles[rem_ref][card_idx++] != bg_high);
 }

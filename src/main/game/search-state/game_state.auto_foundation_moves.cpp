@@ -6,7 +6,6 @@
 
 
 typedef sol_rules::build_policy pol;
-typedef sol_rules::stock_deal_type sdt;
 
 using std::max;
 

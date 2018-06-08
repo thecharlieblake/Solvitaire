@@ -75,7 +75,6 @@ private:
     void get_built_group_moves(std::vector<move>&) const;
     pile::size_type get_built_group_height(pile::ref) const;
     bool valid_built_group_move(card, card, card) const;
-    void add_built_group_move(std::vector<move>&, pile::ref, pile::ref) const;
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref,
                                      card) const;
     bool dominance_blocks_foundation_move(pile::ref);
