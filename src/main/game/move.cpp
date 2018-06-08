@@ -4,19 +4,16 @@
 
 #include "move.h"
 
-const pile::size_type move::dominance_flag = pile::max_size_type;
-
-move::move(pile::ref f, pile::ref t, pile::size_type i) : from(f), to(t), count(i) {
-    assert(i >= 1);
-}
-
-// Returns true is the move has been flagged as a special 'dominance' move
-bool move::is_dominance() const {
-    return count == dominance_flag;
+move::move(mtype ty, pile::ref f, pile::ref t, pile::size_type i) : type(ty), from(f), to(t), count(i) {
+#ifndef NDEBUG
+    if (ty == mtype::regular) assert(i == 1);
+    else assert(i >= 1);
+#endif
 }
 
 bool operator==(const move& a, const move& b) {
-    return    (a.from  == b.from )
+    return    (a.from     == b.from )
               && (a.to    == b.to   )
-              && (a.count == b.count);
+              && (a.count == b.count)
+              && (a.type  == b.type );
 }

@@ -26,7 +26,7 @@ solver::solver(const game_state& gs)
         , backtracks(0)
         , dominance_moves(0)
         , depth(0)
-        , root(nullptr, move(255, 255, 255))
+        , root(nullptr, move(move::mtype::null))
         , current_node(&root) {
 }
 
@@ -53,7 +53,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         }
 
 #ifndef NDEBUG
-        if (current_node->mv.is_dominance()) {
+        if (current_node->mv.type == move::mtype::dominance) {
             LOG_DEBUG("(dominance move)");
         }
         LOG_DEBUG(state);
@@ -92,7 +92,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
             current_node = &current_node->children.back();
             state.make_move(current_node->mv);
             depth++;
-            if (current_node->mv.is_dominance()) dominance_moves++;
+            if (current_node->mv.type == move::mtype::dominance) dominance_moves++;
         }
 
         states_searched++;
@@ -137,7 +137,7 @@ bool solver::revert_to_last_node_with_children() {
     // Checks that the state after the undo is in the cache
     // (as long as the move wasn't a dominance move)
 
-    if (!current_node->mv.is_dominance()) {
+    if (current_node->mv.type != move::mtype::dominance) {
         assert(cache.contains(state));
         LOG_DEBUG("(undo move)");
     } else {

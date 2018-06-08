@@ -227,114 +227,157 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
 ////////////////////
 
 void game_state::make_move(const move m) {
-    // Handles stock moves
-    if (m.from == stock) {
-        // Handles special stock-to-tableau-piles move
-        if (rules.stock_deal_t == sdt::TABLEAU_PILES) {
-            assert(m.from == stock);
-            assert(m.to == 255);
-
-            for (pile::ref tab_pr = original_tableau_piles.front();
-                 tab_pr < pile::ref(original_tableau_piles.front() + m.count);
-                 tab_pr++) {
-                place_card(tab_pr, take_card(stock));
-            }
-        }
-            // Handles stock-to-waste moves
-        else {
-            if (piles[stock].empty()) {
-                // Re-deal waste back to stock
-                while (!piles[waste].empty()) {
-                    place_card(stock, take_card(waste));
-                }
-            } else {
-                assert(m.to == waste);
-                for (int i = 0; i < m.count; i++) {
-                    place_card(waste, take_card(stock));
-                }
-            }
-        }
-    }
-
-        // If this is not a built-pile move
-    else if (m.count == 1 || m.is_dominance()) {
-        assert(m.from < piles.size());
-        assert(m.to   < piles.size());
-
-        place_card(m.to, take_card(m.from));
-#ifndef NO_AUTO_FOUNDATIONS
-        update_auto_foundation_moves(m.to);
-#endif
-    }
-
-        // If this is a built-pile move
-    else {
-        assert(m.from  <  piles.size()  );
-        assert(m.to    <  piles.size()  );
-        assert(m.count <= rules.max_rank);
-
-        // Adds the cards to the 'to' pile
-        for (auto pile_idx = m.count; pile_idx-- > 0;) {
-            place_card(m.to, piles[m.from][pile_idx]);
-        }
-
-        // Removes the cards from the 'from' pile
-        for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
-            take_card(m.from);
-        }
+    switch (m.type) {
+        case move::mtype::regular:
+        case move::mtype::dominance:
+            make_regular_move(m);
+            break;
+        case move::mtype::built_group:
+            make_built_pile_move(m);
+            break;
+        case move::mtype::stock_to_waste:
+            make_stock_to_waste_move(m);
+            break;
+        case move::mtype::stock_to_tableau:
+            make_stock_to_tableau_move(m);
+            break;
+        case move::mtype::redeal:
+            make_redeal_move();
+            break;
+        case move::mtype::null:
+            assert(false);
+            break;
     }
 }
 
 void game_state::undo_move(const move m) {
+    switch (m.type) {
+        case move::mtype::regular:
+        case move::mtype::dominance:
+            undo_regular_move(m);
+            break;
+        case move::mtype::built_group:
+            undo_built_pile_move(m);
+            break;
+        case move::mtype::stock_to_waste:
+            undo_stock_to_waste_move(m);
+            break;
+        case move::mtype::stock_to_tableau:
+            undo_stock_to_tableau_move(m);
+            break;
+        case move::mtype::redeal:
+            undo_redeal_move();
+            break;
+        case move::mtype::null:
+            assert(false);
+            break;
+    }
+}
+
+void game_state::make_regular_move(const move m) {
     assert(m.from < piles.size());
+    assert(m.to   < piles.size());
 
-    // Handles stock moves
-    if (m.from == stock) {
-        // Handles special stock-to-tableau-piles move
-        if (rules.stock_deal_t == sdt::TABLEAU_PILES) {
-            for (pile::ref tab_pr = original_tableau_piles.front() + m.count;
-                 tab_pr-- > original_tableau_piles.front();
-                    ) {
-                place_card(stock, take_card(tab_pr));
-            }
-        }
-            // Handles stock-to-waste moves
-        else {
-            if (piles[waste].empty()) {
-                // Re-deal waste back to stock
-                while (!piles[stock].empty()) {
-                    place_card(waste, take_card(stock));
-                }
-            } else {
-                for (int i = 0; i < m.count; i++) {
-                    place_card(stock, take_card(waste));
-                }
-            }
-        }
-    }
+    place_card(m.to, take_card(m.from));
 
-        // If this is not a built-pile move
-    else if (m.count == 1 || m.is_dominance()) {
-        assert(m.to < piles.size());
-        place_card(m.from, take_card(m.to));
 #ifndef NO_AUTO_FOUNDATIONS
-        update_auto_foundation_moves(m.from);
+    update_auto_foundation_moves(m.to);
 #endif
+}
+
+void game_state::undo_regular_move(const move m) {
+    assert(m.to < piles.size());
+
+    place_card(m.from, take_card(m.to));
+
+#ifndef NO_AUTO_FOUNDATIONS
+    update_auto_foundation_moves(m.from);
+#endif
+}
+
+void game_state::make_built_pile_move(const move m) {
+    assert(rules.move_built_group);
+    assert(m.from  <  piles.size()  );
+    assert(m.to    <  piles.size()  );
+    assert(m.count <= rules.max_rank);
+
+    // Adds the cards to the 'to' pile
+    for (auto pile_idx = m.count; pile_idx-- > 0;) {
+        place_card(m.to, piles[m.from][pile_idx]);
     }
 
-        // If this is a built-pile move
-    else {
-        assert(m.to < piles.size());
-        assert(m.count <= rules.max_rank);
-        // Adds the cards to the 'from' pile
-        for (auto pile_idx = m.count; pile_idx-- > 0;) {
-            place_card(m.from, piles[m.to][pile_idx]);
-        }
+    // Removes the cards from the 'from' pile
+    for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
+        take_card(m.from);
+    }
+}
 
-        // Removes the cards from the 'to' pile
-        for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
-            take_card(m.to);
-        }
+void game_state::undo_built_pile_move(const move m) {
+    assert(rules.move_built_group);
+    assert(m.to < piles.size());
+    assert(m.count <= rules.max_rank);
+
+    // Adds the cards to the 'from' pile
+    for (auto pile_idx = m.count; pile_idx-- > 0;) {
+        place_card(m.from, piles[m.to][pile_idx]);
+    }
+
+    // Removes the cards from the 'to' pile
+    for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
+        take_card(m.to);
+    }
+}
+
+void game_state::make_stock_to_waste_move(const move m) {
+    assert(rules.stock_deal_t == sdt::WASTE);
+
+    for (int i = 0; i < m.count; i++) {
+        place_card(waste, take_card(stock));
+    }
+}
+
+void game_state::undo_stock_to_waste_move(const move m) {
+    assert(rules.stock_deal_t == sdt::WASTE);
+
+    for (int i = 0; i < m.count; i++) {
+        place_card(stock, take_card(waste));
+    }
+}
+
+void game_state::make_stock_to_tableau_move(const move m) {
+    assert(rules.stock_deal_t == sdt::TABLEAU_PILES);
+
+    for (pile::ref tab_pr = original_tableau_piles.front();
+         tab_pr < pile::ref(original_tableau_piles.front() + m.count);
+         tab_pr++) {
+        place_card(tab_pr, take_card(stock));
+    }
+}
+
+void game_state::undo_stock_to_tableau_move(const move m) {
+    assert(rules.stock_deal_t == sdt::TABLEAU_PILES);
+
+    for (pile::ref tab_pr = original_tableau_piles.front() + m.count;
+         tab_pr-- > original_tableau_piles.front();
+            ) {
+        place_card(stock, take_card(tab_pr));
+    }
+}
+
+void game_state::make_redeal_move() {
+    assert(piles[stock].empty());
+
+    // Re-deal waste back to stock
+    while (!piles[waste].empty()) {
+        place_card(stock, take_card(waste));
+    }
+}
+
+void game_state::undo_redeal_move() {
+    assert(piles[waste].empty());
+
+    while (!piles[stock].empty()) {
+        place_card(waste, take_card(stock));
     }
 }
 

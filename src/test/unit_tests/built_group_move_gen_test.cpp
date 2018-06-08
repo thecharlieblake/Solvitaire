@@ -31,18 +31,18 @@ TEST(BuiltGroupMoveGen, SameSuitEmpty) {
             },
             {
                     // Regular moves
-                    move(1, 0, 1),
-                    move(2, 0, 1),
-                    move(3, 0, 1),
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
+                    move(move::mtype::regular, 1, 0, 1),
+                    move(move::mtype::regular, 2, 0, 1),
+                    move(move::mtype::regular, 3, 0, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
 
                     // Built pile moves
-                    move(1, 0, 2),
-                    move(1, 0, 3),
-                    move(1, 4, 2),
-                    move(1, 4, 3)
+                    move(move::mtype::built_group, 1, 0, 2),
+                    move(move::mtype::built_group, 1, 0, 3),
+                    move(move::mtype::built_group, 1, 4, 2),
+                    move(move::mtype::built_group, 1, 4, 3)
             }
     );
 }
@@ -64,21 +64,21 @@ TEST(BuiltGroupMoveGen, RedBlackEmpty) {
             },
             {
                     // Regular moves
-                    move(1, 0, 1),
-                    move(2, 0, 1),
-                    move(3, 0, 1),
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
+                    move(move::mtype::regular, 1, 0, 1),
+                    move(move::mtype::regular, 2, 0, 1),
+                    move(move::mtype::regular, 3, 0, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
 
                     // Built pile moves
-                    move(2, 0, 2),
-                    move(2, 0, 3),
-                    move(2, 4, 2),
-                    move(2, 4, 3),
+                    move(move::mtype::built_group, 2, 0, 2),
+                    move(move::mtype::built_group, 2, 0, 3),
+                    move(move::mtype::built_group, 2, 4, 2),
+                    move(move::mtype::built_group, 2, 4, 3),
 
-                    move(3, 0, 2),
-                    move(3, 4, 2)
+                    move(move::mtype::built_group, 3, 0, 2),
+                    move(move::mtype::built_group, 3, 4, 2)
             }
     );
 }
@@ -100,28 +100,28 @@ TEST(BuiltGroupMoveGen, AnySuitEmpty) {
             },
             {
                     // Regular moves
-                    move(1, 0, 1),
-                    move(2, 0, 1),
-                    move(3, 0, 1),
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
+                    move(move::mtype::regular, 1, 0, 1),
+                    move(move::mtype::regular, 2, 0, 1),
+                    move(move::mtype::regular, 3, 0, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
 
                     // Built pile moves
-                    move(1, 0, 2),
-                    move(1, 0, 3),
-                    move(1, 4, 2),
-                    move(1, 4, 3),
+                    move(move::mtype::built_group, 1, 0, 2),
+                    move(move::mtype::built_group, 1, 0, 3),
+                    move(move::mtype::built_group, 1, 4, 2),
+                    move(move::mtype::built_group, 1, 4, 3),
 
-                    move(2, 0, 2),
-                    move(2, 0, 3),
-                    move(2, 4, 2),
-                    move(2, 4, 3),
+                    move(move::mtype::built_group, 2, 0, 2),
+                    move(move::mtype::built_group, 2, 0, 3),
+                    move(move::mtype::built_group, 2, 4, 2),
+                    move(move::mtype::built_group, 2, 4, 3),
 
-                    move(3, 0, 2),
-                    move(3, 0, 3),
-                    move(3, 4, 2),
-                    move(3, 4, 3),
+                    move(move::mtype::built_group, 3, 0, 2),
+                    move(move::mtype::built_group, 3, 0, 3),
+                    move(move::mtype::built_group, 3, 4, 2),
+                    move(move::mtype::built_group, 3, 4, 3),
             }
     );
 }
@@ -143,12 +143,12 @@ TEST(BuiltGroupMoveGen, CantMove) {
             },
             {
                     // Regular moves
-                    move(1, 0, 1),
-                    move(2, 0, 1),
-                    move(3, 0, 1),
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1)
+                    move(move::mtype::regular, 1, 0, 1),
+                    move(move::mtype::regular, 2, 0, 1),
+                    move(move::mtype::regular, 3, 0, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1)
             }
     );
 }
@@ -170,15 +170,15 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
             },
             {
                     // Regular moves
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
-                    move(0, 4, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
+                    move(move::mtype::regular, 0, 4, 1),
 
                     // Built pile moves
-                    move(1, 0, 3),
-                    move(1, 4, 2),
-                    move(1, 4, 3)
+                    move(move::mtype::built_group, 1, 0, 3),
+                    move(move::mtype::built_group, 1, 4, 2),
+                    move(move::mtype::built_group, 1, 4, 3)
             }
     );
 }
@@ -200,16 +200,16 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
             },
             {
                     // Regular moves
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
-                    move(0, 4, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
+                    move(move::mtype::regular, 0, 4, 1),
 
                     // Built pile moves
-                    move(2, 0, 3),
-                    move(2, 4, 2),
-                    move(2, 4, 3),
-                    move(3, 4, 2)
+                    move(move::mtype::built_group, 2, 0, 3),
+                    move(move::mtype::built_group, 2, 4, 2),
+                    move(move::mtype::built_group, 2, 4, 3),
+                    move(move::mtype::built_group, 3, 4, 2)
             }
     );
 }
@@ -231,24 +231,24 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
             },
             {
                     // Regular moves
-                    move(1, 4, 1),
-                    move(2, 4, 1),
-                    move(3, 4, 1),
-                    move(0, 4, 1),
+                    move(move::mtype::regular, 1, 4, 1),
+                    move(move::mtype::regular, 2, 4, 1),
+                    move(move::mtype::regular, 3, 4, 1),
+                    move(move::mtype::regular, 0, 4, 1),
 
                     // Built pile moves
-                    move(1, 0, 3),
-                    move(2, 0, 3),
-                    move(3, 0, 3),
+                    move(move::mtype::built_group, 1, 0, 3),
+                    move(move::mtype::built_group, 2, 0, 3),
+                    move(move::mtype::built_group, 3, 0, 3),
 
-                    move(1, 4, 2),
-                    move(1, 4, 3),
+                    move(move::mtype::built_group, 1, 4, 2),
+                    move(move::mtype::built_group, 1, 4, 3),
 
-                    move(2, 4, 2),
-                    move(2, 4, 3),
+                    move(move::mtype::built_group, 2, 4, 2),
+                    move(move::mtype::built_group, 2, 4, 3),
 
-                    move(3, 4, 2),
-                    move(3, 4, 3),
+                    move(move::mtype::built_group, 3, 4, 2),
+                    move(move::mtype::built_group, 3, 4, 3),
             }
     );
 }

@@ -8,12 +8,15 @@
 #include "pile.h"
 
 struct move {
-    move(pile::ref , pile::ref, pile::size_type = 1);
-    bool is_dominance() const;
+    enum class mtype {regular, dominance, built_group, stock_to_waste, stock_to_tableau, redeal, null};
+
+    explicit move(mtype, pile::ref = 255 , pile::ref = 255, pile::size_type = 1);
     friend bool operator==(const move&, const move&);
 
-    const static pile::size_type dominance_flag;
-    pile::ref from; pile::ref to; pile::size_type count;
+    mtype type;
+    pile::ref from;
+    pile::ref to;
+    pile::size_type count;
 };
 
 

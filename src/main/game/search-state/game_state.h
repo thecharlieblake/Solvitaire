@@ -43,7 +43,7 @@ public:
 
     /* Legal move generation */
 
-    std::vector<move> get_legal_moves(move = move(255, 255, 255));
+    std::vector<move> get_legal_moves(move = move(move::mtype::regular));
     boost::optional<move> get_dominance_move() const;
 
     /* State inspection */
@@ -65,6 +65,19 @@ private:
 
     void eval_pile_order(pile::ref, bool);
     void eval_pile_order(std::list<pile::ref>&, pile::ref, bool);
+
+    /* Altering state */
+
+    void make_regular_move(move move);
+    void undo_regular_move(move move);
+    void make_built_pile_move(move move);
+    void undo_built_pile_move(move move);
+    void make_stock_to_waste_move(move move);
+    void undo_stock_to_waste_move(move move);
+    void make_stock_to_tableau_move(move move);
+    void undo_stock_to_tableau_move(move move);
+    void make_redeal_move();
+    void undo_redeal_move();
 
     /* Legal move generation */
 

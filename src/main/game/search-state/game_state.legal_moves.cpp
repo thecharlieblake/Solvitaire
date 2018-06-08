@@ -34,7 +34,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         && rules.stock_deal_t == sdt::WASTE
         && piles[stock].empty()
         && !piles[waste].empty()) {
-        moves.emplace_back(stock, waste);
+        moves.emplace_back(move::mtype::redeal);
     }
 
 // Cycles through each pile which we may be able to remove a card from
@@ -44,7 +44,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         if ((rules.hole && rem_ref == hole)
             || piles[rem_ref].empty()
             || (rem_ref == parent_move.to
-                && parent_move.count <= 1
+                && parent_move.count == 1
                 && parent_move.from != stock)
                 ) continue;
 
@@ -69,7 +69,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             if (rules.stock_deal_t == sdt::WASTE) {
                 uint8_t cards_to_move =
                         min(rules.stock_deal_count, piles[stock].size());
-                moves.emplace_back(stock, waste, cards_to_move);
+                moves.emplace_back(move::mtype::stock_to_waste, stock, waste, cards_to_move);
             }
             continue;
         }
@@ -78,14 +78,14 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 // tableau move according to the rules
         for (auto add_ref : tableau_piles) {
             if (is_valid_tableau_move(rem_ref, add_ref)) {
-                moves.emplace_back(rem_ref, add_ref);
+                moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
             }
         }
 
 // Any card can be moved to a cell, so long as the cell isn't full
         for (auto add_ref : cells) {
             if (add_ref != rem_ref && piles[add_ref].empty()) {
-                moves.emplace_back(rem_ref, add_ref);
+                moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
             }
         }
 
@@ -93,13 +93,13 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 // move according to the rules
         for (auto add_ref : foundations) {
             if (is_valid_foundations_move(rem_ref, add_ref)) {
-                moves.emplace_back(rem_ref, add_ref);
+                moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
             }
         }
 
 // Does the same for the hole
         if (rules.hole && is_valid_hole_move(rem_ref)) {
-            moves.emplace_back(rem_ref, hole);
+            moves.emplace_back(move::mtype::regular, rem_ref, hole);
         }
 
 // Note that the stock and the reserve aren't mentioned here, as
@@ -117,7 +117,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
                 for (pile::ref found_pr : foundations) {
                     if (piles[found_pr].empty()) {
-                        moves.emplace_back(tab_pr, found_pr, rules.max_rank);
+                        moves.emplace_back(move::mtype::built_group, tab_pr, found_pr, rules.max_rank);
                         break;
                     }
                 }
@@ -130,7 +130,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 }
 
 // This is a special kind of move which the solver handles differently. Hence
-// the arbitrary second param. We must supply the number of stock cards
+// the arbitrary middle params. We must supply the number of stock cards
 // that we will deal, so that the move can be undone in backtracking
 move game_state::get_stock_tableau_move() const {
     pile::size_type stock_moves =
@@ -139,7 +139,7 @@ move game_state::get_stock_tableau_move() const {
             : piles[stock].size();
 
     assert(stock_moves > 0 && stock_moves <= piles[stock].size());
-    return {stock, 255, stock_moves};
+    return move(move::mtype::stock_to_tableau, 0, 0, stock_moves);
 }
 
 // If a tableau pile is empty and the space policy is
@@ -250,7 +250,7 @@ void game_state::get_built_group_moves(vector<move>& moves) const {
                 // Adds the move to the list of moves, as a special built group move
                 if (valid_built_group_move(bg_low, bg_high, add_card)) {
 
-                    moves.emplace_back(rem_ref, add_ref, built_group_height);
+                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
                 }
             }
         }
@@ -317,7 +317,7 @@ void game_state::add_empty_built_group_moves(vector<move>& moves,
     pile::size_type card_idx = 1;
     do {
         moves.emplace_back(
-                rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1)
+                move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1)
         );
     } while (piles[rem_ref][card_idx++] != bg_high);
 }
@@ -355,7 +355,7 @@ boost::optional<move> game_state::get_dominance_move() const {
                                    + card::rank_t(1);
         if (target_rank == c.get_rank() &&
             auto_foundation_moves[c.get_suit()]) {
-            return move(pr, target_foundation, move::dominance_flag);
+            return move(move::mtype::dominance, pr, target_foundation);
         }
     }
 #endif

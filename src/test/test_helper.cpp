@@ -52,7 +52,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
     solver::node const *n = &sol.get_search_tree();
     for (card c : cards) {
         n = &n->children.back();
-        ASSERT_TRUE(n->mv.is_dominance());
+        ASSERT_TRUE(n->mv.type == move::mtype::dominance);
         ASSERT_TRUE(gs.get_data()[n->mv.from].top_card() == c);
         ASSERT_TRUE(n->mv.to >= 0 && n->mv.to <= 4);
         gs.make_move(n->mv);
