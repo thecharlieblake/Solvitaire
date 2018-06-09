@@ -7,7 +7,7 @@
 #include <numeric>
 
 #include "benchmark.h"
-#include "../game/game_state.h"
+#include "../game/search-state/game_state.h"
 #include "../solver/solver.h"
 
 using namespace std;
@@ -47,7 +47,7 @@ void benchmark::run(const sol_rules &rules) {
             case solver::sol_state::unsolvable:
                 total_unsolvable++;
                 break;
-            case solver::sol_state::cutoff:
+            case solver::sol_state::timed_out:
                 assert(false);
                 break;
         }

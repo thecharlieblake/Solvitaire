@@ -3,7 +3,7 @@
 //
 
 #include "deal_parser.h"
-#include "../../../game/game_state.h"
+#include "../../../game/search-state/game_state.h"
 #include "json_helper.h"
 
 using namespace std;
@@ -166,9 +166,9 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
         json_helper::json_parse_err("Incorrect reserve size");
     }
 
-    for (game_state::pile_ref i = 0; i < json_card_arr.Size(); i++) {
+    for (pile::ref i = 0; i < json_card_arr.Size(); i++) {
         assert(json_card_arr[i].IsString());
-        game_state::pile_ref pr = gs.original_reserve[0];
+        pile::ref pr = gs.original_reserve[0];
         if (!gs.rules.reserve_stacked) pr += i;
         gs.place_card(pr, card(json_card_arr[i].GetString()));
     }

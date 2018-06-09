@@ -312,7 +312,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit",
     "move built group": true
   },
-  "max rank": 5,
+  "max rank": 6,
   "foundations initial card": true
 }
 )"

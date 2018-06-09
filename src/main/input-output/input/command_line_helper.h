@@ -16,10 +16,8 @@ public:
     const std::string get_solitaire_type();
     const std::string get_rules_file();
     int get_random_deal();
-    bool get_help();
     bool get_classify();
     bool get_solvability();
-    bool get_short_sols();
     bool get_available_game_types();
     bool get_benchmark();
     std::string get_describe_game_rules();
@@ -31,7 +29,6 @@ private:
     void print_sol_type_rules_error();
     void print_no_opts_error();
     void print_too_many_opts_error();
-    void print_shortest_sols_error();
 
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
@@ -45,7 +42,6 @@ private:
     bool help;
     bool classify;
     bool solvability;
-    bool shortest_sols;
     bool available_game_types;
     bool benchmark;
 };

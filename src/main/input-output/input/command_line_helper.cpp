@@ -38,8 +38,6 @@ command_line_helper::command_line_helper()
                     "'solvability', 'benchmark' or list of deals to be solved.")
             ("classify", "outputs a simple 'solvable/not solvable' "
                     "classification")
-            ("shortest-sols", "for each instance returns the shortest possible "
-                    "solution. cannot be supplied alongside '--solvability'")
             ("solvability", "calculates the solvability "
                     "percentage of the supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -108,8 +106,6 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     benchmark = (vm.count("benchmark") != 0);
 
-    shortest_sols = (vm.count("shortest-sols") != 0);
-
     // Handle logic error scenarios
     return assess_errors();
 }
@@ -138,11 +134,6 @@ bool command_line_helper::assess_errors() {
     if ((solitaire_type.empty() && rules_file.empty())
             || (!solitaire_type.empty() && !rules_file.empty())) {
         print_sol_type_rules_error();
-        return false;
-    }
-
-    if (shortest_sols && solvability) {
-        print_shortest_sols_error();
         return false;
     }
 
@@ -188,11 +179,6 @@ void command_line_helper::print_too_many_opts_error() {
     print_help();
 }
 
-void command_line_helper::print_shortest_sols_error() {
-    LOG_ERROR ("Error: User cannot supply '--shortest-sols' and '--solvability'");
-    print_help();
-}
-
 const vector<string> command_line_helper::get_input_files() {
     return input_files;
 }
@@ -209,10 +195,6 @@ int command_line_helper::get_random_deal() {
     return random_deal;
 }
 
-bool command_line_helper::get_help() {
-    return help;
-}
-
 bool command_line_helper::get_classify() {
     return classify;
 }
@@ -227,10 +209,6 @@ bool command_line_helper::get_available_game_types() {
 
 string command_line_helper::get_describe_game_rules() {
     return describe_game_rules;
-}
-
-bool command_line_helper::get_short_sols() {
-    return shortest_sols;
 }
 
 bool command_line_helper::get_benchmark() {

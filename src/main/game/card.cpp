@@ -22,9 +22,9 @@ const card::colour_t card::colour::Red = 1;
 // A card can either be created using two int values (rank & suit), or
 // using a string (e.g. "AS")
 
-card::card(suit_t s, rank_t r) : card_suit(s), card_rank(r) {}
+card::card(suit_t s, rank_t r) : card_rank(r), card_suit(s) {}
 
-card::card(const char* c) : card_suit(suit_from_str(c)), card_rank(rank_from_str(c)) {}
+card::card(const char* c) : card_rank(rank_from_str(c)), card_suit(suit_from_str(c)) {}
 
 card::card() : card(0, 0) {}
 

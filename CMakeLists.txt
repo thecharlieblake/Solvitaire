@@ -20,8 +20,8 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/input-output/input/json-parsing/deal_parser.cpp
         src/main/solver/solver.cpp
         src/main/solver/solver.h
-        src/main/game/game_state.cpp
-        src/main/game/game_state.h
+        src/main/game/search-state/game_state.cpp
+        src/main/game/search-state/game_state.h
         src/main/game/sol_rules.h
         src/main/game/pile.cpp
         src/main/game/pile.h
@@ -33,7 +33,6 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/input-output/input/json-parsing/rules_parser.h
         src/main/input-output/output/state_printer.cpp
         src/main/input-output/output/state_printer.h
-        src/main/game/game_state.legal_moves.cpp
         src/main/game/global_cache.cpp
         src/main/game/global_cache.h
         src/main/game/sol_rules.cpp
@@ -43,7 +42,12 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/evaluation/benchmark.h
 		lib/rapidjson/document.h
 		lib/rapidjson/schema.h
-		lib/rapidjson/stringbuffer.h)
+		lib/rapidjson/stringbuffer.h
+        src/main/game/search-state/game_state.legal_moves.cpp
+        src/main/game/search-state/game_state.auto_foundation_moves.cpp
+        src/main/game/search-state/game_state.pile_order.cpp
+        src/main/game/move.cpp
+        src/main/game/move.h)
 set(sources_test
         src/test/test_helper.cpp
         src/test/test_helper.h
@@ -63,7 +67,8 @@ set(sources_test
         src/test/unit_tests/rules_parser_test.cpp
         src/test/unit_tests/card_test.cpp
         src/test/unit_tests/pile_test.cpp
-        src/test/unit_tests/legal_move_gen_test.cpp)
+        src/test/unit_tests/legal_move_gen_test.cpp
+        src/test/unit_tests/built_group_move_gen_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
@@ -131,6 +136,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread
 -Wstrict-null-sentinel -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -g -Wl,-O1") # uncomment for profiling
 
 ###############################################################################
 ## target definitions #########################################################
@@ -174,11 +180,6 @@ set_target_properties(solvitaire-no-suit-symmetry PROPERTIES COMPILE_FLAGS -DNO_
 add_executable(solvitaire-no-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
 set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_SUIT_SYMMETRY -DNO_PILE_SYMMETRY")
-
-# add a separete executable for the 'no reduced state' version of the solver
-add_executable(solvitaire-no-reduced-state ${main} ${sources})
-target_link_libraries(solvitaire-no-reduced-state LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-reduced-state PROPERTIES COMPILE_FLAGS -DNO_REDUCED_STATE)
 
 # add a separete executable for the 'no auto foundations' version of the solver
 add_executable(solvitaire-no-auto-foundations ${main} ${sources})
