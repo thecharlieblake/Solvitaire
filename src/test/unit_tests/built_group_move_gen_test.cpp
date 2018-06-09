@@ -38,7 +38,7 @@ TEST(BuiltGroupMoveGen, SameSuitEmpty) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 1, 0, 2),
                     move(move::mtype::built_group, 1, 0, 3),
                     move(move::mtype::built_group, 1, 4, 2),
@@ -71,7 +71,7 @@ TEST(BuiltGroupMoveGen, RedBlackEmpty) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 2, 0, 2),
                     move(move::mtype::built_group, 2, 0, 3),
                     move(move::mtype::built_group, 2, 4, 2),
@@ -107,7 +107,7 @@ TEST(BuiltGroupMoveGen, AnySuitEmpty) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 1, 0, 2),
                     move(move::mtype::built_group, 1, 0, 3),
                     move(move::mtype::built_group, 1, 4, 2),
@@ -175,7 +175,7 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 1, 0, 3),
                     move(move::mtype::built_group, 1, 4, 2),
                     move(move::mtype::built_group, 1, 4, 3)
@@ -205,7 +205,7 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 2, 0, 3),
                     move(move::mtype::built_group, 2, 4, 2),
                     move(move::mtype::built_group, 2, 4, 3),
@@ -236,7 +236,7 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
 
-                    // Built pile moves
+                    // Built group moves
                     move(move::mtype::built_group, 1, 0, 3),
                     move(move::mtype::built_group, 2, 0, 3),
                     move(move::mtype::built_group, 3, 0, 3),

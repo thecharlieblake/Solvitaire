@@ -233,7 +233,7 @@ void game_state::make_move(const move m) {
             make_regular_move(m);
             break;
         case move::mtype::built_group:
-            make_built_pile_move(m);
+            make_built_group_move(m);
             break;
         case move::mtype::stock_to_waste:
             make_stock_to_waste_move(m);
@@ -257,7 +257,7 @@ void game_state::undo_move(const move m) {
             undo_regular_move(m);
             break;
         case move::mtype::built_group:
-            undo_built_pile_move(m);
+            undo_built_group_move(m);
             break;
         case move::mtype::stock_to_waste:
             undo_stock_to_waste_move(m);
@@ -295,7 +295,7 @@ void game_state::undo_regular_move(const move m) {
 #endif
 }
 
-void game_state::make_built_pile_move(const move m) {
+void game_state::make_built_group_move(move m) {
     assert(rules.move_built_group);
     assert(m.from  <  piles.size()  );
     assert(m.to    <  piles.size()  );
@@ -312,7 +312,7 @@ void game_state::make_built_pile_move(const move m) {
     }
 }
 
-void game_state::undo_built_pile_move(const move m) {
+void game_state::undo_built_group_move(move m) {
     assert(rules.move_built_group);
     assert(m.to < piles.size());
     assert(m.count <= rules.max_rank);

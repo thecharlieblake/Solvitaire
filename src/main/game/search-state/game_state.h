@@ -70,8 +70,8 @@ private:
 
     void make_regular_move(move move);
     void undo_regular_move(move move);
-    void make_built_pile_move(move move);
-    void undo_built_pile_move(move move);
+    void make_built_group_move(move move);
+    void undo_built_group_move(move move);
     void make_stock_to_waste_move(move move);
     void undo_stock_to_waste_move(move move);
     void make_stock_to_tableau_move(move move);
@@ -81,23 +81,37 @@ private:
 
     /* Legal move generation */
 
+    bool stock_can_deal_tableau() const;
     move get_stock_tableau_move() const;
+    bool stock_can_redeal() const;
+    bool undoes_prev_move(pile::ref, move) const;
+    bool is_foundation(pile::ref) const;
+
+    void add_stock_to_waste_move(std::vector<move>&) const;
+    void add_tableau_moves(std::vector<move>&, pile::ref) const;
+    void add_cell_moves(std::vector<move>&, pile::ref) const;
+    void add_foundation_moves(std::vector<move>&, pile::ref) const;
+    void add_built_group_moves(std::vector<move> &) const;
+    void add_foundation_complete_piles_moves(std::vector<move> &) const;
+
     bool is_valid_tableau_move(pile::ref, pile::ref) const;
+    bool is_next_tableau_card(card, card) const;
     bool is_valid_foundations_move(pile::ref, pile::ref) const;
     bool is_valid_hole_move(pile::ref) const;
-    void get_built_group_moves(std::vector<move>&) const;
+
     pile::size_type get_built_group_height(pile::ref) const;
-    bool valid_built_group_move(card, card, card) const;
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref,
                                      card) const;
-    bool dominance_blocks_foundation_move(pile::ref);
-    bool is_ordered_pile(pile::ref) const;
+    bool is_next_built_group_card(card, card) const;
+
+    bool is_next_legal_card(sol_rules::build_policy, card, card) const;
 
     /* Auto-foundation moves */
 
-    void update_auto_foundation_moves(pile::ref);
     bool is_valid_auto_foundation_move(pile::ref) const;
-
+    bool is_ordered_pile(pile::ref) const;
+    bool dominance_blocks_foundation_move(pile::ref);
+    void update_auto_foundation_moves(pile::ref);
 
     /* Game rules */
 
