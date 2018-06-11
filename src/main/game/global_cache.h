@@ -9,6 +9,10 @@
 #include <unordered_set>
 #include <boost/pool/pool.hpp>
 #include <boost/pool/pool_alloc.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/hashed_index.hpp>
 
 #include "sol_rules.h"
 #include "search-state/game_state.h"
@@ -24,6 +28,7 @@ struct cached_game_state {
 
     state_data data;
 };
+
 bool operator==(const cached_game_state&, const cached_game_state&);
 
 struct hasher {
@@ -38,16 +43,48 @@ struct hasher {
 
 class global_cache {
 public:
-    explicit global_cache(const game_state&);
-    bool insert(const game_state&);
-    bool contains(const game_state&) const;
-    void clear();
+    virtual ~global_cache() = default;
+    virtual bool insert(const game_state&) = 0;
+    virtual bool contains(const game_state&) const = 0;
+    virtual void clear() = 0;
+};
+
+class unlimited_cache : public global_cache {
+public:
+    explicit unlimited_cache(const game_state&);
+    bool insert(const game_state&) override;
+    bool contains(const game_state&) const override;
+    void clear() override;
 
 private:
     std::unordered_set<
             cached_game_state,
             hasher
-    > u_set;
+    > cache;
+};
+
+class lru_cache : public global_cache {
+    typedef boost::multi_index::multi_index_container<
+            cached_game_state,
+            boost::multi_index::indexed_by<
+                    boost::multi_index::sequenced<>,
+                    boost::multi_index::hashed_unique<
+                            boost::multi_index::identity<cached_game_state>,
+                            hasher
+                    >
+            >
+    > item_list;
+public:
+    explicit lru_cache(const game_state&, std::size_t);
+    bool insert(const game_state&) override;
+    bool contains(const game_state&) const override;
+    void clear() override;
+
+private:
+    static item_list::ctor_args_list get_init_tuple(const game_state&);
+
+    std::size_t max_num_items;
+    item_list cache;
 };
 
 #endif //SOLVITAIRE_GLOBAL_CACHE_H

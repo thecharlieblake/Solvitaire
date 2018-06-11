@@ -15,7 +15,7 @@
 class solver {
 public:
     enum class sol_state {solved, unsolvable, timed_out};
-    global_cache cache;
+    std::unique_ptr<global_cache> cache;
 
     struct node {
         node(node*, move);

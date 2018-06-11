@@ -18,7 +18,7 @@ using std::cout;
 using std::clog;
 
 solver::solver(const game_state& gs)
-        : cache(gs)
+        : cache(new unlimited_cache(gs))
         , init_state(gs)
         , state(gs)
         , states_searched(1)
@@ -67,7 +67,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
             add_child(*dominance_move);
         } else {
             // Caches the current state
-            bool is_new_state = cache.insert(state);
+            bool is_new_state = cache->insert(state);
             if (is_new_state) {
                 // Gets the legal moves in the current state
                 vector<move> next_moves = get_next_moves();
@@ -138,7 +138,7 @@ bool solver::revert_to_last_node_with_children() {
     // (as long as the move wasn't a dominance move)
 
     if (current_node->mv.type != move::mtype::dominance) {
-        assert(cache.contains(state));
+        assert(cache->contains(state));
         LOG_DEBUG("(undo move)");
     } else {
         LOG_DEBUG("(undo dominance move)");

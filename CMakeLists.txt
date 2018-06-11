@@ -1,10 +1,14 @@
 # File based on https://stackoverflow.com/questions/21163188/most-simple-but-complete-cmake-example
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.9.4)
 project(solvitaire)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# For -flto flag
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
 
 ###############################################################################
 ## source files ###############################################################
@@ -133,10 +137,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread
 -Wcast-align -Wcast-qual -Wformat=2 -Winit-self \
 -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
 -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow \
--Wstrict-null-sentinel -Werror")
+-Wstrict-null-sentinel") # -Werror
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s -DNDEBUG -Wl,-O1")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -g -Wl,-O1") # uncomment for profiling
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O -fno-inline -fno-inline-functions -g -Wl,-O1") # uncomment for profiling
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -s -DNDEBUG -Wl,-O1") # uncomment otherwise
 
 ###############################################################################
 ## target definitions #########################################################
@@ -149,6 +153,9 @@ endif()
 
 # add the data to the target, so it becomes visible in some IDE
 add_executable(solvitaire ${main} ${sources})
+
+set_property(TARGET solvitaire PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # TODO
+
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
 # add a separete executable for the 'suit reduction streamliner' version of the solver

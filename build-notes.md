@@ -52,8 +52,5 @@ Note: this doesn't have to (and probably shouldn't) be run from within the proje
 
 To get line numbers, you will first need to change the release build from -03 to -02
 
-env CPUPROFILE=solvitaire.prof CPUPROFILESIGNAL=12 CPUPROFILE_FREQUENCY=1000 cmake-build-release/bin/solvitaire --type spanish-patience --random 4 --classify &
-killall -12 solvitaire (start profiling)
-killall -12 solvitaire (stop profiling)
-pprof --callgrind src/ solvitaire.prof.0 > solvitaire.callgrind (ignore any warnings)
-kcachegrind solvitaire.callgrind
+valgrind --tool=callgrind --log-file=callgrind.log cmake-build-release/bin/solvitaire ...
+kcachegrind callgrind.out._
