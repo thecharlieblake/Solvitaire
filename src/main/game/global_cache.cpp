@@ -7,6 +7,7 @@
 #include <boost/functional/hash.hpp>
 
 #include "global_cache.h"
+#include "../input-output/output/log_helper.h"
 
 using namespace std;
 using namespace boost;
@@ -30,7 +31,7 @@ typedef boost::multi_index::multi_index_container<
 // CACHED GAME STATE //
 ///////////////////////
 
-cached_game_state::cached_game_state(const game_state& gs) {
+cached_game_state::cached_game_state(const game_state& gs) : live(true) {
     data.reserve(52+18);  // Enough for each card and up to 18 piles
 
     if (gs.rules.hole) {
@@ -170,7 +171,7 @@ size_t hasher::hash_value(card const& c) const {
 
 
 
-//////////////////
+/*//////////////////
 // GLOBAL CACHE //
 //////////////////
 
@@ -188,7 +189,7 @@ bool unlimited_cache::contains(const game_state& gs) const {
 
 void unlimited_cache::clear() {
     cache.clear();
-}
+}*/
 
 
 ///////////////
@@ -219,18 +220,30 @@ item_list::ctor_args_list lru_cache::get_init_tuple(const game_state& gs) {
 }
 
 lru_cache::lru_cache(const game_state& gs, size_t max_num_items_)
-        : max_num_items(max_num_items_), cache(get_init_tuple(gs)) {
+        : max_num_items(max_num_items_), cache(get_init_tuple(gs)), states_removed_from_cache(0) {
 }
 
-bool lru_cache::insert(const game_state& gs) {
+pair<item_list::iterator, bool> lru_cache::insert(const game_state& gs) {
     pair<item_list::iterator, bool> p = cache.push_front(cached_game_state(gs));
 
     if(!p.second){                              /* duplicate item */
         cache.relocate(cache.begin(), p.first); /* put in front */
     } else if(cache.size() > max_num_items){    /* keep the length <= max_num_items */
+
+        // If the least recently used node is 'live' (i.e. a parent), relocates
+        // it to the head of the list until this is no longer the case
+        for (size_t i = 0; prev(cache.end())->live; i++) {
+            cache.relocate(cache.begin(), prev(cache.end()));
+
+            if (i == max_num_items) {
+                LOG_ERROR("All items in cache are live and cache is full");
+                throw runtime_error("All items in cache are live and cache is full");
+            }
+        }
         cache.pop_back();
+        states_removed_from_cache++;
     }
-    return p.second;
+    return p;
 }
 
 bool lru_cache::contains(const game_state& gs) const {
@@ -239,4 +252,13 @@ bool lru_cache::contains(const game_state& gs) const {
 
 void lru_cache::clear() {
     cache.clear();
+}
+
+void lru_cache::set_non_live(item_list::iterator state_iter) {
+    cache.modify(state_iter, [](auto& v){ v.live = false; });
+    // TODO assert
+}
+
+int lru_cache::get_states_removed_from_cache() const {
+    return states_removed_from_cache;
 }

@@ -15,13 +15,14 @@
 class solver {
 public:
     enum class sol_state {solved, unsolvable, timed_out};
-    std::unique_ptr<global_cache> cache;
+    lru_cache cache;
 
     struct node {
-        node(node*, move);
+        node(node*, move, boost::optional<lru_cache::item_list::iterator> = boost::none);
         node* parent;
         const move mv;
         std::vector<node> children;
+        boost::optional<lru_cache::item_list::iterator> parent_state_iter; // Optional, as dominance moves aren't cached
     };
 
     explicit solver(const game_state&);
@@ -35,9 +36,9 @@ public:
     const node& get_search_tree() const;
 
 private:
-    bool revert_to_last_node_with_children();
-    void add_children(std::vector<move>&);
-    void add_child(move);
+    bool revert_to_last_node_with_children(boost::optional<lru_cache::item_list::iterator> = boost::none);
+    void add_children(std::vector<move>&, boost::optional<lru_cache::item_list::iterator> = boost::none);
+    void add_child(move, boost::optional<lru_cache::item_list::iterator> = boost::none);
     std::vector<move> get_next_moves();
 
     const game_state init_state;
@@ -48,6 +49,7 @@ private:
     int backtracks;
     int dominance_moves;
     int depth;
+    int max_depth;
 
     node root;
     node* current_node;

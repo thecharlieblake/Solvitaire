@@ -27,6 +27,7 @@ struct cached_game_state {
     void add_card_divider();
 
     state_data data;
+    bool live; // Is a parent in the current search tree
 };
 
 bool operator==(const cached_game_state&, const cached_game_state&);
@@ -41,29 +42,8 @@ struct hasher {
     const game_state& init_gs;
 };
 
-class global_cache {
+class lru_cache {
 public:
-    virtual ~global_cache() = default;
-    virtual bool insert(const game_state&) = 0;
-    virtual bool contains(const game_state&) const = 0;
-    virtual void clear() = 0;
-};
-
-class unlimited_cache : public global_cache {
-public:
-    explicit unlimited_cache(const game_state&);
-    bool insert(const game_state&) override;
-    bool contains(const game_state&) const override;
-    void clear() override;
-
-private:
-    std::unordered_set<
-            cached_game_state,
-            hasher
-    > cache;
-};
-
-class lru_cache : public global_cache {
     typedef boost::multi_index::multi_index_container<
             cached_game_state,
             boost::multi_index::indexed_by<
@@ -74,17 +54,20 @@ class lru_cache : public global_cache {
                     >
             >
     > item_list;
-public:
+
     explicit lru_cache(const game_state&, std::size_t);
-    bool insert(const game_state&) override;
-    bool contains(const game_state&) const override;
-    void clear() override;
+    std::pair<item_list::iterator, bool> insert(const game_state&);
+    bool contains(const game_state&) const;
+    void clear();
+    void set_non_live(item_list::iterator);
+    int get_states_removed_from_cache() const;
 
 private:
     static item_list::ctor_args_list get_init_tuple(const game_state&);
 
     std::size_t max_num_items;
     item_list cache;
+    int states_removed_from_cache;
 };
 
 #endif //SOLVITAIRE_GLOBAL_CACHE_H

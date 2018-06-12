@@ -153,9 +153,7 @@ endif()
 
 # add the data to the target, so it becomes visible in some IDE
 add_executable(solvitaire ${main} ${sources})
-
-set_property(TARGET solvitaire PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # TODO
-
+set_property(TARGET solvitaire PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # For -flto flag
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
 # add a separete executable for the 'suit reduction streamliner' version of the solver
