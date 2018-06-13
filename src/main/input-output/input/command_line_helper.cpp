@@ -37,7 +37,9 @@ command_line_helper::command_line_helper()
                     "deal based on a seed. Must supply either 'random',"
                     "'solvability', 'benchmark' or list of deals to be solved.")
             ("classify", "outputs a simple 'solvable/not solvable' "
-                    "classification")
+                         "classification")
+            ("cache-capacity", po::value<uint64_t>(), "sets an upper bound on the number of states allowed in "
+                               "the cache")
             ("solvability", "calculates the solvability "
                     "percentage of the supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -100,6 +102,12 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         random_deal = vm["random"].as<int>();
     } else {
         random_deal = -1;
+    }
+
+    if (vm.count("cache-capacity")) {
+        cache_capacity = vm["cache-capacity"].as<uint64_t>();
+    } else {
+        cache_capacity = 1000000000; // One billion
     }
 
     solvability = (vm.count("solvability") != 0);
@@ -197,6 +205,10 @@ int command_line_helper::get_random_deal() {
 
 bool command_line_helper::get_classify() {
     return classify;
+}
+
+uint64_t command_line_helper::get_cache_capacity() {
+    return cache_capacity;
 }
 
 bool command_line_helper::get_solvability() {

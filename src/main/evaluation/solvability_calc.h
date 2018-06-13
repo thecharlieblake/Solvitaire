@@ -11,7 +11,7 @@
 
 class solvability_calc {
 public:
-    explicit solvability_calc(const sol_rules&);
+    explicit solvability_calc(const sol_rules&, uint64_t);
 
     void calculate_solvability_percentage();
 
@@ -63,6 +63,7 @@ private:
 
     const sol_rules& rules;
     const static double coeff_ewma_weight;
+    const uint64_t cache_capacity;
 };
 
 

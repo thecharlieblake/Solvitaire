@@ -219,7 +219,7 @@ item_list::ctor_args_list lru_cache::get_init_tuple(const game_state& gs) {
             );
 }
 
-lru_cache::lru_cache(const game_state& gs, size_t max_num_items_)
+lru_cache::lru_cache(const game_state& gs, uint64_t max_num_items_)
         : max_num_items(max_num_items_), cache(get_init_tuple(gs)), states_removed_from_cache(0) {
 }
 
@@ -232,7 +232,7 @@ pair<item_list::iterator, bool> lru_cache::insert(const game_state& gs) {
 
         // If the least recently used node is 'live' (i.e. a parent), relocates
         // it to the head of the list until this is no longer the case
-        for (size_t i = 0; prev(cache.end())->live; i++) {
+        for (uint64_t i = 0; prev(cache.end())->live; i++) {
             cache.relocate(cache.begin(), prev(cache.end()));
 
             if (i == max_num_items) {
@@ -254,11 +254,24 @@ void lru_cache::clear() {
     cache.clear();
 }
 
-void lru_cache::set_non_live(item_list::iterator state_iter) {
-    cache.modify(state_iter, [](auto& v){ v.live = false; });
-    // TODO assert
+item_list::size_type lru_cache::size() const {
+    return cache.size();
 }
 
-int lru_cache::get_states_removed_from_cache() const {
+item_list::size_type lru_cache::bucket_count() const {
+    return cache.get<1>().bucket_count();
+}
+
+void lru_cache::set_non_live(item_list::iterator state_iter) {
+#ifndef NDEBUG
+    bool succ =
+#endif
+    cache.modify(state_iter, [](auto& v){ v.live = false; });
+#ifndef NDEBUG
+    assert(succ);
+#endif
+}
+
+uint64_t lru_cache::get_states_removed_from_cache() const {
     return states_removed_from_cache;
 }

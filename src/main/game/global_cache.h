@@ -55,19 +55,21 @@ public:
             >
     > item_list;
 
-    explicit lru_cache(const game_state&, std::size_t);
+    explicit lru_cache(const game_state&, uint64_t);
     std::pair<item_list::iterator, bool> insert(const game_state&);
     bool contains(const game_state&) const;
     void clear();
+    item_list::size_type size() const;
+    item_list::size_type bucket_count() const;
     void set_non_live(item_list::iterator);
-    int get_states_removed_from_cache() const;
+    uint64_t get_states_removed_from_cache() const;
 
 private:
     static item_list::ctor_args_list get_init_tuple(const game_state&);
 
-    std::size_t max_num_items;
+    uint64_t max_num_items;
     item_list cache;
-    int states_removed_from_cache;
+    uint64_t states_removed_from_cache;
 };
 
 #endif //SOLVITAIRE_GLOBAL_CACHE_H

@@ -17,7 +17,8 @@ using namespace std;
 
 const double solvability_calc::coeff_ewma_weight = 0.7;
 
-solvability_calc::solvability_calc(const sol_rules& r) : rules(r) {
+solvability_calc::solvability_calc(const sol_rules& r, uint64_t cache_capacity_) :
+        rules(r), cache_capacity(cache_capacity_) {
 }
 
 //////////////////////
@@ -127,7 +128,7 @@ void solvability_calc::calculate_solvability_percentage() {
 void solvability_calc::solve_seed(int seed, millisec timeout,
                                           seed_results& seed_res) {
     game_state gs(rules, seed);
-    solver sol(gs);
+    solver sol(gs, cache_capacity);
     atomic<bool> terminate_solver(false);
 
     future<bool> future = std::async(
@@ -139,8 +140,8 @@ void solvability_calc::solve_seed(int seed, millisec timeout,
 
     future_status status;
     do {
-        status = future.wait_for(timeout);
         auto start = chrono::steady_clock::now();
+        status = future.wait_for(timeout);
 
         if (status == future_status::timeout) {
             terminate_solver = true;

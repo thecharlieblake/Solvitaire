@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <list>
+#include <malloc.h>
 
 #include "solver.h"
 #include "../game/move.h"
@@ -20,12 +21,12 @@ using std::pair;
 using boost::optional;
 using std::max;
 
-solver::solver(const game_state& gs)
-        : cache(lru_cache(gs, 1000000))
+solver::solver(const game_state& gs, uint64_t cache_capacity)
+        : cache(lru_cache(gs, cache_capacity))
         , init_state(gs)
         , state(gs)
-        , states_searched(1)
-        , unique_states_searched(1)
+        , states_searched(0)
+        , unique_states_searched(0)
         , backtracks(0)
         , dominance_moves(0)
         , depth(0)
@@ -75,7 +76,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
             bool is_new_state = insert_res.second;
             if (is_new_state) {
                 // Gets the legal moves in the current state
-                vector<move> next_moves = get_next_moves();
+                vector<move> next_moves = state.get_legal_moves(current_node->mv);
 
                 // If there are none, reverts to the last node with children
                 if (next_moves.empty()) {
@@ -122,10 +123,6 @@ void solver::add_children(std::vector<move>& moves, optional<lru_cache::item_lis
 
 void solver::add_child(move m, optional<lru_cache::item_list::iterator> i) {
     current_node->children.emplace_back(current_node, m, i);
-}
-
-vector<move> solver::get_next_moves() {
-    return state.get_legal_moves(current_node->mv);
 }
 
 // Called when the current node's children have been exhausted. Travels back up
@@ -200,6 +197,8 @@ void solver::print_solution_info() const {
          << "Backtracks: "                << backtracks                            << "\n"
          << "Dominance Moves: "           << dominance_moves                       << "\n"
          << "States Removed From Cache: " << cache.get_states_removed_from_cache() << "\n"
+         << "Final States In Cache: "     << cache.size()                          << "\n"
+         << "Final Buckets In Cache: "    << cache.bucket_count()                  << "\n"
          << "Maximum Search Depth: "      << max_depth                             << "\n"
          << "Final Search Depth: "        << depth                                 << "\n";
 }
