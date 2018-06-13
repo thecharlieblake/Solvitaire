@@ -107,7 +107,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     if (vm.count("cache-capacity")) {
         cache_capacity = vm["cache-capacity"].as<uint64_t>();
     } else {
-        cache_capacity = 1000000000; // One billion
+        cache_capacity = 100000000; // One hundred-million
     }
 
     solvability = (vm.count("solvability") != 0);
