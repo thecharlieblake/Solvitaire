@@ -242,7 +242,7 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
 // Finds the size of the built group at the top of a pile
 pile::size_type game_state::get_built_group_height(pile::ref ref) const {
     pile::size_type i = 1;
-    while (is_next_built_group_card(piles[ref][i], piles[ref][i-1]) && i < piles[ref].size())
+    while (i < piles[ref].size() && is_next_built_group_card(piles[ref][i], piles[ref][i-1]))
         i++;
     return i;
 }

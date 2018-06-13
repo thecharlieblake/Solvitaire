@@ -15,7 +15,7 @@ TEST(GlobalCache, CommutativeTableauPiles) {
     rules.tableau_pile_count = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, std::initializer_list<pile>{{},{},{}});
-    global_cache cache(gs);
+    lru_cache cache(gs, 1000);
 
     cache.insert               (game_state(rules, {{card("AC")},{card("2D")},{card("3H")}}));
     ASSERT_TRUE (cache.contains(game_state(rules, {{card("2D")},{card("3H")},{card("AC")}})));
@@ -39,7 +39,7 @@ TEST(GlobalCache, CommutativeReserve) {
     rules.reserve_size = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, std::initializer_list<pile>{{},{},{}});
-    global_cache cache(gs);
+    lru_cache cache(gs, 1000);
 
     cache.insert               (game_state(rules, {{card("AC")},{card("2D")},{card("3H")}}));
     ASSERT_TRUE (cache.contains(game_state(rules, {{card("2D")},{card("3H")},{card("AC")}})));
@@ -63,7 +63,7 @@ TEST(GlobalCache, CommutativeCells) {
     rules.cells = 3;
     rules.build_pol = sol_rules::build_policy::SAME_SUIT;
     game_state gs(rules, std::initializer_list<pile>{{},{},{}});
-    global_cache cache(gs);
+    lru_cache cache(gs, 1000);
 
     cache.insert               (game_state(rules, {{card("AC")},{card("2D")},{card("3H")}}));
     ASSERT_TRUE (cache.contains(game_state(rules, {{card("2D")},{card("3H")},{card("AC")}})));

@@ -19,9 +19,9 @@ using namespace boost;
 namespace po = boost::program_options;
 
 const optional<sol_rules> gen_rules(command_line_helper&);
-void solve_random_game(int, const sol_rules&, bool);
-void solve_input_files(vector<string>, const sol_rules&, bool);
-void solve_game(const game_state&, bool);
+void solve_random_game(int, const sol_rules&, bool, uint64_t);
+void solve_input_files(vector<string>, const sol_rules&, bool, uint64_t);
+void solve_game(const game_state&, bool, uint64_t);
 
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
@@ -50,16 +50,16 @@ int main(int argc, const char* argv[]) {
 
     // If the user has asked for a solvability percentage, calculates it
     if (clh.get_solvability()) {
-        solvability_calc solv_c(*rules);
+        solvability_calc solv_c(*rules, clh.get_cache_capacity());
         solv_c.calculate_solvability_percentage();
     }
         // If a random deal seed has been supplied, solves it
     else if (clh.get_random_deal() != -1) {
-        solve_random_game(clh.get_random_deal(), *rules, clh.get_classify());
+        solve_random_game(clh.get_random_deal(), *rules, clh.get_classify(), clh.get_cache_capacity());
     }
     // If the benchmark option has been supplied, generates it
     else if (clh.get_benchmark()) {
-        benchmark::run(*rules);
+        benchmark::run(*rules, clh.get_cache_capacity());
     }
     // Otherwise there are supplied input files which should be solved
     else {
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[]) {
         // If there are no input files, solve a random deal based on the
         // supplied seed
         assert (!input_files.empty());
-        solve_input_files(input_files, *rules, clh.get_classify());
+        solve_input_files(input_files, *rules, clh.get_classify(), clh.get_cache_capacity());
     }
 
     return EXIT_SUCCESS;
@@ -90,13 +90,14 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
     }
 }
 
-void solve_random_game(int seed, const sol_rules& rules, bool classify) {
+void solve_random_game(int seed, const sol_rules& rules, bool classify, uint64_t cache_capacity) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state gs(rules, seed);
-    solve_game(gs, classify);
+    solve_game(gs, classify, cache_capacity);
 }
 
-void solve_input_files(const vector<string> input_files, const sol_rules& rules, bool classify) {
+void solve_input_files(const vector<string> input_files, const sol_rules& rules,
+                       bool classify, uint64_t cache_capacity) {
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
@@ -106,7 +107,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
             game_state gs(rules, in_doc);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, classify);
+            solve_game(gs, classify, cache_capacity);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -116,8 +117,8 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, bool classify) {
-    solver solv(gs);
+void solve_game(const game_state& gs, bool classify, uint64_t cache_capacity) {
+    solver solv(gs, cache_capacity);
 
     bool solution = solv.run() == solver::sol_state::solved;
 

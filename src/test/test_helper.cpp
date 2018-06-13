@@ -46,7 +46,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
             {"4D","3D","2D","AD"}
     });
 
-    solver sol = solver(game_state(gs));
+    solver sol(gs);
     sol.run();
 
     solver::node const *n = &sol.get_search_tree();

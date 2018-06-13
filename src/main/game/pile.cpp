@@ -35,7 +35,9 @@ card& pile::operator[] (size_type i) {
 }
 
 card pile::operator[] (size_type i) const {
-    return pile_vec[pile_vec.size() - 1 - i];
+    vector<card>::size_type s = pile_vec.size() - 1 - i;
+    assert(s < pile_vec.size());
+    return pile_vec[s];
 }
 
 void pile::place(const card c) {

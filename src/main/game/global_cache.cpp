@@ -7,6 +7,7 @@
 #include <boost/functional/hash.hpp>
 
 #include "global_cache.h"
+#include "../input-output/output/log_helper.h"
 
 using namespace std;
 using namespace boost;
@@ -14,12 +15,23 @@ using namespace boost;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 
+typedef boost::multi_index::multi_index_container<
+        cached_game_state,
+        boost::multi_index::indexed_by<
+                boost::multi_index::sequenced<>,
+                boost::multi_index::hashed_unique<
+                        boost::multi_index::identity<cached_game_state>,
+                        hasher
+                >
+        >
+> item_list;
+
 
 ///////////////////////
 // CACHED GAME STATE //
 ///////////////////////
 
-cached_game_state::cached_game_state(const game_state& gs) {
+cached_game_state::cached_game_state(const game_state& gs) : live(true) {
     data.reserve(52+18);  // Enough for each card and up to 18 piles
 
     if (gs.rules.hole) {
@@ -159,22 +171,107 @@ size_t hasher::hash_value(card const& c) const {
 
 
 
-//////////////////
+/*//////////////////
 // GLOBAL CACHE //
 //////////////////
 
-bool global_cache::insert(const game_state& gs) {
-    return u_set.emplace(gs).second;
+unlimited_cache::unlimited_cache(const game_state& gs)
+        : cache(0, hasher(gs)) {
 }
 
-bool global_cache::contains(const game_state& gs) const {
-    return u_set.count(cached_game_state(gs)) > 0;
+bool unlimited_cache::insert(const game_state& gs) {
+    return cache.emplace(gs).second;
 }
 
-void global_cache::clear() {
-    u_set.clear();
+bool unlimited_cache::contains(const game_state& gs) const {
+    return cache.count(cached_game_state(gs)) > 0;
 }
 
-global_cache::global_cache(const game_state& gs)
-        : u_set(0, hasher(gs)) {
+void unlimited_cache::clear() {
+    cache.clear();
+}*/
+
+
+///////////////
+// LRU CACHE //
+///////////////
+
+// Based on https://www.boost.org/doc/libs/1_67_0/libs/multi_index/example/serialization.cpp
+/* Boost.MultiIndex example of serialization of a MRU list.
+ *
+ * Copyright 2003-2008 Joaquin M Lopez Munoz.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+ *
+ * See http://www.boost.org/libs/multi_index for library home page.
+ */
+
+item_list::ctor_args_list lru_cache::get_init_tuple(const game_state& gs) {
+    return boost::make_tuple(
+            item_list::nth_index<0>::type::ctor_args(),
+            boost::make_tuple(
+                    size_t(0),
+                    multi_index::identity<cached_game_state>(),
+                    hasher(gs),
+                    equal_to<cached_game_state>()
+                    )
+            );
+}
+
+lru_cache::lru_cache(const game_state& gs, uint64_t max_num_items_)
+        : max_num_items(max_num_items_), cache(get_init_tuple(gs)), states_removed_from_cache(0) {
+}
+
+pair<item_list::iterator, bool> lru_cache::insert(const game_state& gs) {
+    pair<item_list::iterator, bool> p = cache.push_front(cached_game_state(gs));
+
+    if(!p.second){                              /* duplicate item */
+        cache.relocate(cache.begin(), p.first); /* put in front */
+    } else if(cache.size() > max_num_items){    /* keep the length <= max_num_items */
+
+        // If the least recently used node is 'live' (i.e. a parent), relocates
+        // it to the head of the list until this is no longer the case
+        for (uint64_t i = 0; prev(cache.end())->live; i++) {
+            cache.relocate(cache.begin(), prev(cache.end()));
+
+            if (i == max_num_items) {
+                LOG_ERROR("All items in cache are live and cache is full");
+                throw runtime_error("All items in cache are live and cache is full");
+            }
+        }
+        cache.pop_back();
+        states_removed_from_cache++;
+    }
+    return p;
+}
+
+bool lru_cache::contains(const game_state& gs) const {
+    return cache.get<1>().count(cached_game_state(gs)) > 0;
+}
+
+void lru_cache::clear() {
+    cache.clear();
+}
+
+item_list::size_type lru_cache::size() const {
+    return cache.size();
+}
+
+item_list::size_type lru_cache::bucket_count() const {
+    return cache.get<1>().bucket_count();
+}
+
+void lru_cache::set_non_live(item_list::iterator state_iter) {
+#ifndef NDEBUG
+    bool succ =
+#endif
+    cache.modify(state_iter, [](auto& v){ v.live = false; });
+#ifndef NDEBUG
+    assert(succ);
+#endif
+}
+
+uint64_t lru_cache::get_states_removed_from_cache() const {
+    return states_removed_from_cache;
 }
