@@ -88,9 +88,9 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-set(boost_components log program_options)
+set(boost_components program_options)
 
-find_package(Boost 1.63.0 REQUIRED COMPONENTS ${boost_components})
+find_package(Boost 1.53.0 REQUIRED COMPONENTS ${boost_components})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
