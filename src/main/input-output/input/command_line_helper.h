@@ -17,7 +17,7 @@ public:
     const std::string get_rules_file();
     int get_random_deal();
     bool get_classify();
-    bool get_solvability();
+    int get_solvability();
     bool get_available_game_types();
     bool get_benchmark();
     uint64_t get_cache_capacity();
@@ -42,7 +42,7 @@ private:
     int random_deal;
     bool help;
     bool classify;
-    bool solvability;
+    int solvability;
     bool available_game_types;
     bool benchmark;
     uint64_t cache_capacity;
