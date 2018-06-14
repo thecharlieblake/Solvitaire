@@ -6,6 +6,7 @@
 #define SOLVITAIRE_SOLVABILITY_H
 
 #include <vector>
+#include <set>
 
 #include "../game/sol_rules.h"
 
@@ -28,6 +29,7 @@ private:
     };
 
     struct seed_results {
+        seed_results();
         void add_result(sol_result::type);
 
         std::atomic<int> solvable;
@@ -39,15 +41,15 @@ private:
 
     // Printing methods
     void print_header(long) const;
-    void print_row(const seed_results&, sol_result) const;
+    static void print_row(const seed_results&, sol_result, std::set<int>&, std::mutex&);
 
     // Solving methods
-    sol_result solve_seed(int, millisec, seed_results&);
+    static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t, seed_results&);
 
     // Calculation methods
-    double sol_lower_bound(int, int, int) const;
-    double sol_upper_bound(int, int, int) const;
-    double sol_ci_size(int, int, int) const;
+    static double sol_lower_bound(int, int, int);
+    static double sol_upper_bound(int, int, int);
+    static double sol_ci_size(int, int, int);
     static double agresti_coull(int, int, bool);
     static double agresti_coull_mean(int, int);
     static int rnd(double);
