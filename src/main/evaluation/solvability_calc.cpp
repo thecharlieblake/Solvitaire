@@ -78,12 +78,11 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res, s
 // SOLVING METHODS //
 /////////////////////
 
-void solvability_calc::calculate_solvability_percentage(int timeout_) {
+void solvability_calc::calculate_solvability_percentage(int timeout_, int cores) {
     atomic<int> current_seed(0);
     set<int> seeds_in_progress;
     mutex sip_mutex;
 
-    int cores = 4;
     millisec timeout(timeout_);
 
     print_header(timeout.count());
@@ -110,11 +109,12 @@ void solvability_calc::calculate_solvability_percentage(int timeout_) {
                         sip_mutex.unlock();
 
                         sol_result res = solve_seed(my_seed, timeout, sr, cc, seed_res);
-                        print_row(seed_res, res, seeds_in_progress, sip_mutex);
 
                         sip_mutex.lock();
                         seeds_in_progress.erase(my_seed);
                         sip_mutex.unlock();
+
+                        print_row(seed_res, res, seeds_in_progress, sip_mutex);
                     }
                 }
         ));

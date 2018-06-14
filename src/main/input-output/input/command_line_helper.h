@@ -18,6 +18,7 @@ public:
     int get_random_deal();
     bool get_classify();
     int get_solvability();
+    int get_cores();
     bool get_available_game_types();
     bool get_benchmark();
     uint64_t get_cache_capacity();
@@ -43,6 +44,7 @@ private:
     bool help;
     bool classify;
     int solvability;
+    int cores;
     bool available_game_types;
     bool benchmark;
     uint64_t cache_capacity;

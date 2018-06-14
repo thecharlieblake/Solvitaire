@@ -44,6 +44,8 @@ command_line_helper::command_line_helper()
                     "percentage of the supplied solitaire game, given a timeout in milliseconds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
                     "solved.")
+            ("cores", po::value<int>(), "the number of cores for the solvability percentages to be run across. "
+                                        "Must be supplied with the solvability option.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -115,6 +117,13 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     } else {
         solvability = -1;
     }
+
+    if (vm.count("cores")) {
+        cores = vm["cores"].as<int>();
+    } else {
+        cores = 1;
+    }
+
 
     benchmark = (vm.count("benchmark") != 0);
 
@@ -217,6 +226,10 @@ uint64_t command_line_helper::get_cache_capacity() {
 
 int command_line_helper::get_solvability() {
     return solvability;
+}
+
+int command_line_helper::get_cores() {
+    return cores;
 }
 
 bool command_line_helper::get_available_game_types() {
