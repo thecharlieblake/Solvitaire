@@ -5,6 +5,7 @@
 #ifndef SOLVITAIRE_BENCHMARK_H
 #define SOLVITAIRE_BENCHMARK_H
 
+#include <chrono>
 
 #include "../game/sol_rules.h"
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <set>
+#include <chrono>
 
 #include "../game/sol_rules.h"
 
