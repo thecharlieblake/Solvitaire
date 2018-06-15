@@ -23,7 +23,7 @@ bool test_helper::is_solvable(const std::string& input_file, const std::string& 
     const sol_rules rules = rules_parser::from_preset(preset_type);
 
     game_state gs(rules, in_doc);
-    solver sol(gs);
+    solver sol(gs, 1000000);
 
     return sol.run() == solver::sol_state::solved;
 }
@@ -46,7 +46,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
             {"4D","3D","2D","AD"}
     });
 
-    solver sol(gs);
+    solver sol(gs, 1000000);
     sol.run();
 
     solver::node const *n = &sol.get_search_tree();
