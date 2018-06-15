@@ -210,3 +210,11 @@ const solver::node& solver::get_search_tree() const {
 int solver::get_states_searched() const {
     return states_searched;
 }
+
+int solver::get_unique_states_searched() const {
+    return unique_states_searched;
+}
+
+int solver::get_cache_size() const {
+    return cache.size();
+}

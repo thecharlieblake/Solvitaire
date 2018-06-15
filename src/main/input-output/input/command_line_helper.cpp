@@ -40,10 +40,12 @@ command_line_helper::command_line_helper()
                          "classification")
             ("cache-capacity", po::value<uint64_t>(), "sets an upper bound on the number of states allowed in "
                                "the cache")
-            ("solvability", "calculates the solvability "
-                    "percentage of the supplied solitaire game. Must supply "
+            ("solvability", po::value<int>(), "calculates the solvability "
+                    "percentage of the supplied solitaire game, given a timeout in milliseconds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
                     "solved.")
+            ("cores", po::value<int>(), "the number of cores for the solvability percentages to be run across. "
+                                        "Must be supplied with the solvability option.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -110,7 +112,18 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         cache_capacity = 100000000; // One hundred-million
     }
 
-    solvability = (vm.count("solvability") != 0);
+    if (vm.count("solvability")) {
+        solvability = vm["solvability"].as<int>();
+    } else {
+        solvability = -1;
+    }
+
+    if (vm.count("cores")) {
+        cores = vm["cores"].as<int>();
+    } else {
+        cores = 1;
+    }
+
 
     benchmark = (vm.count("benchmark") != 0);
 
@@ -128,7 +141,7 @@ bool command_line_helper::assess_errors() {
 
     // The user must either supply input files, a random seed, or ask for the
     // solvability percentage, or benchmark
-    int opt_count = (random_deal != -1) + !input_files.empty() + solvability + benchmark;
+    int opt_count = (random_deal != -1) + !input_files.empty() + (solvability > 0) + benchmark;
 
     if (opt_count > 1) {
         print_too_many_opts_error();
@@ -211,8 +224,12 @@ uint64_t command_line_helper::get_cache_capacity() {
     return cache_capacity;
 }
 
-bool command_line_helper::get_solvability() {
+int command_line_helper::get_solvability() {
     return solvability;
+}
+
+int command_line_helper::get_cores() {
+    return cores;
 }
 
 bool command_line_helper::get_available_game_types() {

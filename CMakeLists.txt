@@ -88,9 +88,9 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-set(boost_components log program_options)
+set(boost_components program_options)
 
-find_package(Boost 1.63.0 REQUIRED COMPONENTS ${boost_components})
+find_package(Boost 1.53.0 REQUIRED COMPONENTS ${boost_components})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -133,11 +133,12 @@ endif()
 ## compile options ############################################################
 ###############################################################################
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK -pthread -pedantic -Wall -Wextra \
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK \
+-lboost_system -pthread -pedantic -Wall -Wextra \
 -Wcast-align -Wcast-qual -Wformat=2 -Winit-self \
 -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
 -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow \
--Wstrict-null-sentinel") # -Werror
+-Wstrict-null-sentinel -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O -fno-inline -fno-inline-functions -g -Wl,-O1") # uncomment for profiling
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -s -DNDEBUG -Wl,-O1") # uncomment otherwise

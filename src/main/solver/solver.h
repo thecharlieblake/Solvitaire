@@ -33,6 +33,8 @@ public:
     void print_solution() const;
     void print_solution_info() const;
     int get_states_searched() const;
+    int get_unique_states_searched() const;
+    int get_cache_size() const;
     const node& get_search_tree() const;
 
 private:
