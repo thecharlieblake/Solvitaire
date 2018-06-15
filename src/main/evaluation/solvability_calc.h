@@ -8,6 +8,7 @@
 #include <vector>
 #include <set>
 #include <chrono>
+#include <mutex>
 
 #include "../game/sol_rules.h"
 
