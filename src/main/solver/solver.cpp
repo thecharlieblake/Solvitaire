@@ -218,3 +218,7 @@ int solver::get_unique_states_searched() const {
 int solver::get_cache_size() const {
     return cache.size();
 }
+
+int solver::get_states_rem_from_cache() const {
+    return cache.get_states_removed_from_cache();
+}

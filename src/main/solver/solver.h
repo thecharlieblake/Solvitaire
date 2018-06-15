@@ -35,6 +35,7 @@ public:
     int get_states_searched() const;
     int get_unique_states_searched() const;
     int get_cache_size() const;
+    int get_states_rem_from_cache() const;
     const node& get_search_tree() const;
 
 private:

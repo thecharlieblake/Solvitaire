@@ -28,6 +28,7 @@ private:
         type sol_type;
         millisec time;
         int unique_search_states;
+        int states_rem_from_cache;
     };
 
     struct seed_results {
