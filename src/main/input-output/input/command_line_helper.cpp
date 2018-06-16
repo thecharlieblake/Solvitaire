@@ -44,7 +44,10 @@ command_line_helper::command_line_helper()
                     "percentage of the supplied solitaire game, given a timeout in milliseconds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
                     "solved.")
-            ("cores", po::value<int>(), "the number of cores for the solvability percentages to be run across. "
+            ("resume", po::value<vector<int>>()->multitoken(), "resumes the solvability percentage calculation from a "
+                                                    "previous run. Must be supplied with the solvability option. "
+                                                    "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
+            ("cores", po::value<uint>(), "the number of cores for the solvability percentages to be run across. "
                                         "Must be supplied with the solvability option.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
@@ -119,9 +122,16 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     }
 
     if (vm.count("cores")) {
-        cores = vm["cores"].as<int>();
+        cores = vm["cores"].as<uint>();
     } else {
         cores = 1;
+    }
+
+    if (vm.count("resume")) {
+        resume = vm["resume"].as<vector<int>>();
+    } else {
+        resume = {0, 0, 0};
+        for (uint i = 0; i < cores; i++) resume.push_back(i);
     }
 
 
@@ -138,6 +148,11 @@ bool command_line_helper::assess_errors() {
     }
 
     if (available_game_types || !describe_game_rules.empty()) return true;
+
+    if (solvability > 0 && resume.size() != 3 + cores) {
+        print_resume_error();
+        return false;
+    }
 
     // The user must either supply input files, a random seed, or ask for the
     // solvability percentage, or benchmark
@@ -196,7 +211,12 @@ void command_line_helper::print_sol_type_rules_error() {
 
 void command_line_helper::print_too_many_opts_error() {
     LOG_ERROR ("Error: User must supply input file(s), the '--random' option, the 'benchmark' option,, "
-                       "or the '--solvability' option, not multiple");
+               "or the '--solvability' option, not multiple");
+    print_help();
+}
+
+void command_line_helper::print_resume_error() {
+    LOG_ERROR ("Error: Resume contains " << resume.size() << " options, and should contain " << cores + 3);
     print_help();
 }
 
@@ -228,7 +248,11 @@ int command_line_helper::get_solvability() {
     return solvability;
 }
 
-int command_line_helper::get_cores() {
+vector<int> command_line_helper::get_resume() {
+    return resume;
+}
+
+uint command_line_helper::get_cores() {
     return cores;
 }
 
