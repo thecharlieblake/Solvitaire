@@ -49,15 +49,17 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
     solver sol(gs, 1000000);
     sol.run();
 
-    solver::node const *n = &sol.get_search_tree();
+    auto frontier = sol.get_frontier();
+    auto i = std::begin(frontier);
+
     for (card c : cards) {
-        n = &n->children.back();
-        ASSERT_TRUE(n->mv.type == move::mtype::dominance);
-        ASSERT_TRUE(gs.get_data()[n->mv.from].top_card() == c);
-        ASSERT_TRUE(n->mv.to >= 0 && n->mv.to <= 4);
-        gs.make_move(n->mv);
+        i++;
+        ASSERT_TRUE(i->mv.type == move::mtype::dominance);
+        ASSERT_TRUE(gs.get_data()[i->mv.from].top_card() == c);
+        ASSERT_TRUE(i->mv.to >= 0 && i->mv.to <= 4);
+        gs.make_move(i->mv);
     }
-    ASSERT_TRUE(n->children.empty());
+    ASSERT_TRUE(i->child_moves.empty());
 }
 
 void test_helper::run_built_group_test(sol_rules sr,
