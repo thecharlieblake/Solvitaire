@@ -51,7 +51,8 @@ int main(int argc, const char* argv[]) {
     // If the user has asked for a solvability percentage, calculates it
     if (clh.get_solvability() > 0) {
         solvability_calc solv_c(*rules, clh.get_cache_capacity());
-        solv_c.calculate_solvability_percentage(clh.get_solvability(), clh.get_cores(), clh.get_resume());
+        solv_c.calculate_solvability_percentage(clh.get_timeout(), clh.get_solvability(), clh.get_cores(),
+                                                clh.get_resume());
     }
         // If a random deal seed has been supplied, solves it
     else if (clh.get_random_deal() != -1) {

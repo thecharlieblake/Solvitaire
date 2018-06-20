@@ -38,12 +38,13 @@ command_line_helper::command_line_helper()
                     "'solvability', 'benchmark' or list of deals to be solved.")
             ("classify", "outputs a simple 'solvable/not solvable' "
                          "classification")
-            ("cache-capacity", po::value<uint64_t>(), "sets an upper bound on the number of states allowed in "
+            ("cache-capacity", po::value<int>(), "sets an upper bound on the number of states allowed in "
                                "the cache")
             ("solvability", po::value<int>(), "calculates the solvability "
-                    "percentage of the supplied solitaire game, given a timeout in milliseconds. Must supply "
+                    "percentage of the supplied solitaire game, given a limit for the number of seeds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
                     "solved.")
+            ("timeout", po::value<uint64_t>(), "adds a per-game timeout to the solvability percentage generation")
             ("resume", po::value<vector<int>>()->multitoken(), "resumes the solvability percentage calculation from a "
                                                     "previous run. Must be supplied with the solvability option. "
                                                     "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
@@ -119,6 +120,12 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         solvability = vm["solvability"].as<int>();
     } else {
         solvability = -1;
+    }
+
+    if (vm.count("timeout")) {
+        timeout = vm["timeout"].as<uint64_t>();
+    } else {
+        timeout = 604800000; // 1 week in milliseconds
     }
 
     if (vm.count("cores")) {
@@ -246,6 +253,10 @@ uint64_t command_line_helper::get_cache_capacity() {
 
 int command_line_helper::get_solvability() {
     return solvability;
+}
+
+uint64_t command_line_helper::get_timeout() {
+    return timeout;
 }
 
 vector<int> command_line_helper::get_resume() {

@@ -24,6 +24,7 @@ public:
     std::vector<int> get_resume();
     uint64_t get_cache_capacity();
     std::string get_describe_game_rules();
+    uint64_t get_timeout();
 
 private:
     bool assess_errors();
@@ -51,6 +52,7 @@ private:
     bool available_game_types;
     bool benchmark;
     uint64_t cache_capacity;
+    uint64_t timeout;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H

@@ -17,7 +17,7 @@ class solvability_calc {
 public:
     explicit solvability_calc(const sol_rules&, uint64_t);
 
-    void calculate_solvability_percentage(int timeout, uint cores, const std::vector<int>&);
+    void calculate_solvability_percentage(uint64_t, int, uint, const std::vector<int>&);
 
 private:
     typedef std::chrono::milliseconds millisec;

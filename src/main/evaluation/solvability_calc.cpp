@@ -99,7 +99,7 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res, s
 // SOLVING METHODS //
 /////////////////////
 
-void solvability_calc::calculate_solvability_percentage(int timeout_, uint cores, const vector<int>& resume) {
+void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int seed_count, uint cores, const vector<int>& resume) {
     vector<int> resume_seeds(begin(resume) + 3, end(resume));
     sort(begin(resume_seeds), end(resume_seeds));
 
@@ -123,11 +123,12 @@ void solvability_calc::calculate_solvability_percentage(int timeout_, uint cores
     for (uint i = 0; i < cores; i++) {
         futures.push_back(async(
                 launch::async,
-                [&current_seed, &seed_res, &seeds_in_progress, &results_mutex, timeout, sr, cc, i, resume_seeds](){
+                [&current_seed, &seed_res, &seeds_in_progress, &results_mutex, seed_count, timeout, sr, cc, i,
+                        resume_seeds](){
 
                     int my_seed = resume_seeds.size() > i ? resume_seeds[i] : current_seed++;
 
-                    while (my_seed < INT_MAX) {
+                    while (my_seed < seed_count) {
                         results_mutex.lock();
                         seeds_in_progress.insert(my_seed);
                         results_mutex.unlock();
@@ -149,7 +150,8 @@ void solvability_calc::calculate_solvability_percentage(int timeout_, uint cores
                 }
         ));
     }
-    futures[0].wait(); // Should wait indefinitely
+
+    for (auto& f : futures) f.wait();
 }
 
 solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec timeout,
