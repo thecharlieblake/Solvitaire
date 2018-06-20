@@ -11,6 +11,7 @@
 #include <mutex>
 
 #include "../game/sol_rules.h"
+#include "../solver/solver.h"
 
 class solvability_calc {
 public:
@@ -27,8 +28,7 @@ private:
         int seed;
         type sol_type;
         millisec time;
-        int unique_search_states;
-        int states_rem_from_cache;
+        solver::solution_info sol_info;
     };
 
     struct seed_results {

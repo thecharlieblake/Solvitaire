@@ -24,12 +24,27 @@ solvability_calc::solvability_calc(const sol_rules& r, uint64_t cache_capacity_)
 //////////////////////
 
 void solvability_calc::print_header(long t) const {
-    cerr << "Calculating solvability percentage...\n\n"
-            "[Lower Bound% - Upper Bound%], Solvable/Unsolvable/Intractable Count | "
-            "Solved seed: Solvable/Unsolvable/Intractable, Time Taken (ms), Unique Search States, States Removed From Cache | "
-            "Seeds In Progress"
+    cout << "Calculating solvability percentage...\n\n"
+            "Lower Bound"
+            ", Upper Bound"
+            ", Solvable"
+            ", Unsolvable"
+            ", Intractable"
+            ", Attempted Seed"
+            ", Seed State"
+            ", Time Taken(ms)"
+            ", States Searched"
+            ", Unique States Searched"
+            ", Backtracks"
+            ", Dominance Moves"
+            ", States Removed From Cache"
+            ", Final States In Cache"
+            ", Final Buckets In Cache"
+            ", Maximum Search Depth"
+            ", Final Search Depth"
+            ", Seeds In Progress ..."
             "\n--- Timeout = " << t << " milliseconds ---\n";
-    cerr << fixed << setprecision(3);
+    cout << fixed << setprecision(3);
 }
 
 void solvability_calc::print_row(const seed_results& seed_res, sol_result res, set<int>& seeds_in_progress,
@@ -41,36 +56,45 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res, s
                                          seed_res.unsolvable,
                                          seed_res.intractable);
 
-    cerr << "["     << lower_bound * 100
-         << " - "  << upper_bound * 100
-         << "],\t"  << seed_res.solvable
-         << "/"     << seed_res.unsolvable
-         << "/"     << seed_res.intractable
-         << ",\t"    << res.seed
-         << ": ";
+    cout << lower_bound * 100
+         << ", "  << upper_bound * 100
+         << ", "  << seed_res.solvable
+         << ", "  << seed_res.unsolvable
+         << ", "  << seed_res.intractable
+         << ", "  << res.seed;
     switch (res.sol_type) {
         case sol_result::type::timeout:
-            cerr << "timed-out,";
+            cout << ", timed-out";
             break;
         case sol_result::type::solved:
-            cerr << "solved,\t";
+            cout << ", solved";
             break;
         case sol_result::type::unsolvable:
-            cerr << "unsolvable,";
+            cout << ", unsolvable";
             break;
     }
-    cerr << "\t" << res.time.count();
-    if (res.unique_search_states == -1) cerr << ", N/A, N/A";
-    else cerr << ", " << res.unique_search_states << ", " << res.states_rem_from_cache;
-    cerr << " | [";
+    cout << ", " << res.time.count();
+    
+    cout << ", " << res.sol_info.states_searched
+         << ", " << res.sol_info.unique_states_searched
+         << ", " << res.sol_info.backtracks
+         << ", " << res.sol_info.dominance_moves
+         << ", " << res.sol_info.states_removed_from_cache
+         << ", " << res.sol_info.cache_size
+         << ", " << res.sol_info.cache_bucket_count
+         << ", " << res.sol_info.max_depth
+         << ", " << res.sol_info.depth;
 
     sip_mutex.lock();
     for(auto iter = begin(seeds_in_progress); iter != end(seeds_in_progress); ++iter) {
-        cerr << *iter;
-        if (iter != prev(end(seeds_in_progress))) cerr << ",";
+        cout << ", " << *iter;
     }
     sip_mutex.unlock();
-    cerr << "]\n";
+
+    cout << "\n";
+
+    std::flush(clog);
+    std::flush(cout);
 }
 
 
@@ -137,11 +161,11 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
     sol_result res = sol_result();
     res.seed = seed;
 
-    future<tuple<bool, int, int>> future = async(
+    future<tuple<bool, solver::solution_info>> future = async(
             launch::async,
             [&sol, &terminate_solver](){
                 bool solved = sol.run(terminate_solver) == solver::sol_state::solved;
-                return make_tuple(solved, sol.get_unique_states_searched(), sol.get_states_rem_from_cache());
+                return make_tuple(solved, sol.get_solution_info());
             }
     );
 
@@ -154,7 +178,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
             terminate_solver = true;
         } else if (status == future_status::ready) {
             bool exception = false;
-            tuple<bool, int, int> result;
+            tuple<bool, solver::solution_info> result;
 
             try {
                 result = future.get();
@@ -166,14 +190,12 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
                 res.sol_type = sol_result::type::timeout;
                 seed_res.add_result(res.sol_type);
                 res.time = timeout;
-                res.unique_search_states = -1;
-                res.states_rem_from_cache = -1;
+                res.sol_info = get<1>(result);
             } else if (terminate_solver) {
                 res.sol_type = sol_result::type::timeout;
                 seed_res.add_result(res.sol_type);
                 res.time = timeout;
-                res.unique_search_states = get<1>(result);
-                res.states_rem_from_cache = get<2>(result);
+                res.sol_info = get<1>(result);
             } else {
                 auto end = chrono::steady_clock::now();
                 millisec elapsed_millis =
@@ -188,8 +210,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
                     res.sol_type = sol_result::type::unsolvable;
                 }
                 seed_res.add_result(res.sol_type);
-                res.unique_search_states = get<1>(result);
-                res.states_rem_from_cache = get<2>(result);
+                res.sol_info = get<1>(result);
             }
         }
     } while (status != future_status::ready);

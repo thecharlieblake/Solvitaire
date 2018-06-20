@@ -130,5 +130,5 @@ void solve_game(const game_state& gs, bool classify, uint64_t cache_capacity) {
         cout << "No Possible Solution\n";
     }
 
-    solv.print_solution_info();
+    cout << solv.get_solution_info();
 }
