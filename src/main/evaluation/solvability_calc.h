@@ -44,10 +44,10 @@ private:
 
     // Printing methods
     void print_header(long) const;
-    static void print_row(const seed_results&, sol_result, std::set<int>&, std::mutex&);
+    static void print_row(const seed_results&, sol_result, std::set<int>&);
 
     // Solving methods
-    static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t, seed_results&);
+    static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t);
 
     // Calculation methods
     static double sol_lower_bound(int, int, int);
