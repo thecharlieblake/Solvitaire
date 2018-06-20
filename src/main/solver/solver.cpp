@@ -187,16 +187,31 @@ void solver::print_solution() const {
     cout << "\n";
 }
 
-void solver::print_solution_info() const {
-    cout << "States Searched: "           << states_searched                       << "\n"
-         << "Unique States Searched: "    << unique_states_searched                << "\n"
-         << "Backtracks: "                << backtracks                            << "\n"
-         << "Dominance Moves: "           << dominance_moves                       << "\n"
-         << "States Removed From Cache: " << cache.get_states_removed_from_cache() << "\n"
-         << "Final States In Cache: "     << cache.size()                          << "\n"
-         << "Final Buckets In Cache: "    << cache.bucket_count()                  << "\n"
-         << "Maximum Search Depth: "      << max_depth                             << "\n"
-         << "Final Search Depth: "        << depth                                 << "\n";
+std::ostream& operator<< (std::ostream& out, const solver::solution_info& si) {
+    return out
+            << "States Searched: "           << si.states_searched            << "\n"
+            << "Unique States Searched: "    << si.unique_states_searched     << "\n"
+            << "Backtracks: "                << si.backtracks                 << "\n"
+            << "Dominance Moves: "           << si.dominance_moves            << "\n"
+            << "States Removed From Cache: " << si.states_removed_from_cache  << "\n"
+            << "Final States In Cache: "     << si.cache_size                 << "\n"
+            << "Final Buckets In Cache: "    << si.cache_bucket_count         << "\n"
+            << "Maximum Search Depth: "      << si.max_depth                  << "\n"
+            << "Final Search Depth: "        << si.depth                      << "\n";
+}
+
+solver::solution_info solver::get_solution_info() {
+    solution_info si;
+    si.states_searched = states_searched;
+    si.unique_states_searched = unique_states_searched;
+    si.backtracks = backtracks;
+    si.dominance_moves = dominance_moves;
+    si.states_removed_from_cache = cache.get_states_removed_from_cache();
+    si.cache_size = cache.size();
+    si.cache_bucket_count = cache.bucket_count();
+    si.max_depth = max_depth;
+    si.depth = depth;
+    return si;
 }
 
 const vector<solver::node> solver::get_frontier() const {

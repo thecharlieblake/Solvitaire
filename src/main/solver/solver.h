@@ -24,17 +24,30 @@ public:
         boost::optional<lru_cache::item_list::iterator> cache_state; // Optional, as dominance moves aren't cached
     };
 
+    struct solution_info {
+        int states_searched;
+        int unique_states_searched;
+        int backtracks;
+        int dominance_moves;
+        uint64_t states_removed_from_cache;
+        lru_cache::item_list::size_type cache_size;
+        lru_cache::item_list::size_type cache_bucket_count;
+        int max_depth;
+        int depth;
+    };
+    friend std::ostream& operator<< (std::ostream&, const solution_info&);
+
     explicit solver(const game_state&, uint64_t);
 
     sol_state run(boost::optional<std::atomic<bool> &> = boost::none);
 
     void print_solution() const;
-    void print_solution_info() const;
     int get_states_searched() const;
     int get_unique_states_searched() const;
     int get_cache_size() const;
     int get_states_rem_from_cache() const;
     const std::vector<node> get_frontier() const;
+    solution_info get_solution_info();
 
 private:
     bool revert_to_last_node_with_children(boost::optional<lru_cache::item_list::iterator> = boost::none);
