@@ -4,10 +4,10 @@
 #include <future>
 #include <iomanip>
 #include <iostream>
-#include <cmath>
 
 #include "solvability_calc.h"
 #include "../solver/solver.h"
+#include "binomial_ci.h"
 
 using namespace std;
 
@@ -48,15 +48,13 @@ void solvability_calc::print_header(long t) const {
 }
 
 void solvability_calc::print_row(const seed_results& seed_res, sol_result res, set<int>& seeds_in_progress) {
-    double lower_bound = sol_lower_bound(seed_res.solvable,
-                                         seed_res.unsolvable,
-                                         seed_res.intractable);
-    double upper_bound = sol_upper_bound(seed_res.solvable,
-                                         seed_res.unsolvable,
-                                         seed_res.intractable);
+    pair<double, double> interval = binomial_ci::wilson(
+            seed_res.solvable,
+            seed_res.unsolvable,
+            seed_res.intractable);
 
-    cout << lower_bound * 100
-         << ", "  << upper_bound * 100
+    cout << interval.first * 100
+         << ", "  << interval.second * 100
          << ", "  << seed_res.solvable
          << ", "  << seed_res.unsolvable
          << ", "  << seed_res.intractable
@@ -236,56 +234,3 @@ void solvability_calc::seed_results::add_result(sol_result::type t) {
             break;
     }
 }
-
-
-/////////////////////////
-// CALCULATION METHODS //
-/////////////////////////
-
-double solvability_calc::sol_lower_bound(int solvables,
-                                         int unsolvables,
-                                         int intractables) {
-    int x = solvables;
-    int n = solvables + unsolvables + intractables;
-    bool lower_bound = true;
-    return agresti_coull(x, n, lower_bound);
-}
-
-double solvability_calc::sol_upper_bound(int solvables,
-                                         int unsolvables,
-                                         int intractables) {
-    int x = solvables + intractables;
-    int n = solvables + unsolvables + intractables;
-    bool lower_bound = false;
-    return agresti_coull(x, n, lower_bound);
-}
-
-double solvability_calc::sol_ci_size(int solvables,
-                                     int unsolvables,
-                                     int intractables) {
-    return sol_upper_bound(solvables, unsolvables, intractables)
-           - sol_lower_bound(solvables, unsolvables, intractables);
-}
-
-double solvability_calc::agresti_coull(int x, int n, bool lower_bound) {
-    double z = 1.96;
-    double n_ = n + pow(z, 2);
-    double p = (x + pow(z, 2)/2)/n_;
-    double half_ci = z * sqrt((p - pow(p, 2))/n_);
-    if (lower_bound) {
-        double ans = p - half_ci;
-        return ans < 0 ? 0 : ans;
-    } else {
-        double ans = p + half_ci;
-        return ans > 1 ? 1 : ans;
-    }
-}
-
-double solvability_calc::agresti_coull_mean(int x, int n) {
-    double z = 1.96;
-    double n_ = n + pow(z, 2);
-    double p = (x + pow(z, 2)/2)/n_;
-    return p;
-}
-
-int solvability_calc::rnd(double d) { return static_cast<int>(lround(d)); }

@@ -49,14 +49,6 @@ private:
     // Solving methods
     static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t);
 
-    // Calculation methods
-    static double sol_lower_bound(int, int, int);
-    static double sol_upper_bound(int, int, int);
-    static double sol_ci_size(int, int, int);
-    static double agresti_coull(int, int, bool);
-    static double agresti_coull_mean(int, int);
-    static int rnd(double);
-
     const sol_rules& rules;
     const uint64_t cache_capacity;
 };
