@@ -16,7 +16,7 @@ class solvability_calc {
 public:
     explicit solvability_calc(const sol_rules&, uint64_t);
 
-    void calculate_solvability_percentage(int timeout, int cores);
+    void calculate_solvability_percentage(int timeout, uint cores, const std::vector<int>&);
 
 private:
     typedef std::chrono::milliseconds millisec;
@@ -28,10 +28,11 @@ private:
         type sol_type;
         millisec time;
         int unique_search_states;
+        int states_rem_from_cache;
     };
 
     struct seed_results {
-        seed_results();
+        seed_results(std::vector<int>);
         void add_result(sol_result::type);
 
         std::atomic<int> solvable;

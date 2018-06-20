@@ -18,34 +18,30 @@ using std::vector;
 using std::cout;
 using std::clog;
 using std::pair;
-using boost::optional;
 using std::max;
+using std::begin;
+using std::end;
+using boost::optional;
 
 solver::solver(const game_state& gs, uint64_t cache_capacity)
         : cache(lru_cache(gs, cache_capacity))
         , init_state(gs)
         , state(gs)
+        , frontier()
         , states_searched(0)
         , unique_states_searched(0)
         , backtracks(0)
         , dominance_moves(0)
         , depth(0)
         , max_depth(0)
-        , root(nullptr, move(move::mtype::null))
-        , current_node(&root) {
+        , root(move(move::mtype::null))
+        , current_node() {
+    frontier.push_back(root);
+    current_node = begin(frontier);
 }
 
-solver::~solver() {
-    // This code looks to be unnecessary, but on alpha-star 6212 without it,
-    // for reasons that I cannot fathom, it segfaults.
-    while (current_node != nullptr) {
-        current_node->children.clear();
-        current_node = current_node->parent;
-    }
-}
-
-solver::node::node(node* p, const move m, optional<lru_cache::item_list::iterator> c)
-        : parent(p), mv(m), children(), parent_state_iter(c) {
+solver::node::node(const move m)
+        : mv(m), child_moves(), cache_state() {
 }
 
 solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) {
@@ -68,12 +64,14 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         // and repeats. Doesn't cache the state.
         optional<move> dominance_move = state.get_dominance_move();
         if (dominance_move) {
-            // Adds the dominance move as a child of the current search node
-            add_child(*dominance_move);
+            // Adds the dominance move as a child of the current search node;
+            current_node->child_moves.emplace_back(*dominance_move);
         } else {
             // Caches the current state
             pair<lru_cache::item_list::iterator, bool> insert_res = cache.insert(state);
+            current_node->cache_state = insert_res.first;
             bool is_new_state = insert_res.second;
+
             if (is_new_state) {
                 // Gets the legal moves in the current state
                 vector<move> next_moves = state.get_legal_moves(current_node->mv);
@@ -82,7 +80,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
                 if (next_moves.empty()) {
                     states_exhausted = revert_to_last_node_with_children(insert_res.first);
                 } else {
-                    add_children(next_moves, insert_res.first);
+                    current_node->child_moves = std::move(next_moves);
                 }
             }
                 // If the state is not a new one, reverts to the last node with children
@@ -93,9 +91,9 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         }
 
         // Sets the current node to one of its children
-        assert(states_exhausted == current_node->children.empty());
+        assert(states_exhausted == current_node->child_moves.empty());
         if (!states_exhausted) {
-            current_node = &current_node->children.back();
+            set_to_child();
             state.make_move(current_node->mv);
             depth++;
             max_depth = max(depth, max_depth);
@@ -114,17 +112,6 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
     }
 }
 
-void solver::add_children(std::vector<move>& moves, optional<lru_cache::item_list::iterator> i) {
-    current_node->children.reserve(moves.size());
-    for (auto move : moves) {
-        add_child(move, i);
-    }
-}
-
-void solver::add_child(move m, optional<lru_cache::item_list::iterator> i) {
-    current_node->children.emplace_back(current_node, m, i);
-}
-
 // Called when the current node's children have been exhausted. Travels back up
 // the search tree until it finds a node which still has children. Returns true
 // unless all children have been exhausted.
@@ -132,7 +119,7 @@ void solver::add_child(move m, optional<lru_cache::item_list::iterator> i) {
 // If an iterator to the current state is supplied to the function, will also
 // make sure to turn the 'live' bit off upon backtracking
 bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::iterator> cur_state) {
-    if (!current_node->parent)
+    if (current_node == begin(frontier))
         return true;
 
     // Turns the 'live' bit false on the state we are backtracking out of
@@ -157,35 +144,44 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
 
     // Gets a reference to the parent state which can be supplied if this function is
     // called recursively. This ensures that the cached state's 'live' bit is set as appropriate
-    optional<lru_cache::item_list::iterator> p_state = current_node->parent_state_iter;
+    optional<lru_cache::item_list::iterator> p_state = prev(current_node)->cache_state;
 
     // Reverts the current node to its parent and removes it
-    current_node = current_node->parent;
-    current_node->children.pop_back();
+    frontier.pop_back();
+    current_node = prev(end(frontier));
 
     // If the current node now has no children, repeat
-    if (current_node->children.empty()) {
+    if (current_node->child_moves.empty()) {
         return revert_to_last_node_with_children(p_state);
     } else {
         return false;
     }
 }
 
+void solver::set_to_child() {
+    assert(!current_node->child_moves.empty());
+
+    move b = current_node->child_moves.back();
+    current_node->child_moves.pop_back();
+    frontier.emplace_back(b);
+
+    current_node = prev(end(frontier));
+}
+
 void solver::print_solution() const {
     std::flush(clog);
     std::flush(cout);
 
-    const node* n = &root.children.back();
+    auto i = begin(frontier);
     game_state state_copy = init_state;
 
     cout << "Solution:\n";
     cout << state_copy << "\n";
 
     if (states_searched > 1) {
-        while (!n->children.empty()) {
-            state_copy.make_move(n->mv);
+        while (++i != end(frontier)) {
+            state_copy.make_move(i->mv);
             cout << state_copy << "\n";
-            n = &n->children.back();
         }
     }
     cout << "\n";
@@ -203,8 +199,8 @@ void solver::print_solution_info() const {
          << "Final Search Depth: "        << depth                                 << "\n";
 }
 
-const solver::node& solver::get_search_tree() const {
-    return root;
+const vector<solver::node> solver::get_frontier() const {
+    return frontier;
 }
 
 int solver::get_states_searched() const {
@@ -217,4 +213,8 @@ int solver::get_unique_states_searched() const {
 
 int solver::get_cache_size() const {
     return cache.size();
+}
+
+int solver::get_states_rem_from_cache() const {
+    return cache.get_states_removed_from_cache();
 }

@@ -18,9 +18,10 @@ public:
     int get_random_deal();
     bool get_classify();
     int get_solvability();
-    int get_cores();
+    uint get_cores();
     bool get_available_game_types();
     bool get_benchmark();
+    std::vector<int> get_resume();
     uint64_t get_cache_capacity();
     std::string get_describe_game_rules();
 
@@ -31,6 +32,7 @@ private:
     void print_sol_type_rules_error();
     void print_no_opts_error();
     void print_too_many_opts_error();
+    void print_resume_error();
 
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
@@ -44,7 +46,8 @@ private:
     bool help;
     bool classify;
     int solvability;
-    int cores;
+    std::vector<int> resume;
+    uint cores;
     bool available_game_types;
     bool benchmark;
     uint64_t cache_capacity;

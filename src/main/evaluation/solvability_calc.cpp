@@ -26,7 +26,7 @@ solvability_calc::solvability_calc(const sol_rules& r, uint64_t cache_capacity_)
 void solvability_calc::print_header(long t) const {
     cerr << "Calculating solvability percentage...\n\n"
             "[Lower Bound% - Upper Bound%], Solvable/Unsolvable/Intractable Count | "
-            "Solved seed: Solvable/Unsolvable/Intractable, Time Taken (ms), Unique Search States | "
+            "Solved seed: Solvable/Unsolvable/Intractable, Time Taken (ms), Unique Search States, States Removed From Cache | "
             "Seeds In Progress"
             "\n--- Timeout = " << t << " milliseconds ---\n";
     cerr << fixed << setprecision(3);
@@ -60,8 +60,8 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res, s
             break;
     }
     cerr << "\t" << res.time.count();
-    if (res.unique_search_states == -1) cerr << ", N/A";
-    else cerr << ", " << res.unique_search_states;
+    if (res.unique_search_states == -1) cerr << ", N/A, N/A";
+    else cerr << ", " << res.unique_search_states << ", " << res.states_rem_from_cache;
     cerr << " | [";
 
     sip_mutex.lock();
@@ -78,8 +78,12 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res, s
 // SOLVING METHODS //
 /////////////////////
 
-void solvability_calc::calculate_solvability_percentage(int timeout_, int cores) {
-    atomic<int> current_seed(0);
+void solvability_calc::calculate_solvability_percentage(int timeout_, uint cores, const vector<int>& resume) {
+    vector<int> resume_seeds(begin(resume) + 3, end(resume));
+    sort(begin(resume_seeds), end(resume_seeds));
+
+    atomic<int> current_seed(resume_seeds.back());
+    resume_seeds.pop_back();
     set<int> seeds_in_progress;
     mutex sip_mutex;
 
@@ -90,20 +94,19 @@ void solvability_calc::calculate_solvability_percentage(int timeout_, int cores)
     // Spin off 'cores' threads. Each one runs solve_seed and then print_row repeatedly, taking the seed from am
     // atomic int
     vector<future<void>> futures;
-    seed_results seed_res;
+    seed_results seed_res(resume);
 
     sol_rules sr = rules;
     uint64_t cc = cache_capacity;
 
-    for (int i = 0; i < cores; i++) {
+    for (uint i = 0; i < cores; i++) {
         futures.push_back(async(
                 launch::async,
-                [&current_seed, &seed_res, &seeds_in_progress, &sip_mutex, timeout, sr, cc](){
+                [&current_seed, &seed_res, &seeds_in_progress, &sip_mutex, timeout, sr, cc, i, resume_seeds](){
 
-                    int my_seed = 0;
+                    int my_seed = resume_seeds.size() > i ? resume_seeds[i] : current_seed++;
+
                     while (my_seed < INT_MAX) {
-                        my_seed = current_seed++;
-
                         sip_mutex.lock();
                         seeds_in_progress.insert(my_seed);
                         sip_mutex.unlock();
@@ -115,6 +118,8 @@ void solvability_calc::calculate_solvability_percentage(int timeout_, int cores)
                         sip_mutex.unlock();
 
                         print_row(seed_res, res, seeds_in_progress, sip_mutex);
+
+                        my_seed = current_seed++;
                     }
                 }
         ));
@@ -132,11 +137,11 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
     sol_result res = sol_result();
     res.seed = seed;
 
-    future<tuple<bool, int>> future = async(
+    future<tuple<bool, int, int>> future = async(
             launch::async,
             [&sol, &terminate_solver](){
                 bool solved = sol.run(terminate_solver) == solver::sol_state::solved;
-                return make_tuple(solved, sol.get_unique_states_searched());
+                return make_tuple(solved, sol.get_unique_states_searched(), sol.get_states_rem_from_cache());
             }
     );
 
@@ -149,7 +154,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
             terminate_solver = true;
         } else if (status == future_status::ready) {
             bool exception = false;
-            tuple<bool, int> result;
+            tuple<bool, int, int> result;
 
             try {
                 result = future.get();
@@ -162,11 +167,13 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
                 seed_res.add_result(res.sol_type);
                 res.time = timeout;
                 res.unique_search_states = -1;
+                res.states_rem_from_cache = -1;
             } else if (terminate_solver) {
                 res.sol_type = sol_result::type::timeout;
                 seed_res.add_result(res.sol_type);
                 res.time = timeout;
                 res.unique_search_states = get<1>(result);
+                res.states_rem_from_cache = get<2>(result);
             } else {
                 auto end = chrono::steady_clock::now();
                 millisec elapsed_millis =
@@ -182,6 +189,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
                 }
                 seed_res.add_result(res.sol_type);
                 res.unique_search_states = get<1>(result);
+                res.states_rem_from_cache = get<2>(result);
             }
         }
     } while (status != future_status::ready);
@@ -194,7 +202,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
 // SEED RESULTS CLASS //
 ////////////////////////
 
-solvability_calc::seed_results::seed_results() : solvable(0), unsolvable(0), intractable(0) {
+solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), intractable(v[2]) {
 }
 
 void solvability_calc::seed_results::add_result(sol_result::type t) {
