@@ -40,10 +40,12 @@ typedef sol_rules::stock_deal_type sdt;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
-                                                   stock(255),
-                                                   waste(255),
-                                                   hole(255) {
+game_state::game_state(const sol_rules& s_rules, bool streamliners_)
+        : rules(s_rules)
+        , streamliners(streamliners_)
+        , stock(255)
+        , waste(255)
+        , hole (255) {
     // If there is a hole, creates pile
     if (rules.hole) {
         piles.emplace_back();
@@ -100,14 +102,14 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
 }
 
 // Constructs an initial game state from a JSON doc
-game_state::game_state(const sol_rules& s_rules, const Document& doc)
-        : game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, const Document& doc, bool streamliners_)
+        : game_state(s_rules, streamliners_) {
     deal_parser::parse(*this, doc);
 }
 
 // Constructs an initial game state from a seed
-game_state::game_state(const sol_rules& s_rules, int seed)
-        : game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
+        : game_state(s_rules, streamliners_) {
     vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
@@ -183,7 +185,7 @@ game_state::game_state(const sol_rules& s_rules, int seed)
 
 game_state::game_state(const sol_rules& s_rules,
                        std::initializer_list<pile> il)
-        : game_state(s_rules) {
+        : game_state(s_rules, false) {
     pile::ref pr = 0;
     for (const pile& p : il) {
         for (const card c : p.pile_vec) {

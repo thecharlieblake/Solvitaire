@@ -38,18 +38,20 @@ command_line_helper::command_line_helper()
                     "'solvability', 'benchmark' or list of deals to be solved.")
             ("classify", "outputs a simple 'solvable/not solvable' "
                          "classification")
-            ("cache-capacity", po::value<int>(), "sets an upper bound on the number of states allowed in "
+            ("cache-capacity", po::value<uint64_t>(), "sets an upper bound on the number of states allowed in "
                                "the cache")
             ("solvability", po::value<int>(), "calculates the solvability "
                     "percentage of the supplied solitaire game, given a limit for the number of seeds. Must supply "
-                    "either 'random', 'benchmark', 'solvability' or list of deals to be "
-                    "solved.")
+                    "either 'random', 'benchmark', 'solvability' or list of deals to be solved.")
             ("timeout", po::value<uint64_t>(), "adds a per-game timeout to the solvability percentage generation")
             ("resume", po::value<vector<int>>()->multitoken(), "resumes the solvability percentage calculation from a "
                                                     "previous run. Must be supplied with the solvability option. "
                                                     "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
             ("cores", po::value<uint>(), "the number of cores for the solvability percentages to be run across. "
-                                        "Must be supplied with the solvability option.")
+                                         "Must be supplied with the solvability option.")
+            ("streamliners", "applies any relevant streamliners to the search. If the --solvability option is supplied,"
+                             " runs the streamliner version of the search first and then if unsuccessful, the full"
+                             " search for each seed.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -141,6 +143,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         for (uint i = 0; i < cores; i++) resume.push_back(i);
     }
 
+    streamliners = (vm.count("streamliners") != 0);
 
     benchmark = (vm.count("benchmark") != 0);
 
@@ -277,4 +280,8 @@ string command_line_helper::get_describe_game_rules() {
 
 bool command_line_helper::get_benchmark() {
     return benchmark;
+}
+
+bool command_line_helper::get_streamliners() {
+    return streamliners;
 }

@@ -157,21 +157,6 @@ add_executable(solvitaire ${main} ${sources})
 set_property(TARGET solvitaire PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # For -flto flag
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
-# add a separete executable for the 'suit reduction streamliner' version of the solver
-add_executable(solvitaire-suit-reduction-streamliner ${main} ${sources})
-target_link_libraries(solvitaire-suit-reduction-streamliner LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-suit-reduction-streamliner PROPERTIES COMPILE_FLAGS -DSUIT_REDUCTION_STREAMLINER)
-
-# add a separete executable for the 'auto foundations streamliner' version of the solver
-add_executable(solvitaire-auto-foundations-streamliner ${main} ${sources})
-target_link_libraries(solvitaire-auto-foundations-streamliner LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-auto-foundations-streamliner PROPERTIES COMPILE_FLAGS -DAUTO_FOUNDATIONS_STREAMLINER)
-
-# add a separete executable for the 'both streamliners' version of the solver
-add_executable(solvitaire-both-streamliners ${main} ${sources})
-target_link_libraries(solvitaire-both-streamliners LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-both-streamliners PROPERTIES COMPILE_FLAGS "-DSUIT_REDUCTION_STREAMLINER -DAUTO_FOUNDATIONS_STREAMLINER")
-
 # add a separete executable for the 'no pile symmetry' version of the solver
 add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
 target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
