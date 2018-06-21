@@ -11,9 +11,7 @@ using std::max;
 
 
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
-#ifndef AUTO_FOUNDATIONS_STREAMLINER
-    if (rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
-#endif
+    if (streamliners || rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
         return true;
 
     card::suit_t target_suit(target_pile - foundations.front());

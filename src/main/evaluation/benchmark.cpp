@@ -13,7 +13,7 @@
 using namespace std;
 typedef chrono::microseconds microsec;
 
-void benchmark::run(const sol_rules &rules, uint64_t cache_capacity) {
+void benchmark::run(const sol_rules &rules, uint64_t cache_capacity, bool streamliners) {
     cout << "Seed "
             "| Median/Mean Solution Time(μs)"
             "| Median/Mean States Searched "
@@ -27,7 +27,7 @@ void benchmark::run(const sol_rules &rules, uint64_t cache_capacity) {
     int total_unsolvable = 0;
 
     for(int seed = 1; seed <= 1000; seed++) {
-        game_state gs(rules, seed);
+        game_state gs(rules, seed, streamliners);
         solver sol(gs, cache_capacity);
 
         auto start = chrono::steady_clock::now();

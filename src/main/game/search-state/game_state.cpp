@@ -10,6 +10,7 @@
 
 #include <boost/functional/hash.hpp>
 #include <boost/optional.hpp>
+#include <boost/random.hpp>
 
 #include "game_state.h"
 #include "document.h"
@@ -27,9 +28,9 @@ using std::end;
 using std::rbegin;
 using std::rend;
 using std::runtime_error;
-using std::default_random_engine;
 using std::max;
 using std::ostream;
+using std::mt19937;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -40,10 +41,12 @@ typedef sol_rules::stock_deal_type sdt;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
-                                                   stock(255),
-                                                   waste(255),
-                                                   hole(255) {
+game_state::game_state(const sol_rules& s_rules, bool streamliners_)
+        : rules(s_rules)
+        , streamliners(streamliners_)
+        , stock(255)
+        , waste(255)
+        , hole (255) {
     // If there is a hole, creates pile
     if (rules.hole) {
         piles.emplace_back();
@@ -100,14 +103,14 @@ game_state::game_state(const sol_rules& s_rules) : rules(s_rules),
 }
 
 // Constructs an initial game state from a JSON doc
-game_state::game_state(const sol_rules& s_rules, const Document& doc)
-        : game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, const Document& doc, bool streamliners_)
+        : game_state(s_rules, streamliners_) {
     deal_parser::parse(*this, doc);
 }
 
 // Constructs an initial game state from a seed
-game_state::game_state(const sol_rules& s_rules, int seed)
-        : game_state(s_rules) {
+game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
+        : game_state(s_rules, streamliners_) {
     vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
@@ -183,7 +186,7 @@ game_state::game_state(const sol_rules& s_rules, int seed)
 
 game_state::game_state(const sol_rules& s_rules,
                        std::initializer_list<pile> il)
-        : game_state(s_rules) {
+        : game_state(s_rules, false) {
     pile::ref pr = 0;
     for (const pile& p : il) {
         for (const card c : p.pile_vec) {
@@ -196,30 +199,37 @@ game_state::game_state(const sol_rules& s_rules,
 // Generates a randomly ordered vector of cards
 vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
                                            bool two_decks) {
-    vector<uint8_t> values;
-    vector<uint8_t*> v_ptrs;
-    for (int i = 0; i < max_rank * 4; i++) {
-        values.emplace_back(i);
-        if (two_decks) values.emplace_back(i);
-    }
-    for (auto& v : values) {
-        v_ptrs.emplace_back(&v);
-    }
-
-    // Randomly shuffle the pointers
-    auto rng = default_random_engine(seed+1);
-    shuffle(begin(v_ptrs), end(v_ptrs), rng);
-
     vector<card> deck;
-    for (uint8_t *i : v_ptrs) {
-        auto r = static_cast<card::rank_t>(((*i) % max_rank) + 1);
-        card::suit_t s = (*i) / max_rank;
-        deck.emplace_back(card(s, r));
+
+    for (int deck_count = 1; deck_count <= (two_decks ? 2 : 1); deck_count++) {
+        for (card::rank_t rank = 1; rank <= max_rank; rank++) {
+            for (card::suit_t suit = 0 ; suit < 4; suit++) {
+                deck.emplace_back(suit, rank);
+            }
+        }
     }
 
     assert(deck.size() == pile::size_type(max_rank * (two_decks ? 8 : 4)));
+
+    auto rng = mt19937(seed);
+    game_state::shuffle(begin(deck), end(deck), rng);
     return deck;
 }
+
+template<class RandomIt, class URBG>
+void game_state::shuffle(RandomIt first, RandomIt last, URBG&& g) {
+    typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
+    typedef boost::random::uniform_int_distribution<diff_t> distr_t;
+    typedef typename distr_t::param_type param_t;
+
+    distr_t D;
+    diff_t n = last - first;
+    for (diff_t i = n-1; i > 0; --i) {
+        using std::swap;
+        swap(first[i], first[D(g, param_t(0, i))]);
+    }
+}
+
 
 
 ////////////////////

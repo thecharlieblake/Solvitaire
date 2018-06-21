@@ -81,13 +81,7 @@ void cached_game_state::add_card(card c, const game_state& gs) {
     // If the game is a 'hole-based' game, or suit-reduction is on, reduces
     // the cached suit of the card where possible
 
-    bool is_suit_symmetry = gs.rules.hole;
-#ifdef SUIT_REDUCTION_STREAMLINER
-    is_suit_symmetry = true;
-#endif
-#ifdef NO_SUIT_SYMMETRY
-    is_suit_symmetry = false;
-#endif
+    bool is_suit_symmetry = gs.streamliners || gs.rules.hole;
 
     if (is_suit_symmetry) {
         switch (gs.rules.build_pol) {
@@ -141,13 +135,7 @@ size_t hasher::hash_value(card const& c) const {
 
     // If the game is a 'hole-based' game, or suit-reduction is enabled, hash
     // the reduced suit
-    bool is_suit_symmetry = init_gs.rules.hole;
-#ifdef SUIT_REDUCTION_STREAMLINER
-    is_suit_symmetry = true;
-#endif
-#ifdef NO_SUIT_SYMMETRY
-    is_suit_symmetry = false;
-#endif
+    bool is_suit_symmetry = init_gs.streamliners || init_gs.rules.hole;
     
     uint8_t suit_val;
     if (is_suit_symmetry) {
