@@ -10,6 +10,7 @@
 
 #include <boost/functional/hash.hpp>
 #include <boost/optional.hpp>
+#include <boost/random.hpp>
 
 #include "game_state.h"
 #include "document.h"
@@ -211,9 +212,24 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
     assert(deck.size() == pile::size_type(max_rank * (two_decks ? 8 : 4)));
 
     auto rng = mt19937(seed);
-    shuffle(begin(deck), end(deck), rng);
+    game_state::shuffle(begin(deck), end(deck), rng);
     return deck;
 }
+
+template<class RandomIt, class URBG>
+void game_state::shuffle(RandomIt first, RandomIt last, URBG&& g) {
+    typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
+    typedef boost::random::uniform_int_distribution<diff_t> distr_t;
+    typedef typename distr_t::param_type param_t;
+
+    distr_t D;
+    diff_t n = last - first;
+    for (diff_t i = n-1; i > 0; --i) {
+        using std::swap;
+        swap(first[i], first[D(g, param_t(0, i))]);
+    }
+}
+
 
 
 ////////////////////

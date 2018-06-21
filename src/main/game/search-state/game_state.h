@@ -60,6 +60,7 @@ private:
 
     explicit game_state(const sol_rules&, bool);
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
+    template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
 
     /* Pile order logic */
 
