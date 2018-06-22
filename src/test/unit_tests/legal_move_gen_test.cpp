@@ -253,7 +253,6 @@ TEST(LegalMoveGen, Cells) {
     vector<move> actual_moves = gs.get_legal_moves();
 
     vector<move> exp_moves = {
-            move(move::mtype::regular, 0, 1),
             move(move::mtype::regular, 0, 2),
             move(move::mtype::regular, 2, 1)
     };
