@@ -928,6 +928,22 @@ map<string, string> sol_preset_types::mp = {
   "max rank": 9
 }
 )"
+        },
+        {
+                "simple-simon",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "diagonal deal": true,
+    "move built group": true,
+    "move built group policy": "same-suit"
+  },
+  "foundations complete piles": true
+}
+)"
+
         }
 };
 

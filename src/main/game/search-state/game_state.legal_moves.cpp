@@ -117,7 +117,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Tableau / cells to hole / foundation moves
-    if (rules.hole || rules.foundations) {
+    if (rules.hole || (rules.foundations && !rules.foundations_comp_piles)) {
         list<pile::ref> from_piles = tableau_piles;
         if (rules.cells > 0) from_piles.insert(from_piles.end(), cells.begin(), cells.end());
         if (rules.reserve_size > 0) from_piles.insert(from_piles.end(), reserve.begin(), reserve.end());
