@@ -44,7 +44,10 @@ private:
 
     // Printing methods
     void print_header(long, bool) const;
-    static void print_row(const seed_results&, sol_result, boost::optional<sol_result::type>, std::set<int>&);
+    static void print_general_info(const seed_results&);
+    static void print_seed_info(sol_result);
+    static void print_null_seed_info();
+    static void print_seeds_in_prog(std::set<int>&);
 
     // Solving methods
     static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t, bool);
