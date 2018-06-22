@@ -30,11 +30,26 @@ void solvability_calc::print_header(long t, bool streamliners) const {
             ", Upper Bound"
             ", Solvable"
             ", Unsolvable"
-            ", Intractable"
-            ", Attempted Seed"
-            ", Seed State";
-    if (streamliners) cout << ", Streamliner Results";
-    cout << ", Time Taken(ms)"
+            ", Intractable, ";
+    if (streamliners) {
+        cout << "(Streamliner Results:) "
+                "Attempted Seed"
+                ", Outcome"
+                ", Time Taken(ms)"
+                ", States Searched"
+                ", Unique States Searched"
+                ", Backtracks"
+                ", Dominance Moves"
+                ", States Removed From Cache"
+                ", Final States In Cache"
+                ", Final Buckets In Cache"
+                ", Maximum Search Depth"
+                ", Final Search Depth"
+                "(Non-Streamliner Results:) ";
+    }
+    cout << "Attempted Seed"
+            ", Outcome"
+            ", Time Taken(ms)"
             ", States Searched"
             ", Unique States Searched"
             ", Backtracks"
@@ -49,8 +64,7 @@ void solvability_calc::print_header(long t, bool streamliners) const {
     cout << fixed << setprecision(3);
 }
 
-void solvability_calc::print_row(const seed_results& seed_res, sol_result res,
-                                 optional<sol_result::type> streamliner_result, set<int>& seeds_in_progress) {
+void solvability_calc::print_general_info(const seed_results& seed_res) {
     pair<double, double> interval = binomial_ci::wilson(
             seed_res.solvable,
             seed_res.unsolvable,
@@ -60,8 +74,11 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res,
          << ", "  << interval.second * 100
          << ", "  << seed_res.solvable
          << ", "  << seed_res.unsolvable
-         << ", "  << seed_res.intractable
-         << ", "  << res.seed;
+         << ", "  << seed_res.intractable;
+}
+
+void solvability_calc::print_seed_info(sol_result res) {
+    cout << ", "  << res.seed;
     switch (res.sol_type) {
         case sol_result::type::timeout:
             cout << ", timed-out";
@@ -73,21 +90,8 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res,
             cout << ", unsolvable";
             break;
     }
-    if (streamliner_result) {
-        switch (*streamliner_result) {
-            case sol_result::type::timeout:
-                cout << ", timed-out";
-                break;
-            case sol_result::type::solved:
-                cout << ", solved";
-                break;
-            case sol_result::type::unsolvable:
-                cout << ", unsolvable";
-                break;
-        }
-    }
     cout << ", " << res.time.count();
-    
+
     cout << ", " << res.sol_info.states_searched
          << ", " << res.sol_info.unique_states_searched
          << ", " << res.sol_info.backtracks
@@ -97,7 +101,13 @@ void solvability_calc::print_row(const seed_results& seed_res, sol_result res,
          << ", " << res.sol_info.cache_bucket_count
          << ", " << res.sol_info.max_depth
          << ", " << res.sol_info.depth;
+}
 
+void solvability_calc::print_null_seed_info() {
+    cout << ", , , , , , , , , , , , ";
+}
+
+void solvability_calc::print_seeds_in_prog(std::set<int>& seeds_in_progress) {
     for(auto iter = begin(seeds_in_progress); iter != end(seeds_in_progress); ++iter) {
         cout << ", " << *iter;
     }
@@ -148,20 +158,37 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
                         seeds_in_progress.insert(my_seed);
                         results_mutex.unlock();
 
-                        sol_result res = solve_seed(my_seed, timeout, sr, cc, streamliners);
+                        optional<sol_result> stream_res, no_stream_res;
+                        sol_result final_res;
 
-                        optional<sol_result::type> streamliner_result;
                         if (streamliners) {
-                            streamliner_result = res.sol_type;
-                            if (res.sol_type == sol_result::type::unsolvable) {
-                                res = solve_seed(my_seed, timeout, sr, cc, false);
+                            stream_res = solve_seed(my_seed, timeout, sr, cc, true);
+                            if (stream_res->sol_type == sol_result::type::unsolvable) {
+                                no_stream_res = solve_seed(my_seed, timeout, sr, cc, false);
+                                final_res = *no_stream_res;
+                            } else {
+                                final_res = *stream_res;
                             }
+                        } else {
+                            no_stream_res = solve_seed(my_seed, timeout, sr, cc, false);
+                            final_res = *no_stream_res;
                         }
 
                         results_mutex.lock();
+
                         seeds_in_progress.erase(my_seed);
-                        seed_res.add_result(res.sol_type);
-                        print_row(seed_res, res, streamliner_result, seeds_in_progress);
+                        seed_res.add_result(final_res.sol_type);
+
+                        print_general_info(seed_res);
+                        if (streamliners) {
+                            print_seed_info(*stream_res);
+                            if (no_stream_res) print_seed_info(*no_stream_res);
+                            else print_null_seed_info();
+                        } else {
+                            print_seed_info(*no_stream_res);
+                        }
+                        print_seeds_in_prog(seeds_in_progress);
+
                         results_mutex.unlock();
 
                         my_seed = current_seed++;
