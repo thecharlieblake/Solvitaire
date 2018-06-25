@@ -318,7 +318,8 @@ string rules_parser::rules_schema_json() {
         "spaces policy": {"type": "string", "enum": ["any", "no-build", "kings"]},
         "diagonal deal": {"type": "boolean"},
         "move built group": {"type": "boolean"},
-        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]}
+        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]},
+        "face up cards": {"type": "string", "enum": ["all", "top"]}
       }, "additionalProperties": false
     },
     "max rank": {"type": "integer", "minimum": 1, "maximum": 13},
