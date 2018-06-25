@@ -9,6 +9,7 @@
 #include "json_helper.h"
 #include "../sol_preset_types.h"
 #include "../../../game/card.h"
+#include "../../../game/sol_rules.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -20,6 +21,7 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::face_up_policy fu;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -158,6 +160,22 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 } else {
                     json_helper::json_parse_err("[tableau piles][diagonal deal] must be a boolean");
                 }
+            }
+
+            string face_up_str;
+            if (d["tableau piles"].HasMember("face up cards")) {
+                if (d["tableau piles"]["face up cards"].IsString()) {
+                    face_up_str = d["tableau piles"]["face up cards"].GetString();
+                } else {
+                    json_helper::json_parse_err("[tableau piles][face up cards] must be a string");
+                }
+            }
+            if (face_up_str == "all") {
+                sr.face_up = fu::ALL;
+            } else if (face_up_str == "top") {
+                sr.face_up = fu::TOP_CARDS;
+            } else {
+                json_helper::json_parse_err("[tableau piles][face up cards] is invalid");
             }
 
         } else {
