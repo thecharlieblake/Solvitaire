@@ -85,6 +85,16 @@ std::string card::to_string() const {
     return s;
 }
 
+bool card::is_face_up() const {
+    return true;
+}
+
+void card::turn_face_up() {
+}
+
+void card::turn_face_down() {
+}
+
 const card card::divider = card(0, 0);
 
 bool operator==(const card& l, const card& r) {

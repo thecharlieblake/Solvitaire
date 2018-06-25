@@ -39,6 +39,10 @@ public:
     colour_t get_colour() const;
     rank_t get_rank() const;
 
+    bool is_face_up() const;
+    void turn_face_up();
+    void turn_face_down();
+
     std::string to_string() const;
 
 private:

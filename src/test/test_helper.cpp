@@ -62,9 +62,9 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
     ASSERT_TRUE(i->child_moves.empty());
 }
 
-void test_helper::run_built_group_test(sol_rules sr,
-                                       initializer_list<pile> piles,
-                                       vector<move> exp_moves) {
+void test_helper::expected_moves_test(sol_rules sr,
+                                      initializer_list<pile> piles,
+                                      vector<move> exp_moves) {
     game_state gs(sr, piles);
     vector<move> actual_moves = gs.get_legal_moves();
 

@@ -20,13 +20,13 @@ TEST(BuiltGroupMoveGen, SameSuitEmpty) {
     sr.built_group_pol = pol::SAME_SUIT;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -53,13 +53,13 @@ TEST(BuiltGroupMoveGen, RedBlackEmpty) {
     sr.built_group_pol = pol::RED_BLACK;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -89,13 +89,13 @@ TEST(BuiltGroupMoveGen, AnySuitEmpty) {
     sr.built_group_pol = pol::ANY_SUIT;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -132,13 +132,13 @@ TEST(BuiltGroupMoveGen, CantMove) {
     sr.built_group_pol = pol::ANY_SUIT;
     sr.move_built_group = false;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -159,13 +159,13 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
     sr.built_group_pol = pol::SAME_SUIT;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {"4C"},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -189,13 +189,13 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
     sr.built_group_pol = pol::RED_BLACK;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {"4C"},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
@@ -220,13 +220,13 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
     sr.built_group_pol = pol::ANY_SUIT;
     sr.move_built_group = true;
 
-    test_helper::run_built_group_test(
+    test_helper::expected_moves_test(
             sr,
             {
                     {"4C"},
-                    {"3C","2C","AC"}, // Same suit
-                    {"3H","2S","AH"}, // Red black
-                    {"3D","2D","AS"}, // Any suit
+                    {"3C", "2C", "AC"}, // Same suit
+                    {"3H", "2S", "AH"}, // Red black
+                    {"3D", "2D", "AS"}, // Any suit
                     {}
             },
             {
