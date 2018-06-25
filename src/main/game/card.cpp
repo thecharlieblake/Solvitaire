@@ -69,6 +69,8 @@ card::rank_t card::get_rank() const {
 }
 
 std::string card::to_string() const {
+    if (face_down) return "##";
+
     string s;
     switch(card_rank) {
         case 1 : s += "A"; break;
