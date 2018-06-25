@@ -166,16 +166,19 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             if (d["tableau piles"].HasMember("face up cards")) {
                 if (d["tableau piles"]["face up cards"].IsString()) {
                     face_up_str = d["tableau piles"]["face up cards"].GetString();
+
+                    if (face_up_str == "all") {
+                        sr.face_up = fu::ALL;
+                    } else if (face_up_str == "top") {
+                        sr.face_up = fu::TOP_CARDS;
+                    } else {
+                        string err = "[tableau piles][face up cards] is invalid: " + face_up_str;
+                        json_helper::json_parse_err(err);
+                    }
+
                 } else {
                     json_helper::json_parse_err("[tableau piles][face up cards] must be a string");
                 }
-            }
-            if (face_up_str == "all") {
-                sr.face_up = fu::ALL;
-            } else if (face_up_str == "top") {
-                sr.face_up = fu::TOP_CARDS;
-            } else {
-                json_helper::json_parse_err("[tableau piles][face up cards] is invalid");
             }
 
         } else {
