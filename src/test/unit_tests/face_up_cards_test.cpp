@@ -7,6 +7,7 @@
 #include "../test_helper.h"
 #include "../../main/game/search-state/game_state.h"
 #include "../../main/game/sol_rules.h"
+#include "../../main/game/global_cache.h"
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::face_up_policy fu;
@@ -270,4 +271,39 @@ TEST(FaceUpCards, UndoBuiltGroupTurnsBackFaceDown) {
     ASSERT_FACE_UP(gs.get_data()[1][0]);
     ASSERT_FACE_UP(gs.get_data()[1][1]);
     ASSERT_FACE_DOWN(gs.get_data()[1][2]);
+}
+
+TEST(FaceUpCards, CacheEncodesFaceDown) {
+    sol_rules sr;
+    sr.tableau_pile_count = 3;
+    sr.built_group_pol = pol::RED_BLACK;
+    sr.build_pol = pol::RED_BLACK;
+    sr.move_built_group = true;
+    sr.face_up = fu::TOP_CARDS;
+
+    initializer_list<pile> piles = {
+            {"2C"},
+            {"2s","AH"},
+            {}
+    };
+
+    game_state gs(sr, piles);
+    lru_cache cache(gs, 1000);
+    bool new_state;
+
+    gs.make_move(move(mt::regular, 1, 2));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH to empty pile";
+
+    gs.make_move(move(mt::regular, 2, 1));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH back to face-up 2S";
+
+    gs.make_move(move(mt::regular, 1, 0));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH to 2C";
+
+    gs.make_move(move(mt::regular, 0, 1));
+    new_state = cache.insert(gs).second;
+    ASSERT_FALSE(new_state) << "AH to 2S";
 }
