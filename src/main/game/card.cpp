@@ -22,11 +22,12 @@ const card::colour_t card::colour::Red = 1;
 // A card can either be created using two int values (rank & suit), or
 // using a string (e.g. "AS")
 
-card::card(suit_t s, rank_t r) : card_rank(r), card_suit(s) {}
+card::card(suit_t s, rank_t r, bool fd) : card_rank(r), card_suit(s), face_down(fd) {}
 
-card::card(const char* c) : card_rank(rank_from_str(c)), card_suit(suit_from_str(c)) {}
+card::card(const char* c, bool face_down_possible) :
+        card_rank(rank_from_str(c)), card_suit(suit_from_str(c)), face_down(face_down_possible) {} // TODO: CHANGE!
 
-card::card() : card(0, 0) {}
+card::card() : card(0, 0, false) {}
 
 card::suit_t card::suit_from_str(const char* c) {
     switch(tolower(c[strlen(c) - 1])) {
@@ -68,6 +69,8 @@ card::rank_t card::get_rank() const {
 }
 
 std::string card::to_string() const {
+    if (face_down) return "##";
+
     string s;
     switch(card_rank) {
         case 1 : s += "A"; break;
@@ -85,7 +88,17 @@ std::string card::to_string() const {
     return s;
 }
 
-const card card::divider = card(0, 0);
+bool card::is_face_up() const {
+    return true;
+}
+
+void card::turn_face_up() {
+}
+
+void card::turn_face_down() {
+}
+
+const card card::divider = card();
 
 bool operator==(const card& l, const card& r) {
     return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();

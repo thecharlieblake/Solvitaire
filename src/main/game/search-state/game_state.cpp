@@ -18,6 +18,7 @@
 #include "../../input-output/output/state_printer.h"
 #include "../../input-output/output/log_helper.h"
 #include "../move.h"
+#include "../sol_rules.h"
 
 using namespace rapidjson;
 using std::vector;
@@ -34,6 +35,7 @@ using std::mt19937;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::face_up_policy fu;
 
 //////////////////
 // CONSTRUCTORS //
@@ -155,7 +157,10 @@ game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
     for (int t = 0; !deck.empty(); t++) {
         card c = deck.back();
 
-        // Add the randomly generated card to the tableau piles
+        // If only the top cards are face up, initially deals all face down
+        if (rules.face_up == fu::TOP_CARDS) c.turn_face_down();
+
+        // Adds the randomly generated card to the tableau piles
         auto p = t % original_tableau_piles.size();
 
         // If we are doing a diagonal deal, each row should have one fewer card.
@@ -175,6 +180,12 @@ game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
             deck.pop_back();
         }
     }
+
+    // Now if necessary, turns the top cards face up
+    if (rules.face_up == fu::TOP_CARDS)
+        for (auto& p : piles)
+            if (!p.empty())
+                p[0].turn_face_up();
 
     // The size of all piles must equal the deck size
     int piles_sz = 0;
