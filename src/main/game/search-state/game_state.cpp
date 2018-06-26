@@ -32,6 +32,7 @@ using std::runtime_error;
 using std::max;
 using std::ostream;
 using std::mt19937;
+using std::string;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
@@ -196,11 +197,11 @@ game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
 }
 
 game_state::game_state(const sol_rules& s_rules,
-                       std::initializer_list<pile> il)
-        : game_state(s_rules, false) {
-    pile::ref pr = 0;
-    for (const pile& p : il) {
-        for (const card c : p.pile_vec) {
+                       std::initializer_list<std::initializer_list<string>> il)
+        : game_state(s_rules, false) {pile::ref pr = 0;
+    for (auto& p_il : il) {
+        for (const string& card_str : p_il) {
+            card c(card_str.c_str(), s_rules.face_up == fu::TOP_CARDS);
             place_card(pr, c);
         }
         pr++;
@@ -269,6 +270,10 @@ void game_state::make_move(const move m) {
             assert(false);
             break;
     }
+
+#ifndef NDEBUG
+    check_face_down_consistent();
+#endif
 }
 
 void game_state::undo_move(const move m) {
@@ -293,6 +298,10 @@ void game_state::undo_move(const move m) {
             assert(false);
             break;
     }
+
+#ifndef NDEBUG
+    check_face_down_consistent();
+#endif
 }
 
 void game_state::make_regular_move(const move m) {
@@ -301,6 +310,12 @@ void game_state::make_regular_move(const move m) {
 
     place_card(m.to, take_card(m.from));
 
+    if (m.reveal_move) {
+        assert(!piles[m.from].empty());
+        assert(piles[m.from][0].is_face_down());
+        piles[m.from][0].turn_face_up();
+    }
+
 #ifndef NO_AUTO_FOUNDATIONS
     update_auto_foundation_moves(m.to);
 #endif
@@ -308,6 +323,12 @@ void game_state::make_regular_move(const move m) {
 
 void game_state::undo_regular_move(const move m) {
     assert(m.to < piles.size());
+
+    if (m.reveal_move) {
+        assert(!piles[m.from].empty());
+        assert(!piles[m.from][0].is_face_down());
+        piles[m.from][0].turn_face_down();
+    }
 
     place_card(m.from, take_card(m.to));
 
@@ -331,12 +352,24 @@ void game_state::make_built_group_move(move m) {
     for (uint8_t rem_count = 0; rem_count < m.count; rem_count++) {
         take_card(m.from);
     }
+
+    if (m.reveal_move) {
+        assert(!piles[m.from].empty());
+        assert(piles[m.from][0].is_face_down());
+        piles[m.from][0].turn_face_up();
+    }
 }
 
 void game_state::undo_built_group_move(move m) {
     assert(rules.move_built_group);
     assert(m.to < piles.size());
     assert(m.count <= rules.max_rank);
+
+    if (m.reveal_move) {
+        assert(!piles[m.from].empty());
+        assert(!piles[m.from][0].is_face_down());
+        piles[m.from][0].turn_face_down();
+    }
 
     // Adds the cards to the 'from' pile
     for (auto pile_idx = m.count; pile_idx-- > 0;) {
@@ -426,6 +459,23 @@ card game_state::take_card(pile::ref pr) {
 #endif
     return c;
 }
+
+#ifndef NDEBUG
+void game_state::check_face_down_consistent() const {
+    for (auto& p : original_tableau_piles) {
+        if (piles[p].empty()) continue;
+        // Makes sure the top cards of each tableau pile are face up
+        assert(!piles[p].top_card().is_face_down());
+
+        // Makes sure face down cards are never above face down ones
+        bool seen_face_up = false;
+        for (auto& c : piles[p].pile_vec) {
+            seen_face_up = seen_face_up || !c.is_face_down();
+            assert(!(c.is_face_down() && seen_face_up));
+        }
+    }
+}
+#endif
 
 
 ////////////////////////

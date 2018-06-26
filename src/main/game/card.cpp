@@ -25,7 +25,8 @@ const card::colour_t card::colour::Red = 1;
 card::card(suit_t s, rank_t r, bool fd) : card_rank(r), card_suit(s), face_down(fd) {}
 
 card::card(const char* c, bool face_down_possible) :
-        card_rank(rank_from_str(c)), card_suit(suit_from_str(c)), face_down(face_down_possible) {} // TODO: CHANGE!
+        card_rank(rank_from_str(c)), card_suit(suit_from_str(c)),
+        face_down(face_down_from_str(c, face_down_possible)) {}
 
 card::card() : card(0, 0, false) {}
 
@@ -49,6 +50,18 @@ card::rank_t card::rank_from_str(const char* c) {
         default:
             assert(stoi(c) >= 1 && stoi(c) <= 13);
             return static_cast<rank_t>(stoi(c));
+    }
+}
+
+bool card::face_down_from_str(const char *c, bool possible) {
+    if (!possible) return false;
+
+    switch(c[strlen(c) - 1]) {
+        case 'c': return true;
+        case 'h': return true;
+        case 's': return true;
+        case 'd': return true;
+        default: return false;
     }
 }
 
@@ -88,14 +101,16 @@ std::string card::to_string() const {
     return s;
 }
 
-bool card::is_face_up() const {
-    return true;
+bool card::is_face_down() const {
+    return face_down;
 }
 
 void card::turn_face_up() {
+    face_down = false;
 }
 
 void card::turn_face_down() {
+    face_down = true;
 }
 
 const card card::divider = card();

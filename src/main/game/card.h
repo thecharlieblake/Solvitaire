@@ -39,7 +39,7 @@ public:
     colour_t get_colour() const;
     rank_t get_rank() const;
 
-    bool is_face_up() const;
+    bool is_face_down() const;
     void turn_face_up();
     void turn_face_down();
 
@@ -48,6 +48,7 @@ public:
 private:
     static suit_t suit_from_str(const char* c);
     static rank_t rank_from_str(const char* c);
+    bool face_down_from_str(const char *c, bool possible);
 
     rank_t card_rank : 4;
     suit_t card_suit : 2;

@@ -7,6 +7,7 @@
 #include "../test_helper.h"
 #include "../../main/game/search-state/game_state.h"
 #include "../../main/game/sol_rules.h"
+#include "../../main/game/global_cache.h"
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::face_up_policy fu;
@@ -14,10 +15,11 @@ typedef move::mtype mt;
 
 using std::vector;
 using std::ostream;
-using std::initializer_list;
 
-#define ASSERT_FACE_UP(card) ASSERT_TRUE(card.is_face_up()) << card.to_string() << " should be face up"
-#define ASSERT_FACE_DOWN(card) ASSERT_FALSE(card.is_face_up()) << card.to_string() << " should be face down"
+typedef std::initializer_list<std::initializer_list<std::string>> string_il;
+
+#define ASSERT_FACE_UP(card) ASSERT_FALSE(card.is_face_down()) << card.to_string() << " should be face up"
+#define ASSERT_FACE_DOWN(card) ASSERT_TRUE(card.is_face_down()) << card.to_string() << " should be face down"
 
 
 TEST(FaceUpCards, CapsFaceUpIfFaceUpNotAll) {
@@ -28,7 +30,7 @@ TEST(FaceUpCards, CapsFaceUpIfFaceUpNotAll) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"3S"},
             {"2s","AS"},
             {}
@@ -49,7 +51,7 @@ TEST(FaceUpCards, IgnoreCapsIfFaceUpAll) {
     sr.move_built_group = true;
     sr.face_up = fu::ALL;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"3S"},
             {"2s","AS"},
             {}
@@ -70,14 +72,24 @@ TEST(FaceUpCards, MoveTurnsFaceUp) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"3S"},
             {"2s","AS"}, // from
             {} // to
     };
 
+    test_helper::expected_moves_test(
+            sr,
+            piles,
+            {
+                    // Regular moves
+                    move(move::mtype::regular, 0, 2, 1, false),
+                    move(move::mtype::regular, 1, 2, 1, true)
+            }
+    );
+
     game_state gs(sr, piles);
-    gs.make_move(move(mt::regular, 1, 2));
+    gs.make_move(move(mt::regular, 1, 2, 1, true));
 
     ASSERT_FACE_UP(gs.get_data()[0][0]);
     ASSERT_FACE_UP(gs.get_data()[1][0]);
@@ -86,25 +98,34 @@ TEST(FaceUpCards, MoveTurnsFaceUp) {
 
 TEST(FaceUpCards, BuiltGroupMoveTurnsFaceUp) {
     sol_rules sr;
-    sr.tableau_pile_count = 3;
+    sr.tableau_pile_count = 2;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
-            {"4S"},
+    string_il piles = {
             {"3s","2S","AS"}, // from
             {} // to
     };
 
+    test_helper::expected_moves_test(
+            sr,
+            piles,
+            {
+                    // Regular moves
+                    move(move::mtype::regular, 0, 1, 1, false),
+                    // Built-group moves
+                    move(move::mtype::built_group, 0, 1, 2, true)
+            }
+    );
+
     game_state gs(sr, piles);
-    gs.make_move(move(mt::built_group, 1, 2, 2));
+    gs.make_move(move(mt::built_group, 0, 1, 2, true));
 
     ASSERT_FACE_UP(gs.get_data()[0][0]);
     ASSERT_FACE_UP(gs.get_data()[1][0]);
-    ASSERT_FACE_UP(gs.get_data()[2][0]);
-    ASSERT_FACE_UP(gs.get_data()[2][1]);
+    ASSERT_FACE_UP(gs.get_data()[1][1]);
 }
 
 TEST(FaceUpCards, MoveAlreadyFaceUpNoChange) {
@@ -115,14 +136,24 @@ TEST(FaceUpCards, MoveAlreadyFaceUpNoChange) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"3S"},
-            {"2S","AS"}, // from
+            {"2s","AS"}, // from
             {} // to
     };
 
+    test_helper::expected_moves_test(
+            sr,
+            piles,
+            {
+                    // Regular moves
+                    move(move::mtype::regular, 0, 2, 1, false),
+                    move(move::mtype::regular, 1, 2, 1, true)
+            }
+    );
+
     game_state gs(sr, piles);
-    gs.make_move(move(mt::regular, 1, 2));
+    gs.make_move(move(mt::regular, 1, 2, 1, true));
 
     ASSERT_FACE_UP(gs.get_data()[0][0]);
     ASSERT_FACE_UP(gs.get_data()[1][0]);
@@ -137,12 +168,6 @@ TEST(FaceUpCards, FaceDownNoBuiltGroup) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
-            {"3S"},
-            {"2s","AS"},
-            {}
-    };
-
     test_helper::expected_moves_test(
             sr,
             {
@@ -152,8 +177,8 @@ TEST(FaceUpCards, FaceDownNoBuiltGroup) {
             },
             {
                     // Regular moves
-                    move(move::mtype::regular, 0, 2, 1),
-                    move(move::mtype::regular, 1, 2, 1),
+                    move(move::mtype::regular, 0, 2, 1, false),
+                    move(move::mtype::regular, 1, 2, 1, true),
             }
     );
 }
@@ -165,12 +190,6 @@ TEST(FaceUpCards, FaceUpBuiltGroup) {
     sr.build_pol = pol::SAME_SUIT;
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
-
-    initializer_list<pile> piles = {
-            {"3S"},
-            {"2s","AS"},
-            {}
-    };
 
     test_helper::expected_moves_test(
             sr,
@@ -199,12 +218,6 @@ TEST(FaceUpCards, FaceUpBuiltGroup2Not3) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
-            {"3S"},
-            {"2s","AS"},
-            {}
-    };
-
     test_helper::expected_moves_test(
             sr,
             {
@@ -214,11 +227,11 @@ TEST(FaceUpCards, FaceUpBuiltGroup2Not3) {
             },
             {
                     // Regular moves
-                    move(mt::regular, 0, 2, 1),
-                    move(mt::regular, 1, 2, 1),
+                    move(mt::regular, 0, 2, 1, false),
+                    move(mt::regular, 1, 2, 1, false),
 
                     // Built group moves
-                    move(mt::built_group, 1, 2, 2)
+                    move(mt::built_group, 1, 2, 2, true)
             }
     );
 }
@@ -231,14 +244,14 @@ TEST(FaceUpCards, UndoTurnsBackFaceDown) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"3S"},
             {"2s","AS"}, // from
             {} // to
     };
 
     game_state gs(sr, piles);
-    move m = move(mt::regular, 1, 2);
+    move m = move(mt::regular, 1, 2, 1, true);
     gs.make_move(m);
     gs.undo_move(m);
 
@@ -255,14 +268,14 @@ TEST(FaceUpCards, UndoBuiltGroupTurnsBackFaceDown) {
     sr.move_built_group = true;
     sr.face_up = fu::TOP_CARDS;
 
-    initializer_list<pile> piles = {
+    string_il piles = {
             {"4S"},
             {"3s","2S","AS"}, // from
             {} // to
     };
 
     game_state gs(sr, piles);
-    move m = move(mt::built_group, 1, 2, 2);
+    move m = move(mt::built_group, 1, 2, 2, true);
     gs.make_move(m);
     gs.undo_move(m);
 
@@ -270,4 +283,39 @@ TEST(FaceUpCards, UndoBuiltGroupTurnsBackFaceDown) {
     ASSERT_FACE_UP(gs.get_data()[1][0]);
     ASSERT_FACE_UP(gs.get_data()[1][1]);
     ASSERT_FACE_DOWN(gs.get_data()[1][2]);
+}
+
+TEST(FaceUpCards, CacheEncodesFaceDown) {
+    sol_rules sr;
+    sr.tableau_pile_count = 3;
+    sr.built_group_pol = pol::RED_BLACK;
+    sr.build_pol = pol::RED_BLACK;
+    sr.move_built_group = true;
+    sr.face_up = fu::TOP_CARDS;
+
+    string_il piles = {
+            {"2C"},
+            {"2s","AH"},
+            {}
+    };
+
+    game_state gs(sr, piles);
+    lru_cache cache(gs, 1000);
+    bool new_state;
+
+    gs.make_move(move(mt::regular, 1, 2, 1, true));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH to empty pile";
+
+    gs.make_move(move(mt::regular, 2, 1, 1, false));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH back to face-up 2S";
+
+    gs.make_move(move(mt::regular, 1, 0, 1, false));
+    new_state = cache.insert(gs).second;
+    ASSERT_TRUE(new_state) << "AH to 2C";
+
+    gs.make_move(move(mt::regular, 0, 1, 1, false));
+    new_state = cache.insert(gs).second;
+    ASSERT_FALSE(new_state) << "AH to 2S";
 }

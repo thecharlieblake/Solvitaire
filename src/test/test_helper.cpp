@@ -14,9 +14,11 @@
 #define ASSERT_(t_f, statement) ASSERT_TRUE((statement) == (t_f))
 
 using namespace rapidjson;
-using std::initializer_list;
 using std::vector;
 using std::ostream;
+
+typedef std::initializer_list<std::initializer_list<std::string>> string_il;
+
 
 bool test_helper::is_solvable(const std::string& input_file, const std::string& preset_type) {
     const Document in_doc = json_helper::get_file_json(input_file);
@@ -35,7 +37,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
     rules.foundations_removable = false;
     rules.cells = 0;
 
-    game_state gs = game_state(rules, std::initializer_list<pile>{
+    game_state gs = game_state(rules, string_il{
             {},
             {},
             {},
@@ -63,7 +65,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
 }
 
 void test_helper::expected_moves_test(sol_rules sr,
-                                      initializer_list<pile> piles,
+                                      string_il piles,
                                       vector<move> exp_moves) {
     game_state gs(sr, piles);
     vector<move> actual_moves = gs.get_legal_moves();
@@ -88,6 +90,7 @@ ostream& operator <<(ostream& os, const move& m) {
     return os << "move:(" << int(m.from)
               << ","    << int(m.to)
               << ","     << int(m.count)
+              << "," << m.reveal_move
               << ")";
 }
 
