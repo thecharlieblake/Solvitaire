@@ -28,6 +28,10 @@ struct sol_rules {
         WASTE,
         TABLEAU_PILES
     };
+    enum class face_up_policy {
+        ALL,
+        TOP_CARDS
+    };
 
     uint8_t tableau_pile_count;
     build_policy build_pol;
@@ -49,6 +53,8 @@ struct sol_rules {
     bool stock_redeal;
     uint8_t reserve_size;
     bool reserve_stacked;
+    face_up_policy face_up;
+
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H

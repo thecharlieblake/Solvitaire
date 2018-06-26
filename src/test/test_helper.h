@@ -17,7 +17,7 @@ public:
     static bool is_solvable(const std::string&, const std::string&);
     static void run_foundations_dominance_test(sol_rules::build_policy policy,
                                                std::vector<card> cards);
-    static void run_built_group_test(sol_rules sr, std::initializer_list<pile>, std::vector<move>);
+    static void expected_moves_test(sol_rules sr, std::initializer_list<pile>, std::vector<move>);
     static bool moves_eq(std::vector<move>&, std::vector<move>&);
 };
 

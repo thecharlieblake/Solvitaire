@@ -9,6 +9,7 @@
 #include "json_helper.h"
 #include "../sol_preset_types.h"
 #include "../../../game/card.h"
+#include "../../../game/sol_rules.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -20,6 +21,7 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::face_up_policy fu;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -157,6 +159,25 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     sr.diagonal_deal = d["tableau piles"]["diagonal deal"].GetBool();
                 } else {
                     json_helper::json_parse_err("[tableau piles][diagonal deal] must be a boolean");
+                }
+            }
+
+            string face_up_str;
+            if (d["tableau piles"].HasMember("face up cards")) {
+                if (d["tableau piles"]["face up cards"].IsString()) {
+                    face_up_str = d["tableau piles"]["face up cards"].GetString();
+
+                    if (face_up_str == "all") {
+                        sr.face_up = fu::ALL;
+                    } else if (face_up_str == "top") {
+                        sr.face_up = fu::TOP_CARDS;
+                    } else {
+                        string err = "[tableau piles][face up cards] is invalid: " + face_up_str;
+                        json_helper::json_parse_err(err);
+                    }
+
+                } else {
+                    json_helper::json_parse_err("[tableau piles][face up cards] must be a string");
                 }
             }
 
@@ -318,7 +339,8 @@ string rules_parser::rules_schema_json() {
         "spaces policy": {"type": "string", "enum": ["any", "no-build", "kings"]},
         "diagonal deal": {"type": "boolean"},
         "move built group": {"type": "boolean"},
-        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]}
+        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]},
+        "face up cards": {"type": "string", "enum": ["all", "top"]}
       }, "additionalProperties": false
     },
     "max rank": {"type": "integer", "minimum": 1, "maximum": 13},

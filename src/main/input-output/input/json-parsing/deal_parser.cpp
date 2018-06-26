@@ -5,11 +5,13 @@
 #include "deal_parser.h"
 #include "../../../game/search-state/game_state.h"
 #include "json_helper.h"
+#include "../../../game/sol_rules.h"
 
 using namespace std;
 using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
+typedef sol_rules::face_up_policy fu;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     // There are two stages to reading in the supplied deal. It is both put
@@ -100,7 +102,7 @@ void deal_parser::parse_tableau_piles(game_state &gs, const rapidjson::Document&
 
         for (auto& json_card : p.first->GetArray()) {
             assert(json_card.IsString());
-            gs.place_card(*p.second, card(json_card.GetString()));
+            gs.place_card(*p.second, card(json_card.GetString(), gs.rules.face_up != fu::ALL));
         }
     }
 }

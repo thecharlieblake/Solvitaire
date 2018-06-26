@@ -31,13 +31,17 @@ public:
 
     // A card can either be created using two int values (rank & suit), or
     // using a string (e.g. "AS")
-    card(suit_t, rank_t);
-    card(const char*);
+    card(suit_t, rank_t, bool face_down=false);
+    card(const char*, bool face_down_possible=false);
     card();
 
     suit_t get_suit() const;
     colour_t get_colour() const;
     rank_t get_rank() const;
+
+    bool is_face_up() const;
+    void turn_face_up();
+    void turn_face_down();
 
     std::string to_string() const;
 
@@ -46,7 +50,8 @@ private:
     static rank_t rank_from_str(const char* c);
 
     rank_t card_rank : 4;
-    suit_t card_suit : 4;
+    suit_t card_suit : 2;
+    bool face_down : 1;
 };
 
 bool operator==(const card&, const card&);
