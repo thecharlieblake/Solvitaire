@@ -359,6 +359,25 @@ map<string, string> sol_preset_types::mp = {
 
         },
 
+        {
+                "simple-klondike",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": true,
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "max rank": 4,
+  "stock size": 6,
+  "stock deal count": 3,
+  "stock redeal": true
+}
+)"
+        },
         // --- END OF 'CANONICAL' GAMES ---
 
         {
