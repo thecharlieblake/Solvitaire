@@ -86,6 +86,43 @@ bool test_helper::moves_eq(vector<move>& exp_moves, vector<move>& actual_moves) 
 
     return true;
 }
+
+void test_helper::k_plus_stock_test
+        ( sol_rules sr
+        , string_il piles
+        , vector<move> exp_moves
+        , move m
+        , pile::size_type stock_size
+        , pile::size_type waste_size
+        , card top_stock
+        , card top_waste
+        ) {
+
+    game_state gs(sr, piles);
+    vector<move> actual_moves = gs.get_legal_moves();
+
+    ASSERT_TRUE(moves_eq(exp_moves, actual_moves)) << actual_moves;
+
+    gs.make_move(m);
+
+    ASSERT_EQ(gs.get_data()[0].size    (), stock_size) << gs.get_data()[0].size    ();
+    ASSERT_EQ(gs.get_data()[1].size    (), waste_size) << gs.get_data()[1].size    ();
+
+    if (top_stock == card())
+        ASSERT_TRUE(gs.get_data()[0].empty());
+    else
+        ASSERT_EQ(gs.get_data()[0].top_card(), top_stock ) << gs.get_data()[0].top_card().to_string();
+
+    if (top_waste == card())
+        ASSERT_TRUE(gs.get_data()[1].empty());
+    else
+        ASSERT_EQ(gs.get_data()[1].top_card(), top_waste ) << gs.get_data()[1].top_card().to_string();
+
+    gs.undo_move(m);
+
+    ASSERT_EQ(gs.get_data(), game_state(sr, piles).get_data()) << gs;
+}
+
 ostream& operator <<(ostream& os, const move& m) {
     return os << "move:(" << int(m.from)
               << ","    << int(m.to)

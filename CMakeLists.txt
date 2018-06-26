@@ -74,7 +74,8 @@ set(sources_test
         src/test/unit_tests/pile_test.cpp
         src/test/unit_tests/legal_move_gen_test.cpp
         src/test/unit_tests/built_group_move_gen_test.cpp
-        src/test/unit_tests/face_up_cards_test.cpp)
+        src/test/unit_tests/face_up_cards_test.cpp
+        src/test/unit_tests/k-plus-stock-test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################
