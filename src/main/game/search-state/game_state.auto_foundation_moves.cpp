@@ -86,7 +86,13 @@ boost::optional<move> game_state::get_dominance_move() const {
                                    + card::rank_t(1);
         if (target_rank == c.get_rank() &&
             auto_foundation_moves[c.get_suit()]) {
-            return move(move::mtype::dominance, pr, target_foundation);
+            move m(move::mtype::dominance, pr, target_foundation);
+
+            // If this dominance move reveals a card, adds this to the move
+            if (piles[pr].size() > 1 && piles[pr][1].is_face_down())
+                m.make_reveal_move();
+
+            return m;
         }
     }
 #endif

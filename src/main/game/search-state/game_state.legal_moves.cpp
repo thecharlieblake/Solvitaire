@@ -3,6 +3,7 @@
 //
 
 #include "game_state.h"
+#include "../sol_rules.h"
 
 #include <boost/optional/optional.hpp>
 
@@ -14,6 +15,7 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::face_up_policy fu;
 
 
 ////////////////////////////////
@@ -136,9 +138,11 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.move_built_group)
         add_built_group_moves(moves);
 
-    if (rules.foundations_comp_piles) // I.E. Spider-type winning condition
+    if (rules.foundations_comp_piles) // i.e. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
 
+    if (rules.face_up != fu::ALL)
+        turn_face_down_cards(moves);
     /*
 
     vector<move> moves;
@@ -185,6 +189,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.foundations_comp_piles) // I.E. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
 */
+
     return moves;
 }
 
@@ -352,8 +357,12 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
                 if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13))
                     add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
             } else {
-                if (is_next_built_group_card(piles[add_ref].top_card(), bg_high))
-                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+                if (is_next_built_group_card(piles[add_ref].top_card(), bg_high)) {
+                    bool is_reveal_move =
+                               piles[rem_ref].size() > built_group_height
+                            && piles[rem_ref][built_group_height].is_face_down();
+                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
+                }
             }
         }
     }
@@ -362,7 +371,9 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
 // Finds the size of the built group at the top of a pile
 pile::size_type game_state::get_built_group_height(pile::ref ref) const {
     pile::size_type i = 1;
-    while (i < piles[ref].size() && is_next_built_group_card(piles[ref][i], piles[ref][i-1]))
+    while (i < piles[ref].size()
+           && is_next_built_group_card(piles[ref][i], piles[ref][i-1])
+           && !piles[ref][i].is_face_down())
         i++;
     return i;
 }
@@ -374,6 +385,9 @@ void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_
     do {
         moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1));
     } while (piles[rem_ref][card_idx++] != bg_high);
+
+    if (card_idx < piles[rem_ref].size() && piles[rem_ref][card_idx].is_face_down())
+        moves.back().make_reveal_move();
 }
 
 bool game_state::is_next_built_group_card(card a, card b) const {
@@ -393,4 +407,13 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
     }
     // Checks rank
     return b.get_rank() + 1 == a.get_rank();
+}
+
+void game_state::turn_face_down_cards(vector<move>& moves) const {
+    for (auto& m : moves) {
+        bool is_tableau_move = m.from >= original_tableau_piles.front() && m.from <= original_tableau_piles.back();
+        if (is_tableau_move && piles[m.from].size() > 1 && piles[m.from][1].is_face_down()) {
+            m.make_reveal_move();
+        }
+    }
 }

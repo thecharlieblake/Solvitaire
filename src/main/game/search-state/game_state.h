@@ -32,7 +32,7 @@ public:
     // Does the same from a seed
     game_state(const sol_rules&, int seed, bool);
     // Does the same but with an initialiser list (useful for testing)
-    game_state(const sol_rules&, std::initializer_list<pile>);
+    game_state(const sol_rules&, std::initializer_list<std::initializer_list<std::string>>);
 
     /* Altering state */
 
@@ -80,6 +80,10 @@ private:
     void make_redeal_move();
     void undo_redeal_move();
 
+#ifndef NDEBUG
+    void check_face_down_consistent() const;
+#endif
+
     /* Legal move generation */
 
     bool stock_can_deal_tableau() const;
@@ -106,6 +110,8 @@ private:
     bool is_next_built_group_card(card, card) const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;
+
+    void turn_face_down_cards(std::vector<move>&) const;
 
     /* Auto-foundation moves */
 
