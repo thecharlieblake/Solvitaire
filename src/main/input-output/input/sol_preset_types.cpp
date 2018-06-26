@@ -26,7 +26,8 @@ map<string, string> sol_preset_types::mp = {
     "spaces policy": "any",
     "diagonal deal": false,
     "move built group": false,
-    "move built group policy": "same-as-build"
+    "move built group policy": "same-as-build",
+    "face up cards": "all"
   },
   "max rank": 13,
   "two decks": false,
@@ -388,7 +389,8 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "spaces policy": "kings",
     "move built group": true,
-    "diagonal deal": true
+    "diagonal deal": true,
+    "face up cards": "top"
   },
   "stock size": 24,
   "stock deal count": 1,
@@ -408,7 +410,8 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "spaces policy": "kings",
     "move built group": true,
-    "diagonal deal": true
+    "diagonal deal": true,
+    "face up cards": "top"
   },
   "stock size": 24,
   "stock deal count": 3,
@@ -928,6 +931,22 @@ map<string, string> sol_preset_types::mp = {
   "max rank": 9
 }
 )"
+        },
+        {
+                "simple-simon",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "diagonal deal": true,
+    "move built group": true,
+    "move built group policy": "same-suit"
+  },
+  "foundations complete piles": true
+}
+)"
+
         }
 };
 

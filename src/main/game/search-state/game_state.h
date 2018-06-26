@@ -28,11 +28,11 @@ public:
     /* Constructors */
 
     // Creates a game state representation from a JSON doc
-    game_state(const sol_rules&, const rapidjson::Document&);
+    game_state(const sol_rules&, const rapidjson::Document&, bool);
     // Does the same from a seed
-    game_state(const sol_rules&, int seed);
+    game_state(const sol_rules&, int seed, bool);
     // Does the same but with an initialiser list (useful for testing)
-    game_state(const sol_rules&, std::initializer_list<pile>);
+    game_state(const sol_rules&, std::initializer_list<std::initializer_list<std::string>>);
 
     /* Altering state */
 
@@ -58,8 +58,9 @@ public:
 private:
     /* Constructors (& helper function) */
 
-    explicit game_state(const sol_rules&);
+    explicit game_state(const sol_rules&, bool);
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
+    template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
 
     /* Pile order logic */
 
@@ -78,6 +79,10 @@ private:
     void undo_stock_to_tableau_move(move move);
     void make_redeal_move();
     void undo_redeal_move();
+
+#ifndef NDEBUG
+    void check_face_down_consistent() const;
+#endif
 
     /* Legal move generation */
 
@@ -106,6 +111,8 @@ private:
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;
 
+    void turn_face_down_cards(std::vector<move>&) const;
+
     /* Auto-foundation moves */
 
     bool is_valid_auto_foundation_move(pile::ref) const;
@@ -116,6 +123,7 @@ private:
     /* Game rules */
 
     const sol_rules rules;
+    bool streamliners;
 
     /* Pile references */
 

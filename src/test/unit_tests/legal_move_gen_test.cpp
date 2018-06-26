@@ -15,14 +15,16 @@ typedef sol_rules::stock_deal_type sdt;
 
 using std::vector;
 using std::ostream;
-using std::initializer_list;
+
+typedef std::initializer_list<std::initializer_list<std::string>> string_il;
+
 
 TEST(LegalMoveGen, BuildPolAnySuit) {
     sol_rules sr;
     sr.build_pol = pol::ANY_SUIT;
     sr.tableau_pile_count = 5;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"2C"},
             {"2H"},
             {"2D"},
@@ -46,7 +48,7 @@ TEST(LegalMoveGen, BuildPolRedBlack) {
     sr.build_pol = pol::RED_BLACK;
     sr.tableau_pile_count = 5;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"2C"},
             {"2H"},
             {"2S"},
@@ -68,7 +70,7 @@ TEST(LegalMoveGen, BuildPolSameSuit) {
     sr.build_pol = pol::SAME_SUIT;
     sr.tableau_pile_count = 5;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"2C"},
             {"2H"},
             {"2S"},
@@ -89,7 +91,7 @@ TEST(LegalMoveGen, BuildPolNoBuild) {
     sr.build_pol = pol::NO_BUILD;
     sr.tableau_pile_count = 5;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"2C"},
             {"2H"},
             {"2S"},
@@ -109,7 +111,7 @@ TEST(LegalMoveGen, SpacesPolAny) {
     sr.spaces_pol = s_pol::ANY;
     sr.tableau_pile_count = 2;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {},
             {"AC"}
     });
@@ -127,7 +129,7 @@ TEST(LegalMoveGen, SpacesPolKings) {
     sr.spaces_pol = s_pol::KINGS;
     sr.tableau_pile_count = 3;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {},
             {"AC"},
             {"KD"}
@@ -146,7 +148,7 @@ TEST(LegalMoveGen, SpacesPolNoBuild) {
     sr.spaces_pol = s_pol::NO_BUILD;
     sr.tableau_pile_count = 2;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {},
             {"AC"}
     });
@@ -163,7 +165,7 @@ TEST(LegalMoveGen, MoveBuiltGroupTrue) {
     sr.move_built_group = true;
     sr.tableau_pile_count = 2;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {},
             {"2C", "AC"}
     });
@@ -182,7 +184,7 @@ TEST(LegalMoveGen, MoveBuiltGroupFalse) {
     sr.move_built_group = false;
     sr.tableau_pile_count = 2;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {},
             {"AC", "2C"}
     });
@@ -200,7 +202,7 @@ TEST(LegalMoveGen, Foundations) {
     sr.foundations = true;
     sr.tableau_pile_count = 4;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {}, {}, {}, {},
             {"AC"},
             {"AH"},
@@ -225,7 +227,7 @@ TEST(LegalMoveGen, FoundationsRemovable) {
     sr.foundations_removable = true;
     sr.tableau_pile_count = 1;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"AC","2C","3C"}, // Without a few cards here dominance logic blocks
             {},               // removing from foundation
             {},
@@ -246,14 +248,13 @@ TEST(LegalMoveGen, Cells) {
     sr.cells = 2;
     sr.tableau_pile_count = 1;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {"3D"}, {}, // The cells
             {"4H"}
     });
     vector<move> actual_moves = gs.get_legal_moves();
 
     vector<move> exp_moves = {
-            move(move::mtype::regular, 0, 1),
             move(move::mtype::regular, 0, 2),
             move(move::mtype::regular, 2, 1)
     };
@@ -268,7 +269,7 @@ TEST(LegalMoveGen, StockDealToWaste) {
     sr.stock_size = 2;
     sr.stock_deal_t = sdt::WASTE;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {}, {}, {}, {}, // The foundations
             {"AC", "AD"}, // The stock
             {}, // The waste
@@ -290,7 +291,7 @@ TEST(LegalMoveGen, StockDealToTableau) {
     sr.stock_size = 2;
     sr.stock_deal_t = sdt::TABLEAU_PILES;
 
-    game_state gs(sr, initializer_list<pile>{
+    game_state gs(sr, string_il{
             {}, {}, {}, {}, // The foundations
             {"AC", "AD"}, // The stock
             {"3H"}, {"5D"}, {"7C"} // The tableau piles

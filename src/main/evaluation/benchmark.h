@@ -11,7 +11,7 @@
 
 class benchmark {
 public:
-    static void run(const sol_rules &rules, uint64_t);
+    static void run(const sol_rules &rules, uint64_t, bool);
 };
 
 

@@ -11,9 +11,9 @@ using std::max;
 
 
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
-#ifndef AUTO_FOUNDATIONS_STREAMLINER
-    if (rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
-#endif
+    if (rules.foundations_comp_piles)
+        return false;
+    else if (streamliners || rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
         return true;
 
     card::suit_t target_suit(target_pile - foundations.front());
@@ -86,7 +86,13 @@ boost::optional<move> game_state::get_dominance_move() const {
                                    + card::rank_t(1);
         if (target_rank == c.get_rank() &&
             auto_foundation_moves[c.get_suit()]) {
-            return move(move::mtype::dominance, pr, target_foundation);
+            move m(move::mtype::dominance, pr, target_foundation);
+
+            // If this dominance move reveals a card, adds this to the move
+            if (piles[pr].size() > 1 && piles[pr][1].is_face_down())
+                m.make_reveal_move();
+
+            return m;
         }
     }
 #endif

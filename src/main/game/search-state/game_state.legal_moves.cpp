@@ -3,16 +3,19 @@
 //
 
 #include "game_state.h"
+#include "../sol_rules.h"
 
 #include <boost/optional/optional.hpp>
 
 using std::vector;
 using std::min;
+using std::list;
 using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::face_up_policy fu;
 
 
 ////////////////////////////////
@@ -21,6 +24,127 @@ typedef sol_rules::stock_deal_type sdt;
 
 // Note that the moves added last here, are tried first
 vector<move> game_state::get_legal_moves(move parent_move) {
+    // Order:
+    // Foundations complete piles moves
+    // Tableau built group moves
+    // Tableau / cells / reserve to hole / foundation moves
+    // Cell to tableau moves
+    // Tableau to tableau moves
+    // Waste to tableau moves
+    // Reserve to tableau moves
+    // Foundation to tableau moves
+    // Tableau to cell moves
+    // Stock to waste moves
+    // Stock to tableau / redeal moves
+
+    vector<move> moves;
+
+    // Stock to tableau / redeal moves
+    if (rules.stock_size > 0) {
+        if (stock_can_deal_tableau())
+            moves.emplace_back(get_stock_tableau_move());
+        else if (stock_can_redeal())
+            moves.emplace_back(move::mtype::redeal);
+    }
+
+    // Stock to waste moves
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        add_stock_to_waste_move(moves);
+
+    // Tableau to cell moves
+    pile::ref empty_cell = 255;
+    for (auto c : cells) {
+        if (piles[c].empty()) empty_cell = c;
+    }
+    if (empty_cell != 255) {
+        for (auto t : tableau_piles) {
+            if (piles[t].empty() || parent_move.to == t || !is_valid_tableau_move(t, empty_cell)) continue;
+            else moves.emplace_back(move::mtype::regular, t, empty_cell);
+        }
+    }
+
+    // Foundation to tableau moves
+    if (rules.foundations_removable) {
+        for (auto f : foundations) {
+            if (piles[f].empty() || parent_move.to == f || dominance_blocks_foundation_move(f)) continue;
+
+            for (auto t : tableau_piles) {
+                if (is_valid_tableau_move(f, t)) {
+                    moves.emplace_back(move::mtype::regular, f, t);
+                }
+            }
+        }
+    }
+
+    // Reserve to tableau moves
+    for (auto r : reserve) {
+        if (piles[r].empty()) continue;
+
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(r, t)) {
+                moves.emplace_back(move::mtype::regular, r, t);
+            }
+        }
+    }
+
+    // Waste to tableau moves
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[waste].empty()) {
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(waste, t)) {
+                moves.emplace_back(move::mtype::regular, waste, t);
+            }
+        }
+    }
+
+    // Tableau to tableau moves
+    for (auto t_from : tableau_piles) {
+        if (piles[t_from].empty() || parent_move.to == t_from) continue;
+
+        for (auto t_to : tableau_piles) {
+            if (is_valid_tableau_move(t_from, t_to)) {
+                moves.emplace_back(move::mtype::regular, t_from, t_to);
+            }
+        }
+    }
+
+    // Cell to tableau moves
+    for (auto c : cells) {
+        if (piles[c].empty() || parent_move.to == c) continue;
+
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(c, t)) {
+                moves.emplace_back(move::mtype::regular, c, t);
+            }
+        }
+    }
+
+    // Tableau / cells to hole / foundation moves
+    if (rules.hole || (rules.foundations && !rules.foundations_comp_piles)) {
+        list<pile::ref> from_piles = tableau_piles;
+        if (rules.cells > 0) from_piles.insert(from_piles.end(), cells.begin(), cells.end());
+        if (rules.reserve_size > 0) from_piles.insert(from_piles.end(), reserve.begin(), reserve.end());
+
+        for (auto fp : from_piles) {
+            if (piles[fp].empty() || parent_move.to == fp) continue;
+
+            for (auto f : foundations)
+                if (is_valid_foundations_move(fp, f))
+                    moves.emplace_back(move::mtype::regular, fp, f);
+            if (rules.hole && is_valid_hole_move(fp))
+                moves.emplace_back(move::mtype::regular, fp, hole);
+        }
+    }
+
+    if (rules.move_built_group)
+        add_built_group_moves(moves);
+
+    if (rules.foundations_comp_piles) // i.e. Spider-type winning condition
+        add_foundation_complete_piles_moves(moves);
+
+    if (rules.face_up != fu::ALL)
+        turn_face_down_cards(moves);
+    /*
+
     vector<move> moves;
 
     // Attempts stock tableau deal and redeal
@@ -49,10 +173,10 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             continue;
         }
 
-        if (rules.tableau_pile_count > 0)
-            add_tableau_moves(moves, rem_ref);
         if (rules.cells > 0)
             add_cell_moves(moves, rem_ref);
+        if (rules.tableau_pile_count > 0)
+            add_tableau_moves(moves, rem_ref);
         if (rules.foundations)
             add_foundation_moves(moves, rem_ref);
         if (rules.hole && is_valid_hole_move(rem_ref))
@@ -64,6 +188,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
     if (rules.foundations_comp_piles) // I.E. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
+*/
 
     return moves;
 }
@@ -232,8 +357,12 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
                 if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13))
                     add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
             } else {
-                if (is_next_built_group_card(piles[add_ref].top_card(), bg_high))
-                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+                if (is_next_built_group_card(piles[add_ref].top_card(), bg_high)) {
+                    bool is_reveal_move =
+                               piles[rem_ref].size() > built_group_height
+                            && piles[rem_ref][built_group_height].is_face_down();
+                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
+                }
             }
         }
     }
@@ -242,7 +371,9 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
 // Finds the size of the built group at the top of a pile
 pile::size_type game_state::get_built_group_height(pile::ref ref) const {
     pile::size_type i = 1;
-    while (i < piles[ref].size() && is_next_built_group_card(piles[ref][i], piles[ref][i-1]))
+    while (i < piles[ref].size()
+           && is_next_built_group_card(piles[ref][i], piles[ref][i-1])
+           && !piles[ref][i].is_face_down())
         i++;
     return i;
 }
@@ -254,6 +385,9 @@ void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_
     do {
         moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1));
     } while (piles[rem_ref][card_idx++] != bg_high);
+
+    if (card_idx < piles[rem_ref].size() && piles[rem_ref][card_idx].is_face_down())
+        moves.back().make_reveal_move();
 }
 
 bool game_state::is_next_built_group_card(card a, card b) const {
@@ -273,4 +407,13 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
     }
     // Checks rank
     return b.get_rank() + 1 == a.get_rank();
+}
+
+void game_state::turn_face_down_cards(vector<move>& moves) const {
+    for (auto& m : moves) {
+        bool is_tableau_move = m.from >= original_tableau_piles.front() && m.from <= original_tableau_piles.back();
+        if (is_tableau_move && piles[m.from].size() > 1 && piles[m.from][1].is_face_down()) {
+            m.make_reveal_move();
+        }
+    }
 }

@@ -21,9 +21,11 @@ public:
     uint get_cores();
     bool get_available_game_types();
     bool get_benchmark();
+    bool get_streamliners();
     std::vector<int> get_resume();
     uint64_t get_cache_capacity();
     std::string get_describe_game_rules();
+    uint64_t get_timeout();
 
 private:
     bool assess_errors();
@@ -50,7 +52,9 @@ private:
     uint cores;
     bool available_game_types;
     bool benchmark;
+    bool streamliners;
     uint64_t cache_capacity;
+    uint64_t timeout;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H
