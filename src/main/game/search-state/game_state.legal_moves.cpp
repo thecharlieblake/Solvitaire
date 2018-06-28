@@ -4,12 +4,15 @@
 
 #include "game_state.h"
 #include "../sol_rules.h"
+#include "../move.h"
 
 #include <boost/optional/optional.hpp>
 
 using std::vector;
 using std::min;
 using std::list;
+using std::pair;
+using std::set;
 using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
@@ -88,7 +91,10 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Waste to tableau moves
-    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[waste].empty()) {
+    if (rules.stock_size > 0
+        && rules.stock_deal_t == sdt::WASTE
+        && !rules.stock_redeal
+        && !piles[waste].empty()) {
         for (auto t : tableau_piles) {
             if (is_valid_tableau_move(waste, t)) {
                 moves.emplace_back(move::mtype::regular, waste, t);
@@ -234,8 +240,52 @@ bool game_state::is_foundation(pile::ref ref) const {
 }
 
 void game_state::add_stock_to_waste_move(std::vector<move>& moves) const {
-    uint8_t cards_to_move = min(rules.stock_deal_count, piles[stock].size());
-    moves.emplace_back(move::mtype::stock_to_waste, stock, waste, cards_to_move);
+    set<pile::size_type> stock_moves_to_check;
+
+    // Adds multiples of deal count (excluding last card)
+    for (auto i = static_cast<pile::size_type>(rules.stock_deal_count - 1);
+         i < piles[stock].size() - 1;
+         i += rules.stock_deal_count) {
+        stock_moves_to_check.insert(i);
+    }
+
+    // Adds last card
+    stock_moves_to_check.insert(static_cast<pile::size_type>(piles[stock].size() - 1));
+
+    // If the stock can be redealt, searches through the waste then the stock again
+    if (rules.stock_redeal) {
+        auto stock_waste_sz = piles[waste].size() + piles[stock].size();
+        for (auto i = piles[stock].size() - 1 + rules.stock_deal_count;
+             i < piles[stock].size() + stock_waste_sz - 1;
+             i += rules.stock_deal_count) {
+            stock_moves_to_check.insert(static_cast<pile::size_type>(i % stock_waste_sz));
+        }
+    }
+
+    // TODO: invariant -> no waste moves if redeal
+    // TODO: invariant -> count always < stock+waste
+
+    // For each stock move to check, if it can be moved legally to one of the tableau
+    // piles, adds this as a move
+    for (auto i : stock_moves_to_check) {
+        card from;
+        // If we are moving from the waste in a readeal (by looping), finds the correct card
+        if (i < piles[stock].size()) {
+            from = piles[stock][i];
+        } else {
+            auto _i = static_cast<pile::size_type>(piles[stock].size() + piles[waste].size() - 1 - i);
+            from = piles[waste][_i];
+        }
+
+        for (auto t : tableau_piles) {
+            bool valid_move = piles[t].empty()
+                    ? true
+                    : is_next_tableau_card(piles[t].top_card(), from);
+
+            if (valid_move)
+                moves.emplace_back(move::mtype::stock_to_waste, stock, t, i);
+        }
+    }
 }
 
 void game_state::add_tableau_moves(std::vector<move>& moves, pile::ref rem_ref) const {

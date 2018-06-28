@@ -262,28 +262,6 @@ TEST(LegalMoveGen, Cells) {
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
 }
 
-TEST(LegalMoveGen, StockDealToWaste) {
-    sol_rules sr;
-    sr.foundations = true;
-    sr.tableau_pile_count = 3;
-    sr.stock_size = 2;
-    sr.stock_deal_t = sdt::WASTE;
-
-    game_state gs(sr, string_il{
-            {}, {}, {}, {}, // The foundations
-            {"AC", "AD"}, // The stock
-            {}, // The waste
-            {}, {}, {} // The tableau piles
-    });
-    vector<move> actual_moves = gs.get_legal_moves();
-
-    vector<move> exp_moves = {
-            move(move::mtype::stock_to_waste, 4, 5)
-    };
-
-    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
-}
-
 TEST(LegalMoveGen, StockDealToTableau) {
     sol_rules sr;
     sr.foundations = true;

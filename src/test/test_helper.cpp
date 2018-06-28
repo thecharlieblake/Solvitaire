@@ -105,8 +105,8 @@ void test_helper::k_plus_stock_test
 
     gs.make_move(m);
 
-    ASSERT_EQ(gs.get_data()[0].size    (), stock_size) << gs.get_data()[0].size    ();
-    ASSERT_EQ(gs.get_data()[1].size    (), waste_size) << gs.get_data()[1].size    ();
+    ASSERT_EQ(gs.get_data()[0].size(), stock_size) << gs.get_data()[0].size();
+    ASSERT_EQ(gs.get_data()[1].size(), waste_size) << gs.get_data()[1].size();
 
     if (top_stock == card())
         ASSERT_TRUE(gs.get_data()[0].empty());

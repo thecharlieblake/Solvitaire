@@ -385,16 +385,39 @@ void game_state::undo_built_group_move(move m) {
 void game_state::make_stock_to_waste_move(const move m) {
     assert(rules.stock_deal_t == sdt::WASTE);
 
-    for (int i = 0; i < m.count; i++) {
-        place_card(waste, take_card(stock));
+    // Index of the card to be moved
+    auto count = m.count % (piles[stock].size() + piles[waste].size());
+
+    for (int i = 0; i <= count; i++) {
+        if (i < count) place_card(waste, take_card(stock));
+        else           place_card(m.to,  take_card(stock));
+
+        if (rules.stock_redeal) {
+            // If the stock is empty, flips it
+            // (invariant: no search state has an empty stock if rules.stock_size > 0 && rules.stock_redeal)
+            if (piles[stock].empty())
+                while (!piles[waste].empty())
+                    place_card(stock, take_card(waste));
+        }
     }
 }
 
 void game_state::undo_stock_to_waste_move(const move m) {
     assert(rules.stock_deal_t == sdt::WASTE);
 
-    for (int i = 0; i < m.count; i++) {
-        place_card(stock, take_card(waste));
+    auto count = m.count % (piles[stock].size() + piles[waste].size() + 1);
+
+    for (int i = count; i >= 0; i--) {
+        if (rules.stock_redeal) {
+            // If the waste is empty, flips it
+            // (invariant: no search state has an empty stock if rules.stock_size > 0 && rules.stock_redeal)
+            if (piles[waste].empty())
+                while (!piles[stock].empty())
+                    place_card(waste, take_card(stock));
+        }
+
+        if (i < count) place_card(stock, take_card(waste));
+        else           place_card(stock, take_card(m.to ));
     }
 }
 
