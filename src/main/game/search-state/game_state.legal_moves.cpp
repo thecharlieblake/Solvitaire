@@ -358,16 +358,17 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
 
             card bg_high = piles[rem_ref][built_group_height - 1];
 
+            bool is_reveal_move =
+                    piles[rem_ref].size() > built_group_height
+                    && piles[rem_ref][built_group_height].is_face_down();
+
             if (piles[add_ref].empty()) {
                 if (rules.spaces_pol == s_pol::ANY)
-                    add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
+                    add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high, is_reveal_move);
                 else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)
-                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
             } else {
                 if (is_next_built_group_card(piles[add_ref].top_card(), bg_high)) {
-                    bool is_reveal_move =
-                               piles[rem_ref].size() > built_group_height
-                            && piles[rem_ref][built_group_height].is_face_down();
                     moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
                 }
             }
@@ -387,10 +388,11 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 
 // Loops through each possible built group move to an empty pile and adds it to the list
 void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             card bg_high) const {
+                                             card bg_high, bool is_reveal_move) const {
     pile::size_type card_idx = 1;
     do {
-        moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1));
+        moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1),
+                           is_reveal_move);
     } while (piles[rem_ref][card_idx++] != bg_high);
 
     if (card_idx < piles[rem_ref].size() && piles[rem_ref][card_idx].is_face_down())

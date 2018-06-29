@@ -106,7 +106,7 @@ private:
 
     pile::size_type get_built_group_height(pile::ref) const;
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref,
-                                     card) const;
+                                     card, bool) const;
     bool is_next_built_group_card(card, card) const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;

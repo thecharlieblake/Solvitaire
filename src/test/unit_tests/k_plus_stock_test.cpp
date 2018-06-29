@@ -365,5 +365,3 @@ TEST(KPlusStock, RedealCellFoundationMoves) {
             "2H", "2C"
     );
 }
-
-// TODO: add to logic if !redeal && !piles[waste].empty(), consider top waste card too ===>>> FOR ALL 3 WASTE/STOCK MOVE TYPES
