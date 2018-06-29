@@ -8,7 +8,7 @@
 #include "pile.h"
 
 struct move {
-    enum class mtype : uint8_t {regular, dominance, built_group, stock_to_waste, stock_to_tableau, redeal, null};
+    enum class mtype : uint8_t {regular, dominance, built_group, stock_k_plus, stock_to_all_tableau, null};
 
     explicit move(mtype, pile::ref = 255 , pile::ref = 255, pile::size_type = 1, bool reveal_move_ = false);
     friend bool operator==(const move&, const move&);

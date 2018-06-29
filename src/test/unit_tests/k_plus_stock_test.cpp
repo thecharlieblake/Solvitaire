@@ -35,10 +35,10 @@ TEST(KPlusStock, NoRedealExact) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2),
-                    move(move::mtype::stock_to_waste, 0, 3, 8),
+                    move(move::mtype::stock_k_plus, 0, 4, 2),
+                    move(move::mtype::stock_k_plus, 0, 3, 8),
             },
-            move(move::mtype::stock_to_waste, 0, 3, 8),
+            move(move::mtype::stock_k_plus, 0, 3, 8),
             0, 8,
             card(), "2D"
     );
@@ -63,10 +63,10 @@ TEST(KPlusStock, NoRedealOneExtra) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2),
-                    move(move::mtype::stock_to_waste, 0, 3, 6),
+                    move(move::mtype::stock_k_plus, 0, 4, 2),
+                    move(move::mtype::stock_k_plus, 0, 3, 6),
             },
-            move(move::mtype::stock_to_waste, 0, 3, 6),
+            move(move::mtype::stock_k_plus, 0, 3, 6),
             0, 6,
             card(), "AD"
     );
@@ -91,9 +91,9 @@ TEST(KPlusStock, NoRedealTwoExtra) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2)
+                    move(move::mtype::stock_k_plus, 0, 4, 2)
             },
-            move(move::mtype::stock_to_waste, 0, 4, 2),
+            move(move::mtype::stock_k_plus, 0, 4, 2),
             5, 2,
             "3C", "AH"
     );
@@ -118,10 +118,10 @@ TEST(KPlusStock, RedealExact) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2),
-                    move(move::mtype::stock_to_waste, 0, 3, 8),
+                    move(move::mtype::stock_k_plus, 0, 4, 2),
+                    move(move::mtype::stock_k_plus, 0, 3, 8),
             },
-            move(move::mtype::stock_to_waste, 0, 3, 8),
+            move(move::mtype::stock_k_plus, 0, 3, 8),
             8, 0,
             "AS", card()
     );
@@ -146,10 +146,10 @@ TEST(KPlusStock, RedealOneExtra) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2),
-                    move(move::mtype::stock_to_waste, 0, 3, 6),
+                    move(move::mtype::stock_k_plus, 0, 4, 2),
+                    move(move::mtype::stock_k_plus, 0, 3, 6),
             },
-            move(move::mtype::stock_to_waste, 0, 3, 6),
+            move(move::mtype::stock_k_plus, 0, 3, 6),
             6, 0,
             "AS", card()
     );
@@ -174,9 +174,9 @@ TEST(KPlusStock, RedealTwoExtra) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 4, 2)
+                    move(move::mtype::stock_k_plus, 0, 4, 2)
             },
-            move(move::mtype::stock_to_waste, 0, 4, 2),
+            move(move::mtype::stock_k_plus, 0, 4, 2),
             5, 2,
             "3C", "AH"
     );
@@ -201,10 +201,10 @@ TEST(KPlusStock, RedealKPlus3Waste) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 3, 5),
-                    move(move::mtype::stock_to_waste, 0, 4, 8)
+                    move(move::mtype::stock_k_plus, 0, 3, 5),
+                    move(move::mtype::stock_k_plus, 0, 4, 8)
             },
-            move(move::mtype::stock_to_waste, 0, 4, 8),
+            move(move::mtype::stock_k_plus, 0, 4, 8),
             6, 2,
             "3C", "AH"
     );
@@ -229,11 +229,11 @@ TEST(KPlusStock, RedealKPlus4Waste) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 3, 4),
-                    move(move::mtype::stock_to_waste, 0, 4, 7),
-                    move(move::mtype::stock_to_waste, 0, 2, 1)
+                    move(move::mtype::stock_k_plus, 0, 3, 4),
+                    move(move::mtype::stock_k_plus, 0, 4, 7),
+                    move(move::mtype::stock_k_plus, 0, 2, 1)
             },
-            move(move::mtype::stock_to_waste, 0, 2, 1),
+            move(move::mtype::stock_k_plus, 0, 2, 1),
             3, 5,
             "3S", "2S"
     );
@@ -258,11 +258,11 @@ TEST(KPlusStock, RedealKPlus5Waste) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 3, 2),
-                    move(move::mtype::stock_to_waste, 0, 4, 7),
-                    move(move::mtype::stock_to_waste, 0, 2, 3)
+                    move(move::mtype::stock_k_plus, 0, 3, 2),
+                    move(move::mtype::stock_k_plus, 0, 4, 7),
+                    move(move::mtype::stock_k_plus, 0, 2, 3)
             },
-            move(move::mtype::stock_to_waste, 0, 3, 2),
+            move(move::mtype::stock_k_plus, 0, 3, 2),
             2, 7,
             "2D", "AD"
     );
@@ -287,11 +287,83 @@ TEST(KPlusStock, RedealKPlusEmptyStock) {
                     {"2C"}
             },
             {
-                    move(move::mtype::stock_to_waste, 0, 3, 5),
-                    move(move::mtype::stock_to_waste, 0, 4, 8)
+                    move(move::mtype::stock_k_plus, 0, 3, 5),
+                    move(move::mtype::stock_k_plus, 0, 4, 8)
             },
-            move(move::mtype::stock_to_waste, 0, 3, 5),
+            move(move::mtype::stock_k_plus, 0, 3, 5),
             8, 0,
             "AS", card()
     );
 }
+
+TEST(KPlusStock, NoRedealCellFoundationMoves) {
+    sol_rules sr;
+    sr.build_pol = pol::SAME_SUIT;
+    sr.stock_size = 9;
+    sr.stock_deal_t = sdt::WASTE;
+    sr.stock_redeal = false;
+    sr.stock_deal_count = 3;
+    sr.cells = 2;
+    sr.foundations = true;
+
+    test_helper::k_plus_stock_test(
+            sr,
+            {
+                    {"AC"}, {}, {}, {},
+                    {"2D"}, {},
+                    {"2H","AS","2C","AH","2S","3C"},
+                    {"3S"}
+            },
+            {
+                    // Cell moves
+                    move(move::mtype::stock_k_plus, 6, 5, 2),
+                    move(move::mtype::stock_k_plus, 6, 5, 5),
+
+                    // Foundation moves
+                    move(move::mtype::stock_k_plus, 6, 1, 2),
+
+                    // Regular waste move
+                    move(move::mtype::regular, 7, 5, 1)
+            },
+            move(move::mtype::stock_k_plus, 6, 1, 2),
+            3, 3,
+            "2C", "2S"
+    );
+}
+
+TEST(KPlusStock, RedealCellFoundationMoves) {
+    sol_rules sr;
+    sr.build_pol = pol::SAME_SUIT;
+    sr.stock_size = 9;
+    sr.stock_deal_t = sdt::WASTE;
+    sr.stock_redeal = true;
+    sr.stock_deal_count = 3;
+    sr.cells = 2;
+    sr.foundations = true;
+
+    test_helper::k_plus_stock_test(
+            sr,
+            {
+                    {"AC"}, {}, {}, {},
+                    {"2D"}, {},
+                    {"2H","AS","2C","AH","2S","3C"},
+                    {"3S"}
+            },
+            {
+                    // Cell moves
+                    move(move::mtype::stock_k_plus, 6, 5, 2),
+                    move(move::mtype::stock_k_plus, 6, 5, 5),
+                    move(move::mtype::stock_k_plus, 6, 5, 1),
+                    move(move::mtype::stock_k_plus, 6, 5, 4),
+
+                    // Foundation moves
+                    move(move::mtype::stock_k_plus, 6, 1, 2),
+                    move(move::mtype::stock_k_plus, 6, 2, 4)
+            },
+            move(move::mtype::stock_k_plus, 6, 2, 4),
+            1, 5,
+            "2H", "2C"
+    );
+}
+
+// TODO: add to logic if !redeal && !piles[waste].empty(), consider top waste card too ===>>> FOR ALL 3 WASTE/STOCK MOVE TYPES

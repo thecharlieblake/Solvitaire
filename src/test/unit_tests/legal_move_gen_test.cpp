@@ -277,7 +277,7 @@ TEST(LegalMoveGen, StockDealToTableau) {
     vector<move> actual_moves = gs.get_legal_moves();
 
     vector<move> exp_moves = {
-            move(move::mtype::stock_to_tableau, 0, 0, 2) // Special stock-to-tableau syntax
+            move(move::mtype::stock_to_all_tableau, 0, 0, 2) // Special stock-to-tableau syntax
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;

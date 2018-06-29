@@ -9,6 +9,7 @@
 #include "../../main/game/sol_rules.h"
 
 typedef sol_rules::build_policy pol;
+typedef sol_rules::spaces_policy s_pol;
 
 using std::vector;
 using std::ostream;
@@ -250,5 +251,51 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
                     move(move::mtype::built_group, 3, 4, 2),
                     move(move::mtype::built_group, 3, 4, 3),
             }
+    );
+}
+
+TEST(BuiltGroupMoveGen, KingsOnly) {
+    sol_rules sr;
+    sr.tableau_pile_count = 5;
+    sr.build_pol = pol::SAME_SUIT;
+    sr.built_group_pol = pol::RED_BLACK;
+    sr.move_built_group = true;
+    sr.spaces_pol = s_pol::KINGS;
+
+    test_helper::expected_moves_test(
+            sr,
+            {
+                    {},
+                    {"KC", "QC", "JC"}, // Same suit
+                    {"KH", "QS", "JH"}, // Red black
+                    {"KD", "QD", "JS"}, // Any suit
+                    {}
+            },
+            {
+                    // Built group moves
+                    move(move::mtype::built_group, 2, 0, 3),
+                    move(move::mtype::built_group, 2, 4, 3)
+            }
+    );
+}
+
+TEST(BuiltGroupMoveGen, NoBuild) {
+    sol_rules sr;
+    sr.tableau_pile_count = 5;
+    sr.build_pol = pol::SAME_SUIT;
+    sr.built_group_pol = pol::RED_BLACK;
+    sr.move_built_group = true;
+    sr.spaces_pol = s_pol::NO_BUILD;
+
+    test_helper::expected_moves_test(
+            sr,
+            {
+                    {},
+                    {"KC", "QC", "JC"}, // Same suit
+                    {"KH", "QS", "JH"}, // Red black
+                    {"KD", "QD", "JS"}, // Any suit
+                    {}
+            },
+            {}
     );
 }

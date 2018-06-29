@@ -105,18 +105,18 @@ void test_helper::k_plus_stock_test
 
     gs.make_move(m);
 
-    ASSERT_EQ(gs.get_data()[0].size(), stock_size) << gs.get_data()[0].size();
-    ASSERT_EQ(gs.get_data()[1].size(), waste_size) << gs.get_data()[1].size();
+    ASSERT_EQ(gs.get_data()[gs.stock].size(), stock_size) << gs.get_data()[gs.stock].size();
+    ASSERT_EQ(gs.get_data()[gs.waste].size(), waste_size) << gs.get_data()[gs.waste].size();
 
     if (top_stock == card())
-        ASSERT_TRUE(gs.get_data()[0].empty());
+        ASSERT_TRUE(gs.get_data()[gs.stock].empty());
     else
-        ASSERT_EQ(gs.get_data()[0].top_card(), top_stock ) << gs.get_data()[0].top_card().to_string();
+        ASSERT_EQ(gs.get_data()[gs.stock].top_card(), top_stock ) << gs.get_data()[gs.stock].top_card().to_string();
 
     if (top_waste == card())
-        ASSERT_TRUE(gs.get_data()[1].empty());
+        ASSERT_TRUE(gs.get_data()[gs.waste].empty());
     else
-        ASSERT_EQ(gs.get_data()[1].top_card(), top_waste ) << gs.get_data()[1].top_card().to_string();
+        ASSERT_EQ(gs.get_data()[gs.waste].top_card(), top_waste ) << gs.get_data()[gs.waste].top_card().to_string();
 
     gs.undo_move(m);
 

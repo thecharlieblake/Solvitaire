@@ -257,14 +257,11 @@ void game_state::make_move(const move m) {
         case move::mtype::built_group:
             make_built_group_move(m);
             break;
-        case move::mtype::stock_to_waste:
-            make_stock_to_waste_move(m);
+        case move::mtype::stock_k_plus:
+            make_stock_k_plus_move(m);
             break;
-        case move::mtype::stock_to_tableau:
-            make_stock_to_tableau_move(m);
-            break;
-        case move::mtype::redeal:
-            make_redeal_move();
+        case move::mtype::stock_to_all_tableau:
+            make_stock_to_all_tableau_move(m);
             break;
         case move::mtype::null:
             assert(false);
@@ -285,14 +282,11 @@ void game_state::undo_move(const move m) {
         case move::mtype::built_group:
             undo_built_group_move(m);
             break;
-        case move::mtype::stock_to_waste:
-            undo_stock_to_waste_move(m);
+        case move::mtype::stock_k_plus:
+            undo_stock_k_plus_move(m);
             break;
-        case move::mtype::stock_to_tableau:
-            undo_stock_to_tableau_move(m);
-            break;
-        case move::mtype::redeal:
-            undo_redeal_move();
+        case move::mtype::stock_to_all_tableau:
+            undo_stock_to_all_tableau_move(m);
             break;
         case move::mtype::null:
             assert(false);
@@ -382,8 +376,14 @@ void game_state::undo_built_group_move(move m) {
     }
 }
 
-void game_state::make_stock_to_waste_move(const move m) {
+void game_state::make_stock_k_plus_move(const move m) {
     assert(rules.stock_deal_t == sdt::WASTE);
+    assert(m.count < piles[stock].size() + piles[waste].size());
+    assert(!rules.stock_redeal || m.to != waste);
+#ifndef NDEBUG
+    auto sz_before = piles[stock].size() + piles[waste].size();
+#endif
+    // if redeal -> stock tableau move implies s+w-=1
 
     // Index of the card to be moved
     auto count = m.count % (piles[stock].size() + piles[waste].size());
@@ -400,10 +400,22 @@ void game_state::make_stock_to_waste_move(const move m) {
                     place_card(stock, take_card(waste));
         }
     }
+
+#ifndef NDEBUG
+    auto sz_after = piles[stock].size() + piles[waste].size();
+    assert(sz_before == sz_after + 1);
+#endif
+    assert(!(rules.stock_size > 0 && rules.stock_redeal && piles[stock].empty() && !piles[waste].empty()));
+    assert(piles[stock].size() <= rules.stock_size);
 }
 
-void game_state::undo_stock_to_waste_move(const move m) {
+void game_state::undo_stock_k_plus_move(move m) {
     assert(rules.stock_deal_t == sdt::WASTE);
+    assert(m.count < piles[stock].size() + piles[waste].size() + 1);
+    assert(!rules.stock_redeal || m.to != waste);
+#ifndef NDEBUG
+    auto sz_after = piles[stock].size() + piles[waste].size();
+#endif
 
     auto count = m.count % (piles[stock].size() + piles[waste].size() + 1);
 
@@ -419,9 +431,16 @@ void game_state::undo_stock_to_waste_move(const move m) {
         if (i < count) place_card(stock, take_card(waste));
         else           place_card(stock, take_card(m.to ));
     }
+
+#ifndef NDEBUG
+    auto sz_before = piles[stock].size() + piles[waste].size();
+    assert(sz_before == sz_after + 1);
+#endif
+    assert(!(rules.stock_size > 0 && rules.stock_redeal && piles[stock].empty() && !piles[waste].empty()));
+    assert(piles[stock].size() <= rules.stock_size);
 }
 
-void game_state::make_stock_to_tableau_move(const move m) {
+void game_state::make_stock_to_all_tableau_move(move m) {
     assert(rules.stock_deal_t == sdt::TABLEAU_PILES);
 
     for (pile::ref tab_pr = original_tableau_piles.front();
@@ -431,30 +450,13 @@ void game_state::make_stock_to_tableau_move(const move m) {
     }
 }
 
-void game_state::undo_stock_to_tableau_move(const move m) {
+void game_state::undo_stock_to_all_tableau_move(move m) {
     assert(rules.stock_deal_t == sdt::TABLEAU_PILES);
 
     for (pile::ref tab_pr = original_tableau_piles.front() + m.count;
          tab_pr-- > original_tableau_piles.front();
             ) {
         place_card(stock, take_card(tab_pr));
-    }
-}
-
-void game_state::make_redeal_move() {
-    assert(piles[stock].empty());
-
-    // Re-deal waste back to stock
-    while (!piles[waste].empty()) {
-        place_card(stock, take_card(waste));
-    }
-}
-
-void game_state::undo_redeal_move() {
-    assert(piles[waste].empty());
-
-    while (!piles[stock].empty()) {
-        place_card(waste, take_card(stock));
     }
 }
 

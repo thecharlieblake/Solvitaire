@@ -29,32 +29,23 @@ typedef sol_rules::face_up_policy fu;
 vector<move> game_state::get_legal_moves(move parent_move) {
     // Order:
     // Foundations complete piles moves
-    // Tableau built group moves
-    // Tableau / cells / reserve to hole / foundation moves
+    // Tableau / cells / reserve / stock-waste to hole / foundation moves ---
     // Cell to tableau moves
     // Tableau to tableau moves
-    // Waste to tableau moves
+    // Tableau built group moves
+    // Stock-waste to tableau moves
     // Reserve to tableau moves
     // Foundation to tableau moves
-    // Tableau to cell moves
-    // Stock to waste moves
-    // Stock to tableau / redeal moves
+    // Tableau / stock-waste to cell moves
+    // Stock to all tableau moves
 
     vector<move> moves;
 
     // Stock to tableau / redeal moves
-    if (rules.stock_size > 0) {
-        if (stock_can_deal_tableau())
-            moves.emplace_back(get_stock_tableau_move());
-        else if (stock_can_redeal())
-            moves.emplace_back(move::mtype::redeal);
-    }
+    if (rules.stock_size > 0 && stock_can_deal_all_tableau())
+            moves.emplace_back(get_stock_to_all_tableau_move());
 
-    // Stock to waste moves
-    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
-        add_stock_to_waste_move(moves);
-
-    // Tableau to cell moves
+    // Tableau / waste to cell moves
     pile::ref empty_cell = 255;
     for (auto c : cells) {
         if (piles[c].empty()) empty_cell = c;
@@ -64,6 +55,9 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             if (piles[t].empty() || parent_move.to == t || !is_valid_tableau_move(t, empty_cell)) continue;
             else moves.emplace_back(move::mtype::regular, t, empty_cell);
         }
+
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+            add_stock_to_cell_move(moves, empty_cell);
     }
 
     // Foundation to tableau moves
@@ -90,17 +84,12 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         }
     }
 
-    // Waste to tableau moves
-    if (rules.stock_size > 0
-        && rules.stock_deal_t == sdt::WASTE
-        && !rules.stock_redeal
-        && !piles[waste].empty()) {
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(waste, t)) {
-                moves.emplace_back(move::mtype::regular, waste, t);
-            }
-        }
-    }
+    // Stock to tableau moves
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        add_stock_to_tableau_moves(moves);
+
+    if (rules.move_built_group)
+        add_built_group_moves(moves);
 
     // Tableau to tableau moves
     for (auto t_from : tableau_piles) {
@@ -124,8 +113,12 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         }
     }
 
-    // Tableau / cells to hole / foundation moves
+    // Tableau / cells / reserve / stock-waste to hole / foundation moves
     if (rules.hole || (rules.foundations && !rules.foundations_comp_piles)) {
+        // Stock
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+            add_stock_to_hole_foundation_moves(moves);
+
         list<pile::ref> from_piles = tableau_piles;
         if (rules.cells > 0) from_piles.insert(from_piles.end(), cells.begin(), cells.end());
         if (rules.reserve_size > 0) from_piles.insert(from_piles.end(), reserve.begin(), reserve.end());
@@ -141,60 +134,11 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         }
     }
 
-    if (rules.move_built_group)
-        add_built_group_moves(moves);
-
     if (rules.foundations_comp_piles) // i.e. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
 
-    if (rules.face_up != fu::ALL)
+    if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
         turn_face_down_cards(moves);
-    /*
-
-    vector<move> moves;
-
-    // Attempts stock tableau deal and redeal
-    if (rules.stock_size > 0) {
-        if (stock_can_deal_tableau())
-            moves.emplace_back(get_stock_tableau_move());
-        else if (stock_can_redeal())
-            moves.emplace_back(move::mtype::redeal);
-    }
-
-    // Cycles through all of the piles from which we want to remove cards
-    for (pile::ref rem_ref = 0; rem_ref < piles.size(); rem_ref++) {
-        if ((rules.hole && rem_ref == hole) || piles[rem_ref].empty())
-            continue;
-        if (undoes_prev_move(rem_ref, parent_move))
-            continue;
-
-        if (rules.foundations && is_foundation(rem_ref)) {
-            if (!rules.foundations_removable) continue;
-            else if (dominance_blocks_foundation_move(rem_ref)) continue;
-        }
-
-        if (rules.stock_size > 0 && rem_ref == stock) {
-            if (rules.stock_deal_t == sdt::WASTE)
-                add_stock_to_waste_move(moves);
-            continue;
-        }
-
-        if (rules.cells > 0)
-            add_cell_moves(moves, rem_ref);
-        if (rules.tableau_pile_count > 0)
-            add_tableau_moves(moves, rem_ref);
-        if (rules.foundations)
-            add_foundation_moves(moves, rem_ref);
-        if (rules.hole && is_valid_hole_move(rem_ref))
-            moves.emplace_back(move::mtype::regular, rem_ref, hole);
-    }
-
-    if (rules.move_built_group)
-        add_built_group_moves(moves);
-
-    if (rules.foundations_comp_piles) // I.E. Spider-type winning condition
-        add_foundation_complete_piles_moves(moves);
-*/
 
     return moves;
 }
@@ -204,7 +148,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 // REGULAR MOVE GEN FUNCTIONS //
 ////////////////////////////////
 
-bool game_state::stock_can_deal_tableau() const {
+bool game_state::stock_can_deal_all_tableau() const {
     return rules.stock_deal_t == sdt::TABLEAU_PILES
            && !piles[stock].empty();
 }
@@ -212,34 +156,17 @@ bool game_state::stock_can_deal_tableau() const {
 // This is a special kind of move which the solver handles differently.
 // We must supply the number of stock cards
 // that we will deal, so that the move can be undone in backtracking.
-move game_state::get_stock_tableau_move() const {
+move game_state::get_stock_to_all_tableau_move() const {
     pile::size_type stock_moves =
             piles[stock].size() >= tableau_piles.size()
             ? pile::size_type(tableau_piles.size())
             : piles[stock].size();
 
     assert(stock_moves > 0 && stock_moves <= piles[stock].size());
-    return move(move::mtype::stock_to_tableau, 0, 0, stock_moves);
+    return move(move::mtype::stock_to_all_tableau, 0, 0, stock_moves);
 }
 
-bool game_state::stock_can_redeal() const {
-    return rules.stock_redeal
-           && rules.stock_deal_t == sdt::WASTE
-           && piles[stock].empty()
-           && !piles[waste].empty();
-}
-
-bool game_state::undoes_prev_move(pile::ref rem_ref, move parent_move) const {
-    return rem_ref == parent_move.to
-           && parent_move.count == 1
-           && parent_move.from != stock;
-}
-
-bool game_state::is_foundation(pile::ref ref) const {
-    return ref >= foundations.front() && ref <= foundations.back();
-}
-
-void game_state::add_stock_to_waste_move(std::vector<move>& moves) const {
+set<pile::size_type> game_state::generate_stock_moves_to_check() const {
     set<pile::size_type> stock_moves_to_check;
 
     // Adds multiples of deal count (excluding last card)
@@ -262,53 +189,71 @@ void game_state::add_stock_to_waste_move(std::vector<move>& moves) const {
         }
     }
 
-    // TODO: invariant -> no waste moves if redeal
-    // TODO: invariant -> count always < stock+waste
+    return stock_moves_to_check;
+}
 
+void game_state::add_stock_to_cell_move(std::vector<move>& moves, pile::ref empty_cell) const {
+    for (auto i : generate_stock_moves_to_check())
+        moves.emplace_back(move::mtype::stock_k_plus, stock, empty_cell, i);
+
+    // If there is no redeal option and the k-plus representation is not in effect,
+    // adds a regular move from the waste
+    if (!rules.stock_redeal && !piles[waste].empty())
+        moves.emplace_back(move::mtype::regular, waste, empty_cell);
+}
+
+void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
     // For each stock move to check, if it can be moved legally to one of the tableau
     // piles, adds this as a move
-    for (auto i : stock_moves_to_check) {
-        card from;
-        // If we are moving from the waste in a readeal (by looping), finds the correct card
-        if (i < piles[stock].size()) {
-            from = piles[stock][i];
-        } else {
-            auto _i = static_cast<pile::size_type>(piles[stock].size() + piles[waste].size() - 1 - i);
-            from = piles[waste][_i];
-        }
+    for (auto i : generate_stock_moves_to_check()) {
+        card from = stock_card_from_index(i);
 
         for (auto t : tableau_piles) {
-            bool valid_move = piles[t].empty()
-                    ? true
-                    : is_next_tableau_card(piles[t].top_card(), from);
+            if (is_valid_tableau_move(from, t))
+                moves.emplace_back(move::mtype::stock_k_plus, stock, t, i);
+        }
+    }
 
-            if (valid_move)
-                moves.emplace_back(move::mtype::stock_to_waste, stock, t, i);
+    // If there is no redeal option and the k-plus representation is not in effect,
+    // adds a regular move from the waste to valid tableau piles
+    if (!rules.stock_redeal && !piles[waste].empty()) {
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(waste, t))
+                moves.emplace_back(move::mtype::regular, waste, t);
         }
     }
 }
 
-void game_state::add_tableau_moves(std::vector<move>& moves, pile::ref rem_ref) const {
-    for (auto add_ref : tableau_piles) {
-        if (is_valid_tableau_move(rem_ref, add_ref)) {
-            moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
-        }
+void game_state::add_stock_to_hole_foundation_moves(std::vector<move>& moves) const {
+    for (auto i : generate_stock_moves_to_check()) {
+        card from = stock_card_from_index(i);
+
+        for (auto f : foundations)
+            if (is_valid_foundations_move(from, f))
+                moves.emplace_back(move::mtype::stock_k_plus, stock, f, i);
+        if (rules.hole && is_valid_hole_move(from))
+            moves.emplace_back(move::mtype::stock_k_plus, stock, hole, i);
+    }
+
+    // If there is no redeal option and the k-plus representation is not in effect,
+    // adds a regular move from the waste to valid foundation piles
+    if (!rules.stock_redeal && !piles[waste].empty()) {
+        for (auto f : foundations)
+            if (is_valid_foundations_move(waste, f))
+                moves.emplace_back(move::mtype::regular, waste, f);
+
+        if (rules.hole && is_valid_hole_move(waste))
+            moves.emplace_back(move::mtype::regular, waste, hole);
     }
 }
 
-void game_state::add_cell_moves(std::vector<move>& moves, pile::ref rem_ref) const {
-    for (auto add_ref : cells) {
-        if (add_ref != rem_ref && piles[add_ref].empty()) {
-            moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
-        }
-    }
-}
-
-void game_state::add_foundation_moves(std::vector<move>& moves, pile::ref rem_ref) const {
-    for (auto add_ref : foundations) {
-        if (is_valid_foundations_move(rem_ref, add_ref)) {
-            moves.emplace_back(move::mtype::regular, rem_ref, add_ref);
-        }
+card game_state::stock_card_from_index(pile::size_type i) const {
+    if (i < piles[stock].size()) {
+        return piles[stock][i];
+    } else {
+        // If we are moving from the waste in a readeal (by looping), finds the correct card
+        auto _i = static_cast<pile::size_type>(piles[stock].size() + piles[waste].size() - 1 - i);
+        return piles[waste][_i];
     }
 }
 
@@ -331,17 +276,21 @@ bool game_state::is_valid_tableau_move(const pile::ref rem_ref,
     if (rem_ref == add_ref || rules.build_pol == pol::NO_BUILD)
         return false;
 
+    return is_valid_tableau_move(piles[rem_ref].top_card(), add_ref);
+}
+
+bool game_state::is_valid_tableau_move(const card rem_c,
+                                       const pile::ref add_ref) const {
     if (piles[add_ref].empty()) {
         switch(rules.spaces_pol) {
             case sol_rules::spaces_policy::NO_BUILD:
                 return false;
             case sol_rules::spaces_policy::KINGS:
-                return piles[rem_ref].top_card().get_rank() == 13;
+                return rem_c.get_rank() == 13;
             default:
                 return true;
         }
     } else {
-        card rem_c = piles[rem_ref].top_card();
         card add_c = piles[add_ref].top_card();
 
         return is_next_tableau_card(add_c, rem_c);
@@ -356,8 +305,11 @@ bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
                                            const pile::ref add_ref) const {
     if (rem_ref == add_ref || rules.foundations_comp_piles) return false;
 
-    card rem_c = piles[rem_ref].top_card();
+    return is_valid_foundations_move(piles[rem_ref].top_card(), add_ref);
+}
 
+bool game_state::is_valid_foundations_move(const card rem_c,
+                                           const pile::ref add_ref) const {
     // Checks same suit policy
     uint8_t suit_idx = (add_ref - foundations.front()) % uint8_t(4);
     if (rem_c.get_suit() != suit_idx)
@@ -372,8 +324,11 @@ bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
 
 bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {
     if (rem_ref == hole) return false;
+    return is_valid_hole_move(piles[rem_ref].top_card());
+}
 
-    card::rank_t rank = piles[rem_ref].top_card().get_rank();
+bool game_state::is_valid_hole_move(const card c) const {
+    card::rank_t rank = c.get_rank();
     card::rank_t hole_rank = piles[hole].top_card().get_rank();
 
     return rank + 1 == hole_rank
@@ -404,8 +359,10 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
             card bg_high = piles[rem_ref][built_group_height - 1];
 
             if (piles[add_ref].empty()) {
-                if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13))
+                if (rules.spaces_pol == s_pol::ANY)
                     add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high);
+                else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)
+                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
             } else {
                 if (is_next_built_group_card(piles[add_ref].top_card(), bg_high)) {
                     bool is_reveal_move =
