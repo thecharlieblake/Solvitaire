@@ -413,7 +413,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "stock size": 24,
   "stock deal count": 1,
-  "stock redeal": false
+  "stock redeal": true
 }
 )"
 

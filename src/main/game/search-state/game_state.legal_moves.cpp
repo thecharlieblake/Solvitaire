@@ -52,7 +52,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
     if (empty_cell != 255) {
         for (auto t : tableau_piles) {
-            if (piles[t].empty() || parent_move.to == t || !is_valid_tableau_move(t, empty_cell)) continue;
+            if (piles[t].empty() || parent_move.to == t) continue;
             else moves.emplace_back(move::mtype::regular, t, empty_cell);
         }
 
