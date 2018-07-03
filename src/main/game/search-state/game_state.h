@@ -93,7 +93,6 @@ private:
     void add_stock_to_tableau_moves(std::vector<move>&) const;
     void add_stock_to_hole_foundation_moves(std::vector<move>&) const;
     card stock_card_from_index(pile::size_type) const;
-    void add_built_group_moves(std::vector<move> &) const;
     void add_foundation_complete_piles_moves(std::vector<move> &) const;
 
     bool is_valid_tableau_move(pile::ref, pile::ref) const;
@@ -104,13 +103,15 @@ private:
     bool is_valid_hole_move(pile::ref) const;
     bool is_valid_hole_move(card) const;
 
+    void add_built_group_moves(std::vector<move>&) const;
+    void add_built_group_moves(std::vector<move>&, pile::ref, pile::size_type) const;
     pile::size_type get_built_group_height(pile::ref) const;
-    void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref,
-                                     card, bool) const;
     bool is_next_built_group_card(card, card) const;
+    void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
+    void add_kings_only_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
+    void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;
-
     void turn_face_down_cards(std::vector<move>&) const;
 
     /* Auto-foundation moves */

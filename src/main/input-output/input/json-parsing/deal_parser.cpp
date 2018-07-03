@@ -11,6 +11,7 @@ using namespace std;
 using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
+typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
@@ -39,6 +40,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     if (gs.rules.stock_size > 0) {
         parse_stock(gs, doc);
     }
+    
+    // Construct waste
+    if (gs.rules.stock_deal_t == sdt::WASTE) {
+        parse_waste(gs, doc);
+    }
 
     // Construct reserve
     if (gs.rules.reserve_size > 0) {
@@ -46,8 +52,12 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     }
 
     // If the foundations begin with cards in them, fill them
-    if (gs.rules.foundations_init_card) {
-        fill_foundations(gs);
+    if (gs.rules.foundations) {
+        bool supplied_foundations = parse_foundations(gs, doc);
+
+        if (!supplied_foundations && gs.rules.foundations_init_card) {
+            fill_foundations(gs);
+        }
     }
 
     Document d;
@@ -74,6 +84,9 @@ string deal_parser::deal_schema_json() {
   "type": "object", "properties": {
 
     "tableau piles": {
+      "type": "array", "items": {"$ref": "#/definitions/cardarray"}
+    },
+    "foundations": {
       "type": "array", "items": {"$ref": "#/definitions/cardarray"}
     },
     "hole": {"$ref": "#/definitions/card"},
@@ -144,13 +157,21 @@ void deal_parser::parse_stock(game_state &gs, const Document& doc) {
         const Value &json_stock = doc["stock"];
         assert(json_stock.IsArray());
 
-        if (json_stock.Size() != gs.rules.stock_size) {
-            json_helper::json_parse_err("Incorrect stock size");
-        }
-
         for (const Value& json_card : json_stock.GetArray()) {
             assert(json_card.IsString());
             gs.place_card(gs.stock, card(json_card.GetString()));
+        }
+    }
+}
+
+void deal_parser::parse_waste(game_state &gs, const Document& doc) {
+    if (doc.HasMember("waste")) {
+        const Value &json_waste = doc["waste"];
+        assert(json_waste.IsArray());
+
+        for (const Value& json_card : json_waste.GetArray()) {
+            assert(json_card.IsString());
+            gs.place_card(gs.waste, card(json_card.GetString()));
         }
     }
 }
@@ -174,6 +195,28 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
         if (!gs.rules.reserve_stacked) pr += i;
         gs.place_card(pr, card(json_card_arr[i].GetString()));
     }
+}
+
+bool deal_parser::parse_foundations(game_state &gs, const rapidjson::Document& doc) {
+    if (!doc.HasMember("foundations")) return false;
+
+    const Value& json_foundations = doc["foundations"];
+    assert(json_foundations.IsArray());
+
+    if (json_foundations.Size() != 4 * (gs.rules.two_decks ? 2 : 1) ) {
+        json_helper::json_parse_err("Incorrect number of foundations");
+    }
+
+    for (auto j = begin(json_foundations.GetArray()); j != end(json_foundations.GetArray()); j++) {
+
+        for (auto& json_card : j->GetArray()) {
+            assert(json_card.IsString());
+            card c = card(json_card.GetString());
+            gs.place_card(gs.foundations[c.get_suit()], c);
+        }
+    }
+
+    return true;
 }
 
 void deal_parser::fill_foundations(game_state &gs) {

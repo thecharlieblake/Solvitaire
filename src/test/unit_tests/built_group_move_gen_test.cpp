@@ -156,7 +156,8 @@ TEST(BuiltGroupMoveGen, CantMove) {
 
 TEST(BuiltGroupMoveGen, SameSuitOccupied) {
     sol_rules sr;
-    sr.tableau_pile_count = 5;
+    sr.tableau_pile_count = 6;
+    sr.build_pol = pol::SAME_SUIT;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.move_built_group = true;
 
@@ -167,7 +168,8 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
                     {"3C", "2C", "AC"}, // Same suit
                     {"3H", "2S", "AH"}, // Red black
                     {"3D", "2D", "AS"}, // Any suit
-                    {}
+                    {},
+                    {"3C"}
             },
             {
                     // Regular moves
@@ -175,18 +177,22 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
+                    move(move::mtype::regular, 5, 4, 1),
+                    move(move::mtype::regular, 5, 0, 1),
 
                     // Built group moves
                     move(move::mtype::built_group, 1, 0, 3),
                     move(move::mtype::built_group, 1, 4, 2),
-                    move(move::mtype::built_group, 1, 4, 3)
+                    move(move::mtype::built_group, 1, 4, 3),
+                    move(move::mtype::built_group, 1, 5, 2)
             }
     );
 }
 
 TEST(BuiltGroupMoveGen, RedBlackOccupied) {
     sol_rules sr;
-    sr.tableau_pile_count = 5;
+    sr.tableau_pile_count = 6;
+    sr.build_pol = pol::RED_BLACK;
     sr.built_group_pol = pol::RED_BLACK;
     sr.move_built_group = true;
 
@@ -197,7 +203,8 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
                     {"3C", "2C", "AC"}, // Same suit
                     {"3H", "2S", "AH"}, // Red black
                     {"3D", "2D", "AS"}, // Any suit
-                    {}
+                    {},
+                    {"3C"}
             },
             {
                     // Regular moves
@@ -205,19 +212,22 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
+                    move(move::mtype::regular, 5, 4, 1),
 
                     // Built group moves
                     move(move::mtype::built_group, 2, 0, 3),
                     move(move::mtype::built_group, 2, 4, 2),
                     move(move::mtype::built_group, 2, 4, 3),
-                    move(move::mtype::built_group, 3, 4, 2)
+                    move(move::mtype::built_group, 3, 4, 2),
+                    move(move::mtype::built_group, 3, 5, 2)
             }
     );
 }
 
 TEST(BuiltGroupMoveGen, AnySuitOccupied) {
     sol_rules sr;
-    sr.tableau_pile_count = 5;
+    sr.tableau_pile_count = 6;
+    sr.build_pol = pol::ANY_SUIT;
     sr.built_group_pol = pol::ANY_SUIT;
     sr.move_built_group = true;
 
@@ -228,7 +238,8 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
                     {"3C", "2C", "AC"}, // Same suit
                     {"3H", "2S", "AH"}, // Red black
                     {"3D", "2D", "AS"}, // Any suit
-                    {}
+                    {},
+                    {"3C"}
             },
             {
                     // Regular moves
@@ -236,6 +247,8 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
                     move(move::mtype::regular, 0, 4, 1),
+                    move(move::mtype::regular, 5, 4, 1),
+                    move(move::mtype::regular, 5, 0, 1),
 
                     // Built group moves
                     move(move::mtype::built_group, 1, 0, 3),
@@ -250,6 +263,10 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
 
                     move(move::mtype::built_group, 3, 4, 2),
                     move(move::mtype::built_group, 3, 4, 3),
+
+                    move(move::mtype::built_group, 1, 5, 2),
+                    move(move::mtype::built_group, 2, 5, 2),
+                    move(move::mtype::built_group, 3, 5, 2)
             }
     );
 }

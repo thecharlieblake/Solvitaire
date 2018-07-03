@@ -7,6 +7,7 @@
 #include "../move.h"
 
 #include <boost/optional/optional.hpp>
+#include <iostream>
 
 using std::vector;
 using std::min;
@@ -20,6 +21,10 @@ typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 
+// TODO: delete
+using std::ostream;
+std::ostream& operator <<(std::ostream&, const move&);
+std::ostream& operator <<(std::ostream&, const std::vector<move>&);
 
 ////////////////////////////////
 // MAIN LEGAL MOVE GEN CYCLE ///
@@ -140,8 +145,45 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
         turn_face_down_cards(moves);
 
+    // TODO: delete
+//#ifndef NDEBUG
+//    std::cerr << "Moves:\n" << moves;
+    /*vector<move>::size_type i = 0;
+    std::cin >> i;
+    move m = moves[i];
+    moves.erase(moves.begin() + i);
+    moves.push_back(m);*/
+//#endif
+
     return moves;
 }
+
+/*#ifndef NDEBUG
+// TODO: delete
+ostream& operator <<(ostream& os, const move& m) {
+    switch (m.type) {
+        case move::mtype::regular: os << "regular"; break;
+        case move::mtype::dominance: os << "dominance"; break;
+        case move::mtype::built_group: os << "built_group"; break;
+        case move::mtype::stock_k_plus: os << "stock_k_plus"; break;
+        case move::mtype::stock_to_all_tableau: os << "stock_to_all_tableau"; break;
+        case move::mtype::null: os << "null"; break;
+    }
+    os        << " (" << int(m.from)
+              << ","    << int(m.to)
+              << ","     << int(m.count)
+              << "," << m.reveal_move
+              << ")";
+    return os;
+}
+ostream& operator <<(ostream& os, const vector<move>& moves) {
+    int i = 0;
+    for (const move m : moves) {
+        os << m << " "<< i++ << "\n";
+    }
+    return os;
+}
+#endif*/
 
 
 ////////////////////////////////
@@ -216,7 +258,7 @@ void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
 
     // If there is no redeal option and the k-plus representation is not in effect,
     // adds a regular move from the waste to valid tableau piles
-    if (!rules.stock_redeal && !piles[waste].empty()) {
+    if (/*!rules.stock_redeal && */!piles[waste].empty()) {
         for (auto t : tableau_piles) {
             if (is_valid_tableau_move(waste, t))
                 moves.emplace_back(move::mtype::regular, waste, t);
@@ -342,7 +384,7 @@ bool game_state::is_valid_hole_move(const card c) const {
 // BUILT-GROUP MOVE GEN FUNCTIONS //
 ////////////////////////////////////
 
-void game_state::add_built_group_moves(vector<move> &moves) const {
+void game_state::add_built_group_moves(vector<move>& moves) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
 
     // Cycles through each pile to see if it contains a built group
@@ -352,26 +394,28 @@ void game_state::add_built_group_moves(vector<move> &moves) const {
         auto built_group_height = get_built_group_height(rem_ref);
         if (built_group_height == 1) continue;
 
-        // We have found a built group. Cycles through each pile to see if it can be added
-        for (auto add_ref : tableau_piles) {
-            if (add_ref == rem_ref) continue;
+        add_built_group_moves(moves, rem_ref, built_group_height);
+    }
+}
 
-            card bg_high = piles[rem_ref][built_group_height - 1];
+void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height) const {
+    // We have found a built group. Cycles through each pile to see if it can be added
+    for (auto add_ref : tableau_piles) {
+        if (add_ref == rem_ref) continue;
 
-            bool is_reveal_move =
-                    piles[rem_ref].size() > built_group_height
-                    && piles[rem_ref][built_group_height].is_face_down();
+        card bg_high = piles[rem_ref][built_group_height - 1];
+        bool base_face_down =
+                   piles[rem_ref].size() > built_group_height
+                && piles[rem_ref][built_group_height].is_face_down();
 
-            if (piles[add_ref].empty()) {
-                if (rules.spaces_pol == s_pol::ANY)
-                    add_empty_built_group_moves(moves, rem_ref, add_ref, bg_high, is_reveal_move);
-                else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)
-                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
-            } else {
-                if (is_next_built_group_card(piles[add_ref].top_card(), bg_high)) {
-                    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, is_reveal_move);
-                }
+        if (piles[add_ref].empty()) {
+            if (rules.spaces_pol == s_pol::ANY) {
+                add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down);
+            } else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
+                add_kings_only_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
             }
+        } else {
+            add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
         }
     }
 }
@@ -386,22 +430,44 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
     return i;
 }
 
-// Loops through each possible built group move to an empty pile and adds it to the list
-void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             card bg_high, bool is_reveal_move) const {
-    pile::size_type card_idx = 1;
-    do {
-        moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, static_cast<pile::size_type>(card_idx + 1),
-                           is_reveal_move);
-    } while (piles[rem_ref][card_idx++] != bg_high);
-
-    if (card_idx < piles[rem_ref].size() && piles[rem_ref][card_idx].is_face_down())
-        moves.back().make_reveal_move();
-}
-
 bool game_state::is_next_built_group_card(card a, card b) const {
     return is_next_legal_card(rules.built_group_pol, a, b);
 }
+
+// Loops through each possible built group move to an empty pile and adds it to the list
+void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
+                                             pile::size_type built_group_height, bool base_face_down) const {
+
+    for (pile::size_type card_idx = 1; card_idx < built_group_height; card_idx++) {
+        bool is_reveal_move = card_idx + 1 == built_group_height && base_face_down;
+        moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, card_idx + 1, is_reveal_move);
+    }
+}
+
+void game_state::add_kings_only_built_group_move(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
+                                             pile::size_type built_group_height, bool base_face_down) const {
+
+    moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, base_face_down);
+}
+
+// Loops through each possible built group move to an empty pile and adds it to the list
+void game_state::add_non_empty_built_group_move(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
+                                             pile::size_type built_group_height, bool base_face_down) const {
+
+    // Given rank of add pile, get card of that rank - 1 in rem pile and see if next bg card
+    // For each card going down from top card in rem pile, check if is next bg card
+    for (pile::ref r = 1; r < built_group_height; r++) {
+        if (is_next_built_group_card(piles[add_ref].top_card(),  piles[rem_ref][r])) {
+
+            bool is_reveal_move = r + 1 == built_group_height && base_face_down;
+            moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, r + 1, is_reveal_move);
+            break;
+        }
+    }
+}
+
+
+///////////////////////
 
 bool game_state::is_next_legal_card(pol p, card a, card b) const {
     // Checks build pol violations

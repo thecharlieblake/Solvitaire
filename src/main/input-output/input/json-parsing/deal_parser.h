@@ -21,7 +21,9 @@ public:
     static void parse_hole(game_state&, const rapidjson::Document&);
     static void parse_cells(game_state&, const rapidjson::Document&);
     static void parse_stock(game_state&, const rapidjson::Document&);
+    static void parse_waste(game_state&, const rapidjson::Document&);
     static void parse_reserve(game_state&, const rapidjson::Document&);
+    static bool parse_foundations(game_state&, const rapidjson::Document&);
     static void fill_foundations(game_state&);
     static std::string deal_schema_json();
 };

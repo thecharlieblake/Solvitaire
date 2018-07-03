@@ -411,6 +411,7 @@ map<string, string> sol_preset_types::mp = {
     "diagonal deal": true,
     "face up cards": "top"
   },
+  "foundations removable": true,
   "stock size": 24,
   "stock deal count": 1,
   "stock redeal": true
@@ -432,6 +433,7 @@ map<string, string> sol_preset_types::mp = {
     "diagonal deal": true,
     "face up cards": "top"
   },
+  "foundations removable": true,
   "stock size": 24,
   "stock deal count": 3,
   "stock redeal": true
