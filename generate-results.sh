@@ -50,12 +50,12 @@ declare -a arr=(
 
 ## Stock games
 
-#"blind-alleys"
-#"chameleon"
-#"duchess"
-#"east-haven"
-#"klondike"
-#"klondike-deal-1"
+#"blind-alleys" (medium)
+#"chameleon" (hard)
+#"duchess" (hard)
+#"east-haven" (easy)
+#"klondike" (medium)
+#"klondike-deal-1" (medium)
 
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`

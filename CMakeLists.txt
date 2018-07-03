@@ -65,6 +65,7 @@ set(sources_test
         src/test/integration_tests/somerset_test.cpp
         src/test/integration_tests/alpha_star_test.cpp
         src/test/integration_tests/spider_test.cpp
+        src/test/integration_tests/klondike_test.cpp
         src/test/unit_tests/global_cache_test.cpp
         src/test/unit_tests/foundations_dominance_test.cpp
         src/test/unit_tests/deal_parser_test.cpp
@@ -73,7 +74,8 @@ set(sources_test
         src/test/unit_tests/pile_test.cpp
         src/test/unit_tests/legal_move_gen_test.cpp
         src/test/unit_tests/built_group_move_gen_test.cpp
-        src/test/unit_tests/face_up_cards_test.cpp)
+        src/test/unit_tests/face_up_cards_test.cpp
+        src/test/unit_tests/k_plus_stock_test.cpp)
 
 ###############################################################################
 ## Rapid JSON setup ###########################################################

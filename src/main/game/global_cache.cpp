@@ -89,10 +89,10 @@ void cached_game_state::add_card(card c, const game_state& gs) {
                 target.emplace_back(c);
                 break;
             case pol::RED_BLACK:
-                target.emplace_back(c.get_colour(), c.get_rank());
+                target.emplace_back(c.get_colour(), c.get_rank(), c.is_face_down());
                 break;
             default:
-                target.emplace_back(0, c.get_rank());
+                target.emplace_back(0, c.get_rank(), c.is_face_down());
                 break;
         }
     } else {

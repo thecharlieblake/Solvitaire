@@ -359,6 +359,25 @@ map<string, string> sol_preset_types::mp = {
 
         },
 
+        {
+                "simple-klondike",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": true,
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "max rank": 4,
+  "stock size": 6,
+  "stock deal count": 3,
+  "stock redeal": true
+}
+)"
+        },
         // --- END OF 'CANONICAL' GAMES ---
 
         {
@@ -392,9 +411,10 @@ map<string, string> sol_preset_types::mp = {
     "diagonal deal": true,
     "face up cards": "top"
   },
+  "foundations removable": true,
   "stock size": 24,
   "stock deal count": 1,
-  "stock redeal": false
+  "stock redeal": true
 }
 )"
 
@@ -413,6 +433,7 @@ map<string, string> sol_preset_types::mp = {
     "diagonal deal": true,
     "face up cards": "top"
   },
+  "foundations removable": true,
   "stock size": 24,
   "stock deal count": 3,
   "stock redeal": true
@@ -795,7 +816,8 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": true,
+    "face up cards": "top"
   },
   "foundations removable": true,
   "stock size": 31,
