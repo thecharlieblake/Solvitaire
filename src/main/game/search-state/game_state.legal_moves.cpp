@@ -36,16 +36,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Stock-waste to tableau moves
     // Reserve to tableau moves
     // Foundation to tableau moves
-    // Tableau / stock-waste to cell moves
+    // Tableau / reserve / stock-waste to cell moves
     // Stock to all tableau moves
 
     vector<move> moves;
 
-    // Stock to tableau / redeal moves
+    // Stock to all tableau moves
     if (rules.stock_size > 0 && stock_can_deal_all_tableau())
             moves.emplace_back(get_stock_to_all_tableau_move());
 
-    // Tableau / waste to cell moves
+    // Tableau / stock to cell moves
     pile::ref empty_cell = 255;
     for (auto c : cells) {
         if (piles[c].empty()) empty_cell = c;
@@ -56,6 +56,10 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             else moves.emplace_back(move::mtype::regular, t, empty_cell);
         }
 
+        for (auto r : reserve)
+            if (!piles[r].empty())
+                moves.emplace_back(move::mtype::regular, r, empty_cell);
+
         if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
             add_stock_to_cell_move(moves, empty_cell);
     }
@@ -65,11 +69,12 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         for (auto f : foundations) {
             if (piles[f].empty() || parent_move.to == f || dominance_blocks_foundation_move(f)) continue;
 
-            for (auto t : tableau_piles) {
-                if (is_valid_tableau_move(f, t)) {
+            for (auto t : tableau_piles)
+                if (is_valid_tableau_move(f, t))
                     moves.emplace_back(move::mtype::regular, f, t);
-                }
-            }
+
+            if (empty_cell != 255)
+                moves.emplace_back(move::mtype::regular, f, empty_cell);
         }
     }
 
@@ -198,7 +203,7 @@ void game_state::add_stock_to_cell_move(std::vector<move>& moves, pile::ref empt
 
     // If there is no redeal option and the k-plus representation is not in effect,
     // adds a regular move from the waste
-    if (!rules.stock_redeal && !piles[waste].empty())
+    if (!piles[waste].empty())
         moves.emplace_back(move::mtype::regular, waste, empty_cell);
 }
 
@@ -216,7 +221,7 @@ void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
 
     // If there is no redeal option and the k-plus representation is not in effect,
     // adds a regular move from the waste to valid tableau piles
-    if (/*!rules.stock_redeal && */!piles[waste].empty()) {
+    if (!piles[waste].empty()) {
         for (auto t : tableau_piles) {
             if (is_valid_tableau_move(waste, t))
                 moves.emplace_back(move::mtype::regular, waste, t);
@@ -237,7 +242,7 @@ void game_state::add_stock_to_hole_foundation_moves(std::vector<move>& moves) co
 
     // If there is no redeal option and the k-plus representation is not in effect,
     // adds a regular move from the waste to valid foundation piles
-    if (!rules.stock_redeal && !piles[waste].empty()) {
+    if (!piles[waste].empty()) {
         for (auto f : foundations)
             if (is_valid_foundations_move(waste, f))
                 moves.emplace_back(move::mtype::regular, waste, f);
