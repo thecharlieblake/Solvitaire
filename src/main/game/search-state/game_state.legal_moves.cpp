@@ -21,11 +21,6 @@ typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 
-// TODO: delete
-using std::ostream;
-std::ostream& operator <<(std::ostream&, const move&);
-std::ostream& operator <<(std::ostream&, const std::vector<move>&);
-
 ////////////////////////////////
 // MAIN LEGAL MOVE GEN CYCLE ///
 ////////////////////////////////
@@ -145,45 +140,8 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
         turn_face_down_cards(moves);
 
-    // TODO: delete
-//#ifndef NDEBUG
-//    std::cerr << "Moves:\n" << moves;
-    /*vector<move>::size_type i = 0;
-    std::cin >> i;
-    move m = moves[i];
-    moves.erase(moves.begin() + i);
-    moves.push_back(m);*/
-//#endif
-
     return moves;
 }
-
-/*#ifndef NDEBUG
-// TODO: delete
-ostream& operator <<(ostream& os, const move& m) {
-    switch (m.type) {
-        case move::mtype::regular: os << "regular"; break;
-        case move::mtype::dominance: os << "dominance"; break;
-        case move::mtype::built_group: os << "built_group"; break;
-        case move::mtype::stock_k_plus: os << "stock_k_plus"; break;
-        case move::mtype::stock_to_all_tableau: os << "stock_to_all_tableau"; break;
-        case move::mtype::null: os << "null"; break;
-    }
-    os        << " (" << int(m.from)
-              << ","    << int(m.to)
-              << ","     << int(m.count)
-              << "," << m.reveal_move
-              << ")";
-    return os;
-}
-ostream& operator <<(ostream& os, const vector<move>& moves) {
-    int i = 0;
-    for (const move m : moves) {
-        os << m << " "<< i++ << "\n";
-    }
-    return os;
-}
-#endif*/
 
 
 ////////////////////////////////

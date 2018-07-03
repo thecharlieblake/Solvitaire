@@ -816,7 +816,8 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": true,
+    "face up cards": "top"
   },
   "foundations removable": true,
   "stock size": 31,

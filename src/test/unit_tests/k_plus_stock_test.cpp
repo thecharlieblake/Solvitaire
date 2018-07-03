@@ -202,7 +202,8 @@ TEST(KPlusStock, RedealKPlus3Waste) {
             },
             {
                     move(move::mtype::stock_k_plus, 0, 3, 5),
-                    move(move::mtype::stock_k_plus, 0, 4, 8)
+                    move(move::mtype::stock_k_plus, 0, 4, 8),
+                    move(move::mtype::regular, 1, 4, 1)
             },
             move(move::mtype::stock_k_plus, 0, 4, 8),
             6, 2,
@@ -288,7 +289,8 @@ TEST(KPlusStock, RedealKPlusEmptyStock) {
             },
             {
                     move(move::mtype::stock_k_plus, 0, 3, 5),
-                    move(move::mtype::stock_k_plus, 0, 4, 8)
+                    move(move::mtype::stock_k_plus, 0, 4, 8),
+                    move(move::mtype::regular, 1, 4, 1)
             },
             move(move::mtype::stock_k_plus, 0, 3, 5),
             8, 0,
