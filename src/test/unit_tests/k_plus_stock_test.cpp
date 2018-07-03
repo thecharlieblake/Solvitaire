@@ -360,7 +360,10 @@ TEST(KPlusStock, RedealCellFoundationMoves) {
 
                     // Foundation moves
                     move(move::mtype::stock_k_plus, 6, 1, 2),
-                    move(move::mtype::stock_k_plus, 6, 2, 4)
+                    move(move::mtype::stock_k_plus, 6, 2, 4),
+
+                    // Regular waste move
+                    move(move::mtype::regular, 7, 5, 1)
             },
             move(move::mtype::stock_k_plus, 6, 2, 4),
             1, 5,
