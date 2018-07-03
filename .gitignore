@@ -56,3 +56,6 @@ fabric.properties
 ###
 
 results/
+
+
+venv/
