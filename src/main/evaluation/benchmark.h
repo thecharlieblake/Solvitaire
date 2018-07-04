@@ -8,10 +8,11 @@
 #include <chrono>
 
 #include "../game/sol_rules.h"
+#include "../game/search-state/game_state.h"
 
 class benchmark {
 public:
-    static void run(const sol_rules &rules, uint64_t, bool);
+    static void run(const sol_rules &rules, uint64_t, game_state::streamliner_options);
 };
 
 

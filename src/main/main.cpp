@@ -60,7 +60,7 @@ int main(int argc, const char* argv[]) {
     }
     // If the benchmark option has been supplied, generates it
     else if (clh.get_benchmark()) {
-        benchmark::run(*rules, clh.get_cache_capacity(), clh.get_streamliners());
+        benchmark::run(*rules, clh.get_cache_capacity(), clh.get_streamliners_game_state());
     }
     // Otherwise there are supplied input files which should be solved
     else {
@@ -93,18 +93,21 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
 
 void solve_random_game(int seed, const sol_rules& rules, command_line_helper& clh) {
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
-    game_state gs(rules, seed, clh.get_streamliners());
+    game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
+    game_state gs(rules, seed, stream_opts);
     solve_game(gs, clh);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules, command_line_helper& clh) {
+    game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
+    
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
             const Document in_doc = json_helper::get_file_json(input_file);
 
             // Attempts to create a game state object from the json
-            game_state gs(rules, in_doc, clh.get_streamliners());
+            game_state gs(rules, in_doc, stream_opts);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
             solve_game(gs, clh);

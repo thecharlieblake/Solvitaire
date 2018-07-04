@@ -6,6 +6,7 @@
 
 
 typedef sol_rules::build_policy pol;
+typedef game_state::streamliner_options sos;
 
 using std::max;
 
@@ -13,7 +14,10 @@ using std::max;
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
     if (rules.foundations_comp_piles)
         return false;
-    else if (streamliners || rules.build_pol == pol::NO_BUILD || rules.build_pol == pol::SAME_SUIT)
+    else if (   stream_opts     == sos::AUTO_FOUNDATIONS
+             || stream_opts     == sos::BOTH
+             || rules.build_pol == pol::NO_BUILD
+             || rules.build_pol == pol::SAME_SUIT)
         return true;
 
     card::suit_t target_suit(target_pile - foundations.front());

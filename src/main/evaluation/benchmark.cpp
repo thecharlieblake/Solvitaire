@@ -13,11 +13,11 @@
 using namespace std;
 typedef chrono::microseconds microsec;
 
-void benchmark::run(const sol_rules &rules, uint64_t cache_capacity, bool streamliners) {
+void benchmark::run(const sol_rules &rules, uint64_t cache_capacity, game_state::streamliner_options streamliners) {
     cout << "Seed "
-            "| Median/Mean Solution Time(μs)"
+            "| Median/Mean Solution Time(μs) "
             "| Median/Mean States Searched "
-            "| Solvable/Unsolvable ";
+            "| Solvable/Unsolvable";
 
     multiset<int> sol_times;
     multiset<int> states_searched;
