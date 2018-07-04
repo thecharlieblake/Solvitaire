@@ -167,12 +167,17 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
                         sol_result final_res;
 
                         if (streamliners) {
-                            stream_res = solve_seed(my_seed, timeout, sr, cc, true);
-                            if (stream_res->sol_type == sol_result::type::unsolvable) {
-                                no_stream_res = solve_seed(my_seed, timeout, sr, cc, false);
-                                final_res = *no_stream_res;
-                            } else {
-                                final_res = *stream_res;
+                            stream_res = solve_seed(my_seed, (timeout/10), sr, cc, true);
+
+                            switch (stream_res->sol_type) {
+                                case sol_result::type::unsolvable:
+                                case sol_result::type::timeout:
+                                    no_stream_res = solve_seed(my_seed, timeout, sr, cc, false);
+                                    final_res = *no_stream_res;
+                                    break;
+                                default:
+                                    final_res = *stream_res;
+                                    break;
                             }
                         } else {
                             no_stream_res = solve_seed(my_seed, timeout, sr, cc, false);
@@ -215,6 +220,8 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
     res.seed = seed;
 
     future<tuple<bool, solver::solution_info>> future = async(
+                                case sol_result::type::solved:
+                                case sol_result::type::mem_limit:
             launch::async,
             [&sol, &terminate_solver](){
                 bool solved = sol.run(terminate_solver) == solver::sol_state::solved;
