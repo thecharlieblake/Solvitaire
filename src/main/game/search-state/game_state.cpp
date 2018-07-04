@@ -37,6 +37,7 @@ using std::string;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
+typedef game_state::streamliner_options sos;
 
 //////////////////
 // CONSTRUCTORS //
@@ -44,9 +45,9 @@ typedef sol_rules::face_up_policy fu;
 
 // A private constructor used by both of the public ones. Initializes all of the
 // piles and pile refs specified by the rules
-game_state::game_state(const sol_rules& s_rules, bool streamliners_)
+game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts_)
         : rules(s_rules)
-        , streamliners(streamliners_)
+        , stream_opts(stream_opts_)
         , stock(255)
         , waste(255)
         , hole (255) {
@@ -106,14 +107,14 @@ game_state::game_state(const sol_rules& s_rules, bool streamliners_)
 }
 
 // Constructs an initial game state from a JSON doc
-game_state::game_state(const sol_rules& s_rules, const Document& doc, bool streamliners_)
-        : game_state(s_rules, streamliners_) {
+game_state::game_state(const sol_rules& s_rules, const Document& doc, streamliner_options s_opts)
+        : game_state(s_rules, s_opts) {
     deal_parser::parse(*this, doc);
 }
 
 // Constructs an initial game state from a seed
-game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
-        : game_state(s_rules, streamliners_) {
+game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s_opts)
+        : game_state(s_rules, s_opts) {
     vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
@@ -198,7 +199,7 @@ game_state::game_state(const sol_rules& s_rules, int seed, bool streamliners_)
 
 game_state::game_state(const sol_rules& s_rules,
                        std::initializer_list<std::initializer_list<string>> il)
-        : game_state(s_rules, false) {pile::ref pr = 0;
+        : game_state(s_rules, sos::NONE) {pile::ref pr = 0;
     for (auto& p_il : il) {
         for (const string& card_str : p_il) {
             card c(card_str.c_str(), s_rules.face_up == fu::TOP_CARDS);

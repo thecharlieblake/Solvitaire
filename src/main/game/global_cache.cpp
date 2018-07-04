@@ -8,12 +8,14 @@
 
 #include "global_cache.h"
 #include "../input-output/output/log_helper.h"
+#include "search-state/game_state.h"
 
 using namespace std;
 using namespace boost;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef game_state::streamliner_options sos;
 
 typedef boost::multi_index::multi_index_container<
         cached_game_state,
@@ -81,7 +83,9 @@ void cached_game_state::add_card(card c, const game_state& gs) {
     // If the game is a 'hole-based' game, or suit-reduction is on, reduces
     // the cached suit of the card where possible
 
-    bool is_suit_symmetry = gs.streamliners || gs.rules.hole;
+    bool is_suit_symmetry =    gs.stream_opts == sos::SUIT_SYMMETRY
+                            || gs.stream_opts == sos::BOTH
+                            || gs.rules.hole;
 
     if (is_suit_symmetry) {
         switch (gs.rules.build_pol) {
@@ -135,7 +139,9 @@ size_t hasher::hash_value(card const& c) const {
 
     // If the game is a 'hole-based' game, or suit-reduction is enabled, hash
     // the reduced suit
-    bool is_suit_symmetry = init_gs.streamliners || init_gs.rules.hole;
+    bool is_suit_symmetry =    init_gs.stream_opts == sos::SUIT_SYMMETRY
+                               || init_gs.stream_opts == sos::BOTH
+                               || init_gs.rules.hole;
     
     uint8_t suit_val;
     if (is_suit_symmetry) {

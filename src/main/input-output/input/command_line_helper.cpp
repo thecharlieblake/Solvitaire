@@ -49,9 +49,12 @@ command_line_helper::command_line_helper()
                                                     "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
             ("cores", po::value<uint>(), "the number of cores for the solvability percentages to be run across. "
                                          "Must be supplied with the solvability option.")
-            ("streamliners", "applies any relevant streamliners to the search. If the --solvability option is supplied,"
-                             " runs the streamliner version of the search first and then if unsuccessful, the full"
-                             " search for each seed.")
+            ("streamliners", po::value<string>(),
+                    "Applies streamliners to the search. Options include 'none', 'both', 'suit-symmetry',"
+                    " 'auto-foundations', and 'smart-solvability'. Defaults to 'none', unless '--solvability' is"
+                    " also supplied, in which case defaults to 'smart-solvability'. 'smart-solvability' mode is only"
+                    " available with '--solvability', and runs first with both streamliners and a 10% timeout. If this"
+                    " is unsuccessful (unsolvable or timeout), then runs again without streamliners.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be "
@@ -143,7 +146,29 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         for (uint i = 0; i < cores; i++) resume.push_back(i);
     }
 
-    streamliners = (vm.count("streamliners") != 0);
+    if (vm.count("streamliners")) {
+        auto& s = vm["streamliners"].as<string>();
+
+        if (s == "auto-foundations" ) streamliners = streamliner_opt::AUTO_FOUNDATIONS;
+        else if (s == "suit-symmetry") streamliners = streamliner_opt::SUIT_SYMMETRY;
+        else if (s == "both") streamliners = streamliner_opt::BOTH;
+        else if (s == "smart-solvability") {
+            if (solvability == -1) {
+                print_streamliner_solvability_error();
+                return false;
+            } else {
+                streamliners = streamliner_opt::SMART;
+            }
+        }
+        else if (s == "none") streamliners = streamliner_opt::NONE;
+        else {
+            print_streamliner_error(s);
+            return false;
+        }
+    } else {
+        if (solvability == -1) streamliners = streamliner_opt::NONE;
+        else streamliners = streamliner_opt::SMART;
+    }
 
     benchmark = (vm.count("benchmark") != 0);
 
@@ -230,6 +255,15 @@ void command_line_helper::print_resume_error() {
     print_help();
 }
 
+void command_line_helper::print_streamliner_error(const string& str) {
+    LOG_ERROR ("Error: invalid streamliner: " + str + ".\nAvailable options are: 'none', 'both', 'suit-symmetry',"
+                                                      " 'auto-foundations', and 'smart-solvability'");
+}
+
+void command_line_helper::print_streamliner_solvability_error() {
+    LOG_ERROR ("Smart streamliner mode can only be used with '--solvability'");
+}
+
 const vector<string> command_line_helper::get_input_files() {
     return input_files;
 }
@@ -282,6 +316,23 @@ bool command_line_helper::get_benchmark() {
     return benchmark;
 }
 
-bool command_line_helper::get_streamliners() {
+command_line_helper::streamliner_opt command_line_helper::get_streamliners() {
     return streamliners;
+}
+
+game_state::streamliner_options command_line_helper::get_streamliners_game_state() {
+    return convert_streamliners(streamliners);
+}
+
+game_state::streamliner_options command_line_helper::convert_streamliners(streamliner_opt so) {
+    switch (so){
+        case command_line_helper::streamliner_opt::NONE: return game_state::streamliner_options::NONE;
+        case command_line_helper::streamliner_opt::AUTO_FOUNDATIONS: return game_state::streamliner_options::AUTO_FOUNDATIONS;
+        case command_line_helper::streamliner_opt::SUIT_SYMMETRY: return game_state::streamliner_options::SUIT_SYMMETRY;
+        case command_line_helper::streamliner_opt::BOTH: return game_state::streamliner_options::BOTH;
+        case command_line_helper::streamliner_opt::SMART:
+        default:
+            assert(false);
+            return game_state::streamliner_options::NONE;;
+    }
 }

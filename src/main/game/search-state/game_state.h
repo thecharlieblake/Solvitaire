@@ -26,12 +26,14 @@ class game_state {
     friend class state_printer;
     friend class test_helper;
 public:
+    enum class streamliner_options {NONE, AUTO_FOUNDATIONS, SUIT_SYMMETRY, BOTH};
+
     /* Constructors */
 
     // Creates a game state representation from a JSON doc
-    game_state(const sol_rules&, const rapidjson::Document&, bool);
+    game_state(const sol_rules&, const rapidjson::Document&, streamliner_options);
     // Does the same from a seed
-    game_state(const sol_rules&, int seed, bool);
+    game_state(const sol_rules&, int seed, streamliner_options);
     // Does the same but with an initialiser list (useful for testing)
     game_state(const sol_rules&, std::initializer_list<std::initializer_list<std::string>>);
 
@@ -59,7 +61,7 @@ public:
 private:
     /* Constructors (& helper function) */
 
-    explicit game_state(const sol_rules&, bool);
+    explicit game_state(const sol_rules&, streamliner_options);
     static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
     template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
 
@@ -124,7 +126,7 @@ private:
     /* Game rules */
 
     const sol_rules rules;
-    bool streamliners;
+    streamliner_options stream_opts;
 
     /* Pile references */
 
