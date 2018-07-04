@@ -23,7 +23,7 @@ private:
     typedef std::chrono::milliseconds millisec;
 
     struct sol_result {
-        enum class type { timeout, solved, unsolvable };
+        enum class type { timeout, solved, unsolvable, mem_limit };
 
         int seed;
         type sol_type;
@@ -37,9 +37,8 @@ private:
 
         std::atomic<int> solvable;
         std::atomic<int> unsolvable;
-        std::atomic<int> intractable;
-        //millisec solvable_time;
-        //millisec unsolvable_time;
+        std::atomic<int> timed_out;
+        std::atomic<int> mem_limit;
     };
 
     // Printing methods

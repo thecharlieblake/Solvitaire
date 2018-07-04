@@ -30,7 +30,8 @@ void solvability_calc::print_header(long t, bool streamliners) const {
             ", Upper Bound"
             ", Solvable"
             ", Unsolvable"
-            ", Intractable, ";
+            ", Timed-out"
+            ", Memory Limited, ";
     if (streamliners) {
         cout << "(Streamliner Results:) "
                 "Attempted Seed"
@@ -68,13 +69,14 @@ void solvability_calc::print_general_info(const seed_results& seed_res) {
     pair<double, double> interval = binomial_ci::wilson(
             seed_res.solvable,
             seed_res.unsolvable,
-            seed_res.intractable);
+            (seed_res.timed_out + seed_res.mem_limit));
 
     cout << interval.first * 100
          << ", "  << interval.second * 100
          << ", "  << seed_res.solvable
          << ", "  << seed_res.unsolvable
-         << ", "  << seed_res.intractable;
+         << ", "  << seed_res.timed_out
+         << ", "  << seed_res.mem_limit;
 }
 
 void solvability_calc::print_seed_info(sol_result res) {
@@ -88,6 +90,9 @@ void solvability_calc::print_seed_info(sol_result res) {
             break;
         case sol_result::type::unsolvable:
             cout << ", unsolvable";
+            break;
+        case sol_result::type::mem_limit:
+            cout << ", mem-limit";
             break;
     }
     cout << ", " << res.time.count();
@@ -234,20 +239,20 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
                 exception = true;
             }
 
+            auto end = chrono::steady_clock::now();
+            millisec elapsed_millis =
+                    chrono::duration_cast<chrono::milliseconds>(end - start);
+
             if (exception) {
-                res.sol_type = sol_result::type::timeout;
-                res.time = timeout;
+                res.sol_type = sol_result::type::mem_limit;
+                res.time = elapsed_millis;
                 res.sol_info = get<1>(result);
             } else if (terminate_solver) {
                 res.sol_type = sol_result::type::timeout;
                 res.time = timeout;
                 res.sol_info = get<1>(result);
             } else {
-                auto end = chrono::steady_clock::now();
-                millisec elapsed_millis =
-                        chrono::duration_cast<chrono::milliseconds>(end - start);
                 res.time = elapsed_millis;
-
                 if (get<0>(result)) {
                     res.sol_type = sol_result::type::solved;
                 } else {
@@ -266,19 +271,22 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
 // SEED RESULTS CLASS //
 ////////////////////////
 
-solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), intractable(v[2]) {
+solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), timed_out(v[2]) {
 }
 
 void solvability_calc::seed_results::add_result(sol_result::type t) {
     switch (t) {
         case sol_result::type::timeout:
-            intractable++;
+            timed_out++;
             break;
         case sol_result::type::solved:
             solvable++;
             break;
         case sol_result::type::unsolvable:
             unsolvable++;
+            break;
+        case sol_result::type ::mem_limit:
+            mem_limit++;
             break;
     }
 }
