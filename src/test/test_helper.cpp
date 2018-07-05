@@ -18,13 +18,14 @@ using std::vector;
 using std::ostream;
 
 typedef std::initializer_list<std::initializer_list<std::string>> string_il;
+typedef game_state::streamliner_options sos;
 
 
 bool test_helper::is_solvable(const std::string& input_file, const std::string& preset_type) {
     const Document in_doc = json_helper::get_file_json(input_file);
     const sol_rules rules = rules_parser::from_preset(preset_type);
 
-    game_state gs(rules, in_doc, false);
+    game_state gs(rules, in_doc, sos::NONE);
     solver sol(gs, 1000000);
 
     return sol.run() == solver::sol_state::solved;

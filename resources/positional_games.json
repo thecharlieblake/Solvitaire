@@ -1,0 +1,22 @@
+{
+  "gaps": {
+    "sequences": {
+      "count": 4,
+      "from": "any",
+      "to": "spaces",
+      "spaces policy": "increasing neighbour same-suit",
+      "victory": "ascending same-suit"
+    },
+    "foundations": true,
+    "foundations initial card": true
+  },
+  "accordion": {
+    "sequences": {
+      "count": 1,
+      "from": ["1R", "3R"],
+      "to": ["same-suit", "same-rank"],
+      "spaces policy": "remove",
+      "victory": "single pile"
+    }
+  }
+}
