@@ -12,6 +12,7 @@
 #include "solver.h"
 #include "../game/move.h"
 #include "../input-output/output/log_helper.h"
+#include "../input-output/output/state_printer.h"
 
 using std::atomic;
 using std::vector;
@@ -57,6 +58,7 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         if (current_node->mv.type == move::mtype::dominance) {
             LOG_DEBUG("(dominance move)");
         }
+        state_printer::print_move(clog, current_node->mv);
         LOG_DEBUG(state);
 #endif
 
@@ -134,11 +136,19 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
     // (as long as the move wasn't a dominance move)
 
     if (current_node->mv.type != move::mtype::dominance) {
-        if (cache.get_states_removed_from_cache() == 0) assert(cache.contains(state));
+        if (cache.get_states_removed_from_cache() == 0) {
+            if (!cache.contains(state)) {
+                state_printer::print_move(clog, current_node->mv);
+                LOG_DEBUG("-------");
+                LOG_DEBUG(state);
+                assert(false);
+            }
+        }
         LOG_DEBUG("(undo move)");
     } else {
         LOG_DEBUG("(undo dominance move)");
     }
+    state_printer::print_move(clog, current_node->mv);
     LOG_DEBUG(state);
 #endif
 

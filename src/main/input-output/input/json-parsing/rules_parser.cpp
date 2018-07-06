@@ -186,6 +186,125 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("foundations")) {
+        if (d["foundations"].IsObject()) {
+            if (d["foundations"].HasMember("present")) {
+                if (d["foundations"]["present"].IsBool()) {
+                    sr.foundations_present = d["foundations"]["present"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[foundations][present] must be a boolean");
+                }
+            }
+
+            if (d["foundations"].HasMember("initial card")) {
+                if (d["foundations"]["initial card"].IsBool()) {
+                    sr.foundations_init_card = d["foundations"]["initial card"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[foundations][initial card] must be a boolean");
+                }
+            }
+
+            if (d["foundations"].HasMember("removable")) {
+                if (d["foundations"]["removable"].IsBool()) {
+                    sr.foundations_removable = d["foundations"]["removable"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[foundations][removable] must be a boolean");
+                }
+            }
+
+            if (d["foundations"].HasMember("complete piles")) {
+                if (d["foundations"]["complete piles"].IsBool()) {
+                    sr.foundations_only_comp_piles = d["foundations"]["complete piles"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[foundations][complete piles] must be a boolean");
+                }
+            }
+
+        } else {
+            json_helper::json_parse_err("[foundations] must be an object");
+        }
+    }
+
+    if (d.HasMember("hole")) {
+        if (d["hole"].IsBool()) {
+            sr.hole = d["hole"].GetBool();
+        } else {
+            json_helper::json_parse_err("[hole] must be a boolean");
+        }
+    }
+
+    if (d.HasMember("cells")) {
+        if (d["cells"].IsInt()) {
+            sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
+        } else {
+            json_helper::json_parse_err("[cells] must be an integer");
+        }
+    }
+
+    if (d.HasMember("stock")) {
+        if (d["stock"].IsObject()) {
+            if (d["stock"].HasMember("size")) {
+                if (d["stock"]["size"].IsInt()) {
+                    sr.stock_size = static_cast<uint8_t>(d["stock"]["size"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[stock][size] must be an integer");
+                }
+            }
+
+            if (d["stock"].HasMember("deal type")) {
+                if (d["stock"]["deal type"].IsString()) {
+                    if(string(d["stock"]["deal type"].GetString()) == "waste") {
+                        sr.stock_deal_t = sdt::WASTE;
+                    } else {
+                        sr.stock_deal_t = sdt::TABLEAU_PILES;
+                    }
+                } else {
+                    json_helper::json_parse_err("[stock][deal type] must be a string");
+                }
+            }
+
+            if (d["stock"].HasMember("deal count")) {
+                if (d["stock"]["deal count"].IsInt()) {
+                    sr.stock_deal_count = static_cast<uint8_t>(d["stock"]["deal count"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[stock][deal count] must be an integer");
+                }
+            }
+
+            if (d["stock"].HasMember("redeal")) {
+                if (d["stock"]["redeal"].IsBool()) {
+                    sr.stock_redeal = static_cast<uint8_t>(d["stock"]["redeal"].GetBool());
+                } else {
+                    json_helper::json_parse_err("[stock][redeal] must be a boolean");
+                }
+            }
+        } else {
+            json_helper::json_parse_err("[stock] must be an object");
+        }
+    }
+
+    if (d.HasMember("reserve")) {
+        if (d["reserve"].IsObject()) {
+            if (d["reserve"].HasMember("size")) {
+                if (d["reserve"]["size"].IsInt()) {
+                    sr.reserve_size = static_cast<uint8_t>(d["reserve"]["size"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[size] must be an integer");
+                }
+            }
+
+            if (d["reserve"].HasMember("stacked")) {
+                if (d["reserve"]["stacked"].IsBool()) {
+                    sr.reserve_stacked = d["reserve"]["stacked"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[stacked] must be a boolean");
+                }
+            }
+        } else {
+            json_helper::json_parse_err("[reserve] must be an object");
+        }
+    }
+
     if (d.HasMember("max rank")) {
         if (d["max rank"].IsInt()) {
             sr.max_rank = static_cast<card::rank_t>(d["max rank"].GetInt());
@@ -205,109 +324,9 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
-    if (d.HasMember("hole")) {
-        if (d["hole"].IsBool()) {
-            sr.hole = d["hole"].GetBool();
-        } else {
-            json_helper::json_parse_err("[hole] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("foundations")) {
-        if (d["foundations"].IsBool()) {
-            sr.foundations = d["foundations"].GetBool();
-        } else {
-            json_helper::json_parse_err("[foundations] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("foundations initial card")) {
-        if (d["foundations initial card"].IsBool()) {
-            sr.foundations_init_card = d["foundations initial card"].GetBool();
-        } else {
-            json_helper::json_parse_err("[foundations initial card] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("foundations removable")) {
-        if (d["foundations removable"].IsBool()) {
-            sr.foundations_removable = d["foundations removable"].GetBool();
-        } else {
-            json_helper::json_parse_err("[foundations removable] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("foundations complete piles")) {
-        if (d["foundations complete piles"].IsBool()) {
-            sr.foundations_comp_piles = d["foundations complete piles"].GetBool();
-        } else {
-            json_helper::json_parse_err("[foundations complete piles] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("cells")) {
-        if (d["cells"].IsInt()) {
-            sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
-        } else {
-            json_helper::json_parse_err("[cells] must be an integer");
-        }
-    }
-
-    if (d.HasMember("stock size")) {
-        if (d["stock size"].IsInt()) {
-            sr.stock_size = static_cast<uint8_t>(d["stock size"].GetInt());
-        } else {
-            json_helper::json_parse_err("[stock size] must be an integer");
-        }
-    }
-
-    if (d.HasMember("stock deal type")) {
-        if (d["stock deal type"].IsString()) {
-            if(string(d["stock deal type"].GetString()) == "waste") {
-                sr.stock_deal_t = sdt::WASTE;
-            } else {
-                sr.stock_deal_t = sdt::TABLEAU_PILES;
-            }
-        } else {
-            json_helper::json_parse_err("[stock deal type] must be a string");
-        }
-    }
-
-    if (d.HasMember("stock deal count")) {
-        if (d["stock deal count"].IsInt()) {
-            sr.stock_deal_count = static_cast<uint8_t>(d["stock deal count"].GetInt());
-        } else {
-            json_helper::json_parse_err("[stock deal count] must be an integer");
-        }
-    }
-
-    if (d.HasMember("stock redeal")) {
-        if (d["stock redeal"].IsBool()) {
-            sr.stock_redeal = static_cast<uint8_t>(d["stock redeal"].GetBool());
-        } else {
-            json_helper::json_parse_err("[stock redeal] must be a boolean");
-        }
-    }
-
-    if (d.HasMember("reserve size")) {
-        if (d["reserve size"].IsInt()) {
-            sr.reserve_size = static_cast<uint8_t>(d["reserve size"].GetInt());
-        } else {
-            json_helper::json_parse_err("[reserve size] must be an integer");
-        }
-    }
-
-    if (d.HasMember("reserve stacked")) {
-        if (d["reserve stacked"].IsBool()) {
-            sr.reserve_stacked = d["reserve stacked"].GetBool();
-        } else {
-            json_helper::json_parse_err("[reserve stacked] must be a boolean");
-        }
-    }
-
     int solution_types = 0;
     if (sr.hole) solution_types++;
-    if (sr.foundations) solution_types++;
+    if (sr.foundations_present) solution_types++;
     if (solution_types != 1) {
         json_helper::json_parse_err("one and only one of [hole] and [foundations] "
                                     "must be true");
@@ -329,36 +348,130 @@ string rules_parser::rules_schema_json() {
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "JSON Schema representing a generic solitaire game",
-
-  "type": "object", "properties": {
-
+  "type": "object",
+  "properties": {
     "tableau piles": {
-      "type": "object", "properties": {
-        "count": {"type": "integer", "minimum": 0},
-        "build policy": {"type": "string", "enum": ["any-suit", "red-black", "same-suit", "no-build"]},
-        "spaces policy": {"type": "string", "enum": ["any", "no-build", "kings"]},
-        "diagonal deal": {"type": "boolean"},
-        "move built group": {"type": "boolean"},
-        "move built group policy": {"type": "string", "enum": ["same-as-build", "any-suit", "red-black", "same-suit", "no-build"]},
-        "face up cards": {"type": "string", "enum": ["all", "top"]}
-      }, "additionalProperties": false
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "build policy": {
+          "type": "string",
+          "enum": [
+            "any-suit",
+            "red-black",
+            "same-suit",
+            "no-build"
+          ]
+        },
+        "spaces policy": {
+          "type": "string",
+          "enum": [
+            "any",
+            "no-build",
+            "kings"
+          ]
+        },
+        "diagonal deal": {
+          "type": "boolean"
+        },
+        "move built group": {
+          "type": "boolean"
+        },
+        "move built group policy": {
+          "type": "string",
+          "enum": [
+            "same-as-build",
+            "any-suit",
+            "red-black",
+            "same-suit",
+            "no-build"
+          ]
+        },
+        "face up cards": {
+          "type": "string",
+          "enum": [
+            "all",
+            "top"
+          ]
+        }
+      },
+      "additionalProperties": false
     },
-    "max rank": {"type": "integer", "minimum": 1, "maximum": 13},
-    "two decks": {"type": "boolean"},
-    "hole": {"type": "boolean"},
-    "foundations": {"type": "boolean"},
-    "foundations initial card": {"type": "boolean"},
-    "foundations removable": {"type": "boolean"},
-    "foundations complete piles": {"type": "boolean"},
-    "cells": {"type": "integer", "minimum": 0},
-    "stock size": {"type": "integer", "minimum": 0},
-    "stock deal type": {"type": "string", "enum": ["waste", "tableau piles"]},
-    "stock deal count": {"type": "integer", "minimum": 1},
-    "stock redeal": {"type": "boolean"},
-    "reserve size": {"type": "integer", "minimum": 0},
-    "reserve stacked": {"type": "boolean"}
-
-  }, "additionalProperties": false
+    "foundations": {
+      "type": "object",
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "initial card": {
+          "type": "boolean"
+        },
+        "removable": {
+          "type": "boolean"
+        },
+        "only complete pile moves": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "hole": {
+      "type": "boolean"
+    },
+    "cells": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stock": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deal type": {
+          "type": "string",
+          "enum": [
+            "waste",
+            "tableau piles"
+          ]
+        },
+        "deal count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "redeal": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reserve": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stacked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "max rank": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 13
+    },
+    "two decks": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
 }
 )";
     return schema_json;

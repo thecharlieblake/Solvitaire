@@ -90,11 +90,11 @@ private:
     bool stock_can_deal_all_tableau() const;
     move get_stock_to_all_tableau_move() const;
 
-    std::set<pile::size_type> generate_stock_moves_to_check() const;
+    std::set<std::pair<int8_t, bool>> generate_k_plus_moves_to_check() const;
     void add_stock_to_cell_move(std::vector<move>&, pile::ref) const;
     void add_stock_to_tableau_moves(std::vector<move>&) const;
     void add_stock_to_hole_foundation_moves(std::vector<move>&) const;
-    card stock_card_from_index(pile::size_type) const;
+    card stock_card_from_count(int8_t) const;
     void add_foundation_complete_piles_moves(std::vector<move> &) const;
 
     bool is_valid_tableau_move(pile::ref, pile::ref) const;

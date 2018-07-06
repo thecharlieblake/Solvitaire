@@ -4,11 +4,12 @@
 
 #include "move.h"
 
-move::move(mtype ty, pile::ref f, pile::ref t, pile::size_type i, bool reveal_move_) :
-        type(ty), from(f), to(t), count(i), reveal_move(reveal_move_) {
+move::move(mtype ty, pile::ref f, pile::ref t, int8_t count_, bool reveal_move_, bool flip_waste_) :
+        type(ty), from(f), to(t), count(count_), reveal_move(reveal_move_), flip_waste(flip_waste_) {
 #ifndef NDEBUG
-    if (ty == mtype::regular) assert(i == 1);
-    else if (ty != mtype::stock_k_plus) assert(i >= 1);
+    if (ty == mtype::regular)      assert(count == 1);
+    if (ty == mtype::stock_k_plus) assert(!reveal_move_);
+    if (ty != mtype::stock_k_plus) assert(count >= 1 && !flip_waste_);
 #endif
 }
 

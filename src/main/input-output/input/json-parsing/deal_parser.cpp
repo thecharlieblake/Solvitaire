@@ -52,7 +52,7 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     }
 
     // If the foundations begin with cards in them, fill them
-    if (gs.rules.foundations) {
+    if (gs.rules.foundations_present) {
         bool supplied_foundations = parse_foundations(gs, doc);
 
         if (!supplied_foundations && gs.rules.foundations_init_card) {

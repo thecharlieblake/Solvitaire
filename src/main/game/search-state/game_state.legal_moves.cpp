@@ -119,7 +119,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Tableau / cells / reserve / stock-waste to hole / foundation moves
-    if (rules.hole || (rules.foundations && !rules.foundations_comp_piles)) {
+    if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
         // Stock
         if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
             add_stock_to_hole_foundation_moves(moves);
@@ -139,7 +139,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         }
     }
 
-    if (rules.foundations_comp_piles) // i.e. Spider-type winning condition
+    if (rules.foundations_only_comp_piles) // i.e. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
 
     if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
@@ -171,94 +171,67 @@ move game_state::get_stock_to_all_tableau_move() const {
     return move(move::mtype::stock_to_all_tableau, 0, 0, stock_moves);
 }
 
-set<pile::size_type> game_state::generate_stock_moves_to_check() const {
-    set<pile::size_type> stock_moves_to_check;
+set<pair<int8_t, bool>> game_state::generate_k_plus_moves_to_check() const {
+    set<pair<int8_t, bool>> stock_moves_to_check;
+
+    // If the waste isn't empty, adds the move from the top of the current waste
+    if (piles[waste].size() != 0) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));
 
     // Adds multiples of deal count (excluding last card)
-    for (auto i = static_cast<pile::size_type>(rules.stock_deal_count - 1);
-         i < piles[stock].size() - 1;
-         i += rules.stock_deal_count) {
-        stock_moves_to_check.insert(i);
-    }
+    for (int8_t count = rules.stock_deal_count;
+            count < piles[stock].size();
+            count += rules.stock_deal_count)
+        stock_moves_to_check.insert(pair<int8_t, bool>(count, false));
 
     // Adds last card
-    stock_moves_to_check.insert(static_cast<pile::size_type>(piles[stock].size() - 1));
+    bool flip_waste = rules.stock_redeal;
+    stock_moves_to_check.insert(pair<int8_t, bool>(static_cast<int8_t>(piles[stock].size()), flip_waste));
 
     // If the stock can be redealt, searches through the waste then the stock again
-    if (rules.stock_redeal) {
-        auto stock_waste_sz = piles[waste].size() + piles[stock].size();
-        for (auto i = piles[stock].size() - 1 + rules.stock_deal_count;
-             i < piles[stock].size() + stock_waste_sz - 1;
-             i += rules.stock_deal_count) {
-            stock_moves_to_check.insert(static_cast<pile::size_type>(i % stock_waste_sz));
-        }
-    }
+    if (rules.stock_redeal)
+        for (auto count = static_cast<int8_t>(-piles[waste].size() + rules.stock_deal_count);
+                count < piles[stock].size();
+                count += rules.stock_deal_count)
+            stock_moves_to_check.insert(pair<int8_t, bool>(count, false));
 
     return stock_moves_to_check;
 }
 
 void game_state::add_stock_to_cell_move(std::vector<move>& moves, pile::ref empty_cell) const {
-    for (auto i : generate_stock_moves_to_check())
-        moves.emplace_back(move::mtype::stock_k_plus, stock, empty_cell, i);
-
-    // If there is no redeal option and the k-plus representation is not in effect,
-    // adds a regular move from the waste
-    if (!piles[waste].empty())
-        moves.emplace_back(move::mtype::regular, waste, empty_cell);
+    for (auto k_plus_mv : generate_k_plus_moves_to_check())
+        moves.emplace_back(move::mtype::stock_k_plus, stock, empty_cell, k_plus_mv.first, false, k_plus_mv.second);
 }
 
 void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
     // For each stock move to check, if it can be moved legally to one of the tableau
     // piles, adds this as a move
-    for (auto i : generate_stock_moves_to_check()) {
-        card from = stock_card_from_index(i);
+    for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
+        card from = stock_card_from_count(k_plus_mv.first);
 
-        for (auto t : tableau_piles) {
+        for (auto t : tableau_piles)
             if (is_valid_tableau_move(from, t))
-                moves.emplace_back(move::mtype::stock_k_plus, stock, t, i);
-        }
-    }
-
-    // If there is no redeal option and the k-plus representation is not in effect,
-    // adds a regular move from the waste to valid tableau piles
-    if (!piles[waste].empty()) {
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(waste, t))
-                moves.emplace_back(move::mtype::regular, waste, t);
-        }
+                moves.emplace_back(move::mtype::stock_k_plus, stock, t, k_plus_mv.first, false, k_plus_mv.second);
     }
 }
 
 void game_state::add_stock_to_hole_foundation_moves(std::vector<move>& moves) const {
-    for (auto i : generate_stock_moves_to_check()) {
-        card from = stock_card_from_index(i);
+    for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
+        card from = stock_card_from_count(k_plus_mv.first);
 
         for (auto f : foundations)
             if (is_valid_foundations_move(from, f))
-                moves.emplace_back(move::mtype::stock_k_plus, stock, f, i);
+                moves.emplace_back(move::mtype::stock_k_plus, stock, f, k_plus_mv.first, false, k_plus_mv.second);
+
         if (rules.hole && is_valid_hole_move(from))
-            moves.emplace_back(move::mtype::stock_k_plus, stock, hole, i);
-    }
-
-    // If there is no redeal option and the k-plus representation is not in effect,
-    // adds a regular move from the waste to valid foundation piles
-    if (!piles[waste].empty()) {
-        for (auto f : foundations)
-            if (is_valid_foundations_move(waste, f))
-                moves.emplace_back(move::mtype::regular, waste, f);
-
-        if (rules.hole && is_valid_hole_move(waste))
-            moves.emplace_back(move::mtype::regular, waste, hole);
+            moves.emplace_back(move::mtype::stock_k_plus, stock, hole, k_plus_mv.first, false, k_plus_mv.second);
     }
 }
 
-card game_state::stock_card_from_index(pile::size_type i) const {
-    if (i < piles[stock].size()) {
-        return piles[stock][i];
+card game_state::stock_card_from_count(int8_t count) const {
+    if (count > 0) {
+        return piles[stock][count - 1];
     } else {
-        // If we are moving from the waste in a readeal (by looping), finds the correct card
-        auto _i = static_cast<pile::size_type>(piles[stock].size() + piles[waste].size() - 1 - i);
-        return piles[waste][_i];
+        return piles[waste][-count];
     }
 }
 
@@ -308,7 +281,7 @@ bool game_state::is_next_tableau_card(card a, card b) const {
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
                                            const pile::ref add_ref) const {
-    if (rem_ref == add_ref || rules.foundations_comp_piles) return false;
+    if (rem_ref == add_ref || rules.foundations_only_comp_piles) return false;
 
     return is_valid_foundations_move(piles[rem_ref].top_card(), add_ref);
 }

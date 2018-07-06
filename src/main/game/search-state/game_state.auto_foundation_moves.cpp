@@ -12,7 +12,7 @@ using std::max;
 
 
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
-    if (rules.foundations_comp_piles)
+    if (rules.foundations_only_comp_piles)
         return false;
     else if (   stream_opts     == sos::AUTO_FOUNDATIONS
              || stream_opts     == sos::BOTH
@@ -65,7 +65,7 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 boost::optional<move> game_state::get_dominance_move() const {
 #ifndef NO_AUTO_FOUNDATIONS
     // If there are 2 decks or no foundations, return
-    if (!rules.foundations || rules.two_decks)
+    if (!rules.foundations_present || rules.two_decks)
         return boost::none;
 
     // Cycles through the piles and sees if any cards can be automatically moved
@@ -132,7 +132,7 @@ bool game_state::dominance_blocks_foundation_move(pile::ref target_pile) {
 // Decides which 'auto foundation' booleans should be 'true' currently
 void game_state::update_auto_foundation_moves(pile::ref target_pile) {
     // If there are no foundations, or this is not a foundation move, do nothing
-    if (!rules.foundations
+    if (!rules.foundations_present
         || target_pile < foundations.front()
         || target_pile > foundations.back()) {
         return;

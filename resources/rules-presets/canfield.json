@@ -1,9 +1,0 @@
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "red-black"
-  },
-  "stock size": 34,
-  "reserve size": 14,
-  "reserve stacked": true
-}

@@ -4,12 +4,13 @@
 
 #include "state_printer.h"
 
-using namespace std;
+using std::ostream;
+using std::vector;
 
 typedef sol_rules::stock_deal_type sdt;
 
 ostream& state_printer::print(ostream& stream, const game_state& gs) {
-    if (gs.rules.foundations) {
+    if (gs.rules.foundations_present) {
         state_printer::print_header(stream, "Foundations");
         state_printer::print_top_of_piles(stream, gs.foundations, gs);
     }
@@ -113,4 +114,37 @@ void state_printer::print_top_of_pile(ostream& stream,
 
 void state_printer::print_card(std::ostream& s, const card c) {
     s << c.to_string();
+}
+
+void state_printer::print_move(std::ostream& s, const move m) {
+    s << "move(";
+    switch (m.type) {
+        case move::mtype::regular:
+            s << "regular";
+            break;
+        case move::mtype::dominance:
+            s << "dominance";
+            break;
+        case move::mtype::built_group:
+            s << "built group";
+            break;
+        case move::mtype::stock_k_plus:
+            s << "stock k-plus";
+            break;
+        case move::mtype::stock_to_all_tableau:
+            s << "stock-to-all-tableau";
+            break;
+        case move::mtype::null:
+            s << "null";
+            break;
+    }
+    s << ", "
+      << int(m.from)
+      << ", "
+      << int(m.to)
+      << ", "
+      << int(m.count)
+      << ", "
+      << (m.reveal_move ? "true" : "false")
+      << ")\n";
 }
