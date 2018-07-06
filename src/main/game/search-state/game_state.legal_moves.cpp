@@ -119,7 +119,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Tableau / cells / reserve / stock-waste to hole / foundation moves
-    if (rules.hole || (rules.foundations && !rules.foundations_comp_piles)) {
+    if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
         // Stock
         if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
             add_stock_to_hole_foundation_moves(moves);
@@ -139,7 +139,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         }
     }
 
-    if (rules.foundations_comp_piles) // i.e. Spider-type winning condition
+    if (rules.foundations_only_comp_piles) // i.e. Spider-type winning condition
         add_foundation_complete_piles_moves(moves);
 
     if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
@@ -190,6 +190,7 @@ set<pile::size_type> game_state::generate_stock_moves_to_check() const {
         for (auto i = piles[stock].size() - 1 + rules.stock_deal_count;
              i < piles[stock].size() + stock_waste_sz - 1;
              i += rules.stock_deal_count) {
+            if (i == stock_waste_sz - 1) continue; // No need to add top of waste card as it is a regular move
             stock_moves_to_check.insert(static_cast<pile::size_type>(i % stock_waste_sz));
         }
     }
@@ -308,7 +309,7 @@ bool game_state::is_next_tableau_card(card a, card b) const {
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
                                            const pile::ref add_ref) const {
-    if (rem_ref == add_ref || rules.foundations_comp_piles) return false;
+    if (rem_ref == add_ref || rules.foundations_only_comp_piles) return false;
 
     return is_valid_foundations_move(piles[rem_ref].top_card(), add_ref);
 }

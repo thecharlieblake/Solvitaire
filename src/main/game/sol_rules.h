@@ -41,10 +41,10 @@ struct sol_rules {
     bool two_decks;
     uint8_t max_rank;
     bool hole;
-    bool foundations;
+    bool foundations_present;
     bool foundations_init_card;
     bool foundations_removable;
-    bool foundations_comp_piles;
+    bool foundations_only_comp_piles;
     bool diagonal_deal;
     uint8_t cells;
     uint8_t stock_size;

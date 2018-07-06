@@ -12,6 +12,7 @@
 class state_printer {
 public:
     static std::ostream& print(std::ostream&, const game_state&);
+    static void print_move(std::ostream&, move);
 
 private:
     static void print_header(std::ostream&, const char*);

@@ -199,7 +199,7 @@ TEST(LegalMoveGen, MoveBuiltGroupFalse) {
 
 TEST(LegalMoveGen, Foundations) {
     sol_rules sr;
-    sr.foundations = true;
+    sr.foundations_present = true;
     sr.tableau_pile_count = 4;
 
     game_state gs(sr, string_il{
@@ -223,7 +223,7 @@ TEST(LegalMoveGen, Foundations) {
 
 TEST(LegalMoveGen, FoundationsRemovable) {
     sol_rules sr;
-    sr.foundations = true;
+    sr.foundations_present = true;
     sr.foundations_removable = true;
     sr.tableau_pile_count = 1;
 
@@ -264,7 +264,7 @@ TEST(LegalMoveGen, Cells) {
 
 TEST(LegalMoveGen, StockDealToTableau) {
     sol_rules sr;
-    sr.foundations = true;
+    sr.foundations_present = true;
     sr.tableau_pile_count = 3;
     sr.stock_size = 2;
     sr.stock_deal_t = sdt::TABLEAU_PILES;

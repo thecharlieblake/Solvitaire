@@ -58,7 +58,7 @@ game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts
     }
 
     // If there are foundation piles, creates the relevant pile vectors
-    if (rules.foundations) {
+    if (rules.foundations_present) {
         for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
             foundations.push_back(static_cast<pile::ref>(piles.size() - 1));
@@ -389,9 +389,8 @@ void game_state::make_stock_k_plus_move(const move m) {
     // Index of the card to be moved
     auto count = m.count % (piles[stock].size() + piles[waste].size());
 
-    for (int i = 0; i <= count; i++) {
-        if (i < count) place_card(waste, take_card(stock));
-        else           place_card(m.to,  take_card(stock));
+    for (int i = 0; i < count; i++) {
+        place_card(waste, take_card(stock));
 
         if (rules.stock_redeal) {
             // If the stock is empty, flips it
@@ -401,6 +400,11 @@ void game_state::make_stock_k_plus_move(const move m) {
                     place_card(stock, take_card(waste));
         }
     }
+
+    place_card(m.to,  take_card(stock));
+    if (rules.stock_redeal && piles[stock].empty() && count != 0)
+        while (!piles[waste].empty())
+            place_card(stock, take_card(waste));
 
 #ifndef NDEBUG
     auto sz_after = piles[stock].size() + piles[waste].size();
@@ -420,7 +424,12 @@ void game_state::undo_stock_k_plus_move(move m) {
 
     auto count = m.count % (piles[stock].size() + piles[waste].size() + 1);
 
-    for (int i = count; i >= 0; i--) {
+    if (rules.stock_redeal && piles[waste].empty() && count != 0)
+        while (!piles[stock].empty())
+            place_card(waste, take_card(stock));
+    place_card(stock, take_card(m.to));
+
+    for (int i = 0; i < count; i++) {
         if (rules.stock_redeal) {
             // If the waste is empty, flips it
             // (invariant: no search state has an empty stock if rules.stock_size > 0 && rules.stock_redeal)
@@ -429,8 +438,7 @@ void game_state::undo_stock_k_plus_move(move m) {
                     place_card(waste, take_card(stock));
         }
 
-        if (i < count) place_card(stock, take_card(waste));
-        else           place_card(stock, take_card(m.to ));
+        place_card(stock, take_card(waste));
     }
 
 #ifndef NDEBUG
@@ -514,7 +522,7 @@ bool game_state::is_solved() const {
         solved = piles[hole].size()
                  == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
     } else {
-        assert(rules.foundations);
+        assert(rules.foundations_present);
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
                 solved = false;

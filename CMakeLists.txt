@@ -69,7 +69,6 @@ set(sources_test
         src/test/unit_tests/global_cache_test.cpp
         src/test/unit_tests/foundations_dominance_test.cpp
         src/test/unit_tests/deal_parser_test.cpp
-        src/test/unit_tests/rules_parser_test.cpp
         src/test/unit_tests/card_test.cpp
         src/test/unit_tests/pile_test.cpp
         src/test/unit_tests/legal_move_gen_test.cpp

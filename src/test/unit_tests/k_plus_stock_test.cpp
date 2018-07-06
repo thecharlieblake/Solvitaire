@@ -306,7 +306,7 @@ TEST(KPlusStock, NoRedealCellFoundationMoves) {
     sr.stock_redeal = false;
     sr.stock_deal_count = 3;
     sr.cells = 2;
-    sr.foundations = true;
+    sr.foundations_present = true;
 
     test_helper::k_plus_stock_test(
             sr,
@@ -341,7 +341,7 @@ TEST(KPlusStock, RedealCellFoundationMoves) {
     sr.stock_redeal = true;
     sr.stock_deal_count = 3;
     sr.cells = 2;
-    sr.foundations = true;
+    sr.foundations_present = true;
 
     test_helper::k_plus_stock_test(
             sr,
