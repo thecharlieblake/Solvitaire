@@ -42,7 +42,9 @@ public:
 
     // Modify
     void place(card);
+    void place(size_type, card);
     card take();
+    card take(size_type);
 
 private:
     // Underlying vector

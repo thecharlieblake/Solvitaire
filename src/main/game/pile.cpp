@@ -44,10 +44,23 @@ void pile::place(const card c) {
     pile_vec.emplace_back(c);
 }
 
+void pile::place(size_type i, const card c) {
+    vector<card>::size_type s = pile_vec.size() - 1 - i;
+    pile_vec.insert(begin(pile_vec) + s, c);
+}
+
 card pile::take() {
     assert(!empty());
     card c = top_card();
     pile_vec.pop_back();
+    return c;
+}
+
+card pile::take(size_type i) {
+    assert(i < size());
+    vector<card>::size_type s = pile_vec.size() - 1 - i;
+    card c = pile_vec[s];
+    pile_vec.erase(begin(pile_vec) + s);
     return c;
 }
 
