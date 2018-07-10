@@ -22,6 +22,7 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
+typedef sol_rules::direction dir;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -305,6 +306,56 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("sequences")) {
+        if (d["sequences"].IsObject()) {
+            if (d["sequences"].HasMember("count")) {
+                if (d["sequences"]["count"].IsInt()) {
+                    sr.sequence_count = static_cast<uint8_t>(d["sequences"]["count"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[count] must be an integer");
+                }
+            }
+
+            if (d["sequences"].HasMember("build policy")) {
+                if (d["sequences"]["build policy"].IsString()) {
+                    string bp_str = d["sequences"]["build policy"].GetString();
+
+                    if (bp_str == "any-suit") {
+                        sr.sequence_build_pol = pol::ANY_SUIT;
+                    } else if (bp_str == "red-black") {
+                        sr.sequence_build_pol = pol::RED_BLACK;
+                    } else if (bp_str == "same-suit") {
+                        sr.sequence_build_pol = pol::SAME_SUIT;
+                    } else {
+                        json_helper::json_parse_err("[sequences][build policy] is invalid");
+                    }
+                } else {
+                    json_helper::json_parse_err("[sequences][build policy] must be an string");
+                }
+            }
+
+            if (d["sequences"].HasMember("direction")) {
+                if (d["sequences"]["direction"].IsString()) {
+                    string dir_str = d["sequences"]["direction"].GetString();
+
+                    if (dir_str == "L") {
+                        sr.sequence_direction = dir::LEFT;
+                    } else if (dir_str == "R") {
+                        sr.sequence_direction = dir::RIGHT;
+                    } else if (dir_str == "LR") {
+                        sr.sequence_direction = dir::BOTH;
+                    } else {
+                        json_helper::json_parse_err("[sequences][direction] is invalid");
+                    }
+                } else {
+                    json_helper::json_parse_err("[sequences][direction] must be an string");
+                }
+            }
+        } else {
+            json_helper::json_parse_err("[sequences] must be an object");
+        }
+    }
+
     if (d.HasMember("max rank")) {
         if (d["max rank"].IsInt()) {
             sr.max_rank = static_cast<card::rank_t>(d["max rank"].GetInt());
@@ -327,8 +378,9 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     int solution_types = 0;
     if (sr.hole) solution_types++;
     if (sr.foundations_present) solution_types++;
+    if (sr.sequence_count > 0) solution_types++;
     if (solution_types != 1) {
-        json_helper::json_parse_err("one and only one of [hole] and [foundations] "
+        json_helper::json_parse_err("one and only one of [hole], [foundations] and [sequences][count] > 0 "
                                     "must be true");
     }
 
@@ -462,7 +514,7 @@ string rules_parser::rules_schema_json() {
       },
       "additionalProperties": false
     },
-    "sequence": {
+    "sequences": {
       "type": "object",
       "properties": {
         "count": {

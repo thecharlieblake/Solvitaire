@@ -11,18 +11,18 @@ typedef test_helper th;
 const static std::string path = "resources/gaps/";
 const static std::string type = "simple-gaps";
 
-TEST(AlphaStar, SimpleSolvable) {
+TEST(Gaps, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));
 }
 
-TEST(AlphaStar, ComplexSolvable) {
+TEST(Gaps, ComplexSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "ComplexSolvable.json", type));
 }
 
-TEST(AlphaStar, SimpleUnsolvable) {
+TEST(Gaps, SimpleUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "SimpleUnsolvable.json", type));
 }
 
-TEST(AlphaStar, ComplexUnsolvable) {
+TEST(Gaps, ComplexUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "ComplexUnsolvable.json", type));
 }

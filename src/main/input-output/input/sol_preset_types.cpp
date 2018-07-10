@@ -47,7 +47,7 @@ map<string, string> sol_preset_types::mp = {
     "size": 0,
     "stacked": false
   },
-  "sequence": {
+  "sequences": {
     "count": 0,
     "direction": "L",
     "build policy": "same-suit"
@@ -1051,7 +1051,10 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "present": false
   },
-  "sequence": {
+  "tableau piles": {
+    "count": 0
+  },
+  "sequences": {
     "count": 4,
     "direction": "L",
     "build policy": "same-suit"
@@ -1068,7 +1071,10 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "present": false
   },
-  "sequence": {
+  "tableau piles": {
+    "count": 0
+  },
+  "sequences": {
     "count": 4,
     "direction": "L",
     "build policy": "same-suit"

@@ -78,7 +78,16 @@ string deal_parser::deal_schema_json() {
 
   "definitions": {
     "card": {"type": "string", "pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K)(c|C|d|D|h|H|s|S))$"},
-    "cardarray": {"type": "array", "items": {"$ref": "#/definitions/card"}}
+    "cardarray": {"type": "array", "items": {"$ref": "#/definitions/card"}},
+    "cardarraywithempty": {
+      "type": "array",
+      "items": {
+        "oneOf":[
+          {"$ref": "#/definitions/card"},
+          {"type": "string","enum": [""]}
+        ]
+      }
+    }
   },
 
   "type": "object", "properties": {
@@ -88,6 +97,9 @@ string deal_parser::deal_schema_json() {
     },
     "foundations": {
       "type": "array", "items": {"$ref": "#/definitions/cardarray"}
+    },
+    "sequences": {
+      "type": "array", "items": {"$ref": "#/definitions/cardarraywithempty"}
     },
     "hole": {"$ref": "#/definitions/card"},
     "stock": {"$ref": "#/definitions/cardarray"},
