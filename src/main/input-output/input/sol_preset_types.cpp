@@ -1059,6 +1059,23 @@ map<string, string> sol_preset_types::mp = {
 }
 )"
 
+        },
+        {
+                "simple-gaps",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "sequence": {
+    "count": 4,
+    "direction": "L",
+    "build policy": "same-suit"
+  }
+}
+)"
+
         }
 };
 

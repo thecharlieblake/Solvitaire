@@ -66,6 +66,7 @@ set(sources_test
         src/test/integration_tests/alpha_star_test.cpp
         src/test/integration_tests/spider_test.cpp
         src/test/integration_tests/klondike_test.cpp
+        src/test/integration_tests/gaps_test.cpp
         src/test/unit_tests/global_cache_test.cpp
         src/test/unit_tests/foundations_dominance_test.cpp
         src/test/unit_tests/deal_parser_test.cpp
