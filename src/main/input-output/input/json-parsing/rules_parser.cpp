@@ -462,6 +462,32 @@ string rules_parser::rules_schema_json() {
       },
       "additionalProperties": false
     },
+    "sequence": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "L",
+            "R",
+            "LR"
+          ]
+        },
+        "build policy": {
+          "type": "string",
+          "enum": [
+            "any-suit",
+            "red-black",
+            "same-suit"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "max rank": {
       "type": "integer",
       "minimum": 1,
