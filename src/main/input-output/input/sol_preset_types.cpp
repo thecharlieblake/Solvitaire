@@ -47,6 +47,11 @@ map<string, string> sol_preset_types::mp = {
     "size": 0,
     "stacked": false
   },
+  "sequence": {
+    "count": 0,
+    "direction": "L",
+    "build policy": "same-suit"
+  },
   "max rank": 13,
   "two decks": false
 }
