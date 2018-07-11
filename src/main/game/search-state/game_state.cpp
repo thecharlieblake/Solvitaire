@@ -195,6 +195,21 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
             if (!p.empty())
                 p[0].turn_face_up();
 
+    // Deals to the sequence piles
+    if (rules.sequence_count > 0) {
+        for (int t = 0; !deck.empty(); t++) {
+            card c = deck.back();
+            if (c.get_rank() == 1) c = card(); // Inserts gaps where aces would be
+
+            // Adds the randomly generated card to the tableau piles
+            auto s = t % sequences.size();
+
+            pile::ref seq_pile = sequences[s];
+            place_card(seq_pile, c);
+            deck.pop_back();
+        }
+    }
+
     // The size of all piles must equal the deck size
     int piles_sz = 0;
     for (auto& p : piles) piles_sz += p.size();
