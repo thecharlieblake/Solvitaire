@@ -68,6 +68,11 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
         add_pile(pr, gs);
         add_card_divider();
     }
+
+    for (pile::ref pr : gs.sequences) {
+        add_pile(pr, gs);
+        add_card_divider();
+    }
 }
 
 
@@ -83,9 +88,9 @@ void cached_game_state::add_card(card c, const game_state& gs) {
     // If the game is a 'hole-based' game, or suit-reduction is on, reduces
     // the cached suit of the card where possible
 
-    bool is_suit_symmetry =    gs.stream_opts == sos::SUIT_SYMMETRY
-                            || gs.stream_opts == sos::BOTH
-                            || gs.rules.hole;
+    bool is_suit_symmetry = (gs.rules.foundations_present
+            && (gs.stream_opts == sos::SUIT_SYMMETRY || gs.stream_opts == sos::BOTH))
+            || gs.rules.hole;
 
     if (is_suit_symmetry) {
         switch (gs.rules.build_pol) {
@@ -139,10 +144,10 @@ size_t hasher::hash_value(card const& c) const {
 
     // If the game is a 'hole-based' game, or suit-reduction is enabled, hash
     // the reduced suit
-    bool is_suit_symmetry =    init_gs.stream_opts == sos::SUIT_SYMMETRY
-                               || init_gs.stream_opts == sos::BOTH
-                               || init_gs.rules.hole;
-    
+    bool is_suit_symmetry = (init_gs.rules.foundations_present
+                             && (init_gs.stream_opts == sos::SUIT_SYMMETRY || init_gs.stream_opts == sos::BOTH))
+                            || init_gs.rules.hole;
+
     uint8_t suit_val;
     if (is_suit_symmetry) {
         switch (init_gs.rules.build_pol) {
@@ -162,28 +167,6 @@ size_t hasher::hash_value(card const& c) const {
     auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
     return boost_hasher(raw_val);
 }
-
-
-
-/*//////////////////
-// GLOBAL CACHE //
-//////////////////
-
-unlimited_cache::unlimited_cache(const game_state& gs)
-        : cache(0, hasher(gs)) {
-}
-
-bool unlimited_cache::insert(const game_state& gs) {
-    return cache.emplace(gs).second;
-}
-
-bool unlimited_cache::contains(const game_state& gs) const {
-    return cache.count(cached_game_state(gs)) > 0;
-}
-
-void unlimited_cache::clear() {
-    cache.clear();
-}*/
 
 
 ///////////////

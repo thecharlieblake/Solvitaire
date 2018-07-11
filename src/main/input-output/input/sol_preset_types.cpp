@@ -1075,10 +1075,11 @@ map<string, string> sol_preset_types::mp = {
     "count": 0
   },
   "sequences": {
-    "count": 3,
+    "count": 4,
     "direction": "L",
     "build policy": "same-suit"
-  }
+  },
+  "max rank": 4
 }
 )"
 

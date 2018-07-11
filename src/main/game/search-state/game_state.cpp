@@ -161,11 +161,11 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
     // Deals to the sequence piles
     if (rules.sequence_count > 0) {
         for (int t = 0; !deck.empty(); t++) {
-            card c = deck.back();
-            if (c.get_rank() == 1) c = card(); // Inserts gaps where aces would be
-
             // Adds the randomly generated card to the tableau piles
             auto s = t % sequences.size();
+
+            card c = deck.back();
+            if (c.get_rank() == 1) c = "AS"; // The dummy "gap" placeholder
 
             pile::ref seq_pile = sequences[s];
             place_card(seq_pile, c);
@@ -285,6 +285,9 @@ void game_state::make_move(const move m) {
         case move::mtype::stock_to_all_tableau:
             make_stock_to_all_tableau_move(m);
             break;
+        case move::mtype::sequence:
+            make_sequence_move(m);
+            break;
         case move::mtype::null:
             assert(false);
             break;
@@ -309,6 +312,9 @@ void game_state::undo_move(const move m) {
             break;
         case move::mtype::stock_to_all_tableau:
             undo_stock_to_all_tableau_move(m);
+            break;
+        case move::mtype::sequence:
+            undo_sequence_move(m);
             break;
         case move::mtype::null:
             assert(false);
@@ -493,6 +499,30 @@ void game_state::undo_stock_to_all_tableau_move(move m) {
     }
 }
 
+void game_state::make_sequence_move(const move m) {
+    pile::ref from_seq_ref = m.from / rules.max_rank;
+    pile::size_type from_card_idx = m.from % rules.max_rank;
+    card from_card = piles[from_seq_ref][from_card_idx];
+    piles[from_seq_ref][from_card_idx] = "AS";
+
+    pile::ref to_seq_ref = m.to / rules.max_rank;
+    pile::size_type to_card_idx = m.to % rules.max_rank;
+    assert(piles[to_seq_ref][to_card_idx] == "AS");
+    piles[to_seq_ref][to_card_idx] = from_card;
+}
+
+void game_state::undo_sequence_move(const move m) {
+    pile::ref to_seq_ref = m.to / rules.max_rank;
+    pile::size_type to_card_idx = m.to % rules.max_rank;
+    card to_card = piles[to_seq_ref][to_card_idx];
+    piles[to_seq_ref][to_card_idx] = "AS";
+
+    pile::ref from_seq_ref = m.from / rules.max_rank;
+    pile::size_type from_card_idx = m.from % rules.max_rank;
+    assert(piles[from_seq_ref][from_card_idx] == "AS");
+    piles[from_seq_ref][from_card_idx] = to_card;
+}
+
 // Places a card on a pile and if it is on a tableau, cell or reserve pile,
 // reorders the pile refs so that the largest pile is first
 void game_state::place_card(pile::ref pr, card c) {
@@ -545,13 +575,24 @@ bool game_state::is_solved() const {
     if (rules.hole) {
         solved = piles[hole].size()
                  == rules.max_rank * 4 * (rules.two_decks ? 2 : 1);
-    } else {
-        assert(rules.foundations_present);
+    } else if (rules.foundations_present) {
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
-                solved = false;
+        solved = false;
+    }
+}
+    } else if (rules.sequence_count > 0) {
+        for (pile::ref i = 0; i < sequences.size() && solved; i++) {
+            for (pile::ref j = piles[sequences[i]].size(); j-- > 2;) {
+                if (!is_next_legal_card(rules.sequence_build_pol, piles[sequences[i]][j-1], piles[sequences[i]][j])) {
+                    solved = false;
+                    break;
+                }
             }
+            if (piles[sequences[i]].top_card() != "AS") solved = false;
         }
+    } else {
+        assert(false);
     }
 
     // Runs some alternative checks in debug mode to make sure the game state
@@ -567,7 +608,7 @@ bool game_state::is_solved() const {
             }
         }
             // All piles other than the foundations must be empty
-        else {
+        else if (rules.foundations_present) {
             bool non_foundation_ref =
                     pr < foundations.front()
                     || pr >= foundations.front() + foundations.size();
@@ -577,7 +618,13 @@ bool game_state::is_solved() const {
             }
         }
     }
-    assert(solved == rest_empty);
+    if (rules.sequence_count > 0) {
+        for (auto seq : sequences) {
+            assert(piles[seq].size() == rules.max_rank);
+        }
+    } else {
+        assert(solved == rest_empty);
+    }
 #endif
 
     return solved;

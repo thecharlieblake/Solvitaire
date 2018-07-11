@@ -101,7 +101,11 @@ void state_printer::print_sequences(ostream& stream,
         stream << "\n";
         auto& pile = gs.piles[s];
         for (auto i = pile.size(); i --> 0 ;) {
-            print_card(stream, pile[i]);
+            card c = pile[i];
+            if (c == "AS")
+                stream << "__";
+            else
+                print_card(stream, pile[i]);
             stream << " ";
         }
         stream << "\n";
@@ -152,6 +156,9 @@ void state_printer::print_move(std::ostream& s, const move m) {
             break;
         case move::mtype::stock_to_all_tableau:
             s << "stock-to-all-tableau";
+            break;
+        case move::mtype::sequence:
+            s << "sequence";
             break;
         case move::mtype::null:
             s << "null";

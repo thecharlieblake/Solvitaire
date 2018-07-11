@@ -20,6 +20,7 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
+typedef sol_rules::direction dir;
 
 ////////////////////////////////
 // MAIN LEGAL MOVE GEN CYCLE ///
@@ -31,6 +32,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Foundations complete piles moves
     // Tableau / cells / reserve / stock-waste to hole / foundation moves ---
     // Cell to tableau moves
+    // Sequence to sequence moves
     // Tableau to tableau moves
     // Tableau built group moves
     // Stock-waste to tableau moves
@@ -105,6 +107,11 @@ vector<move> game_state::get_legal_moves(move parent_move) {
                 moves.emplace_back(move::mtype::regular, t_from, t_to);
             }
         }
+    }
+
+    // Sequence to sequence moves
+    if (rules.sequence_count > 0) {
+        add_sequence_moves(moves);
     }
 
     // Cell to tableau moves
@@ -398,6 +405,63 @@ void game_state::add_non_empty_built_group_move(vector<move>& moves, pile::ref r
             bool is_reveal_move = r + 1 == built_group_height && base_face_down;
             moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, r + 1, is_reveal_move);
             break;
+        }
+    }
+}
+
+void game_state::add_sequence_moves(std::vector<move>& moves) const {
+    // Note, the sequence moves are encoded by counting each card's location (1-52) and adding that into 'to' and 'from'
+
+    // Finds the spaces
+    vector<pair<uint8_t, uint8_t>> space_locations;
+    for (pile::ref i = 0; i < sequences.size(); i++) {
+
+        for (pile::ref j = piles[sequences[i]].size(); j --> 0 ;) {
+            if (piles[sequences[i]][j] == "AS") {
+                space_locations.emplace_back(i, j);
+            }
+        }
+    }
+
+    // Searches through the cards again to find valid moves into the spaces
+    for (pile::ref i = 0; i < sequences.size(); i++) {
+        for (pile::ref j = piles[sequences[i]].size(); j --> 0 ;) {
+            pile::ref from_idx = i * piles[sequences[i]].size() + j; // Encoded index of card to be moved
+            card from_card = piles[sequences[i]][j];
+            if (from_card == "AS") continue;
+
+            // Adds valid moves
+            for (pair<uint8_t, uint8_t> space_loc : space_locations) {
+                pile::ref space_idx = space_loc.first * piles[sequences[i]].size() + space_loc.second; // Encoded index of space
+
+                if (rules.sequence_direction == dir::LEFT || rules.sequence_direction == dir::BOTH) {
+                    // Only twos in the far left column
+                    if (space_loc.second == piles[sequences[i]].size() - 1) {
+                        if (from_card.get_rank() == 2)
+                            moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                    }
+                    // Otherwise must agree with left neighbour
+                    else {
+                        card neighbour_card = piles[sequences[space_loc.first]][space_loc.second + 1];
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card))
+                            moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                    }
+                }
+
+                if (rules.sequence_direction == dir::RIGHT || rules.sequence_direction == dir::BOTH) {
+                    // Only max rank in the far right column
+                    if (space_loc.second == 0) {
+                        if (from_card.get_rank() == rules.max_rank)
+                            moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                    }
+                    // Otherwise must agree with right neighbour
+                    else {
+                        card neighbour_card = piles[sequences[space_loc.first]][space_loc.second - 1];
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card))
+                            moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                    }
+                }
+            }
         }
     }
 }

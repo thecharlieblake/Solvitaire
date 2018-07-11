@@ -230,7 +230,7 @@ void deal_parser::parse_sequences(game_state& gs, const rapidjson::Document& doc
         for (auto& json_card : p.first->GetArray()) {
             assert(json_card.IsString());
             string card_str = json_card.GetString();
-            card c = card_str.empty() ? card() : card(json_card.GetString());
+            card c = card_str.empty() ? "AS" : card(json_card.GetString());
             gs.place_card(*p.second, c);
         }
     }
