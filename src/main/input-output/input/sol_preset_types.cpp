@@ -1075,7 +1075,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 0
   },
   "sequences": {
-    "count": 4,
+    "count": 3,
     "direction": "L",
     "build policy": "same-suit"
   }

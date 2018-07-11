@@ -136,6 +136,7 @@ private:
     pile::ref waste;
     std::list<pile::ref> reserve;
     std::vector<pile::ref> foundations;
+    std::vector<pile::ref> sequences;
     pile::ref hole;
 
     /* Pile references of starting/original layout */

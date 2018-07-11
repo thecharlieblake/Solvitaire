@@ -104,6 +104,12 @@ game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts
         tableau_piles.push_back(static_cast<pile::ref>(piles.size() - 1));
         original_tableau_piles.push_back(static_cast<pile::ref>(piles.size() - 1));
     }
+
+    // Creates the sequence piles
+    for (uint8_t i = 0; i < rules.sequence_count; i++) {
+        piles.emplace_back();
+        sequences.push_back(static_cast<pile::ref>(piles.size() - 1));
+    }
 }
 
 // Constructs an initial game state from a JSON doc
