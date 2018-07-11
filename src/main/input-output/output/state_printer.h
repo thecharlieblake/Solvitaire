@@ -19,6 +19,9 @@ private:
     static void print_piles(std::ostream&,
                             const std::vector<pile::ref>&,
                             const game_state&);
+    static void print_sequences(std::ostream&,
+                            const std::vector<pile::ref>&,
+                            const game_state&);
     static void print_top_of_piles(std::ostream&,
                                    const std::vector<pile::ref>&,
                                    const game_state&);

@@ -43,6 +43,10 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         state_printer::print_header(stream, "Hole Card");
         state_printer::print_top_of_pile(stream, gs.hole, gs);
     }
+    if (gs.rules.sequence_count > 0) {
+        state_printer::print_header(stream, "Sequences");
+        state_printer::print_sequences(stream, gs.sequences, gs);
+    }
     return stream << "===================================";
 }
 
@@ -88,6 +92,21 @@ void state_printer::print_piles(ostream& stream,
             row_idx++;
         }
     }
+}
+
+void state_printer::print_sequences(ostream& stream,
+                                const vector<pile::ref>& seq_rs,
+                                const game_state& gs) {
+    for (auto s : seq_rs) {
+        stream << "\n";
+        auto& pile = gs.piles[s];
+        for (auto i = pile.size(); i --> 0 ;) {
+            print_card(stream, pile[i]);
+            stream << " ";
+        }
+        stream << "\n";
+    }
+    stream << "\n";
 }
 
 void state_printer::print_top_of_piles(ostream& stream,

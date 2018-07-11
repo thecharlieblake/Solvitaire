@@ -83,6 +83,7 @@ card::rank_t card::get_rank() const {
 
 std::string card::to_string() const {
     if (face_down) return "##";
+    if (card_rank == 0) return "__";
 
     string s;
     switch(card_rank) {
