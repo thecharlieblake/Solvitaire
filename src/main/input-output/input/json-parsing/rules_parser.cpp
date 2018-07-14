@@ -440,8 +440,9 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (sr.hole) solution_types++;
     if (sr.foundations_present) solution_types++;
     if (sr.sequence_count > 0) solution_types++;
+    if (sr.accordion_size > 0) solution_types++;
     if (solution_types != 1) {
-        json_helper::json_parse_err("one and only one of [hole], [foundations] and [sequences][count] > 0 "
+        json_helper::json_parse_err("one and only one of [hole], [foundations], [accordion][size] > 0 and [sequences][count] > 0 "
                                     "must be true");
     }
 

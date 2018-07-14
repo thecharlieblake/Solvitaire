@@ -56,6 +56,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
         parse_sequences(gs, doc);
     }
 
+    // Construct accordion
+    if (gs.rules.accordion_size > 0) {
+        parse_accordion(gs, doc);
+    }
+
     // If the foundations begin with cards in them, fill them
     if (gs.rules.foundations_present) {
         bool supplied_foundations = parse_foundations(gs, doc);
@@ -109,7 +114,8 @@ string deal_parser::deal_schema_json() {
     "hole": {"$ref": "#/definitions/card"},
     "stock": {"$ref": "#/definitions/cardarray"},
     "waste": {"$ref": "#/definitions/cardarray"},
-    "reserve": {"$ref": "#/definitions/cardarray"}
+    "reserve": {"$ref": "#/definitions/cardarray"},
+    "accordion": {"$ref": "#/definitions/cardarray"}
 
   }, "additionalProperties": false
 }
@@ -233,6 +239,26 @@ void deal_parser::parse_sequences(game_state& gs, const rapidjson::Document& doc
             card c = card_str.empty() ? "AS" : card(json_card.GetString());
             gs.place_card(*p.second, c);
         }
+    }
+}
+
+void deal_parser::parse_accordion(game_state &gs, const Document& doc) {
+    assert(doc.HasMember("accordion"));
+    const Value& json_accordion_piles = doc["accordion"];
+    assert(json_accordion_piles.IsArray());
+
+    const auto& json_card_arr = json_accordion_piles.GetArray();
+
+    // We treat a regular reserve like multiple single-card piles,
+    // but a stacked reserve as a single multiple-card pile
+    if (json_card_arr.Size() != gs.rules.accordion_size) {
+        json_helper::json_parse_err("Incorrect accordion size");
+    }
+
+    for (pile::ref i = 0; i < json_card_arr.Size(); i++) {
+        assert(json_card_arr[i].IsString());
+        pile::ref pr = gs.accordion[i];
+        gs.place_card(pr, card(json_card_arr[i].GetString()));
     }
 }
 

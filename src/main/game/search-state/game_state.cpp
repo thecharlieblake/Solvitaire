@@ -98,6 +98,15 @@ game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts
         }
     }
 
+    // If there is a reserve, creates piles
+    if (rules.accordion_size > 0) {
+        uint8_t pile_count = rules.accordion_size;
+        for (uint8_t i = 0; i < pile_count; i++) {
+            piles.emplace_back();
+            accordion.push_back(static_cast<pile::ref>(piles.size() - 1));
+        }
+    }
+
     // Creates the tableau piles
     for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
         piles.emplace_back();
@@ -169,6 +178,14 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
 
             pile::ref seq_pile = sequences[s];
             place_card(seq_pile, c);
+            deck.pop_back();
+        }
+    }
+
+    // Deals to the accordion
+    if (rules.accordion_size > 0) {
+        for (unsigned int i = 0; i < rules.accordion_size; i++) {
+            place_card(accordion[i], deck.back());
             deck.pop_back();
         }
     }

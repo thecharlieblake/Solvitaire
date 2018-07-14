@@ -48,7 +48,7 @@ solver::node::node(const move m)
 solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) {
     bool states_exhausted = false;
 
-    while(!(state.is_solved() || states_exhausted)) {
+    while(!(/*state.is_solved() || */states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
         if (terminate_solver && *terminate_solver) {
             return sol_state::timed_out;

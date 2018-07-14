@@ -140,6 +140,7 @@ private:
     std::list<pile::ref> reserve;
     std::vector<pile::ref> foundations;
     std::vector<pile::ref> sequences;
+    std::vector<pile::ref> accordion;
     pile::ref hole;
 
     /* Pile references of starting/original layout */

@@ -47,6 +47,10 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         state_printer::print_header(stream, "Sequences");
         state_printer::print_sequences(stream, gs.sequences, gs);
     }
+    if (gs.rules.accordion_size > 0) {
+        state_printer::print_header(stream, "Accordion");
+        state_printer::print_top_of_piles(stream, gs.accordion, gs);
+    }
     return stream << "===================================";
 }
 
