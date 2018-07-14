@@ -1088,6 +1088,66 @@ map<string, string> sol_preset_types::mp = {
 }
 )"
 
+        },
+        {
+                "simple-accordion",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 10,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+        {
+                "accordion-knuth",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 18,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+        {
+                "accordion",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 52,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
         }
 };
 
