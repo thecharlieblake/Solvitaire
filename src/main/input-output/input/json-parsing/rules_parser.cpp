@@ -514,6 +514,34 @@ string rules_parser::rules_schema_json() {
       },
       "additionalProperties": false
     },
+    "accordion": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "moves": {
+          "items": {
+            "type": "string",
+            "pattern": "^((L|R)([1-9]|[1-4][0-9]|5[0-2]))$"
+          }
+        },
+        "build policies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "same-suit",
+              "red-black",
+              "any-suit",
+              "same-rank"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "sequences": {
       "type": "object",
       "properties": {
