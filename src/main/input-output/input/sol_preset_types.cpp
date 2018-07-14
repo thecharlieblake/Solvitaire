@@ -47,6 +47,11 @@ map<string, string> sol_preset_types::mp = {
     "size": 0,
     "stacked": false
   },
+  "accordion": {
+    "size": 0,
+    "moves": [],
+    "build policies": []
+  },
   "sequences": {
     "count": 0,
     "direction": "L",
