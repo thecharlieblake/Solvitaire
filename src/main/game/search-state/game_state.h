@@ -80,6 +80,8 @@ private:
     void undo_stock_k_plus_move(move move);
     void make_stock_to_all_tableau_move(move move);
     void undo_stock_to_all_tableau_move(move move);
+    void make_sequence_move(move move);
+    void undo_sequence_move(move move);
 
 #ifndef NDEBUG
     void check_face_down_consistent() const;
@@ -112,6 +114,7 @@ private:
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_kings_only_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
+    void add_sequence_moves(std::vector<move>&) const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;
     void turn_face_down_cards(std::vector<move>&) const;
@@ -136,6 +139,7 @@ private:
     pile::ref waste;
     std::list<pile::ref> reserve;
     std::vector<pile::ref> foundations;
+    std::vector<pile::ref> sequences;
     pile::ref hole;
 
     /* Pile references of starting/original layout */

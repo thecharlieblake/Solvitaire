@@ -32,6 +32,11 @@ struct sol_rules {
         ALL,
         TOP_CARDS
     };
+    enum class direction {
+        LEFT,
+        RIGHT,
+        BOTH
+    };
 
     uint8_t tableau_pile_count;
     build_policy build_pol;
@@ -54,7 +59,9 @@ struct sol_rules {
     uint8_t reserve_size;
     bool reserve_stacked;
     face_up_policy face_up;
-
+    uint8_t sequence_count;
+    direction sequence_direction;
+    build_policy sequence_build_pol;
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H

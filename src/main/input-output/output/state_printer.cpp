@@ -43,6 +43,10 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
         state_printer::print_header(stream, "Hole Card");
         state_printer::print_top_of_pile(stream, gs.hole, gs);
     }
+    if (gs.rules.sequence_count > 0) {
+        state_printer::print_header(stream, "Sequences");
+        state_printer::print_sequences(stream, gs.sequences, gs);
+    }
     return stream << "===================================";
 }
 
@@ -90,6 +94,25 @@ void state_printer::print_piles(ostream& stream,
     }
 }
 
+void state_printer::print_sequences(ostream& stream,
+                                const vector<pile::ref>& seq_rs,
+                                const game_state& gs) {
+    for (auto s : seq_rs) {
+        stream << "\n";
+        auto& pile = gs.piles[s];
+        for (auto i = pile.size(); i --> 0 ;) {
+            card c = pile[i];
+            if (c == "AS")
+                stream << "__";
+            else
+                print_card(stream, pile[i]);
+            stream << " ";
+        }
+        stream << "\n";
+    }
+    stream << "\n";
+}
+
 void state_printer::print_top_of_piles(ostream& stream,
                                        const vector<pile::ref>& vp,
                                        const game_state& gs) {
@@ -133,6 +156,9 @@ void state_printer::print_move(std::ostream& s, const move m) {
             break;
         case move::mtype::stock_to_all_tableau:
             s << "stock-to-all-tableau";
+            break;
+        case move::mtype::sequence:
+            s << "sequence";
             break;
         case move::mtype::null:
             s << "null";

@@ -9,7 +9,6 @@ move::move(mtype ty, pile::ref f, pile::ref t, int8_t count_, bool reveal_move_,
 #ifndef NDEBUG
     if (ty == mtype::regular)      assert(count == 1);
     if (ty == mtype::stock_k_plus) assert(!reveal_move_);
-    if (ty != mtype::stock_k_plus) assert(count >= 1 && !flip_waste_);
 #endif
 }
 

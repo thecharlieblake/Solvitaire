@@ -51,6 +51,11 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
         parse_reserve(gs, doc);
     }
 
+    // Construct sequences
+    if (gs.rules.sequence_count > 0) {
+        parse_sequences(gs, doc);
+    }
+
     // If the foundations begin with cards in them, fill them
     if (gs.rules.foundations_present) {
         bool supplied_foundations = parse_foundations(gs, doc);
@@ -78,7 +83,16 @@ string deal_parser::deal_schema_json() {
 
   "definitions": {
     "card": {"type": "string", "pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K)(c|C|d|D|h|H|s|S))$"},
-    "cardarray": {"type": "array", "items": {"$ref": "#/definitions/card"}}
+    "cardarray": {"type": "array", "items": {"$ref": "#/definitions/card"}},
+    "cardarraywithempty": {
+      "type": "array",
+      "items": {
+        "oneOf":[
+          {"$ref": "#/definitions/card"},
+          {"type": "string","enum": [""]}
+        ]
+      }
+    }
   },
 
   "type": "object", "properties": {
@@ -88,6 +102,9 @@ string deal_parser::deal_schema_json() {
     },
     "foundations": {
       "type": "array", "items": {"$ref": "#/definitions/cardarray"}
+    },
+    "sequences": {
+      "type": "array", "items": {"$ref": "#/definitions/cardarraywithempty"}
     },
     "hole": {"$ref": "#/definitions/card"},
     "stock": {"$ref": "#/definitions/cardarray"},
@@ -194,6 +211,28 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
         pile::ref pr = gs.original_reserve[0];
         if (!gs.rules.reserve_stacked) pr += i;
         gs.place_card(pr, card(json_card_arr[i].GetString()));
+    }
+}
+
+void deal_parser::parse_sequences(game_state& gs, const rapidjson::Document& doc) {
+    assert(doc.HasMember("sequences"));
+    const Value& json_seqs = doc["sequences"];
+    assert(json_seqs.IsArray());
+
+    if (json_seqs.Size() != gs.rules.sequence_count ) {
+        json_helper::json_parse_err("Incorrect number of sequences");
+    }
+
+    for (auto p = std::make_pair(begin(json_seqs.GetArray()), begin(gs.sequences));
+         p.second != end(gs.sequences);
+         ++p.first, ++p.second) {
+
+        for (auto& json_card : p.first->GetArray()) {
+            assert(json_card.IsString());
+            string card_str = json_card.GetString();
+            card c = card_str.empty() ? "AS" : card(json_card.GetString());
+            gs.place_card(*p.second, c);
+        }
     }
 }
 

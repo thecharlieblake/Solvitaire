@@ -58,7 +58,6 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         if (current_node->mv.type == move::mtype::dominance) {
             LOG_DEBUG("(dominance move)");
         }
-        state_printer::print_move(clog, current_node->mv);
         LOG_DEBUG(state);
 #endif
 
@@ -137,18 +136,12 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
 
     if (current_node->mv.type != move::mtype::dominance) {
         if (cache.get_states_removed_from_cache() == 0) {
-            if (!cache.contains(state)) {
-                state_printer::print_move(clog, current_node->mv);
-                LOG_DEBUG("-------");
-                LOG_DEBUG(state);
-                assert(false);
-            }
+            assert(cache.contains(state));
         }
         LOG_DEBUG("(undo move)");
     } else {
         LOG_DEBUG("(undo dominance move)");
     }
-    state_printer::print_move(clog, current_node->mv);
     LOG_DEBUG(state);
 #endif
 

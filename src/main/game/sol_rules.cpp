@@ -7,6 +7,8 @@
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::direction dir;
+typedef sol_rules::face_up_policy fu;
 
 // Note that the 'default' sol rules are set up by parsing the default json
 // rules description. This initialisation is really just for testing purposes.
@@ -28,5 +30,9 @@ sol_rules::sol_rules() :
         stock_deal_t(sdt::TABLEAU_PILES),
         stock_deal_count(1),
         reserve_size(0),
-        reserve_stacked(false) {
+        reserve_stacked(false),
+        face_up(fu::ALL),
+        sequence_count(0),
+        sequence_direction(dir::LEFT),
+        sequence_build_pol(pol::SAME_SUIT) {
 }

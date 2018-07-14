@@ -47,6 +47,11 @@ map<string, string> sol_preset_types::mp = {
     "size": 0,
     "stacked": false
   },
+  "sequences": {
+    "count": 0,
+    "direction": "L",
+    "build policy": "same-suit"
+  },
   "max rank": 13,
   "two decks": false
 }
@@ -1034,6 +1039,47 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "only complete pile moves": true
   }
+}
+)"
+
+        },
+        {
+                "gaps",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "sequences": {
+    "count": 4,
+    "direction": "L",
+    "build policy": "same-suit"
+  }
+}
+)"
+
+        },
+        {
+                "simple-gaps",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "sequences": {
+    "count": 4,
+    "direction": "L",
+    "build policy": "same-suit"
+  },
+  "max rank": 4
 }
 )"
 
