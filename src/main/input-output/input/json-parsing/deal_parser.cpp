@@ -255,9 +255,10 @@ void deal_parser::parse_accordion(game_state &gs, const Document& doc) {
         json_helper::json_parse_err("Incorrect accordion size");
     }
 
-    for (pile::ref i = 0; i < json_card_arr.Size(); i++) {
+    auto acc_it = begin(gs.accordion);
+    for (pile::ref i = 0; i < json_card_arr.Size(); i++, acc_it++) {
         assert(json_card_arr[i].IsString());
-        pile::ref pr = gs.accordion[i];
+        pile::ref pr = *acc_it;
         gs.place_card(pr, card(json_card_arr[i].GetString()));
     }
 }

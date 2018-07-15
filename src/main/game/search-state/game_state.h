@@ -82,6 +82,8 @@ private:
     void undo_stock_to_all_tableau_move(move move);
     void make_sequence_move(move move);
     void undo_sequence_move(move move);
+    void make_accordion_move(move move);
+    void undo_accordion_move(move move);
 
 #ifndef NDEBUG
     void check_face_down_consistent() const;
@@ -98,6 +100,7 @@ private:
     void add_stock_to_hole_foundation_moves(std::vector<move>&) const;
     card stock_card_from_count(int8_t) const;
     void add_foundation_complete_piles_moves(std::vector<move> &) const;
+    void add_accordion_moves(std::vector<move>&) const;
 
     bool is_valid_tableau_move(pile::ref, pile::ref) const;
     bool is_valid_tableau_move(card, pile::ref) const;
@@ -117,6 +120,7 @@ private:
     void add_sequence_moves(std::vector<move>&) const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;
+    bool is_next_legal_card(std::vector<sol_rules::accordion_policy>, card, card) const;
     void turn_face_down_cards(std::vector<move>&) const;
 
     /* Auto-foundation moves */
@@ -140,7 +144,7 @@ private:
     std::list<pile::ref> reserve;
     std::vector<pile::ref> foundations;
     std::vector<pile::ref> sequences;
-    std::vector<pile::ref> accordion;
+    std::list<pile::ref> accordion;
     pile::ref hole;
 
     /* Pile references of starting/original layout */

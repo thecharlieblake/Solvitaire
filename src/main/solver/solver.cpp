@@ -48,7 +48,7 @@ solver::node::node(const move m)
 solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) {
     bool states_exhausted = false;
 
-    while(!(/*state.is_solved() || */states_exhausted)) {
+    while(!(state.is_solved() || states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
         if (terminate_solver && *terminate_solver) {
             return sol_state::timed_out;
@@ -136,6 +136,7 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
 
     if (current_node->mv.type != move::mtype::dominance) {
         if (cache.get_states_removed_from_cache() == 0) {
+            LOG_DEBUG(state); // TODO
             assert(cache.contains(state));
         }
         LOG_DEBUG("(undo move)");

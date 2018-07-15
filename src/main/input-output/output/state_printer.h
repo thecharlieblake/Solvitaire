@@ -27,6 +27,8 @@ private:
                                    const game_state&);
     static void print_top_of_pile(std::ostream&, pile::ref,
                                   const game_state&);
+    static void print_accordion(std::ostream&, const std::list<pile::ref>&,
+                                  const game_state&);
     static void print_card(std::ostream&, card);
 };
 

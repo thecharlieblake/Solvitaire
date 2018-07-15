@@ -6,6 +6,7 @@
 
 using std::ostream;
 using std::vector;
+using std::list;
 
 typedef sol_rules::stock_deal_type sdt;
 
@@ -49,7 +50,7 @@ ostream& state_printer::print(ostream& stream, const game_state& gs) {
     }
     if (gs.rules.accordion_size > 0) {
         state_printer::print_header(stream, "Accordion");
-        state_printer::print_top_of_piles(stream, gs.accordion, gs);
+        state_printer::print_accordion(stream, gs.accordion, gs);
     }
     return stream << "===================================";
 }
@@ -133,6 +134,16 @@ void state_printer::print_top_of_piles(ostream& stream,
     stream << "\n";
 }
 
+void state_printer::print_accordion(ostream& stream,
+                                       const list<pile::ref>& vp,
+                                       const game_state& gs) {
+    for (pile::ref p : vp) {
+        print_card(stream, gs.piles[p].top_card());
+        stream << "\t";
+    }
+    stream << "\n";
+}
+
 void state_printer::print_top_of_pile(ostream& stream,
                                       const pile::ref pile_r,
                                       const game_state& gs) {
@@ -163,6 +174,9 @@ void state_printer::print_move(std::ostream& s, const move m) {
             break;
         case move::mtype::sequence:
             s << "sequence";
+            break;
+        case move::mtype::accordion:
+            s << "accordion";
             break;
         case move::mtype::null:
             s << "null";
