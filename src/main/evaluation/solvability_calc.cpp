@@ -281,7 +281,7 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
 // SEED RESULTS CLASS //
 ////////////////////////
 
-solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), timed_out(v[2]) {
+solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), timed_out(v[2]), mem_limit(0) {
 }
 
 void solvability_calc::seed_results::add_result(sol_result::type t) {

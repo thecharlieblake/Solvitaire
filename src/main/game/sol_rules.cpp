@@ -34,5 +34,6 @@ sol_rules::sol_rules() :
         face_up(fu::ALL),
         sequence_count(0),
         sequence_direction(dir::LEFT),
-        sequence_build_pol(pol::SAME_SUIT) {
+        sequence_build_pol(pol::SAME_SUIT),
+        accordion_size(0) {
 }

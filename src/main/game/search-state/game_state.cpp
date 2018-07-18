@@ -98,6 +98,15 @@ game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts
         }
     }
 
+    // If there is a reserve, creates piles
+    if (rules.accordion_size > 0) {
+        uint8_t pile_count = rules.accordion_size;
+        for (uint8_t i = 0; i < pile_count; i++) {
+            piles.emplace_back();
+            accordion.push_back(static_cast<pile::ref>(piles.size() - 1));
+        }
+    }
+
     // Creates the tableau piles
     for (uint8_t i = 0; i < rules.tableau_pile_count; i++) {
         piles.emplace_back();
@@ -169,6 +178,14 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
 
             pile::ref seq_pile = sequences[s];
             place_card(seq_pile, c);
+            deck.pop_back();
+        }
+    }
+
+    // Deals to the accordion
+    if (rules.accordion_size > 0) {
+        for (auto pr : accordion) {
+            place_card(pr, deck.back());
             deck.pop_back();
         }
     }
@@ -288,6 +305,9 @@ void game_state::make_move(const move m) {
         case move::mtype::sequence:
             make_sequence_move(m);
             break;
+        case move::mtype::accordion:
+            make_accordion_move(m);
+            break;
         case move::mtype::null:
             assert(false);
             break;
@@ -315,6 +335,9 @@ void game_state::undo_move(const move m) {
             break;
         case move::mtype::sequence:
             undo_sequence_move(m);
+            break;
+        case move::mtype::accordion:
+            undo_accordion_move(m);
             break;
         case move::mtype::null:
             assert(false);
@@ -360,10 +383,8 @@ void game_state::undo_regular_move(const move m) {
 }
 
 void game_state::make_built_group_move(move m) {
-    assert(rules.move_built_group);
     assert(m.from  <  piles.size()  );
     assert(m.to    <  piles.size()  );
-    assert(m.count <= rules.max_rank);
 
     // Adds the cards to the 'to' pile
     for (auto pile_idx = m.count; pile_idx-- > 0;) {
@@ -383,9 +404,7 @@ void game_state::make_built_group_move(move m) {
 }
 
 void game_state::undo_built_group_move(move m) {
-    assert(rules.move_built_group);
     assert(m.to < piles.size());
-    assert(m.count <= rules.max_rank);
 
     if (m.reveal_move) {
         assert(!piles[m.from].empty());
@@ -523,6 +542,16 @@ void game_state::undo_sequence_move(const move m) {
     piles[from_seq_ref][from_card_idx] = to_card;
 }
 
+void game_state::make_accordion_move(move m) {
+    make_built_group_move(m);
+    accordion.remove(m.from);
+}
+
+void game_state::undo_accordion_move(move m) {
+    accordion.insert(upper_bound(begin(accordion), end(accordion), m.from), m.from);
+    undo_built_group_move(m);
+}
+
 // Places a card on a pile and if it is on a tableau, cell or reserve pile,
 // reorders the pile refs so that the largest pile is first
 void game_state::place_card(pile::ref pr, card c) {
@@ -578,9 +607,9 @@ bool game_state::is_solved() const {
     } else if (rules.foundations_present) {
         for (auto f : foundations) {
             if (piles[f].size() != rules.max_rank) {
-        solved = false;
-    }
-}
+                solved = false;
+            }
+        }
     } else if (rules.sequence_count > 0) {
         for (pile::ref i = 0; i < sequences.size() && solved; i++) {
             for (pile::ref j = piles[sequences[i]].size(); j-- > 2;) {
@@ -591,6 +620,8 @@ bool game_state::is_solved() const {
             }
             if (piles[sequences[i]].top_card() != "AS") solved = false;
         }
+    } else if (rules.accordion_size > 0) {
+        return accordion.size() == 1;
     } else {
         assert(false);
     }

@@ -6,6 +6,7 @@
 #define SOLVITAIRE_SOL_RULES_H
 
 #include <string>
+#include <vector>
 
 #include "../../../lib/rapidjson/document.h"
 
@@ -23,6 +24,12 @@ struct sol_rules {
         NO_BUILD,
         KINGS,
         ANY
+    };
+    enum class accordion_policy {
+        SAME_RANK,
+        SAME_SUIT,
+        RED_BLACK,
+        ANY_SUIT
     };
     enum class stock_deal_type {
         WASTE,
@@ -62,6 +69,9 @@ struct sol_rules {
     uint8_t sequence_count;
     direction sequence_direction;
     build_policy sequence_build_pol;
+    uint8_t accordion_size;
+    std::vector<std::pair<direction, uint8_t>> accordion_moves;
+    std::vector<accordion_policy> accordion_pol;
 };
 
 #endif //SOLVITAIRE_SOL_RULES_H

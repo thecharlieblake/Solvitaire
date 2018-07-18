@@ -73,6 +73,10 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
         add_pile(pr, gs);
         add_card_divider();
     }
+
+    for (pile::ref pr : gs.accordion) {
+        add_card(gs.piles[pr].top_card(), gs);
+    }
 }
 
 

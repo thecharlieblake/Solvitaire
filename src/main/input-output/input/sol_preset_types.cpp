@@ -47,6 +47,11 @@ map<string, string> sol_preset_types::mp = {
     "size": 0,
     "stacked": false
   },
+  "accordion": {
+    "size": 0,
+    "moves": [],
+    "build policies": []
+  },
   "sequences": {
     "count": 0,
     "direction": "L",
@@ -1080,6 +1085,66 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "max rank": 4
+}
+)"
+
+        },
+        {
+                "simple-accordion",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 10,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+        {
+                "accordion-knuth",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 18,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+        {
+                "accordion",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 52,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
 }
 )"
 

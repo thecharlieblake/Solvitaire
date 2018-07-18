@@ -18,6 +18,7 @@ using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
@@ -29,6 +30,7 @@ typedef sol_rules::direction dir;
 // Note that the moves added last here, are tried first
 vector<move> game_state::get_legal_moves(move parent_move) {
     // Order:
+    // Accordion moves
     // Foundations complete piles moves
     // Tableau / cells / reserve / stock-waste to hole / foundation moves ---
     // Cell to tableau moves
@@ -151,6 +153,9 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
     if (rules.tableau_pile_count > 0 && rules.face_up != fu::ALL)
         turn_face_down_cards(moves);
+
+    if (rules.accordion_size > 0)
+        add_accordion_moves(moves);
 
     return moves;
 }
@@ -466,6 +471,26 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
     }
 }
 
+void game_state::add_accordion_moves(vector<move>& moves) const {
+    int idx = 0, idx_max = static_cast<int>(accordion.size());
+    for (auto from_it = begin(accordion); from_it != end(accordion); from_it++, idx++) {
+        for (pair<dir, uint8_t> move_rule : rules.accordion_moves) {
+            auto to_it = from_it;
+
+            if        (move_rule.first == dir::LEFT  && idx - move_rule.second >= 0) {
+                for (uint8_t i = 0; i < move_rule.second; i++) to_it--;
+            } else if (move_rule.first == dir::RIGHT && idx + move_rule.second < idx_max) {
+                for (uint8_t i = 0; i < move_rule.second; i++) to_it++;
+            } else {
+                continue;
+            }
+
+            if (is_next_legal_card(rules.accordion_pol, piles[*to_it].top_card(), piles[*from_it].top_card()))
+                moves.emplace_back(move::mtype::accordion, *from_it, *to_it, piles[*from_it].size());
+        }
+    }
+}
+
 
 ///////////////////////
 
@@ -482,6 +507,25 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
     }
     // Checks rank
     return b.get_rank() + 1 == a.get_rank();
+}
+
+bool game_state::is_next_legal_card(vector<acc_pol> vp, card a, card b) const {
+    for (auto p : vp) {
+        switch (p) {
+            case sol_rules::accordion_policy::SAME_RANK:
+                if (b.get_rank() == a.get_rank()) return true;
+                break;
+            case sol_rules::accordion_policy::SAME_SUIT:
+                if (b.get_suit() == a.get_suit()) return true;
+                break;
+            case sol_rules::accordion_policy::RED_BLACK:
+                if (b.get_colour() != a.get_colour()) return true;
+                break;
+            case sol_rules::accordion_policy::ANY_SUIT:
+                return true;
+        }
+    }
+    return false;
 }
 
 void game_state::turn_face_down_cards(vector<move>& moves) const {

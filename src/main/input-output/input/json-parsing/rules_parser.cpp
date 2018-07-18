@@ -20,6 +20,7 @@ using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
@@ -306,6 +307,66 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
         }
     }
 
+    if (d.HasMember("accordion")) {
+        if (d["accordion"].IsObject()) {
+            if (d["accordion"].HasMember("size")) {
+                if (d["accordion"]["size"].IsInt()) {
+                    sr.accordion_size = static_cast<uint8_t>(d["accordion"]["size"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[size] must be an integer");
+                }
+            }
+
+            if (d["accordion"].HasMember("moves")) {
+                if (d["accordion"]["moves"].IsArray()) {
+                    for (auto& json_move : d["accordion"]["moves"].GetArray()) {
+                        string move_str = json_move.GetString();
+
+                        sol_rules::direction move_dir;
+                        if (move_str[0] == 'L') {
+                            move_dir = sol_rules::direction::LEFT;
+                        } else if (move_str[0] == 'R') {
+                            move_dir = sol_rules::direction::RIGHT;
+                        } else {
+                            json_helper::json_parse_err(R"([accordion][moves] must begin 'L' or 'R')");
+                        }
+
+                        auto count_str = move_str.substr(1, move_str.size() - 1);
+                        auto count = static_cast<uint8_t>(stoi(count_str));
+
+                        sr.accordion_moves.emplace_back(move_dir, count);
+                    }
+                } else {
+                    json_helper::json_parse_err("[accordion][moves] must be an array");
+                }
+            }
+
+            if (d["accordion"].HasMember("build policies")) {
+                if (d["accordion"]["build policies"].IsArray()) {
+                    for (auto& json_policy : d["accordion"]["build policies"].GetArray()) {
+                        string policy_str = json_policy.GetString();
+
+                        if (policy_str == "any-suit") {
+                            sr.accordion_pol.emplace_back(acc_pol::ANY_SUIT);
+                        } else if (policy_str == "red-black") {
+                            sr.accordion_pol.emplace_back(acc_pol::RED_BLACK);
+                        } else if (policy_str == "same-suit") {
+                            sr.accordion_pol.emplace_back(acc_pol::SAME_SUIT);
+                        } else if (policy_str == "same-rank") {
+                            sr.accordion_pol.emplace_back(acc_pol::SAME_RANK);
+                        } else {
+                            json_helper::json_parse_err("[accordion][build policies] is invalid");
+                        }
+                    }
+                } else {
+                    json_helper::json_parse_err("[accordion][build policies] must be an array");
+                }
+            }
+        } else {
+            json_helper::json_parse_err("[accordion] must be an object");
+        }
+    }
+
     if (d.HasMember("sequences")) {
         if (d["sequences"].IsObject()) {
             if (d["sequences"].HasMember("count")) {
@@ -379,8 +440,9 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     if (sr.hole) solution_types++;
     if (sr.foundations_present) solution_types++;
     if (sr.sequence_count > 0) solution_types++;
+    if (sr.accordion_size > 0) solution_types++;
     if (solution_types != 1) {
-        json_helper::json_parse_err("one and only one of [hole], [foundations] and [sequences][count] > 0 "
+        json_helper::json_parse_err("one and only one of [hole], [foundations], [accordion][size] > 0 and [sequences][count] > 0 "
                                     "must be true");
     }
 
@@ -510,6 +572,34 @@ string rules_parser::rules_schema_json() {
         },
         "stacked": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "accordion": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "moves": {
+          "items": {
+            "type": "string",
+            "pattern": "^((L|R)([1-9]|[1-4][0-9]|5[0-2]))$"
+          }
+        },
+        "build policies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "same-suit",
+              "red-black",
+              "any-suit",
+              "same-rank"
+            ]
+          }
         }
       },
       "additionalProperties": false
