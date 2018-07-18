@@ -462,6 +462,9 @@ string rules_parser::rules_schema_json() {
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "JSON Schema representing a generic solitaire game",
+  "definitions": {
+    "rank": {"type": "string", "pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K))$"},
+  },
   "type": "object",
   "properties": {
     "tableau piles": {
@@ -485,14 +488,23 @@ string rules_parser::rules_schema_json() {
           "enum": [
             "any",
             "no-build",
-            "kings"
+            "kings",
+            "auto-reserve"
           ]
         },
         "diagonal deal": {
           "type": "boolean"
         },
-        "move built group": {
+        "wraps": {
           "type": "boolean"
+        },
+        "move built group": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "whole-pile"
+          ]
         },
         "move built group policy": {
           "type": "string",
@@ -520,8 +532,20 @@ string rules_parser::rules_schema_json() {
         "present": {
           "type": "boolean"
         },
-        "initial card": {
-          "type": "boolean"
+        "initial cards": {
+          "type": "string",
+          "enum": [
+            "none",
+            "one",
+            "all"
+          ]
+        },
+        "base card": {
+          "type": "string",
+          "oneOf":[
+          	{"$ref": "#/definitions/rank"},
+          	{"type": "string","enum": ["random"]}
+          ]
         },
         "removable": {
           "type": "boolean"

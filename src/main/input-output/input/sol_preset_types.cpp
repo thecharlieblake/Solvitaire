@@ -25,13 +25,15 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
-    "move built group": false,
+    "wraps": false,
+    "move built group": "no",
     "move built group policy": "same-as-build",
     "face up cards": "all"
   },
   "foundations": {
     "present": true,
-    "initial card": false,
+    "initial cards": "none",
+    "base card": "A",
     "removable": false,
     "only complete pile moves": false
   },
