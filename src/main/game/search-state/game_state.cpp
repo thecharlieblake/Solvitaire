@@ -49,7 +49,7 @@ typedef sol_rules::foundations_init_type fit;
 game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts_)
         : rules(s_rules)
         , stream_opts(stream_opts_)
-        , foundation_base(card::rank_t(0))
+        , foundations_base(card::rank_t(0))
         , stock(255)
         , waste(255)
         , hole (255) {
@@ -132,7 +132,8 @@ game_state::game_state(const sol_rules& s_rules, const Document& doc, streamline
 // Constructs an initial game state from a seed
 game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s_opts)
         : game_state(s_rules, s_opts) {
-    vector<card> deck = gen_shuffled_deck(seed, rules.max_rank, rules.two_decks);
+    auto rng = mt19937(seed);
+    vector<card> deck = gen_shuffled_deck(rules.max_rank, rules.two_decks, rng);
 
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
@@ -140,14 +141,30 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
         place_card(hole, card("AS"));
     }
 
-    // If the foundations begin filled, then fills them
-    if (rules.foundations_init_cards == fit::ALL) {
-        for (uint8_t f_idx = 0; f_idx < 4*(rules.two_decks ? 2:1); f_idx++) {
-            card c = card(f_idx % uint8_t(4), 1);
+    // If the foundation base is random, selects a random rank and suit
+    card::suit_t rand_suit = 0;
+    if (!rules.foundations_base) {
+        boost::random::uniform_int_distribution<card::rank_t> distr_rank(1, rules.max_rank);
+        foundations_base = distr_rank(rng);
+        boost::random::uniform_int_distribution<card::suit_t> distr_suit(0, 3);
+        rand_suit = distr_suit(rng);
+    }
 
-            deck.erase(find(begin(deck), end(deck), c));
-            place_card(foundations[f_idx], c);
-        }
+    // If the foundations begin filled, then fills them
+    uint8_t founds_to_fill = 0;
+    switch (rules.foundations_init_cards) {
+        case sol_rules::foundations_init_type::NONE:
+            break;
+        case sol_rules::foundations_init_type::ONE:
+            founds_to_fill = 1; break;
+        case sol_rules::foundations_init_type::ALL:
+            founds_to_fill = static_cast<uint8_t>(4 * (rules.two_decks ? 2 : 1)); break;
+    }
+    for (uint8_t f_idx = 0; f_idx < founds_to_fill; f_idx++) {
+        card c = card((f_idx + rand_suit) % uint8_t(4), foundations_base);
+
+        deck.erase(find(begin(deck), end(deck), c));
+        place_card(foundations[(f_idx + rand_suit)], c);
     }
 
     // If there is a stock, deals to it and set up a waste pile too
@@ -250,8 +267,8 @@ game_state::game_state(const sol_rules& s_rules,
 }
 
 // Generates a randomly ordered vector of cards
-vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
-                                           bool two_decks) {
+vector<card> game_state::gen_shuffled_deck(card::rank_t max_rank,
+                                           bool two_decks, mt19937 rng) {
     vector<card> deck;
 
     for (int deck_count = 1; deck_count <= (two_decks ? 2 : 1); deck_count++) {
@@ -264,7 +281,6 @@ vector<card> game_state::gen_shuffled_deck(int seed, card::rank_t max_rank,
 
     assert(deck.size() == pile::size_type(max_rank * (two_decks ? 8 : 4)));
 
-    auto rng = mt19937(seed);
     game_state::shuffle(begin(deck), end(deck), rng);
     return deck;
 }
