@@ -134,6 +134,7 @@ private:
 
     const sol_rules rules;
     streamliner_options stream_opts;
+    card::rank_t foundation_base;
 
     /* Pile references */
 

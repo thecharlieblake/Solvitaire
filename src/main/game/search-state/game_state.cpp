@@ -49,6 +49,7 @@ typedef sol_rules::foundations_init_type fit;
 game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts_)
         : rules(s_rules)
         , stream_opts(stream_opts_)
+        , foundation_base(card::rank_t(0))
         , stock(255)
         , waste(255)
         , hole (255) {

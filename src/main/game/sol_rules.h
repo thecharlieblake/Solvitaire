@@ -7,7 +7,9 @@
 
 #include <string>
 #include <vector>
+#include <boost/optional.hpp>
 
+#include "card.h"
 #include "../../../lib/rapidjson/document.h"
 
 struct sol_rules {
@@ -23,7 +25,8 @@ struct sol_rules {
     enum class spaces_policy {
         NO_BUILD,
         KINGS,
-        ANY
+        ANY,
+        AUTO_RESERVE_THEN_WASTE
     };
     enum class accordion_policy {
         SAME_RANK,
@@ -60,11 +63,13 @@ struct sol_rules {
     spaces_policy spaces_pol;
     built_group_type move_built_group;
     build_policy built_group_pol;
+    bool tableau_wraps;
     bool two_decks;
     uint8_t max_rank;
     bool hole;
     bool foundations_present;
     foundations_init_type foundations_init_cards;
+    boost::optional<card::rank_t> foundations_base;
     bool foundations_removable;
     bool foundations_only_comp_piles;
     bool diagonal_deal;

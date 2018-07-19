@@ -117,6 +117,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.spaces_pol = s_pol::NO_BUILD;
                     } else if (sp_str == "kings") {
                         sr.spaces_pol = s_pol::KINGS;
+                    } else if (sp_str == "auto-reserve-then-waste") {
+                        sr.spaces_pol = s_pol::AUTO_RESERVE_THEN_WASTE;
                     } else {
                         json_helper::json_parse_err("[tableau piles][spaces policy] is invalid");
                     }
@@ -195,6 +197,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
+            if (d["tableau piles"].HasMember("wraps")) {
+                if (d["tableau piles"]["wraps"].IsBool()) {
+                    sr.tableau_wraps = d["tableau piles"]["wraps"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[tableau piles][wraps] must be a boolean");
+                }
+            }
+
         } else {
             json_helper::json_parse_err("[tableau piles] must be an object");
         }
@@ -226,6 +236,21 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     }
                 } else {
                     json_helper::json_parse_err("[foundations][initial cards] must be a string");
+                }
+            }
+
+            if (d["foundations"].HasMember("base card")) {
+                if (d["foundations"]["base card"].IsString()) {
+                    string base_card_str = d["foundations"]["base card"].GetString();
+
+                    if (base_card_str == "random") {
+                        sr.foundations_base = boost::none;
+                    } else {
+                        base_card_str += "H";
+                        sr.foundations_base = card(base_card_str.c_str()).get_rank();
+                    }
+                } else {
+                    json_helper::json_parse_err("[foundations][base card] must be a string");
                 }
             }
 

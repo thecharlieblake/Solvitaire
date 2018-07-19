@@ -283,6 +283,12 @@ bool deal_parser::parse_foundations(game_state &gs, const rapidjson::Document& d
         }
     }
 
+    // If the game uses a random base for foundations, assume that the first card in the first foundation is that base
+    if (!gs.rules.foundations_base) {
+        auto& first_found = gs.piles[gs.foundations[0]];
+        gs.foundation_base = first_found[first_found.size() - 1].get_rank();
+    }
+
     return true;
 }
 

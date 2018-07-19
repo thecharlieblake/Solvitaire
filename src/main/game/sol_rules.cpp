@@ -25,6 +25,7 @@ sol_rules::sol_rules() :
         hole(false),
         foundations_present(false),
         foundations_init_cards(fit::NONE),
+        foundations_base(1),
         foundations_only_comp_piles(false),
         diagonal_deal(false),
         cells(0),
