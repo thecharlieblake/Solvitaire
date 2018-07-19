@@ -276,10 +276,18 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 4,
     "build policy": "red-black",
-    "move built group": "yes"
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve",
+    "wraps": true
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
   },
   "stock": {
-    "size": 34
+    "size": 34,
+    "deal count": 3,
+    "redeal": true
   },
   "reserve": {
     "size": 14,
@@ -297,10 +305,19 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3,
     "build policy": "red-black",
-    "move built group": "yes"
+    "move built group": "yes",
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve",
+    "wraps": true
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
   },
   "stock": {
-    "size": 1
+    "size": 1,
+    "deal count": 3,
+    "redeal": true
   },
   "reserve": {
     "size": 2,
