@@ -121,7 +121,7 @@ private:
     void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_sequence_moves(std::vector<move>&) const;
 
-    bool is_next_legal_card(sol_rules::build_policy, card, card) const;
+    bool is_next_legal_card(sol_rules::build_policy, card, card, bool) const;
     bool is_next_legal_card(std::vector<sol_rules::accordion_policy>, card, card) const;
     void turn_face_down_cards(std::vector<move>&) const;
 

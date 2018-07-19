@@ -69,7 +69,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             add_stock_to_cell_move(moves, empty_cell);
     }
 
-    // Foundation to tableau moves
+    // Foundation to tableau / empty cell moves
     if (rules.foundations_removable) {
         for (auto f : foundations) {
             if (piles[f].empty() || parent_move.to == f || dominance_blocks_foundation_move(f)) continue;
@@ -297,7 +297,7 @@ bool game_state::is_valid_tableau_move(const card rem_c,
 }
 
 bool game_state::is_next_tableau_card(card a, card b) const {
-    return is_next_legal_card(rules.build_pol, a, b);
+    return is_next_legal_card(rules.build_pol, a, b, rules.tableau_wraps);
 }
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
@@ -418,7 +418,7 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 }
 
 bool game_state::is_next_built_group_card(card a, card b) const {
-    return is_next_legal_card(rules.built_group_pol, a, b);
+    return is_next_legal_card(rules.built_group_pol, a, b, rules.tableau_wraps);
 }
 
 // Loops through each possible built group move to an empty pile and adds it to the list
@@ -487,7 +487,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with left neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second + 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card, false))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -501,7 +501,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with right neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second - 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card, false))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -533,7 +533,7 @@ void game_state::add_accordion_moves(vector<move>& moves) const {
 
 ///////////////////////
 
-bool game_state::is_next_legal_card(pol p, card a, card b) const {
+bool game_state::is_next_legal_card(pol p, card a, card b, bool wraps) const {
     // Checks build pol violations
     switch(p) {
         case sol_rules::build_policy::SAME_SUIT:
@@ -545,7 +545,11 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
         default:;
     }
     // Checks rank
-    return b.get_rank() + 1 == a.get_rank();
+    if (wraps) {
+        return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
+    } else {
+        return b.get_rank() + 1 == a.get_rank();
+    }
 }
 
 bool game_state::is_next_legal_card(vector<acc_pol> vp, card a, card b) const {

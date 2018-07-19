@@ -631,7 +631,7 @@ bool game_state::is_solved() const {
     } else if (rules.sequence_count > 0) {
         for (pile::ref i = 0; i < sequences.size() && solved; i++) {
             for (pile::ref j = piles[sequences[i]].size(); j-- > 2;) {
-                if (!is_next_legal_card(rules.sequence_build_pol, piles[sequences[i]][j-1], piles[sequences[i]][j])) {
+                if (!is_next_legal_card(rules.sequence_build_pol, piles[sequences[i]][j-1], piles[sequences[i]][j], false)) { // TODO
                     solved = false;
                     break;
                 }
