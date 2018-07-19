@@ -124,6 +124,14 @@ void test_helper::k_plus_stock_test
     ASSERT_EQ(gs.get_data(), game_state(sr, piles).get_data()) << gs;
 }
 
+uint8_t test_helper::cards_in_founds(game_state& gs) {
+    uint8_t sz = 0;
+    for (auto found : gs.foundations) {
+        sz += gs.piles[found].size();
+    }
+    return sz;
+}
+
 ostream& operator <<(ostream& os, const move& m) {
     return os << "move:(" << int(m.from)
               << ","    << int(m.to)

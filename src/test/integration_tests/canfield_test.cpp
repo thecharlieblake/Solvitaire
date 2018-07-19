@@ -5,8 +5,14 @@
 #include <gtest/gtest.h>
 
 #include "../test_helper.h"
+#include "../../main/input-output/input/json-parsing/rules_parser.h"
+#include "../../main/game/search-state/game_state.h"
+
+using std::vector;
 
 typedef test_helper th;
+typedef game_state::streamliner_options so;
+typedef std::initializer_list<std::initializer_list<std::string>> string_il;
 
 const static std::string path = "resources/canfield/";
 const static std::string type = "simple-canfield";
@@ -25,4 +31,100 @@ TEST(Canfield, SimpleUnsolvable) {
 
 TEST(Canfield, ComplexUnsolvable) {
     EXPECT_FALSE(th::is_solvable(path + "ComplexUnsolvable.json", type));
+}
+
+TEST(Canfield, FoundationSingleCard) {
+    sol_rules sr = rules_parser::from_preset("canfield");
+    game_state gs(sr, 0, so::NONE);
+
+    ASSERT_EQ(1, test_helper::cards_in_founds(gs));
+}
+
+TEST(Canfield, FoundationWraps) {
+    sol_rules sr = rules_parser::from_preset("simple-canfield");
+
+    game_state gs(sr, string_il{
+            {"3C"},{},{},{}, // Foundations
+            {},{}, // Stock-waste
+            {}, // Reserve
+            {"AC"},{},{} // Tableau piles
+    });
+
+    vector<move> actual_moves = gs.get_legal_moves();
+    vector<move> exp_moves = {
+            move(move::mtype::regular, 7, 0, 1)
+    };
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
+TEST(Canfield, MoveWholePile) {
+    sol_rules sr = rules_parser::from_preset("simple-canfield");
+
+    game_state gs(sr, string_il{
+            {"3C"},{},{},{}, // Foundations
+            {},{}, // Stock-waste
+            {}, // Reserve
+            {"2H","3S","AH"},{"AC"},{"2D"} // Tableau piles
+    });
+
+    vector<move> actual_moves = gs.get_legal_moves();
+    vector<move> exp_moves = {
+            move(move::mtype::built_group, 7, 8, 3)
+    };
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
+TEST(Canfield, MoveWholePileNotSpace) {
+    sol_rules sr = rules_parser::from_preset("simple-canfield");
+
+    game_state gs(sr, string_il{
+            {"3C"},{},{},{}, // Foundations
+            {},{}, // Stock-waste
+            {}, // Reserve
+            {"2H","3S","AH"},{},{"2D"} // Tableau piles
+    });
+
+    vector<move> actual_moves = gs.get_legal_moves();
+    vector<move> exp_moves = {};
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
+TEST(Canfield, AutoReserve) {
+    sol_rules sr = rules_parser::from_preset("simple-canfield");
+
+    game_state gs(sr, string_il{
+            {"3C"},{},{},{}, // Foundations
+            {"3D"},{"2D"}, // Stock-waste
+            {"3H"}, // Reserve
+            {"2H","3S","AH"},{},{"AC"} // Tableau piles
+    });
+
+    vector<move> actual_moves = gs.get_legal_moves();
+    vector<move> exp_moves = {
+            move(move::mtype::regular, 6, 8, 1)
+    };
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
+TEST(Canfield, AutoReserveThenWaste) {
+    sol_rules sr = rules_parser::from_preset("simple-canfield");
+
+    game_state gs(sr, string_il{
+            {"3C"},{},{},{}, // Foundations
+            {"3D"},{"3H"}, // Stock-waste
+            {}, // Reserve
+            {"2H","3S","AH"},{},{"AC"} // Tableau piles
+    });
+
+    vector<move> actual_moves = gs.get_legal_moves();
+    vector<move> exp_moves = {
+            move(move::mtype::stock_k_plus, 4, 8, 1),
+            move(move::mtype::stock_k_plus, 4, 8, 2),
+    };
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
 }

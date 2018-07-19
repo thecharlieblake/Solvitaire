@@ -512,7 +512,7 @@ string rules_parser::rules_schema_json() {
             "any",
             "no-build",
             "kings",
-            "auto-reserve"
+            "auto-reserve-then-waste"
           ]
         },
         "diagonal deal": {

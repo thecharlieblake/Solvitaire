@@ -277,7 +277,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black",
     "move built group": "whole-pile",
-    "spaces policy": "auto-reserve",
+    "spaces policy": "auto-reserve-then-waste",
     "wraps": true
   },
   "foundations": {
@@ -307,7 +307,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "move built group": "yes",
     "move built group": "whole-pile",
-    "spaces policy": "auto-reserve",
+    "spaces policy": "auto-reserve-then-waste",
     "wraps": true
   },
   "foundations": {
