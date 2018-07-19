@@ -112,6 +112,8 @@ private:
 
     void add_built_group_moves(std::vector<move>&) const;
     void add_built_group_moves(std::vector<move>&, pile::ref, pile::size_type) const;
+    void add_whole_pile_moves(std::vector<move>&) const;
+    void add_whole_pile_moves(std::vector<move>&, pile::ref, pile::size_type) const;
     pile::size_type get_built_group_height(pile::ref) const;
     bool is_next_built_group_card(card, card) const;
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;

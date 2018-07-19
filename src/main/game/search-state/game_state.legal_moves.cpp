@@ -98,8 +98,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
         add_stock_to_tableau_moves(moves);
 
-    if (rules.move_built_group != bgt::NO)
-        add_built_group_moves(moves);
+    switch (rules.move_built_group) {
+        case sol_rules::built_group_type::YES:
+            add_built_group_moves(moves);
+            break;
+        case sol_rules::built_group_type::WHOLE_PILE:
+            add_whole_pile_moves(moves);
+            break;
+        case sol_rules::built_group_type::NO:
+            break;
+    }
 
     // Tableau to tableau moves
     for (auto t_from : tableau_piles) {
@@ -365,6 +373,36 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
             }
         } else {
             add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
+        }
+    }
+}
+
+void game_state::add_whole_pile_moves(vector<move>& moves) const {
+    assert(rules.built_group_pol != pol::NO_BUILD);
+
+    // Cycles through each pile to see if it contains a whole-pile built group
+    for (auto rem_ref : tableau_piles) {
+        auto built_group_height = get_built_group_height(rem_ref);
+
+        if (built_group_height == piles[rem_ref].size()) {
+            add_whole_pile_moves(moves, rem_ref, built_group_height);
+        }
+    }
+}
+
+void game_state::add_whole_pile_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height) const {
+    // We have found a built group. Cycles through each pile to see if it can be added
+    for (auto add_ref : tableau_piles) {
+        if (add_ref == rem_ref) continue;
+
+        card bg_high = piles[rem_ref][built_group_height - 1];
+
+        if (piles[add_ref].empty()) {
+            if (rules.spaces_pol == s_pol::ANY || rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
+                moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+            }
+        } else if (is_next_built_group_card(piles[add_ref].top_card(),  bg_high)) {
+            moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
         }
     }
 }
