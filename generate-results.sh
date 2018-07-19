@@ -31,31 +31,31 @@ declare -a arr=(
 "free-cell-6-pile"
 "free-cell-7-pile"
 "free-cell"
+"blind-alleys"
+"chameleon"
+"duchess"
+"east-haven"
+"klondike"
+"klondike-deal-1"
+"martha"
+"canfield"
+"penguin"
+"alina"
+"bakers-dozen"
+"scotch-patience"
+"spider"
 )
 
 ### Presets not attempted:
 
 ## Rules incorrect
 
-#"martha"
-#"canfield"
-#"penguin"
 
 ## Too difficult (?)
 
-#"alina"
-#"bakers-dozen"
-#"scotch-patience"
-#"spider"
 
 ## Stock games
 
-#"blind-alleys" (medium)
-#"chameleon" (hard)
-#"duchess" (hard)
-#"east-haven" (easy)
-#"klondike" (medium)
-#"klondike-deal-1" (medium)
 
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
@@ -65,7 +65,7 @@ mkdir -p results/$DATE
 for i in "${arr[@]}"
 do
     echo "Running $i ..."
-    ./sol --type "$i" --solvability 10000 --time 600000 --cores 25 --stream > results/$DATE/$i.csv
+    sol --type "$i" --solvability 20 --time 60 --stream none > results/$DATE/$i.csv
 done
 
 echo "Done!"

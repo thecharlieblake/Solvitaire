@@ -22,6 +22,7 @@ typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
+typedef sol_rules::built_group_type bgt;
 
 ////////////////////////////////
 // MAIN LEGAL MOVE GEN CYCLE ///
@@ -97,7 +98,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
         add_stock_to_tableau_moves(moves);
 
-    if (rules.move_built_group)
+    if (rules.move_built_group != bgt::NO)
         add_built_group_moves(moves);
 
     // Tableau to tableau moves

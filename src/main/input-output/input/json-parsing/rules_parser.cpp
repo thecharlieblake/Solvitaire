@@ -24,6 +24,8 @@ typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
+typedef sol_rules::built_group_type bgt;
+typedef sol_rules::foundations_init_type fit;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -125,10 +127,20 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             }
 
             if (d["tableau piles"].HasMember("move built group")) {
-                if (d["tableau piles"]["move built group"].IsBool()) {
-                    sr.move_built_group = d["tableau piles"]["move built group"].GetBool();
+                if (d["tableau piles"]["move built group"].IsString()) {
+                    string mbg_str = d["tableau piles"]["move built group"].GetString();
+
+                    if (mbg_str == "yes") {
+                        sr.move_built_group = bgt::YES;
+                    } else if (mbg_str == "no") {
+                        sr.move_built_group = bgt::NO;
+                    } else if (mbg_str == "whole-pile") {
+                        sr.move_built_group = bgt::WHOLE_PILE;
+                    } else {
+                        json_helper::json_parse_err("[tableau piles][move built group] is invalid");
+                    }
                 } else {
-                    json_helper::json_parse_err("[tableau piles][move built group] must be a boolean");
+                    json_helper::json_parse_err("[tableau piles][move built group] must be a string");
                 }
             }
 
@@ -198,11 +210,22 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
-            if (d["foundations"].HasMember("initial card")) {
-                if (d["foundations"]["initial card"].IsBool()) {
-                    sr.foundations_init_card = d["foundations"]["initial card"].GetBool();
+            if (d["foundations"].HasMember("initial cards")) {
+                if (d["foundations"]["initial cards"].IsString()) {
+                    string ic_str = d["foundations"]["initial cards"].GetString();
+
+                    if (ic_str == "none") {
+                        sr.foundations_init_cards = fit::NONE;
+                    } else if (ic_str == "one") {
+                        sr.foundations_init_cards = fit::ONE;
+                    } else if (ic_str == "all") {
+                        sr.foundations_init_cards = fit::ALL;
+                    } else {
+                        string err = "[foundations][initial cards] is invalid: " + ic_str;
+                        json_helper::json_parse_err(err);
+                    }
                 } else {
-                    json_helper::json_parse_err("[foundations][initial card] must be a boolean");
+                    json_helper::json_parse_err("[foundations][initial cards] must be a string");
                 }
             }
 

@@ -38,6 +38,7 @@ typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef game_state::streamliner_options sos;
+typedef sol_rules::foundations_init_type fit;
 
 //////////////////
 // CONSTRUCTORS //
@@ -139,7 +140,7 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
     }
 
     // If the foundations begin filled, then fills them
-    if (rules.foundations_init_card) {
+    if (rules.foundations_init_cards == fit::ALL) {
         for (uint8_t f_idx = 0; f_idx < 4*(rules.two_decks ? 2:1); f_idx++) {
             card c = card(f_idx % uint8_t(4), 1);
 

@@ -13,6 +13,7 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
+typedef sol_rules::foundations_init_type fit;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     // There are two stages to reading in the supplied deal. It is both put
@@ -65,7 +66,7 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     if (gs.rules.foundations_present) {
         bool supplied_foundations = parse_foundations(gs, doc);
 
-        if (!supplied_foundations && gs.rules.foundations_init_card) {
+        if (!supplied_foundations && gs.rules.foundations_init_cards == fit::ALL) {
             fill_foundations(gs);
         }
     }
