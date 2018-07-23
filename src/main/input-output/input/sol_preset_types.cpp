@@ -305,7 +305,6 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3,
     "build policy": "red-black",
-    "move built group": "yes",
     "move built group": "whole-pile",
     "spaces policy": "auto-reserve-then-waste",
     "wraps": true

@@ -136,7 +136,6 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
 
     if (current_node->mv.type != move::mtype::dominance) {
         if (cache.get_states_removed_from_cache() == 0) {
-            LOG_DEBUG(state); // TODO
             assert(cache.contains(state));
         }
         LOG_DEBUG("(undo move)");

@@ -110,12 +110,15 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Tableau to tableau moves
-    for (auto t_from : tableau_piles) {
-        if (piles[t_from].empty() || parent_move.to == t_from) continue;
+    // If only whole pile moves are available, doesn't make regular ones
+    if (rules.move_built_group != bgt::WHOLE_PILE) {
+        for (auto t_from : tableau_piles) {
+            if (piles[t_from].empty() || parent_move.to == t_from) continue;
 
-        for (auto t_to : tableau_piles) {
-            if (is_valid_tableau_move(t_from, t_to)) {
-                moves.emplace_back(move::mtype::regular, t_from, t_to);
+            for (auto t_to : tableau_piles) {
+                if (is_valid_tableau_move(t_from, t_to)) {
+                    moves.emplace_back(move::mtype::regular, t_from, t_to);
+                }
             }
         }
     }
@@ -317,9 +320,9 @@ bool game_state::is_valid_foundations_move(const card rem_c,
 
     // Checks rank
     if (piles[add_ref].empty())
-        return rem_c.get_rank() == 1;
+        return rem_c.get_rank() == rules.foundations_base;
     else
-        return rem_c.get_rank() == piles[add_ref].top_card().get_rank() + 1;
+        return rem_c.get_rank() == (piles[add_ref].top_card().get_rank() + 1) % rules.max_rank;
 }
 
 bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {

@@ -106,9 +106,7 @@ string deal_parser::deal_schema_json() {
     "tableau piles": {
       "type": "array", "items": {"$ref": "#/definitions/cardarray"}
     },
-    "foundations": {
-      "type": "array", "items": {"$ref": "#/definitions/cardarray"}
-    },
+    "foundations": {"$ref": "#/definitions/cardarray"},
     "sequences": {
       "type": "array", "items": {"$ref": "#/definitions/cardarraywithempty"}
     },
@@ -266,17 +264,10 @@ bool deal_parser::parse_foundations(game_state &gs, const rapidjson::Document& d
     const Value& json_foundations = doc["foundations"];
     assert(json_foundations.IsArray());
 
-    if (json_foundations.Size() != 4 * (gs.rules.two_decks ? 2 : 1) ) {
-        json_helper::json_parse_err("Incorrect number of foundations");
-    }
-
     for (auto j = begin(json_foundations.GetArray()); j != end(json_foundations.GetArray()); j++) {
-
-        for (auto& json_card : j->GetArray()) {
-            assert(json_card.IsString());
-            card c = card(json_card.GetString());
-            gs.place_card(gs.foundations[c.get_suit()], c);
-        }
+        assert(j->IsString());
+        card c = card(j->GetString());
+        gs.place_card(gs.foundations[c.get_suit()], c);
     }
 
     // If the game uses a random base for foundations, assume that the first card in the first foundation is that base

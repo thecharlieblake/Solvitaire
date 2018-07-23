@@ -65,12 +65,13 @@ TEST(Canfield, MoveWholePile) {
             {"3C"},{},{},{}, // Foundations
             {},{}, // Stock-waste
             {}, // Reserve
-            {"2H","3S","AH"},{"AC"},{"2D"} // Tableau piles
+            {"3H","2S","AH"},{"AS"},{"2D"} // Tableau piles
     });
 
     vector<move> actual_moves = gs.get_legal_moves();
     vector<move> exp_moves = {
-            move(move::mtype::built_group, 7, 8, 3)
+            move(move::mtype::built_group, 7, 8, 3),
+            move(move::mtype::built_group, 8, 9, 1),
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;

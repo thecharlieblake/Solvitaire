@@ -149,8 +149,7 @@ void game_state::update_auto_foundation_moves(pile::ref target_pile) {
 }
 
 card::rank_t game_state::foundation_base_convert(card::rank_t r) const {
-    //card::rank_t s = r - (foundations_base - card::rank_t(1));
-    //if (s < 1) s += rules.max_rank;
-    //return s;
-    return r;
+    card::rank_t s = r - (foundations_base - card::rank_t(1));
+    if (s < 1) s += rules.max_rank;
+    return s;
 }
