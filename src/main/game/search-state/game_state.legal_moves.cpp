@@ -65,7 +65,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             if (!piles[r].empty())
                 moves.emplace_back(move::mtype::regular, r, empty_cell);
 
-        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
             add_stock_to_cell_move(moves, empty_cell);
     }
 
@@ -95,7 +95,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     }
 
     // Stock to tableau moves
-    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
         add_stock_to_tableau_moves(moves);
 
     switch (rules.move_built_group) {
@@ -139,7 +139,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Tableau / cells / reserve / stock-waste to hole / foundation moves
     if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
         // Stock
-        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
             add_stock_to_hole_foundation_moves(moves);
 
         list<pile::ref> from_piles = tableau_piles;
@@ -196,7 +196,8 @@ set<pair<int8_t, bool>> game_state::generate_k_plus_moves_to_check() const {
     set<pair<int8_t, bool>> stock_moves_to_check;
 
     // If the waste isn't empty, adds the move from the top of the current waste
-    if (piles[waste].size() != 0) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));
+    if (!piles[waste].empty()) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));
+    else if (piles[stock].empty()) return stock_moves_to_check;
 
     // Adds multiples of deal count (excluding last card)
     for (int8_t count = rules.stock_deal_count;
@@ -398,7 +399,7 @@ void game_state::add_whole_pile_moves(vector<move>& moves, pile::ref rem_ref, pi
         card bg_high = piles[rem_ref][built_group_height - 1];
 
         if (piles[add_ref].empty()) {
-            if (rules.spaces_pol == s_pol::ANY || rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
+            if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)) {
                 moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
             }
         } else if (is_next_built_group_card(piles[add_ref].top_card(),  bg_high)) {

@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <random>
 
 #include <boost/functional/hash.hpp>
 #include <boost/optional/optional.hpp>
@@ -62,7 +63,7 @@ private:
     /* Constructors (& helper function) */
 
     explicit game_state(const sol_rules&, streamliner_options);
-    static std::vector<card> gen_shuffled_deck(card::rank_t, bool, mt19937);
+    static std::vector<card> gen_shuffled_deck(card::rank_t, bool, std::mt19937);
     template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
 
     /* Pile order logic */
@@ -131,6 +132,7 @@ private:
     bool is_ordered_pile(pile::ref) const;
     bool dominance_blocks_foundation_move(pile::ref);
     void update_auto_foundation_moves(pile::ref);
+    card::rank_t foundation_base_convert(card::rank_t) const;
 
     /* Game rules */
 

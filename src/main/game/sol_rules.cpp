@@ -20,6 +20,7 @@ sol_rules::sol_rules() :
         spaces_pol(s_pol::ANY),
         move_built_group(bgt::NO),
         built_group_pol(pol::ANY_SUIT),
+        tableau_wraps(false),
         two_decks(false),
         max_rank(13),
         hole(false),

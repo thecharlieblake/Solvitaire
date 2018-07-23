@@ -3,10 +3,12 @@
 //
 
 #include "game_state.h"
+#include "../sol_rules.h"
 
 
 typedef sol_rules::build_policy pol;
 typedef game_state::streamliner_options sos;
+typedef sol_rules::stock_deal_type sdt;
 
 using std::max;
 
@@ -21,11 +23,12 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
         return true;
 
     card::suit_t target_suit(target_pile - foundations.front());
-    card::rank_t target_rank = piles[target_pile].empty()
-                               ? card::rank_t(0)
-                               : piles[target_pile].top_card().get_rank();
+    card::rank_t move_up_rank = piles[target_pile].empty()
+                               ? card::rank_t(1)
+                               : foundation_base_convert(piles[target_pile].top_card().get_rank() + card::rank_t(1));
+
     // The card to be moved up
-    card move_up_card(target_suit, card::rank_t(target_rank + 1));
+    card move_up_card(target_suit, move_up_rank);
 
     // The max difference between the 'move up' card and the foundations of the
     // same colour and the other colour
@@ -36,7 +39,7 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 
         card::suit_t s(pr - foundations.front());
         card::rank_t r = piles[pr].empty() ? card::rank_t(0)
-                                           : piles[pr].top_card().get_rank();
+                                           : foundation_base_convert(piles[pr].top_card().get_rank());
         card c(s, r);
 
         auto rank_diff = int(move_up_card.get_rank() - r);
@@ -71,10 +74,11 @@ boost::optional<move> game_state::get_dominance_move() const {
     // Cycles through the piles and sees if any cards can be automatically moved
     // to the foundations
     for (pile::ref pr = 0; pr < piles.size(); pr++) {
-        // Don't move foundation cards, hole or stock cards to the foundations
+        // Don't move foundation cards, hole, waste or stock cards to the foundations
         if ((pr >= foundations.front() && pr <= foundations.back())
             || (rules.hole && pr == hole)
             || (rules.stock_size > 0 && pr == stock)
+            || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste)
             || (piles[pr].empty())) {
             continue;
         }
@@ -85,10 +89,9 @@ boost::optional<move> game_state::get_dominance_move() const {
         // If the card is the right rank and the auto-move boolean is true, then
         // returns the move
         card::rank_t target_rank = piles[target_foundation].empty()
-                                   ? card::rank_t(1) :
-                                   piles[target_foundation].top_card().get_rank()
-                                   + card::rank_t(1);
-        if (target_rank == c.get_rank() &&
+                                   ? card::rank_t(1)
+                                   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
+        if (target_rank == foundation_base_convert(c.get_rank()) &&
             auto_foundation_moves[c.get_suit()]) {
             move m(move::mtype::dominance, pr, target_foundation);
 
@@ -143,4 +146,11 @@ void game_state::update_auto_foundation_moves(pile::ref target_pile) {
     for (pile::ref pr : foundations) {
         auto_foundation_moves[pr] = is_valid_auto_foundation_move(pr);
     }
+}
+
+card::rank_t game_state::foundation_base_convert(card::rank_t r) const {
+    //card::rank_t s = r - (foundations_base - card::rank_t(1));
+    //if (s < 1) s += rules.max_rank;
+    //return s;
+    return r;
 }

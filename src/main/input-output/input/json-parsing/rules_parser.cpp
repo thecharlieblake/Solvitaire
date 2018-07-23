@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "../../../../../lib/rapidjson/error/en.h"
+
 #include "rules_parser.h"
 #include "json_helper.h"
 #include "../sol_preset_types.h"
@@ -494,7 +496,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                                     "must be true");
     }
 
-    rules_schema_json(); // Throws an error if it fails
     Document vd;
     vd.Parse(rules_schema_json().c_str());
     assert(!vd.HasParseError());
@@ -510,9 +511,6 @@ string rules_parser::rules_schema_json() {
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "JSON Schema representing a generic solitaire game",
-  "definitions": {
-    "rank": {"type": "string", "pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K))$"},
-  },
   "type": "object",
   "properties": {
     "tableau piles": {
@@ -591,8 +589,8 @@ string rules_parser::rules_schema_json() {
         "base card": {
           "type": "string",
           "oneOf":[
-          	{"$ref": "#/definitions/rank"},
-          	{"type": "string","enum": ["random"]}
+          	{"pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K))$"},
+          	{"enum": ["random"]}
           ]
         },
         "removable": {
