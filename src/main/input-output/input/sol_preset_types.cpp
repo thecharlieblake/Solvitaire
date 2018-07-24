@@ -290,7 +290,7 @@ map<string, string> sol_preset_types::mp = {
     "redeal": true
   },
   "reserve": {
-    "size": 14,
+    "size": 13,
     "stacked": true
   }
 }
@@ -314,7 +314,7 @@ map<string, string> sol_preset_types::mp = {
     "base card": "random"
   },
   "stock": {
-    "size": 1,
+    "size": 6,
     "deal count": 3,
     "redeal": true
   },

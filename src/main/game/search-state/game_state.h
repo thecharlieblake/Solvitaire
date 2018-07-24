@@ -111,6 +111,7 @@ private:
     bool is_valid_hole_move(pile::ref) const;
     bool is_valid_hole_move(card) const;
 
+    void add_valid_tableau_moves(std::vector<move>&, pile::ref) const;
     void add_built_group_moves(std::vector<move>&) const;
     void add_built_group_moves(std::vector<move>&, pile::ref, pile::size_type) const;
     void add_whole_pile_moves(std::vector<move>&) const;
@@ -121,6 +122,7 @@ private:
     void add_kings_only_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_sequence_moves(std::vector<move>&) const;
+    bool tableau_space_and_auto_reserve() const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card, bool) const;
     bool is_next_legal_card(std::vector<sol_rules::accordion_policy>, card, card) const;
@@ -128,6 +130,7 @@ private:
 
     /* Auto-foundation moves */
 
+    boost::optional<move> auto_reserve_move() const;
     bool is_valid_auto_foundation_move(pile::ref) const;
     bool is_ordered_pile(pile::ref) const;
     bool dominance_blocks_foundation_move(pile::ref);

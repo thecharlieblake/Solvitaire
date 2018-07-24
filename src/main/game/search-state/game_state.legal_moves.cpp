@@ -74,9 +74,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         for (auto f : foundations) {
             if (piles[f].empty() || parent_move.to == f || dominance_blocks_foundation_move(f)) continue;
 
-            for (auto t : tableau_piles)
-                if (is_valid_tableau_move(f, t))
-                    moves.emplace_back(move::mtype::regular, f, t);
+            add_valid_tableau_moves(moves, f);
 
             if (empty_cell != 255)
                 moves.emplace_back(move::mtype::regular, f, empty_cell);
@@ -87,17 +85,14 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     for (auto r : reserve) {
         if (piles[r].empty()) continue;
 
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(r, t)) {
-                moves.emplace_back(move::mtype::regular, r, t);
-            }
-        }
+        add_valid_tableau_moves(moves, r);
     }
 
-    // Stock to tableau moves
+    // Stock-waste to tableau moves
     if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
         add_stock_to_tableau_moves(moves);
 
+    // Tableau built group moves
     switch (rules.move_built_group) {
         case sol_rules::built_group_type::YES:
             add_built_group_moves(moves);
@@ -115,11 +110,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         for (auto t_from : tableau_piles) {
             if (piles[t_from].empty() || parent_move.to == t_from) continue;
 
-            for (auto t_to : tableau_piles) {
-                if (is_valid_tableau_move(t_from, t_to)) {
-                    moves.emplace_back(move::mtype::regular, t_from, t_to);
-                }
-            }
+            add_valid_tableau_moves(moves, t_from);
         }
     }
 
@@ -132,11 +123,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     for (auto c : cells) {
         if (piles[c].empty() || parent_move.to == c) continue;
 
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(c, t)) {
-                moves.emplace_back(move::mtype::regular, c, t);
-            }
-        }
+        add_valid_tableau_moves(moves, c);
     }
 
     // Tableau / cells / reserve / stock-waste to hole / foundation moves
@@ -233,9 +220,14 @@ void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
     for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
         card from = stock_card_from_count(k_plus_mv.first);
 
-        for (auto t : tableau_piles)
-            if (is_valid_tableau_move(from, t))
+        // Obeys the auto-reserve restriction unless the reserve is empty
+        if (!piles[reserve.front()].empty() && tableau_space_and_auto_reserve()) return;
+
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(from, t)) {
                 moves.emplace_back(move::mtype::stock_k_plus, stock, t, k_plus_mv.first, false, k_plus_mv.second);
+            }
+        }
     }
 }
 
@@ -313,6 +305,8 @@ bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
 
 bool game_state::is_valid_foundations_move(const card rem_c,
                                            const pile::ref add_ref) const {
+    if (piles[add_ref].size() == rules.max_rank) return false;
+
     // Checks same suit policy
     uint8_t suit_idx = (add_ref - foundations.front()) % uint8_t(4);
     if (rem_c.get_suit() != suit_idx)
@@ -320,9 +314,9 @@ bool game_state::is_valid_foundations_move(const card rem_c,
 
     // Checks rank
     if (piles[add_ref].empty())
-        return rem_c.get_rank() == rules.foundations_base;
+        return rem_c.get_rank() == foundations_base;
     else
-        return rem_c.get_rank() == (piles[add_ref].top_card().get_rank() + 1) % rules.max_rank;
+        return rem_c.get_rank() == (piles[add_ref].top_card().get_rank() % rules.max_rank) + 1;
 }
 
 bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {
@@ -344,6 +338,16 @@ bool game_state::is_valid_hole_move(const card c) const {
 ////////////////////////////////////
 // BUILT-GROUP MOVE GEN FUNCTIONS //
 ////////////////////////////////////
+
+void game_state::add_valid_tableau_moves(std::vector<move>& moves, pile::ref from) const {
+    if (tableau_space_and_auto_reserve()) return;
+
+    for (auto to : tableau_piles) {
+        if (is_valid_tableau_move(from, to)) {
+            moves.emplace_back(move::mtype::regular, from, to);
+        }
+    }
+}
 
 void game_state::add_built_group_moves(vector<move>& moves) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
@@ -383,6 +387,7 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
 
 void game_state::add_whole_pile_moves(vector<move>& moves) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
+    if (tableau_space_and_auto_reserve()) return;
 
     // Cycles through each pile to see if it contains a whole-pile built group
     for (auto rem_ref : tableau_piles) {
@@ -534,6 +539,13 @@ void game_state::add_accordion_moves(vector<move>& moves) const {
     }
 }
 
+// If auto-reserve is enabled and there is a space, returns
+bool game_state::tableau_space_and_auto_reserve() const {
+    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE)
+        for (auto to : tableau_piles)
+            if (piles[to].empty()) return true;
+    return false;
+}
 
 ///////////////////////
 

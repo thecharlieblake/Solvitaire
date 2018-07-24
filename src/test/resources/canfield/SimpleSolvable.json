@@ -5,6 +5,6 @@
     ["AC"],
     ["3D"]
   ],
-  "stock": ["AH","3S"],
-  "reserve": ["2H","AS","3H","2D","3C","AD"]
+  "reserve": ["AH","3S"],
+  "stock": ["2H","AS","3H","2D","3C","AD"]
 }

@@ -97,18 +97,21 @@ TEST(Canfield, AutoReserve) {
     sol_rules sr = rules_parser::from_preset("simple-canfield");
 
     game_state gs(sr, string_il{
-            {"3C"},{},{},{}, // Foundations
-            {"3D"},{"2D"}, // Stock-waste
+            {"2C"},{},{},{}, // Foundations
+            {"3D","2D"},{}, // Stock-waste
             {"3H"}, // Reserve
             {"2H","3S","AH"},{},{"AC"} // Tableau piles
     });
 
     vector<move> actual_moves = gs.get_legal_moves();
-    vector<move> exp_moves = {
-            move(move::mtype::regular, 6, 8, 1)
-    };
+    vector<move> exp_moves = {};
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+
+    boost::optional<move> actual_dom_move = gs.get_dominance_move();
+    boost::optional<move> exp_dom_move = move(move::mtype::dominance, 6, 8, 1);
+
+    ASSERT_EQ(exp_dom_move, actual_dom_move) << *actual_dom_move;
 }
 
 TEST(Canfield, AutoReserveThenWaste) {
@@ -116,16 +119,21 @@ TEST(Canfield, AutoReserveThenWaste) {
 
     game_state gs(sr, string_il{
             {"3C"},{},{},{}, // Foundations
-            {"3D"},{"3H"}, // Stock-waste
+            {"2D"},{"2S"}, // Stock-waste
             {}, // Reserve
-            {"2H","3S","AH"},{},{"AC"} // Tableau piles
+            {"2H","3S","AH"},{},{"AD"} // Tableau piles
     });
 
     vector<move> actual_moves = gs.get_legal_moves();
     vector<move> exp_moves = {
-            move(move::mtype::stock_k_plus, 4, 8, 1),
-            move(move::mtype::stock_k_plus, 4, 8, 2),
+            move(move::mtype::stock_k_plus, 4, 8, 0),
+            move(move::mtype::stock_k_plus, 4, 8, 1)
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+
+    boost::optional<move> actual_dom_move = gs.get_dominance_move();
+    boost::optional<move> exp_dom_move = boost::none;
+
+    ASSERT_EQ(exp_dom_move, actual_dom_move) << *actual_dom_move;
 }

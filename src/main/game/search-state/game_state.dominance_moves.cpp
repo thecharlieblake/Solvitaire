@@ -9,9 +9,10 @@
 typedef sol_rules::build_policy pol;
 typedef game_state::streamliner_options sos;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::spaces_policy s_pol;
 
 using std::max;
-
+using boost::optional;
 
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
     if (rules.foundations_only_comp_piles)
@@ -65,8 +66,13 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 }
 
 // Returns a dominance move if one is available
-boost::optional<move> game_state::get_dominance_move() const {
+optional<move> game_state::get_dominance_move() const {
 #ifndef NO_AUTO_FOUNDATIONS
+    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) {
+        optional<move> arm = auto_reserve_move();
+        if (arm) return arm;
+    }
+
     // If there are 2 decks or no foundations, return
     if (!rules.foundations_present || rules.two_decks)
         return boost::none;
@@ -104,6 +110,17 @@ boost::optional<move> game_state::get_dominance_move() const {
     }
 #endif
 
+    return boost::none;
+}
+
+optional<move> game_state::auto_reserve_move() const {
+    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE && !piles[reserve.front()].empty()) {
+        for (auto to : tableau_piles) {
+            if (piles[to].empty()) {
+                return move(move::mtype::dominance, reserve.front(), to);
+            }
+        }
+    }
     return boost::none;
 }
 

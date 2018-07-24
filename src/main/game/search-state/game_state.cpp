@@ -263,6 +263,16 @@ game_state::game_state(const sol_rules& s_rules,
         }
         pr++;
     }
+
+    // Sets foundations base appropriately
+    if (rules.foundations_present && rules.foundations_base == boost::none) {
+        for (auto f : foundations) {
+            if (!piles[f].empty()) {
+                foundations_base = piles[f].top_card().get_rank();
+                return;
+            }
+        }
+    }
 }
 
 // Generates a randomly ordered vector of cards
