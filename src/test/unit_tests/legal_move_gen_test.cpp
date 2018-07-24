@@ -12,6 +12,7 @@
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
+typedef sol_rules::built_group_type bgt;
 
 using std::vector;
 using std::ostream;
@@ -162,7 +163,7 @@ TEST(LegalMoveGen, SpacesPolNoBuild) {
 
 TEST(LegalMoveGen, MoveBuiltGroupTrue) {
     sol_rules sr;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.tableau_pile_count = 2;
 
     game_state gs(sr, string_il{
@@ -181,7 +182,7 @@ TEST(LegalMoveGen, MoveBuiltGroupTrue) {
 
 TEST(LegalMoveGen, MoveBuiltGroupFalse) {
     sol_rules sr;
-    sr.move_built_group = false;
+    sr.move_built_group = bgt::NO;
     sr.tableau_pile_count = 2;
 
     game_state gs(sr, string_il{

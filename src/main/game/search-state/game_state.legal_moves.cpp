@@ -22,6 +22,7 @@ typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
+typedef sol_rules::built_group_type bgt;
 
 ////////////////////////////////
 // MAIN LEGAL MOVE GEN CYCLE ///
@@ -64,18 +65,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             if (!piles[r].empty())
                 moves.emplace_back(move::mtype::regular, r, empty_cell);
 
-        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
             add_stock_to_cell_move(moves, empty_cell);
     }
 
-    // Foundation to tableau moves
+    // Foundation to tableau / empty cell moves
     if (rules.foundations_removable) {
         for (auto f : foundations) {
             if (piles[f].empty() || parent_move.to == f || dominance_blocks_foundation_move(f)) continue;
 
-            for (auto t : tableau_piles)
-                if (is_valid_tableau_move(f, t))
-                    moves.emplace_back(move::mtype::regular, f, t);
+            add_valid_tableau_moves(moves, f);
 
             if (empty_cell != 255)
                 moves.emplace_back(move::mtype::regular, f, empty_cell);
@@ -86,28 +85,32 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     for (auto r : reserve) {
         if (piles[r].empty()) continue;
 
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(r, t)) {
-                moves.emplace_back(move::mtype::regular, r, t);
-            }
-        }
+        add_valid_tableau_moves(moves, r);
     }
 
-    // Stock to tableau moves
-    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+    // Stock-waste to tableau moves
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
         add_stock_to_tableau_moves(moves);
 
-    if (rules.move_built_group)
-        add_built_group_moves(moves);
+    // Tableau built group moves
+    switch (rules.move_built_group) {
+        case sol_rules::built_group_type::YES:
+            add_built_group_moves(moves);
+            break;
+        case sol_rules::built_group_type::WHOLE_PILE:
+            add_whole_pile_moves(moves);
+            break;
+        case sol_rules::built_group_type::NO:
+            break;
+    }
 
     // Tableau to tableau moves
-    for (auto t_from : tableau_piles) {
-        if (piles[t_from].empty() || parent_move.to == t_from) continue;
+    // If only whole pile moves are available, doesn't make regular ones
+    if (rules.move_built_group != bgt::WHOLE_PILE) {
+        for (auto t_from : tableau_piles) {
+            if (piles[t_from].empty() || parent_move.to == t_from) continue;
 
-        for (auto t_to : tableau_piles) {
-            if (is_valid_tableau_move(t_from, t_to)) {
-                moves.emplace_back(move::mtype::regular, t_from, t_to);
-            }
+            add_valid_tableau_moves(moves, t_from);
         }
     }
 
@@ -120,17 +123,13 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     for (auto c : cells) {
         if (piles[c].empty() || parent_move.to == c) continue;
 
-        for (auto t : tableau_piles) {
-            if (is_valid_tableau_move(c, t)) {
-                moves.emplace_back(move::mtype::regular, c, t);
-            }
-        }
+        add_valid_tableau_moves(moves, c);
     }
 
     // Tableau / cells / reserve / stock-waste to hole / foundation moves
     if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
         // Stock
-        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !piles[stock].empty())
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
             add_stock_to_hole_foundation_moves(moves);
 
         list<pile::ref> from_piles = tableau_piles;
@@ -187,7 +186,8 @@ set<pair<int8_t, bool>> game_state::generate_k_plus_moves_to_check() const {
     set<pair<int8_t, bool>> stock_moves_to_check;
 
     // If the waste isn't empty, adds the move from the top of the current waste
-    if (piles[waste].size() != 0) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));
+    if (!piles[waste].empty()) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));
+    else if (piles[stock].empty()) return stock_moves_to_check;
 
     // Adds multiples of deal count (excluding last card)
     for (int8_t count = rules.stock_deal_count;
@@ -220,9 +220,14 @@ void game_state::add_stock_to_tableau_moves(std::vector<move>& moves) const {
     for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
         card from = stock_card_from_count(k_plus_mv.first);
 
-        for (auto t : tableau_piles)
-            if (is_valid_tableau_move(from, t))
+        // Obeys the auto-reserve restriction unless the reserve is empty
+        if (!piles[reserve.front()].empty() && tableau_space_and_auto_reserve()) return;
+
+        for (auto t : tableau_piles) {
+            if (is_valid_tableau_move(from, t)) {
                 moves.emplace_back(move::mtype::stock_k_plus, stock, t, k_plus_mv.first, false, k_plus_mv.second);
+            }
+        }
     }
 }
 
@@ -288,7 +293,7 @@ bool game_state::is_valid_tableau_move(const card rem_c,
 }
 
 bool game_state::is_next_tableau_card(card a, card b) const {
-    return is_next_legal_card(rules.build_pol, a, b);
+    return is_next_legal_card(rules.build_pol, a, b, rules.tableau_wraps);
 }
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
@@ -300,6 +305,8 @@ bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
 
 bool game_state::is_valid_foundations_move(const card rem_c,
                                            const pile::ref add_ref) const {
+    if (piles[add_ref].size() == rules.max_rank) return false;
+
     // Checks same suit policy
     uint8_t suit_idx = (add_ref - foundations.front()) % uint8_t(4);
     if (rem_c.get_suit() != suit_idx)
@@ -307,9 +314,9 @@ bool game_state::is_valid_foundations_move(const card rem_c,
 
     // Checks rank
     if (piles[add_ref].empty())
-        return rem_c.get_rank() == 1;
+        return rem_c.get_rank() == foundations_base;
     else
-        return rem_c.get_rank() == piles[add_ref].top_card().get_rank() + 1;
+        return rem_c.get_rank() == (piles[add_ref].top_card().get_rank() % rules.max_rank) + 1;
 }
 
 bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {
@@ -331,6 +338,16 @@ bool game_state::is_valid_hole_move(const card c) const {
 ////////////////////////////////////
 // BUILT-GROUP MOVE GEN FUNCTIONS //
 ////////////////////////////////////
+
+void game_state::add_valid_tableau_moves(std::vector<move>& moves, pile::ref from) const {
+    if (tableau_space_and_auto_reserve()) return;
+
+    for (auto to : tableau_piles) {
+        if (is_valid_tableau_move(from, to)) {
+            moves.emplace_back(move::mtype::regular, from, to);
+        }
+    }
+}
 
 void game_state::add_built_group_moves(vector<move>& moves) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
@@ -368,6 +385,37 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
     }
 }
 
+void game_state::add_whole_pile_moves(vector<move>& moves) const {
+    assert(rules.built_group_pol != pol::NO_BUILD);
+    if (tableau_space_and_auto_reserve()) return;
+
+    // Cycles through each pile to see if it contains a whole-pile built group
+    for (auto rem_ref : tableau_piles) {
+        auto built_group_height = get_built_group_height(rem_ref);
+
+        if (built_group_height == piles[rem_ref].size()) {
+            add_whole_pile_moves(moves, rem_ref, built_group_height);
+        }
+    }
+}
+
+void game_state::add_whole_pile_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height) const {
+    // We have found a built group. Cycles through each pile to see if it can be added
+    for (auto add_ref : tableau_piles) {
+        if (add_ref == rem_ref) continue;
+
+        card bg_high = piles[rem_ref][built_group_height - 1];
+
+        if (piles[add_ref].empty()) {
+            if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)) {
+                moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+            }
+        } else if (is_next_built_group_card(piles[add_ref].top_card(),  bg_high)) {
+            moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
+        }
+    }
+}
+
 // Finds the size of the built group at the top of a pile
 pile::size_type game_state::get_built_group_height(pile::ref ref) const {
     pile::size_type i = 1;
@@ -379,7 +427,7 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 }
 
 bool game_state::is_next_built_group_card(card a, card b) const {
-    return is_next_legal_card(rules.built_group_pol, a, b);
+    return is_next_legal_card(rules.built_group_pol, a, b, rules.tableau_wraps);
 }
 
 // Loops through each possible built group move to an empty pile and adds it to the list
@@ -448,7 +496,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with left neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second + 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card, false))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -462,7 +510,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with right neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second - 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card, false))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -491,10 +539,17 @@ void game_state::add_accordion_moves(vector<move>& moves) const {
     }
 }
 
+// If auto-reserve is enabled and there is a space, returns
+bool game_state::tableau_space_and_auto_reserve() const {
+    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE)
+        for (auto to : tableau_piles)
+            if (piles[to].empty()) return true;
+    return false;
+}
 
 ///////////////////////
 
-bool game_state::is_next_legal_card(pol p, card a, card b) const {
+bool game_state::is_next_legal_card(pol p, card a, card b, bool wraps) const {
     // Checks build pol violations
     switch(p) {
         case sol_rules::build_policy::SAME_SUIT:
@@ -506,7 +561,11 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
         default:;
     }
     // Checks rank
-    return b.get_rank() + 1 == a.get_rank();
+    if (wraps) {
+        return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
+    } else {
+        return b.get_rank() + 1 == a.get_rank();
+    }
 }
 
 bool game_state::is_next_legal_card(vector<acc_pol> vp, card a, card b) const {

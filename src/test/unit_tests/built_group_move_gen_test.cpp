@@ -10,6 +10,7 @@
 
 typedef sol_rules::build_policy pol;
 typedef sol_rules::spaces_policy s_pol;
+typedef sol_rules::built_group_type bgt;
 
 using std::vector;
 using std::ostream;
@@ -19,7 +20,7 @@ TEST(BuiltGroupMoveGen, SameSuitEmpty) {
     sol_rules sr;
     sr.tableau_pile_count = 5;
     sr.built_group_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -52,7 +53,7 @@ TEST(BuiltGroupMoveGen, RedBlackEmpty) {
     sol_rules sr;
     sr.tableau_pile_count = 5;
     sr.built_group_pol = pol::RED_BLACK;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -88,7 +89,7 @@ TEST(BuiltGroupMoveGen, AnySuitEmpty) {
     sol_rules sr;
     sr.tableau_pile_count = 5;
     sr.built_group_pol = pol::ANY_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -131,7 +132,7 @@ TEST(BuiltGroupMoveGen, CantMove) {
     sol_rules sr;
     sr.tableau_pile_count = 5;
     sr.built_group_pol = pol::ANY_SUIT;
-    sr.move_built_group = false;
+    sr.move_built_group = bgt::NO;
 
     test_helper::expected_moves_test(
             sr,
@@ -159,7 +160,7 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
     sr.tableau_pile_count = 6;
     sr.build_pol = pol::SAME_SUIT;
     sr.built_group_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -194,7 +195,7 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
     sr.tableau_pile_count = 6;
     sr.build_pol = pol::RED_BLACK;
     sr.built_group_pol = pol::RED_BLACK;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -229,7 +230,7 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
     sr.tableau_pile_count = 6;
     sr.build_pol = pol::ANY_SUIT;
     sr.built_group_pol = pol::ANY_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
 
     test_helper::expected_moves_test(
             sr,
@@ -276,7 +277,7 @@ TEST(BuiltGroupMoveGen, KingsOnly) {
     sr.tableau_pile_count = 5;
     sr.build_pol = pol::SAME_SUIT;
     sr.built_group_pol = pol::RED_BLACK;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.spaces_pol = s_pol::KINGS;
 
     test_helper::expected_moves_test(
@@ -301,7 +302,7 @@ TEST(BuiltGroupMoveGen, NoBuild) {
     sr.tableau_pile_count = 5;
     sr.build_pol = pol::SAME_SUIT;
     sr.built_group_pol = pol::RED_BLACK;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.spaces_pol = s_pol::NO_BUILD;
 
     test_helper::expected_moves_test(

@@ -11,6 +11,7 @@
 #include "../main/game/card.h"
 #include "../main/game/pile.h"
 #include "../main/game/move.h"
+#include "../main/game/search-state/game_state.h"
 
 class test_helper {
 public:
@@ -30,6 +31,7 @@ public:
             , card
             );
     static bool moves_eq(std::vector<move>&, std::vector<move>&);
+    static uint8_t cards_in_founds(game_state&);
 };
 
 std::ostream& operator <<(std::ostream&, const move&);

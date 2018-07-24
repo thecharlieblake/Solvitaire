@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <random>
 
 #include <boost/functional/hash.hpp>
 #include <boost/optional/optional.hpp>
@@ -62,7 +63,7 @@ private:
     /* Constructors (& helper function) */
 
     explicit game_state(const sol_rules&, streamliner_options);
-    static std::vector<card> gen_shuffled_deck(int, card::rank_t, bool);
+    static std::vector<card> gen_shuffled_deck(card::rank_t, bool, std::mt19937);
     template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
 
     /* Pile order logic */
@@ -110,30 +111,37 @@ private:
     bool is_valid_hole_move(pile::ref) const;
     bool is_valid_hole_move(card) const;
 
+    void add_valid_tableau_moves(std::vector<move>&, pile::ref) const;
     void add_built_group_moves(std::vector<move>&) const;
     void add_built_group_moves(std::vector<move>&, pile::ref, pile::size_type) const;
+    void add_whole_pile_moves(std::vector<move>&) const;
+    void add_whole_pile_moves(std::vector<move>&, pile::ref, pile::size_type) const;
     pile::size_type get_built_group_height(pile::ref) const;
     bool is_next_built_group_card(card, card) const;
     void add_empty_built_group_moves(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_kings_only_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_sequence_moves(std::vector<move>&) const;
+    bool tableau_space_and_auto_reserve() const;
 
-    bool is_next_legal_card(sol_rules::build_policy, card, card) const;
+    bool is_next_legal_card(sol_rules::build_policy, card, card, bool) const;
     bool is_next_legal_card(std::vector<sol_rules::accordion_policy>, card, card) const;
     void turn_face_down_cards(std::vector<move>&) const;
 
     /* Auto-foundation moves */
 
+    boost::optional<move> auto_reserve_move() const;
     bool is_valid_auto_foundation_move(pile::ref) const;
     bool is_ordered_pile(pile::ref) const;
     bool dominance_blocks_foundation_move(pile::ref);
     void update_auto_foundation_moves(pile::ref);
+    card::rank_t foundation_base_convert(card::rank_t) const;
 
     /* Game rules */
 
     const sol_rules rules;
     streamliner_options stream_opts;
+    card::rank_t foundations_base;
 
     /* Pile references */
 

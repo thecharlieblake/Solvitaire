@@ -13,6 +13,7 @@ using namespace rapidjson;
 typedef sol_rules::build_policy pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
+typedef sol_rules::foundations_init_type fit;
 
 void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     // There are two stages to reading in the supplied deal. It is both put
@@ -65,7 +66,7 @@ void deal_parser::parse(game_state &gs, const rapidjson::Document& doc) {
     if (gs.rules.foundations_present) {
         bool supplied_foundations = parse_foundations(gs, doc);
 
-        if (!supplied_foundations && gs.rules.foundations_init_card) {
+        if (!supplied_foundations && gs.rules.foundations_init_cards == fit::ALL) {
             fill_foundations(gs);
         }
     }
@@ -105,9 +106,7 @@ string deal_parser::deal_schema_json() {
     "tableau piles": {
       "type": "array", "items": {"$ref": "#/definitions/cardarray"}
     },
-    "foundations": {
-      "type": "array", "items": {"$ref": "#/definitions/cardarray"}
-    },
+    "foundations": {"$ref": "#/definitions/cardarray"},
     "sequences": {
       "type": "array", "items": {"$ref": "#/definitions/cardarraywithempty"}
     },
@@ -208,10 +207,6 @@ void deal_parser::parse_reserve(game_state &gs, const Document& doc) {
 
     // We treat a regular reserve like multiple single-card piles,
     // but a stacked reserve as a single multiple-card pile
-    if (json_reserve_piles.Size() != gs.rules.reserve_size) {
-        json_helper::json_parse_err("Incorrect reserve size");
-    }
-
     for (pile::ref i = 0; i < json_card_arr.Size(); i++) {
         assert(json_card_arr[i].IsString());
         pile::ref pr = gs.original_reserve[0];
@@ -269,17 +264,16 @@ bool deal_parser::parse_foundations(game_state &gs, const rapidjson::Document& d
     const Value& json_foundations = doc["foundations"];
     assert(json_foundations.IsArray());
 
-    if (json_foundations.Size() != 4 * (gs.rules.two_decks ? 2 : 1) ) {
-        json_helper::json_parse_err("Incorrect number of foundations");
+    for (auto j = begin(json_foundations.GetArray()); j != end(json_foundations.GetArray()); j++) {
+        assert(j->IsString());
+        card c = card(j->GetString());
+        gs.place_card(gs.foundations[c.get_suit()], c);
     }
 
-    for (auto j = begin(json_foundations.GetArray()); j != end(json_foundations.GetArray()); j++) {
-
-        for (auto& json_card : j->GetArray()) {
-            assert(json_card.IsString());
-            card c = card(json_card.GetString());
-            gs.place_card(gs.foundations[c.get_suit()], c);
-        }
+    // If the game uses a random base for foundations, assume that the first card in the first foundation is that base
+    if (!gs.rules.foundations_base) {
+        auto& first_found = gs.piles[gs.foundations[0]];
+        gs.foundations_base = first_found[first_found.size() - 1].get_rank();
     }
 
     return true;

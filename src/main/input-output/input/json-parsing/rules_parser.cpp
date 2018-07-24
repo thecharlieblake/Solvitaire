@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "../../../../../lib/rapidjson/error/en.h"
+
 #include "rules_parser.h"
 #include "json_helper.h"
 #include "../sol_preset_types.h"
@@ -24,6 +26,8 @@ typedef sol_rules::accordion_policy acc_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::face_up_policy fu;
 typedef sol_rules::direction dir;
+typedef sol_rules::built_group_type bgt;
+typedef sol_rules::foundations_init_type fit;
 
 const sol_rules rules_parser::from_file(const string rules_file) {
     sol_rules sr = get_default();
@@ -115,6 +119,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.spaces_pol = s_pol::NO_BUILD;
                     } else if (sp_str == "kings") {
                         sr.spaces_pol = s_pol::KINGS;
+                    } else if (sp_str == "auto-reserve-then-waste") {
+                        sr.spaces_pol = s_pol::AUTO_RESERVE_THEN_WASTE;
                     } else {
                         json_helper::json_parse_err("[tableau piles][spaces policy] is invalid");
                     }
@@ -125,10 +131,20 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
             }
 
             if (d["tableau piles"].HasMember("move built group")) {
-                if (d["tableau piles"]["move built group"].IsBool()) {
-                    sr.move_built_group = d["tableau piles"]["move built group"].GetBool();
+                if (d["tableau piles"]["move built group"].IsString()) {
+                    string mbg_str = d["tableau piles"]["move built group"].GetString();
+
+                    if (mbg_str == "yes") {
+                        sr.move_built_group = bgt::YES;
+                    } else if (mbg_str == "no") {
+                        sr.move_built_group = bgt::NO;
+                    } else if (mbg_str == "whole-pile") {
+                        sr.move_built_group = bgt::WHOLE_PILE;
+                    } else {
+                        json_helper::json_parse_err("[tableau piles][move built group] is invalid");
+                    }
                 } else {
-                    json_helper::json_parse_err("[tableau piles][move built group] must be a boolean");
+                    json_helper::json_parse_err("[tableau piles][move built group] must be a string");
                 }
             }
 
@@ -183,6 +199,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
+            if (d["tableau piles"].HasMember("wraps")) {
+                if (d["tableau piles"]["wraps"].IsBool()) {
+                    sr.tableau_wraps = d["tableau piles"]["wraps"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[tableau piles][wraps] must be a boolean");
+                }
+            }
+
         } else {
             json_helper::json_parse_err("[tableau piles] must be an object");
         }
@@ -198,11 +222,37 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
-            if (d["foundations"].HasMember("initial card")) {
-                if (d["foundations"]["initial card"].IsBool()) {
-                    sr.foundations_init_card = d["foundations"]["initial card"].GetBool();
+            if (d["foundations"].HasMember("initial cards")) {
+                if (d["foundations"]["initial cards"].IsString()) {
+                    string ic_str = d["foundations"]["initial cards"].GetString();
+
+                    if (ic_str == "none") {
+                        sr.foundations_init_cards = fit::NONE;
+                    } else if (ic_str == "one") {
+                        sr.foundations_init_cards = fit::ONE;
+                    } else if (ic_str == "all") {
+                        sr.foundations_init_cards = fit::ALL;
+                    } else {
+                        string err = "[foundations][initial cards] is invalid: " + ic_str;
+                        json_helper::json_parse_err(err);
+                    }
                 } else {
-                    json_helper::json_parse_err("[foundations][initial card] must be a boolean");
+                    json_helper::json_parse_err("[foundations][initial cards] must be a string");
+                }
+            }
+
+            if (d["foundations"].HasMember("base card")) {
+                if (d["foundations"]["base card"].IsString()) {
+                    string base_card_str = d["foundations"]["base card"].GetString();
+
+                    if (base_card_str == "random") {
+                        sr.foundations_base = boost::none;
+                    } else {
+                        base_card_str += "H";
+                        sr.foundations_base = card(base_card_str.c_str()).get_rank();
+                    }
+                } else {
+                    json_helper::json_parse_err("[foundations][base card] must be a string");
                 }
             }
 
@@ -446,7 +496,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                                     "must be true");
     }
 
-    rules_schema_json(); // Throws an error if it fails
     Document vd;
     vd.Parse(rules_schema_json().c_str());
     assert(!vd.HasParseError());
@@ -485,14 +534,23 @@ string rules_parser::rules_schema_json() {
           "enum": [
             "any",
             "no-build",
-            "kings"
+            "kings",
+            "auto-reserve-then-waste"
           ]
         },
         "diagonal deal": {
           "type": "boolean"
         },
-        "move built group": {
+        "wraps": {
           "type": "boolean"
+        },
+        "move built group": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "whole-pile"
+          ]
         },
         "move built group policy": {
           "type": "string",
@@ -520,8 +578,20 @@ string rules_parser::rules_schema_json() {
         "present": {
           "type": "boolean"
         },
-        "initial card": {
-          "type": "boolean"
+        "initial cards": {
+          "type": "string",
+          "enum": [
+            "none",
+            "one",
+            "all"
+          ]
+        },
+        "base card": {
+          "type": "string",
+          "oneOf":[
+          	{"pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K))$"},
+          	{"enum": ["random"]}
+          ]
         },
         "removable": {
           "type": "boolean"

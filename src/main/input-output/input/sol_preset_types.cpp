@@ -25,13 +25,15 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
-    "move built group": false,
+    "wraps": false,
+    "move built group": "no",
     "move built group policy": "same-as-build",
     "face up cards": "all"
   },
   "foundations": {
     "present": true,
-    "initial card": false,
+    "initial cards": "none",
+    "base card": "A",
     "removable": false,
     "only complete pile moves": false
   },
@@ -200,7 +202,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "foundations": {
-     "initial card": true
+     "initial cards": "all"
   },
   "stock": {
      "size": 36
@@ -219,7 +221,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "foundations": {
-     "initial card": true
+     "initial cards": "all"
   },
   "stock": {
      "size": 3
@@ -274,13 +276,21 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 4,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve-then-waste",
+    "wraps": true
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
   },
   "stock": {
-    "size": 34
+    "size": 34,
+    "deal count": 3,
+    "redeal": true
   },
   "reserve": {
-    "size": 14,
+    "size": 13,
     "stacked": true
   }
 }
@@ -295,10 +305,18 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve-then-waste",
+    "wraps": true
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
   },
   "stock": {
-    "size": 1
+    "size": 6,
+    "deal count": 3,
+    "redeal": true
   },
   "reserve": {
     "size": 2,
@@ -352,10 +370,10 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 12,
     "build policy": "same-suit",
-    "move built group": true
+    "move built group": "yes"
   },
   "foundations": {
-    "initial card": true
+    "initial cards": "all"
   }
 }
 )"
@@ -369,10 +387,10 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3,
     "build policy": "same-suit",
-    "move built group": true
+    "move built group": "yes"
   },
   "foundations": {
-    "initial card": true
+    "initial cards": "all"
   },
   "max rank": 6
 }
@@ -387,7 +405,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 10,
     "build policy": "any-suit",
-    "move built group": true,
+    "move built group": "yes",
     "move built group policy": "same-suit"
   },
   "foundations": {
@@ -410,7 +428,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 4,
     "build policy": "any-suit",
-    "move built group": true,
+    "move built group": "yes",
     "move built group policy": "same-suit"
   },
   "foundations": {
@@ -435,7 +453,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 4,
     "build policy": "red-black",
-    "move built group": true,
+    "move built group": "yes",
     "diagonal deal": true,
     "face up cards": "top"
   },
@@ -465,7 +483,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "foundations": {
     "removable": true,
-    "initial card": true
+    "initial cards": "all"
   }
 }
 )"
@@ -481,7 +499,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 7,
     "build policy": "red-black",
     "spaces policy": "kings",
-    "move built group": true,
+    "move built group": "yes",
     "diagonal deal": true,
     "face up cards": "top"
   },
@@ -507,7 +525,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 7,
     "build policy": "red-black",
     "spaces policy": "kings",
-    "move built group": true,
+    "move built group": "yes",
     "diagonal deal": true,
     "face up cards": "top"
   },
@@ -567,7 +585,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "foundations": {
-    "initial card": true
+    "initial cards": "all"
   }
 }
 )"
@@ -583,7 +601,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black"
   },
   "foundations": {
-    "initial card": true,
+    "initial cards": "all",
     "removable": true
   }
 }
@@ -600,7 +618,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black"
   },
   "foundations": {
-    "initial card": true,
+    "initial cards": "all",
     "removable": true
   },
   "cells": 1
@@ -618,7 +636,7 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black"
   },
   "foundations": {
-    "initial card": true,
+    "initial cards": "all",
     "removable": true
   },
   "cells": 2
@@ -796,12 +814,12 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "same-suit",
-    "move built group": true,
+    "move built group": "yes",
     "spaces policy": "kings"
   },
   "cells": 7,
   "foundations": {
-    "initial card": true
+    "initial cards": "all"
   }
 }
 )"
@@ -815,7 +833,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 10,
     "build policy": "same-suit",
-    "move built group": true,
+    "move built group": "yes",
     "spaces policy": "kings"
   },
   "cells": 4
@@ -831,10 +849,10 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 4,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": "yes"
   },
   "foundations": {
-    "initial card": true
+    "initial cards": "all"
   },
   "reserve": {
     "size": 12
@@ -854,7 +872,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 3,
     "build policy": "any-suit",
-    "move built group": true
+    "move built group": "yes"
   },
   "reserve": {
     "size": 13,
@@ -909,10 +927,10 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 6,
     "build policy": "red-black",
-    "move built group": true
+    "move built group": "yes"
   },
   "foundations": {
-    "initial card": true,
+    "initial cards": "all",
     "removable": true
   },
   "stock": {
@@ -930,7 +948,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "red-black",
-    "move built group": true,
+    "move built group": "yes",
     "face up cards": "top"
   },
   "foundations": {
@@ -951,7 +969,7 @@ map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "build policy": "red-black",
-    "move built group": true,
+    "move built group": "yes",
     "spaces policy": "kings",
     "diagonal deal": true
   },
@@ -993,7 +1011,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "any-suit",
-    "move built group": true,
+    "move built group": "yes",
     "move built group policy": "same-suit",
     "diagonal deal": true
   },
@@ -1016,7 +1034,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 7,
     "build policy": "any-suit",
-    "move built group": true,
+    "move built group": "yes",
     "move built group policy": "same-suit"
   },
   "foundations": {
@@ -1038,7 +1056,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 10,
     "diagonal deal": true,
-    "move built group": true,
+    "move built group": "yes",
     "move built group policy": "same-suit"
   },
   "foundations": {

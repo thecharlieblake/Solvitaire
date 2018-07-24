@@ -9,6 +9,8 @@ typedef sol_rules::spaces_policy s_pol;
 typedef sol_rules::stock_deal_type sdt;
 typedef sol_rules::direction dir;
 typedef sol_rules::face_up_policy fu;
+typedef sol_rules::built_group_type bgt;
+typedef sol_rules::foundations_init_type fit;
 
 // Note that the 'default' sol rules are set up by parsing the default json
 // rules description. This initialisation is really just for testing purposes.
@@ -16,13 +18,15 @@ sol_rules::sol_rules() :
         tableau_pile_count(0),
         build_pol(pol::ANY_SUIT),
         spaces_pol(s_pol::ANY),
-        move_built_group(false),
+        move_built_group(bgt::NO),
         built_group_pol(pol::ANY_SUIT),
+        tableau_wraps(false),
         two_decks(false),
         max_rank(13),
         hole(false),
         foundations_present(false),
-        foundations_init_card(false),
+        foundations_init_cards(fit::NONE),
+        foundations_base(1),
         foundations_only_comp_piles(false),
         diagonal_deal(false),
         cells(0),

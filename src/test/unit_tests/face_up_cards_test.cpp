@@ -12,6 +12,7 @@
 typedef sol_rules::build_policy pol;
 typedef sol_rules::face_up_policy fu;
 typedef move::mtype mt;
+typedef sol_rules::built_group_type bgt;
 
 using std::vector;
 using std::ostream;
@@ -27,7 +28,7 @@ TEST(FaceUpCards, CapsFaceUpIfFaceUpNotAll) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -48,7 +49,7 @@ TEST(FaceUpCards, IgnoreCapsIfFaceUpAll) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::ALL;
 
     string_il piles = {
@@ -69,7 +70,7 @@ TEST(FaceUpCards, MoveTurnsFaceUp) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -101,7 +102,7 @@ TEST(FaceUpCards, BuiltGroupMoveTurnsFaceUp) {
     sr.tableau_pile_count = 2;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -133,7 +134,7 @@ TEST(FaceUpCards, MoveAlreadyFaceUpNoChange) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -165,7 +166,7 @@ TEST(FaceUpCards, FaceDownNoBuiltGroup) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     test_helper::expected_moves_test(
@@ -188,7 +189,7 @@ TEST(FaceUpCards, FaceUpBuiltGroup) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     test_helper::expected_moves_test(
@@ -215,7 +216,7 @@ TEST(FaceUpCards, FaceUpBuiltGroup2Not3) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     test_helper::expected_moves_test(
@@ -241,7 +242,7 @@ TEST(FaceUpCards, UndoTurnsBackFaceDown) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -265,7 +266,7 @@ TEST(FaceUpCards, UndoBuiltGroupTurnsBackFaceDown) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::SAME_SUIT;
     sr.build_pol = pol::SAME_SUIT;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
@@ -290,7 +291,7 @@ TEST(FaceUpCards, CacheEncodesFaceDown) {
     sr.tableau_pile_count = 3;
     sr.built_group_pol = pol::RED_BLACK;
     sr.build_pol = pol::RED_BLACK;
-    sr.move_built_group = true;
+    sr.move_built_group = bgt::YES;
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
