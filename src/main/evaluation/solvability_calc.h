@@ -34,10 +34,8 @@ private:
     };
 
     // Printing methods
-    void print_header(long) const;
     static void print_general_info(const seed_results&);
     static void print_seed_info(seed_result);
-    static void print_null_seed_info();
     static void print_seeds_in_prog(std::set<int>&);
 
     // Solving methods

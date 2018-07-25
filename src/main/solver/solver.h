@@ -12,6 +12,7 @@
 
 #include "../game/global_cache.h"
 #include "../game/sol_rules.h"
+#include "../input-output/input/command_line_helper.h"
 
 class solver {
 public:
@@ -45,6 +46,9 @@ public:
     result run(boost::optional<std::chrono::milliseconds> = boost::none);
 
     void print_solution() const;
+    static void print_header(long, command_line_helper::streamliner_opt);
+    static void print_result_csv(solver::result);
+    static void print_null_seed_info();
     const std::vector<node> get_frontier() const;
 
 private:
