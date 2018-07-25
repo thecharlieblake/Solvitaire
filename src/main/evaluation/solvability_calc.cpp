@@ -4,6 +4,8 @@
 #include <future>
 #include <iomanip>
 #include <iostream>
+#include <vector>
+#include <omp.h>
 
 #include "solvability_calc.h"
 #include "../solver/solver.h"
@@ -136,71 +138,60 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
     millisec timeout(timeout_);
     print_header(timeout.count(), stream_opt);
 
-    // Spin off 'cores' threads. Each one runs solve_seed and then print_row repeatedly, taking the seed from am
-    // atomic int
-    vector<future<void>> futures;
-
     sol_rules sr = rules;
     uint64_t cc = cache_capacity;
 
+#pragma omp parallel for
     for (uint i = 0; i < cores; i++) {
-        futures.push_back(async(
-                launch::async,
-                [&current_seed, &seed_res, &seeds_in_progress, &results_mutex, seed_count, timeout, sr, cc, i,
-                        resume_seeds, stream_opt](){
 
-                    int my_seed = resume_seeds.size() > i ? resume_seeds[i] : current_seed++;
+        int my_seed = resume_seeds.size() > i ? resume_seeds[i] : current_seed++;
 
-                    while (my_seed < seed_count) {
-                        results_mutex.lock();
-                        seeds_in_progress.insert(my_seed);
-                        results_mutex.unlock();
+        while (my_seed < seed_count) {
+            results_mutex.lock();
+            seeds_in_progress.insert(my_seed);
+            results_mutex.unlock();
 
-                        optional<seed_result> stream_res, no_stream_res, final_res;
+            optional<seed_result> stream_res, no_stream_res, final_res;
 
-                        if (stream_opt == cmd_sos::SMART) {
-                            stream_res = solve_seed(my_seed, (timeout/10), sr, cc, sos::BOTH);
+            if (stream_opt == cmd_sos::SMART) {
+                stream_res = solve_seed(my_seed, (timeout / 10), sr, cc, sos::BOTH);
 
-                            switch (stream_res->second.sol_type) {
-                                case solver::result::type::UNSOLVABLE:
-                                case solver::result::type::TIMEOUT:
-                                    no_stream_res = solve_seed(my_seed, timeout, sr, cc, sos::NONE);
-                                    final_res = *no_stream_res;
-                                    break;
-                                default:
-                                    final_res = *stream_res;
-                                    break;
-                            }
-                        } else {
-                            no_stream_res = solve_seed(my_seed, timeout, sr, cc,
-                                    command_line_helper::convert_streamliners(stream_opt));
-                            final_res = *no_stream_res;
-                        }
-
-                        results_mutex.lock();
-
-                        seeds_in_progress.erase(my_seed);
-                        seed_res.add_result(final_res->second.sol_type);
-
-                        print_general_info(seed_res);
-                        if (stream_opt == cmd_sos::SMART) {
-                            print_seed_info(*stream_res);
-                            if (no_stream_res) print_seed_info(*no_stream_res);
-                            else print_null_seed_info();
-                        } else {
-                            print_seed_info(*no_stream_res);
-                        }
-                        print_seeds_in_prog(seeds_in_progress);
-
-                        results_mutex.unlock();
-
-                        my_seed = current_seed++;
-                    }
+                switch (stream_res->second.sol_type) {
+                    case solver::result::type::UNSOLVABLE:
+                    case solver::result::type::TIMEOUT:
+                        no_stream_res = solve_seed(my_seed, timeout, sr, cc, sos::NONE);
+                        final_res = *no_stream_res;
+                        break;
+                    default:
+                        final_res = *stream_res;
+                        break;
                 }
-        ));
-    }
+            } else {
+                no_stream_res = solve_seed(my_seed, timeout, sr, cc,
+                                           command_line_helper::convert_streamliners(stream_opt));
+                final_res = *no_stream_res;
+            }
 
-    for (auto& f : futures) f.wait();
+            results_mutex.lock();
+
+            seeds_in_progress.erase(my_seed);
+            seed_res.add_result(final_res->second.sol_type);
+
+            print_general_info(seed_res);
+            if (stream_opt == cmd_sos::SMART) {
+                print_seed_info(*stream_res);
+                if (no_stream_res) print_seed_info(*no_stream_res);
+                else print_null_seed_info();
+            } else {
+                print_seed_info(*no_stream_res);
+            }
+            print_seeds_in_prog(seeds_in_progress);
+
+            results_mutex.unlock();
+
+            my_seed = current_seed++;
+        }
+    }
 }
 
 solvability_calc::seed_result solvability_calc::solve_seed(int seed, millisec timeout, const sol_rules& rules,
