@@ -14,6 +14,7 @@ using boost::optional;
 
 typedef command_line_helper::streamliner_opt cmd_sos;
 typedef game_state::streamliner_options sos;
+typedef std::chrono::milliseconds millisec;
 
 ///////////////////
 // SETUP METHODS //
@@ -82,33 +83,22 @@ void solvability_calc::print_general_info(const seed_results& seed_res) {
          << ", "  << seed_res.mem_limit;
 }
 
-void solvability_calc::print_seed_info(sol_result res) {
-    cout << ", "  << res.seed;
-    switch (res.sol_type) {
-        case sol_result::type::TIMEOUT:
-            cout << ", timed-out";
-            break;
-        case sol_result::type::SOLVED:
-            cout << ", solved";
-            break;
-        case sol_result::type::UNSOLVABLE:
-            cout << ", unsolvable";
-            break;
-        case sol_result::type::MEM_LIMIT:
-            cout << ", mem-limit";
-            break;
-    }
-    cout << ", " << res.time.count();
+void solvability_calc::print_seed_info(seed_result seed_res) {
+    int seed = seed_res.first;
+    auto& res = seed_res.second;
 
-    cout << ", " << res.sol_info.states_searched
-         << ", " << res.sol_info.unique_states_searched
-         << ", " << res.sol_info.backtracks
-         << ", " << res.sol_info.dominance_moves
-         << ", " << res.sol_info.states_removed_from_cache
-         << ", " << res.sol_info.cache_size
-         << ", " << res.sol_info.cache_bucket_count
-         << ", " << res.sol_info.max_depth
-         << ", " << res.sol_info.depth;
+    cout << ", " << seed
+         << ", " << res.sol_type
+         << ", " << res.time.count()
+         << ", " << res.states_searched
+         << ", " << res.unique_states_searched
+         << ", " << res.backtracks
+         << ", " << res.dominance_moves
+         << ", " << res.states_removed_from_cache
+         << ", " << res.cache_size
+         << ", " << res.cache_bucket_count
+         << ", " << res.max_depth
+         << ", " << res.depth;
 }
 
 void solvability_calc::print_null_seed_info() {
@@ -166,15 +156,14 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
                         seeds_in_progress.insert(my_seed);
                         results_mutex.unlock();
 
-                        optional<sol_result> stream_res, no_stream_res;
-                        sol_result final_res;
+                        optional<seed_result> stream_res, no_stream_res, final_res;
 
                         if (stream_opt == cmd_sos::SMART) {
                             stream_res = solve_seed(my_seed, (timeout/10), sr, cc, sos::BOTH);
 
-                            switch (stream_res->sol_type) {
-                                case sol_result::type::UNSOLVABLE:
-                                case sol_result::type::TIMEOUT:
+                            switch (stream_res->second.sol_type) {
+                                case solver::result::type::UNSOLVABLE:
+                                case solver::result::type::TIMEOUT:
                                     no_stream_res = solve_seed(my_seed, timeout, sr, cc, sos::NONE);
                                     final_res = *no_stream_res;
                                     break;
@@ -191,7 +180,7 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
                         results_mutex.lock();
 
                         seeds_in_progress.erase(my_seed);
-                        seed_res.add_result(final_res.sol_type);
+                        seed_res.add_result(final_res->second.sol_type);
 
                         print_general_info(seed_res);
                         if (stream_opt == cmd_sos::SMART) {
@@ -214,66 +203,13 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
     for (auto& f : futures) f.wait();
 }
 
-solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec timeout, const sol_rules& rules,
+solvability_calc::seed_result solvability_calc::solve_seed(int seed, millisec timeout, const sol_rules& rules,
                                                           uint64_t cache_capacity,
                                                           game_state::streamliner_options stream_opt) {
     game_state gs(rules, seed, stream_opt);
     solver sol(gs, cache_capacity);
-    atomic<bool> terminate_solver(false);
 
-    sol_result res = sol_result();
-    res.seed = seed;
-
-    future<tuple<bool, solver::solution_info>> future = async(
-            launch::async,
-            [&sol, &terminate_solver](){
-                bool solved = sol.run(terminate_solver) == solver::sol_state::solved;
-                return make_tuple(solved, sol.get_solution_info());
-            }
-    );
-
-    future_status status;
-    do {
-        auto start = chrono::steady_clock::now();
-        status = future.wait_for(timeout);
-
-        if (status == future_status::timeout) {
-            terminate_solver = true;
-        } else if (status == future_status::ready) {
-            bool exception = false;
-            tuple<bool, solver::solution_info> result;
-
-            try {
-                result = future.get();
-            } catch(runtime_error& e) {
-                exception = true;
-            }
-
-            auto end = chrono::steady_clock::now();
-            millisec elapsed_millis =
-                    chrono::duration_cast<chrono::milliseconds>(end - start);
-
-            if (exception) {
-                res.sol_type = sol_result::type::MEM_LIMIT;
-                res.time = elapsed_millis;
-                res.sol_info = get<1>(result);
-            } else if (terminate_solver) {
-                res.sol_type = sol_result::type::TIMEOUT;
-                res.time = timeout;
-                res.sol_info = get<1>(result);
-            } else {
-                res.time = elapsed_millis;
-                if (get<0>(result)) {
-                    res.sol_type = sol_result::type::SOLVED;
-                } else {
-                    res.sol_type = sol_result::type::UNSOLVABLE;
-                }
-                res.sol_info = get<1>(result);
-            }
-        }
-    } while (status != future_status::ready);
-
-    return res;
+    return seed_result(seed, sol.run(optional<std::chrono::milliseconds>(timeout)));
 }
 
 
@@ -284,18 +220,18 @@ solvability_calc::sol_result solvability_calc::solve_seed(int seed, millisec tim
 solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), timed_out(v[2]), mem_limit(0) {
 }
 
-void solvability_calc::seed_results::add_result(sol_result::type t) {
+void solvability_calc::seed_results::add_result(solver::result::type t) {
     switch (t) {
-        case sol_result::type::TIMEOUT:
+        case solver::result::type::TIMEOUT:
             timed_out++;
             break;
-        case sol_result::type::SOLVED:
+        case solver::result::type::SOLVED:
             solvable++;
             break;
-        case sol_result::type::UNSOLVABLE:
+        case solver::result::type::UNSOLVABLE:
             unsolvable++;
             break;
-        case sol_result::type ::MEM_LIMIT:
+        case solver::result::type ::MEM_LIMIT:
             mem_limit++;
             break;
     }

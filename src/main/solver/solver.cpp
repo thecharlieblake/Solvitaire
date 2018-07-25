@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <list>
 #include <malloc.h>
+#include <chrono>
 
 #include "solver.h"
 #include "../game/move.h"
@@ -29,29 +30,41 @@ solver::solver(const game_state& gs, uint64_t cache_capacity)
         , init_state(gs)
         , state(gs)
         , frontier()
-        , states_searched(0)
-        , unique_states_searched(0)
-        , backtracks(0)
-        , dominance_moves(0)
-        , depth(0)
-        , max_depth(0)
         , root(move(move::mtype::null))
         , current_node() {
     frontier.push_back(root);
     current_node = begin(frontier);
+    res.states_searched = 0;
+    res.unique_states_searched = 0;
+    res.backtracks = 0;
+    res.dominance_moves = 0;
+    res.states_removed_from_cache = 0;
+    res.max_depth = 0;
+    res.depth = 0;
 }
 
 solver::node::node(const move m)
         : mv(m), child_moves(), cache_state() {
 }
 
-solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) {
+solver::result solver::run(boost::optional<millisec> timeout) {
+    const clock::time_point start_time = clock::now();
+    result::type res_type = timeout ? dfs(start_time + *timeout) : dfs();
+    res.sol_type = res_type;
+    res.states_removed_from_cache = cache.get_states_removed_from_cache();
+    res.cache_size = cache.size();
+    res.cache_bucket_count = cache.bucket_count();
+    res.time = std::chrono::duration_cast<millisec>(clock::now() - start_time);
+    return res;
+}
+
+solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
     bool states_exhausted = false;
 
     while(!(state.is_solved() || states_exhausted)) {
         // If the terminate flag was supplied and has been set to true, return
-        if (terminate_solver && *terminate_solver) {
-            return sol_state::timed_out;
+        if (end_time && clock::now() >= *end_time) {
+            return result::type::TIMEOUT;
         }
 
 #ifndef NDEBUG
@@ -68,26 +81,30 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
             // Adds the dominance move as a child of the current search node;
             current_node->child_moves.emplace_back(*dominance_move);
         } else {
-            // Caches the current state
-            pair<lru_cache::item_list::iterator, bool> insert_res = cache.insert(state);
-            current_node->cache_state = insert_res.first;
-            bool is_new_state = insert_res.second;
+            try {
+                // Caches the current state
+                pair<lru_cache::item_list::iterator, bool> insert_res = cache.insert(state);
+                current_node->cache_state = insert_res.first;
+                bool is_new_state = insert_res.second;
 
-            if (is_new_state) {
-                // Gets the legal moves in the current state
-                vector<move> next_moves = state.get_legal_moves(current_node->mv);
+                if (is_new_state) {
+                    // Gets the legal moves in the current state
+                    vector<move> next_moves = state.get_legal_moves(current_node->mv);
 
-                // If there are none, reverts to the last node with children
-                if (next_moves.empty()) {
-                    states_exhausted = revert_to_last_node_with_children(insert_res.first);
-                } else {
-                    current_node->child_moves = std::move(next_moves);
+                    // If there are none, reverts to the last node with children
+                    if (next_moves.empty()) {
+                        states_exhausted = revert_to_last_node_with_children(insert_res.first);
+                    } else {
+                        current_node->child_moves = std::move(next_moves);
+                    }
                 }
-            }
-                // If the state is not a new one, reverts to the last node with children
-            else {
-                unique_states_searched--;
-                states_exhausted = revert_to_last_node_with_children();
+                    // If the state is not a new one, reverts to the last node with children
+                else {
+                    res.unique_states_searched--;
+                    states_exhausted = revert_to_last_node_with_children();
+                }
+            } catch (const std::runtime_error e) {
+                return result::type::MEM_LIMIT;
             }
         }
 
@@ -96,20 +113,20 @@ solver::sol_state solver::run(boost::optional<atomic<bool> &> terminate_solver) 
         if (!states_exhausted) {
             set_to_child();
             state.make_move(current_node->mv);
-            depth++;
-            max_depth = max(depth, max_depth);
-            if (current_node->mv.type == move::mtype::dominance) dominance_moves++;
+            res.depth++;
+            res.max_depth = max(res.depth, res.max_depth);
+            if (current_node->mv.type == move::mtype::dominance) res.dominance_moves++;
         }
 
-        states_searched++;
-        unique_states_searched++;
+        res.states_searched++;
+        res.unique_states_searched++;
     }
 
     if (state.is_solved()) {
-        return sol_state::solved;
+        return result::type::SOLVED;
     } else {
         assert(states_exhausted);
-        return sol_state::unsolvable;
+        return result::type::UNSOLVABLE;
     }
 }
 
@@ -127,8 +144,8 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
     if (cur_state) cache.set_non_live(*cur_state);
 
     state.undo_move(current_node->mv);
-    depth--;
-    backtracks++;
+    res.depth--;
+    res.backtracks++;
 
 #ifndef NDEBUG
     // Checks that the state after the undo is in the cache
@@ -181,7 +198,7 @@ void solver::print_solution() const {
     cout << "Solution:\n";
     cout << state_copy << "\n";
 
-    if (states_searched > 1) {
+    if (res.states_searched > 1) {
         while (++i != end(frontier)) {
             state_copy.make_move(i->mv);
             cout << state_copy << "\n";
@@ -190,49 +207,39 @@ void solver::print_solution() const {
     cout << "\n";
 }
 
-std::ostream& operator<< (std::ostream& out, const solver::solution_info& si) {
-    return out
-            << "States Searched: "           << si.states_searched            << "\n"
-            << "Unique States Searched: "    << si.unique_states_searched     << "\n"
-            << "Backtracks: "                << si.backtracks                 << "\n"
-            << "Dominance Moves: "           << si.dominance_moves            << "\n"
-            << "States Removed From Cache: " << si.states_removed_from_cache  << "\n"
-            << "Final States In Cache: "     << si.cache_size                 << "\n"
-            << "Final Buckets In Cache: "    << si.cache_bucket_count         << "\n"
-            << "Maximum Search Depth: "      << si.max_depth                  << "\n"
-            << "Final Search Depth: "        << si.depth                      << "\n";
+std::ostream& operator<< (std::ostream& out, const solver::result::type& rt) {
+    switch(rt) {
+        case solver::result::type::TIMEOUT:
+            out << "timed-out";
+            break;
+        case solver::result::type::SOLVED:
+            out << "solved";
+            break;
+        case solver::result::type::UNSOLVABLE:
+            out << "unsolvable";
+            break;
+        case solver::result::type::MEM_LIMIT:
+            out << "memory-limit-reached";
+            break;
+    }
+    return out;
 }
 
-solver::solution_info solver::get_solution_info() {
-    solution_info si;
-    si.states_searched = states_searched;
-    si.unique_states_searched = unique_states_searched;
-    si.backtracks = backtracks;
-    si.dominance_moves = dominance_moves;
-    si.states_removed_from_cache = cache.get_states_removed_from_cache();
-    si.cache_size = cache.size();
-    si.cache_bucket_count = cache.bucket_count();
-    si.max_depth = max_depth;
-    si.depth = depth;
-    return si;
+std::ostream& operator<< (std::ostream& out, const solver::result& r) {
+    return out
+            << "Solution Type: "             << r.sol_type                   << "\n"
+            << "States Searched: "           << r.states_searched            << "\n"
+            << "Unique States Searched: "    << r.unique_states_searched     << "\n"
+            << "Backtracks: "                << r.backtracks                 << "\n"
+            << "Dominance Moves: "           << r.dominance_moves            << "\n"
+            << "States Removed From Cache: " << r.states_removed_from_cache  << "\n"
+            << "Final States In Cache: "     << r.cache_size                 << "\n"
+            << "Final Buckets In Cache: "    << r.cache_bucket_count         << "\n"
+            << "Maximum Search Depth: "      << r.max_depth                  << "\n"
+            << "Final Search Depth: "        << r.depth                      << "\n"
+            << "Time Taken (milliseconds): " << r.time.count()               << "\n";
 }
 
 const vector<solver::node> solver::get_frontier() const {
     return frontier;
-}
-
-int solver::get_states_searched() const {
-    return states_searched;
-}
-
-int solver::get_unique_states_searched() const {
-    return unique_states_searched;
-}
-
-int solver::get_cache_size() const {
-    return cache.size();
-}
-
-int solver::get_states_rem_from_cache() const {
-    return cache.get_states_removed_from_cache();
 }

@@ -31,23 +31,23 @@ void benchmark::run(const sol_rules &rules, uint64_t cache_capacity, game_state:
         solver sol(gs, cache_capacity);
 
         auto start = chrono::steady_clock::now();
-        solver::sol_state result = sol.run();
+        solver::result result = sol.run();
         auto end = chrono::steady_clock::now();
         microsec elapsed_micros =
                 chrono::duration_cast<chrono::microseconds>(end - start);
 
         sol_times.insert(static_cast<int>(elapsed_micros.count()));
         total_time += static_cast<int>(elapsed_micros.count());
-        states_searched.insert(sol.get_states_searched());
-        total_states += sol.get_states_searched();
-        switch (result) {
-            case solver::sol_state::solved:
+        states_searched.insert(result.states_searched);
+        total_states += result.states_searched;
+        switch (result.sol_type) {
+            case solver::result::type::SOLVED:
                 total_solvable++;
                 break;
-            case solver::sol_state::unsolvable:
+            case solver::result::type::UNSOLVABLE:
                 total_unsolvable++;
                 break;
-            case solver::sol_state::timed_out:
+            default:
                 assert(false);
                 break;
         }

@@ -123,15 +123,14 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
 void solve_game(const game_state& gs, command_line_helper& clh) {
     solver solv(gs, clh.get_cache_capacity());
 
-    bool solution = solv.run() == solver::sol_state::solved;
+    solver::result result = solv.run();
 
-    if (solution) {
-        if (!clh.get_classify()) solv.print_solution();
-        cout << "Solved\n";
-    } else {
-        if (!clh.get_classify()) cout << "Deal:\n" << gs << "\n";
-        cout << "No Possible Solution\n";
+    if (!clh.get_classify()) {
+        if (result.sol_type == solver::result::type::SOLVED) {
+            solv.print_solution();
+        } else {
+            cout << "Deal:\n" << gs << "\n";
+        }
     }
-
-    cout << solv.get_solution_info();
+    cout << result;
 }
