@@ -1,5 +1,16 @@
 #!/bin/bash
 
+trap 'exit 130' INT
+
+if [ "$#" != 3 ]; then
+    echo "Usage: <seeds> <cores> <timeout>"
+    exit 1
+fi
+
+seeds="$1"
+cores="$2"
+timeout="$3"
+
 declare -a arr=(
 "alpha-star"
 "bakers-game"
@@ -38,7 +49,6 @@ declare -a arr=(
 ## Rules incorrect
 
 #"martha"
-#"canfield"
 #"penguin"
 
 ## Too difficult (?)
@@ -60,12 +70,15 @@ declare -a arr=(
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
 
-mkdir -p results/$DATE
+out_dir=results/$DATE
+
+mkdir -p "$out_dir"
+echo "Writing to $out_dir/"
 
 for i in "${arr[@]}"
 do
     echo "Running $i ..."
-    ./sol --type "$i" --solvability 10000 --time 600000 --cores 25 --stream > results/$DATE/$i.csv
+    ./solvability.sh "$seeds" "$cores" "./cmake-build-release/bin/solvitaire --type $i --timeout $timeout" "$out_dir"/$i.csv
 done
 
 echo "Done!"
