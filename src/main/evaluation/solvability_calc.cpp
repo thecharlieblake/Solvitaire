@@ -29,47 +29,6 @@ solvability_calc::solvability_calc(const sol_rules& r, uint64_t cache_capacity_)
 // PRINTING METHODS //
 //////////////////////
 
-void solvability_calc::print_header(long t) const {
-    cout << "Calculating solvability percentage...\n\n"
-            "Lower Bound"
-            ", Upper Bound"
-            ", Solvable"
-            ", Unsolvable"
-            ", Timed-out"
-            ", Memory Limited, ";
-    if (stream_opt == cmd_sos::SMART) {
-        cout << "| (Streamliner Results:) "
-                "Attempted Seed"
-                ", Outcome"
-                ", Time Taken(ms)"
-                ", States Searched"
-                ", Unique States Searched"
-                ", Backtracks"
-                ", Dominance Moves"
-                ", States Removed From Cache"
-                ", Final States In Cache"
-                ", Final Buckets In Cache"
-                ", Maximum Search Depth"
-                ", Final Search Depth"
-                "| (Non-Streamliner Results:) ";
-    }
-    cout << "Attempted Seed"
-            ", Outcome"
-            ", Time Taken(ms)"
-            ", States Searched"
-            ", Unique States Searched"
-            ", Backtracks"
-            ", Dominance Moves"
-            ", States Removed From Cache"
-            ", Final States In Cache"
-            ", Final Buckets In Cache"
-            ", Maximum Search Depth"
-            ", Final Search Depth"
-            ", Seeds In Progress ..."
-            "\n--- Timeout = " << t << " milliseconds ---\n";
-    cout << fixed << setprecision(3);
-}
-
 void solvability_calc::print_general_info(const seed_results& seed_res) {
     pair<double, double> interval = binomial_ci::wilson(
             seed_res.solvable,
@@ -88,22 +47,8 @@ void solvability_calc::print_seed_info(seed_result seed_res) {
     int seed = seed_res.first;
     auto& res = seed_res.second;
 
-    cout << ", " << seed
-         << ", " << res.sol_type
-         << ", " << res.time.count()
-         << ", " << res.states_searched
-         << ", " << res.unique_states_searched
-         << ", " << res.backtracks
-         << ", " << res.dominance_moves
-         << ", " << res.states_removed_from_cache
-         << ", " << res.cache_size
-         << ", " << res.cache_bucket_count
-         << ", " << res.max_depth
-         << ", " << res.depth;
-}
-
-void solvability_calc::print_null_seed_info() {
-    cout << ", , , , , , , , , , , , ";
+    cout << ", " << seed;
+    solver::print_result_csv(res);
 }
 
 void solvability_calc::print_seeds_in_prog(std::set<int>& seeds_in_progress) {
@@ -135,7 +80,7 @@ void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int s
     seed_res.timed_out  = resume[2];
 
     timeout = millisec(timeout_);
-    print_header(timeout.count());
+    solver::print_header(timeout.count(), stream_opt_);
     seed_count = seed_count_;
     stream_opt = stream_opt_;
 
@@ -186,7 +131,7 @@ void solvability_calc::solver_thread(solvability_calc* sc, uint core) {
         if (sc->stream_opt == cmd_sos::SMART) {
             print_seed_info(*stream_res);
             if (no_stream_res) print_seed_info(*no_stream_res);
-            else print_null_seed_info();
+            else solver::print_null_seed_info();
         } else {
             print_seed_info(*no_stream_res);
         }

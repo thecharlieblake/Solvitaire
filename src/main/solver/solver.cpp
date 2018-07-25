@@ -9,11 +9,13 @@
 #include <list>
 #include <malloc.h>
 #include <chrono>
+#include <iomanip>
 
 #include "solver.h"
 #include "../game/move.h"
 #include "../input-output/output/log_helper.h"
 #include "../input-output/output/state_printer.h"
+#include "../input-output/input/command_line_helper.h"
 
 using std::atomic;
 using std::vector;
@@ -24,6 +26,8 @@ using std::max;
 using std::begin;
 using std::end;
 using boost::optional;
+using std::fixed;
+using std::setprecision;
 
 solver::solver(const game_state& gs, uint64_t cache_capacity)
         : cache(lru_cache(gs, cache_capacity))
@@ -239,6 +243,65 @@ std::ostream& operator<< (std::ostream& out, const solver::result& r) {
             << "Maximum Search Depth: "      << r.max_depth                  << "\n"
             << "Final Search Depth: "        << r.depth                      << "\n"
             << "Time Taken (milliseconds): " << r.time.count()               << "\n";
+}
+
+void solver::print_header(long t, command_line_helper::streamliner_opt stream_opt) {
+    cout << "Calculating solvability percentage...\n\n"
+            "Lower Bound"
+            ", Upper Bound"
+            ", Solvable"
+            ", Unsolvable"
+            ", Timed-out"
+            ", Memory Limited, ";
+    if (stream_opt == command_line_helper::streamliner_opt::SMART) {
+        cout << "| (Streamliner Results:) "
+                "Attempted Seed"
+                ", Outcome"
+                ", Time Taken(ms)"
+                ", States Searched"
+                ", Unique States Searched"
+                ", Backtracks"
+                ", Dominance Moves"
+                ", States Removed From Cache"
+                ", Final States In Cache"
+                ", Final Buckets In Cache"
+                ", Maximum Search Depth"
+                ", Final Search Depth"
+                "| (Non-Streamliner Results:) ";
+    }
+    cout << "Attempted Seed"
+            ", Outcome"
+            ", Time Taken(ms)"
+            ", States Searched"
+            ", Unique States Searched"
+            ", Backtracks"
+            ", Dominance Moves"
+            ", States Removed From Cache"
+            ", Final States In Cache"
+            ", Final Buckets In Cache"
+            ", Maximum Search Depth"
+            ", Final Search Depth"
+            ", Seeds In Progress ..."
+            "\n--- Timeout = " << t << " milliseconds ---\n";
+    cout << fixed << setprecision(3);
+}
+
+void solver::print_result_csv(solver::result res) {
+    cout << ", " << res.sol_type
+         << ", " << res.time.count()
+         << ", " << res.states_searched
+         << ", " << res.unique_states_searched
+         << ", " << res.backtracks
+         << ", " << res.dominance_moves
+         << ", " << res.states_removed_from_cache
+         << ", " << res.cache_size
+         << ", " << res.cache_bucket_count
+         << ", " << res.max_depth
+         << ", " << res.depth;
+}
+
+void solver::print_null_seed_info() {
+    cout << ", , , , , , , , , , , , ";
 }
 
 const vector<solver::node> solver::get_frontier() const {

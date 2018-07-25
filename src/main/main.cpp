@@ -23,7 +23,7 @@ typedef std::chrono::milliseconds millisec;
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&, command_line_helper&);
 void solve_input_files(vector<string>, const sol_rules&, command_line_helper&);
-void solve_game(const game_state&, command_line_helper&);
+void solve_game(const game_state&, command_line_helper&, int);
 
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
@@ -97,7 +97,7 @@ void solve_random_game(int seed, const sol_rules& rules, command_line_helper& cl
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
     game_state gs(rules, seed, stream_opts);
-    solve_game(gs, clh);
+    solve_game(gs, clh, seed);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules, command_line_helper& clh) {
@@ -112,7 +112,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
             game_state gs(rules, in_doc, stream_opts);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, clh);
+            solve_game(gs, clh, -1);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -122,17 +122,21 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, command_line_helper& clh) {
+void solve_game(const game_state& gs, command_line_helper& clh, int seed) {
     solver solv(gs, clh.get_cache_capacity());
 
     solver::result result = solv.run(millisec(clh.get_timeout()));
 
-    if (!clh.get_classify()) {
+    if (clh.get_classify()) {
+        cout << seed;
+        solver::print_result_csv(result);
+        cout << "\n";
+    } else {
         if (result.sol_type == solver::result::type::SOLVED) {
             solv.print_solution();
         } else {
             cout << "Deal:\n" << gs << "\n";
         }
+        cout << result;
     }
-    cout << result;
 }
