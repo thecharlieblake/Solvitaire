@@ -43,7 +43,7 @@ command_line_helper::command_line_helper()
             ("solvability", po::value<int>(), "calculates the solvability "
                     "percentage of the supplied solitaire game, given a limit for the number of seeds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be solved.")
-            ("timeout", po::value<uint64_t>(), "adds a per-game timeout to the solvability percentage generation")
+            ("timeout", po::value<uint64_t>(), "adds a timeout to searches")
             ("resume", po::value<vector<int>>()->multitoken(), "resumes the solvability percentage calculation from a "
                                                     "previous run. Must be supplied with the solvability option. "
                                                     "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
