@@ -20,8 +20,8 @@ public:
 
     void calculate_solvability_percentage(uint64_t, int, uint, command_line_helper::streamliner_opt, const std::vector<int>&);
 
-private:
     typedef std::pair<int, solver::result> seed_result;
+private:
 
     struct seed_results {
         explicit seed_results(std::vector<int>);

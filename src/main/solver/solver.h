@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <chrono>
 
 #include "../game/global_cache.h"
 #include "../game/sol_rules.h"
