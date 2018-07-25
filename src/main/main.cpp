@@ -18,6 +18,8 @@ using namespace boost;
 
 namespace po = boost::program_options;
 
+typedef std::chrono::milliseconds millisec;
+
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&, command_line_helper&);
 void solve_input_files(vector<string>, const sol_rules&, command_line_helper&);
@@ -123,7 +125,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
 void solve_game(const game_state& gs, command_line_helper& clh) {
     solver solv(gs, clh.get_cache_capacity());
 
-    solver::result result = solv.run();
+    solver::result result = solv.run(millisec(clh.get_timeout()));
 
     if (!clh.get_classify()) {
         if (result.sol_type == solver::result::type::SOLVED) {
