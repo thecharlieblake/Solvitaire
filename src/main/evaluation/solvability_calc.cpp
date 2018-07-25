@@ -4,7 +4,6 @@
 #include <future>
 #include <iomanip>
 #include <iostream>
-#include <vector>
 #include <omp.h>
 
 #include "solvability_calc.h"
@@ -30,7 +29,7 @@ solvability_calc::solvability_calc(const sol_rules& r, uint64_t cache_capacity_)
 // PRINTING METHODS //
 //////////////////////
 
-void solvability_calc::print_header(long t, cmd_sos stream_opt) const {
+void solvability_calc::print_header(long t) const {
     cout << "Calculating solvability percentage...\n\n"
             "Lower Bound"
             ", Upper Bound"
@@ -123,74 +122,79 @@ void solvability_calc::print_seeds_in_prog(std::set<int>& seeds_in_progress) {
 // SOLVING METHODS //
 /////////////////////
 
-void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int seed_count, uint cores,
-                                                        cmd_sos stream_opt, const vector<int>& resume) {
-    vector<int> resume_seeds(begin(resume) + 3, end(resume));
+void solvability_calc::calculate_solvability_percentage(uint64_t timeout_, int seed_count_, uint cores,
+                                                        cmd_sos stream_opt_, const vector<int>& resume) {
+    resume_seeds = vector<int>(begin(resume) + 3, end(resume));
     sort(begin(resume_seeds), end(resume_seeds));
 
-    atomic<int> current_seed(resume_seeds.back());
+    current_seed = resume_seeds.back();
     resume_seeds.pop_back();
 
-    set<int> seeds_in_progress;
-    seed_results seed_res(resume);
-    mutex results_mutex;
+    seed_res.solvable   = resume[0];
+    seed_res.unsolvable = resume[1];
+    seed_res.timed_out  = resume[2];
 
-    millisec timeout(timeout_);
-    print_header(timeout.count(), stream_opt);
+    timeout = millisec(timeout_);
+    print_header(timeout.count());
+    seed_count = seed_count_;
+    stream_opt = stream_opt_;
 
-    sol_rules sr = rules;
-    uint64_t cc = cache_capacity;
+    vector<std::thread> threads(cores);
 
-#pragma omp parallel for
-    for (uint i = 0; i < cores; i++) {
+    for (uint c = 0; c < cores; c++)
+        threads[c] = std::thread(solver_thread, this, c);
 
-        int my_seed = resume_seeds.size() > i ? resume_seeds[i] : current_seed++;
+    for (uint c = 0; c < cores; c++)
+        threads[c].join();
+}
 
-        while (my_seed < seed_count) {
-            results_mutex.lock();
-            seeds_in_progress.insert(my_seed);
-            results_mutex.unlock();
+void solvability_calc::solver_thread(solvability_calc* sc, uint core) {
+    int my_seed = sc->resume_seeds.size() > core ? sc->resume_seeds[core] : sc->current_seed++;
 
-            optional<seed_result> stream_res, no_stream_res, final_res;
+    while (my_seed < sc->seed_count) {
+        sc->results_mutex.lock();
+        sc->seeds_in_progress.insert(my_seed);
+        sc->results_mutex.unlock();
 
-            if (stream_opt == cmd_sos::SMART) {
-                stream_res = solve_seed(my_seed, (timeout / 10), sr, cc, sos::BOTH);
+        optional<seed_result> stream_res, no_stream_res, final_res;
 
-                switch (stream_res->second.sol_type) {
-                    case solver::result::type::UNSOLVABLE:
-                    case solver::result::type::TIMEOUT:
-                        no_stream_res = solve_seed(my_seed, timeout, sr, cc, sos::NONE);
-                        final_res = *no_stream_res;
-                        break;
-                    default:
-                        final_res = *stream_res;
-                        break;
-                }
-            } else {
-                no_stream_res = solve_seed(my_seed, timeout, sr, cc,
-                                           command_line_helper::convert_streamliners(stream_opt));
-                final_res = *no_stream_res;
+        if (sc->stream_opt == cmd_sos::SMART) {
+            stream_res = solve_seed(my_seed, (sc->timeout/10), sc->rules, sc->cache_capacity, sos::BOTH);
+
+            switch (stream_res->second.sol_type) {
+                case solver::result::type::UNSOLVABLE:
+                case solver::result::type::TIMEOUT:
+                    no_stream_res = solve_seed(my_seed, sc->timeout, sc->rules, sc->cache_capacity, sos::NONE);
+                    final_res = *no_stream_res;
+                    break;
+                default:
+                    final_res = *stream_res;
+                    break;
             }
-
-            results_mutex.lock();
-
-            seeds_in_progress.erase(my_seed);
-            seed_res.add_result(final_res->second.sol_type);
-
-            print_general_info(seed_res);
-            if (stream_opt == cmd_sos::SMART) {
-                print_seed_info(*stream_res);
-                if (no_stream_res) print_seed_info(*no_stream_res);
-                else print_null_seed_info();
-            } else {
-                print_seed_info(*no_stream_res);
-            }
-            print_seeds_in_prog(seeds_in_progress);
-
-            results_mutex.unlock();
-
-            my_seed = current_seed++;
+        } else {
+            no_stream_res = solve_seed(my_seed, sc->timeout, sc->rules, sc->cache_capacity,
+                                       command_line_helper::convert_streamliners(sc->stream_opt));
+            final_res = *no_stream_res;
         }
+
+        sc->results_mutex.lock();
+
+        sc->seeds_in_progress.erase(my_seed);
+        sc->seed_res.add_result(final_res->second.sol_type);
+
+        print_general_info(sc->seed_res);
+        if (sc->stream_opt == cmd_sos::SMART) {
+            print_seed_info(*stream_res);
+            if (no_stream_res) print_seed_info(*no_stream_res);
+            else print_null_seed_info();
+        } else {
+            print_seed_info(*no_stream_res);
+        }
+        print_seeds_in_prog(sc->seeds_in_progress);
+
+        sc->results_mutex.unlock();
+
+        my_seed = sc->current_seed++;
     }
 }
 
@@ -208,7 +212,7 @@ solvability_calc::seed_result solvability_calc::solve_seed(int seed, millisec ti
 // SEED RESULTS CLASS //
 ////////////////////////
 
-solvability_calc::seed_results::seed_results(vector<int> v) : solvable(v[0]), unsolvable(v[1]), timed_out(v[2]), mem_limit(0) {
+solvability_calc::seed_results::seed_results() : solvable(0), unsolvable(0), timed_out(0), mem_limit(0) {
 }
 
 void solvability_calc::seed_results::add_result(solver::result::type t) {
