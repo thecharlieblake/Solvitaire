@@ -125,13 +125,36 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
 void solve_game(const game_state& gs, command_line_helper& clh, int seed) {
     solver solv(gs, clh.get_cache_capacity());
 
-    solver::result result = solv.run(millisec(clh.get_timeout()));
+    solver::result result, streamliner_result;
+    bool smart = clh.get_streamliners() == command_line_helper::streamliner_opt::SMART;
+    bool run_again = false;
+
+    if (smart) {
+        result = solv.run(millisec(clh.get_timeout() / 10));
+        run_again = result.sol_type != solver::result::type::SOLVED;
+        if (run_again)
+            streamliner_result = solv.run(millisec(clh.get_timeout()));
+    } else {
+        result = solv.run(millisec(clh.get_timeout()));
+    }
 
     if (clh.get_classify()) {
         cout << seed;
         solver::print_result_csv(result);
+        if (smart) {
+            if (run_again) {
+                solver::print_result_csv(streamliner_result);
+            } else {
+                solver::print_null_seed_info();
+            }
+        }
         cout << "\n";
     } else {
+        if (run_again) {
+            cout << "Unsolvable using streamliner. Running again...\n";
+            result = streamliner_result;
+        }
+
         if (result.sol_type == solver::result::type::SOLVED) {
             solv.print_solution();
         } else {
