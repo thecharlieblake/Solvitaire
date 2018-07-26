@@ -43,7 +43,7 @@ command_line_helper::command_line_helper()
             ("solvability", po::value<int>(), "calculates the solvability "
                     "percentage of the supplied solitaire game, given a limit for the number of seeds. Must supply "
                     "either 'random', 'benchmark', 'solvability' or list of deals to be solved.")
-            ("timeout", po::value<uint64_t>(), "adds a per-game timeout to the solvability percentage generation")
+            ("timeout", po::value<uint64_t>(), "adds a timeout to searches")
             ("resume", po::value<vector<int>>()->multitoken(), "resumes the solvability percentage calculation from a "
                                                     "previous run. Must be supplied with the solvability option. "
                                                     "Syntax: [sol unsol intract in-progress-1 in-progress-2 ...]")
@@ -52,8 +52,8 @@ command_line_helper::command_line_helper()
             ("streamliners", po::value<string>(),
                     "Applies streamliners to the search. Options include 'none', 'both', 'suit-symmetry',"
                     " 'auto-foundations', and 'smart-solvability'. Defaults to 'none', unless '--solvability' is"
-                    " also supplied, in which case defaults to 'smart-solvability'. 'smart-solvability' mode is only"
-                    " available with '--solvability', and runs first with both streamliners and a 10% timeout. If this"
+                    " also supplied, in which case defaults to 'smart-solvability'. 'smart-solvability' mode"
+                    " runs first with both streamliners and a 10% timeout. If this"
                     " is unsuccessful (unsolvable or timeout), then runs again without streamliners.")
             ("benchmark", "outputs performance statistics for the solver on the "
                     "supplied solitaire game. Must supply "
@@ -152,14 +152,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
         if (s == "auto-foundations" ) streamliners = streamliner_opt::AUTO_FOUNDATIONS;
         else if (s == "suit-symmetry") streamliners = streamliner_opt::SUIT_SYMMETRY;
         else if (s == "both") streamliners = streamliner_opt::BOTH;
-        else if (s == "smart-solvability") {
-            if (solvability == -1) {
-                print_streamliner_solvability_error();
-                return false;
-            } else {
-                streamliners = streamliner_opt::SMART;
-            }
-        }
+        else if (s == "smart-solvability") streamliners = streamliner_opt::SMART;
         else if (s == "none") streamliners = streamliner_opt::NONE;
         else {
             print_streamliner_error(s);
@@ -258,10 +251,6 @@ void command_line_helper::print_resume_error() {
 void command_line_helper::print_streamliner_error(const string& str) {
     LOG_ERROR ("Error: invalid streamliner: " + str + ".\nAvailable options are: 'none', 'both', 'suit-symmetry',"
                                                       " 'auto-foundations', and 'smart-solvability'");
-}
-
-void command_line_helper::print_streamliner_solvability_error() {
-    LOG_ERROR ("Smart streamliner mode can only be used with '--solvability'");
 }
 
 const vector<string> command_line_helper::get_input_files() {

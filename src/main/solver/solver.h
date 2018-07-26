@@ -8,13 +8,14 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <chrono>
 
 #include "../game/global_cache.h"
 #include "../game/sol_rules.h"
+#include "../input-output/input/command_line_helper.h"
 
 class solver {
 public:
-    enum class sol_state {solved, unsolvable, timed_out};
     lru_cache cache;
 
     struct node {
@@ -24,7 +25,10 @@ public:
         boost::optional<lru_cache::item_list::iterator> cache_state; // Optional, as dominance moves aren't cached
     };
 
-    struct solution_info {
+    struct result {
+        enum class type { TIMEOUT, SOLVED, UNSOLVABLE, MEM_LIMIT };
+
+        type sol_type;
         int states_searched;
         int unique_states_searched;
         int backtracks;
@@ -34,22 +38,25 @@ public:
         lru_cache::item_list::size_type cache_bucket_count;
         int max_depth;
         int depth;
+        std::chrono::milliseconds time;
     };
-    friend std::ostream& operator<< (std::ostream&, const solution_info&);
 
     explicit solver(const game_state&, uint64_t);
 
-    sol_state run(boost::optional<std::atomic<bool> &> = boost::none);
+    result run(boost::optional<std::chrono::milliseconds> = boost::none);
 
     void print_solution() const;
-    int get_states_searched() const;
-    int get_unique_states_searched() const;
-    int get_cache_size() const;
-    int get_states_rem_from_cache() const;
+    static void print_header(long, command_line_helper::streamliner_opt);
+    static void print_result_csv(solver::result);
+    static void print_null_seed_info();
     const std::vector<node> get_frontier() const;
-    solution_info get_solution_info();
 
 private:
+    typedef std::chrono::high_resolution_clock clock;
+    typedef std::chrono::milliseconds millisec;
+
+    result::type dfs(boost::optional<clock::time_point> = boost::none);
+
     bool revert_to_last_node_with_children(boost::optional<lru_cache::item_list::iterator> = boost::none);
     void set_to_child();
 
@@ -57,16 +64,14 @@ private:
     game_state state;
     std::vector<node> frontier;
 
-    int states_searched;
-    int unique_states_searched;
-    int backtracks;
-    int dominance_moves;
-    int depth;
-    int max_depth;
+    result res;
 
     node root;
     std::vector<node>::iterator current_node;
 };
+
+std::ostream& operator<< (std::ostream&, const solver::result::type&);
+std::ostream& operator<< (std::ostream&, const solver::result&);
 
 
 #endif //SOLVITAIRE_SOLVER_H

@@ -21,20 +21,11 @@ public:
     void calculate_solvability_percentage(uint64_t, int, uint, command_line_helper::streamliner_opt, const std::vector<int>&);
 
 private:
-    typedef std::chrono::milliseconds millisec;
-
-    struct sol_result {
-        enum class type { TIMEOUT, SOLVED, UNSOLVABLE, MEM_LIMIT };
-
-        int seed;
-        type sol_type;
-        millisec time;
-        solver::solution_info sol_info;
-    };
+    typedef std::pair<int, solver::result> seed_result;
 
     struct seed_results {
-        explicit seed_results(std::vector<int>);
-        void add_result(sol_result::type);
+        seed_results();
+        void add_result(solver::result::type);
 
         std::atomic<int> solvable;
         std::atomic<int> unsolvable;
@@ -43,17 +34,24 @@ private:
     };
 
     // Printing methods
-    void print_header(long, command_line_helper::streamliner_opt) const;
     static void print_general_info(const seed_results&);
-    static void print_seed_info(sol_result);
-    static void print_null_seed_info();
+    static void print_seed_info(seed_result);
     static void print_seeds_in_prog(std::set<int>&);
 
     // Solving methods
-    static sol_result solve_seed(int, millisec, const sol_rules&, uint64_t, game_state::streamliner_options);
+    static void solver_thread(solvability_calc*, uint core);
+    static seed_result solve_seed(int, std::chrono::milliseconds, const sol_rules&, uint64_t, game_state::streamliner_options);
 
     const sol_rules& rules;
     const uint64_t cache_capacity;
+    std::chrono::milliseconds timeout;
+    std::mutex results_mutex;
+    seed_results seed_res;
+    std::set<int> seeds_in_progress;
+    std::vector<int> resume_seeds;
+    std::atomic<int> current_seed;
+    int seed_count;
+    command_line_helper::streamliner_opt stream_opt;
 };
 
 

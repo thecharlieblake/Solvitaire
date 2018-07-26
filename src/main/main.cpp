@@ -18,10 +18,12 @@ using namespace boost;
 
 namespace po = boost::program_options;
 
+typedef std::chrono::milliseconds millisec;
+
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&, command_line_helper&);
 void solve_input_files(vector<string>, const sol_rules&, command_line_helper&);
-void solve_game(const game_state&, command_line_helper&);
+void solve_game(const game_state&, command_line_helper&, int);
 
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
@@ -95,7 +97,7 @@ void solve_random_game(int seed, const sol_rules& rules, command_line_helper& cl
     LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
     game_state gs(rules, seed, stream_opts);
-    solve_game(gs, clh);
+    solve_game(gs, clh, seed);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules, command_line_helper& clh) {
@@ -110,7 +112,7 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
             game_state gs(rules, in_doc, stream_opts);
 
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, clh);
+            solve_game(gs, clh, -1);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -120,18 +122,44 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, command_line_helper& clh) {
+void solve_game(const game_state& gs, command_line_helper& clh, int seed) {
     solver solv(gs, clh.get_cache_capacity());
 
-    bool solution = solv.run() == solver::sol_state::solved;
+    solver::result result, streamliner_result;
+    bool smart = clh.get_streamliners() == command_line_helper::streamliner_opt::SMART;
+    bool run_again = false;
 
-    if (solution) {
-        if (!clh.get_classify()) solv.print_solution();
-        cout << "Solved\n";
+    if (smart) {
+        result = solv.run(millisec(clh.get_timeout() / 10));
+        run_again = result.sol_type != solver::result::type::SOLVED;
+        if (run_again)
+            streamliner_result = solv.run(millisec(clh.get_timeout()));
     } else {
-        if (!clh.get_classify()) cout << "Deal:\n" << gs << "\n";
-        cout << "No Possible Solution\n";
+        result = solv.run(millisec(clh.get_timeout()));
     }
 
-    cout << solv.get_solution_info();
+    if (clh.get_classify()) {
+        cout << seed;
+        solver::print_result_csv(result);
+        if (smart) {
+            if (run_again) {
+                solver::print_result_csv(streamliner_result);
+            } else {
+                solver::print_null_seed_info();
+            }
+        }
+        cout << "\n";
+    } else {
+        if (run_again) {
+            cout << "Unsolvable using streamliner. Running again...\n";
+            result = streamliner_result;
+        }
+
+        if (result.sol_type == solver::result::type::SOLVED) {
+            solv.print_solution();
+        } else {
+            cout << "Deal:\n" << gs << "\n";
+        }
+        cout << result;
+    }
 }
