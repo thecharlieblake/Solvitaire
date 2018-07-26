@@ -322,6 +322,7 @@ game_state::streamliner_options command_line_helper::convert_streamliners(stream
         case command_line_helper::streamliner_opt::SMART:
         default:
             assert(false);
+            throw runtime_error("attempted to convert smart streamliner mode to single streamliner");
             return game_state::streamliner_options::NONE;;
     }
 }

@@ -1166,6 +1166,23 @@ map<string, string> sol_preset_types::mp = {
 }
 )"
 
+        },
+        {
+                "forty-theives",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "same-suit"
+  },
+  "stock": {
+    "size": 64
+  },
+  "two decks": true
+}
+)"
+
         }
 };
 

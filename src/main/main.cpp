@@ -23,7 +23,10 @@ typedef std::chrono::milliseconds millisec;
 const optional<sol_rules> gen_rules(command_line_helper&);
 void solve_random_game(int, const sol_rules&, command_line_helper&);
 void solve_input_files(vector<string>, const sol_rules&, command_line_helper&);
-void solve_game(const game_state&, command_line_helper&, int);
+void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> seed, optional<const Document&> in_doc);
+pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout, uint64_t cache_capacity,
+                                        game_state::streamliner_options str_opts,
+                                        optional<int> seed, optional<const Document&> in_doc);
 
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
@@ -94,25 +97,21 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
 }
 
 void solve_random_game(int seed, const sol_rules& rules, command_line_helper& clh) {
-    LOG_INFO ("Attempting to solve with seed: " << seed << "...");
-    game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
-    game_state gs(rules, seed, stream_opts);
-    solve_game(gs, clh, seed);
+    if (clh.get_classify())
+        cout << seed;
+    else
+        LOG_INFO ("Attempting to solve with seed: " << seed << "...");
+    solve_game(rules, clh, seed, none);
 }
 
 void solve_input_files(const vector<string> input_files, const sol_rules& rules, command_line_helper& clh) {
-    game_state::streamliner_options stream_opts = clh.get_streamliners_game_state();
-    
     for (const string& input_file : input_files) {
         try {
             // Reads in the input file to a json doc
             const Document in_doc = json_helper::get_file_json(input_file);
 
-            // Attempts to create a game state object from the json
-            game_state gs(rules, in_doc, stream_opts);
-
             LOG_INFO ("Attempting to solve " << input_file << "...");
-            solve_game(gs, clh, -1);
+            solve_game(rules, clh, none, in_doc);
 
         } catch (const runtime_error& error) {
             string errmsg = "Error parsing deal file: ";
@@ -122,44 +121,56 @@ void solve_input_files(const vector<string> input_files, const sol_rules& rules,
     }
 }
 
-void solve_game(const game_state& gs, command_line_helper& clh, int seed) {
-    solver solv(gs, clh.get_cache_capacity());
+void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> seed, optional<const Document&> in_doc) {
+    typedef pair<solver, solver::result> solve_sol;
 
-    solver::result result, streamliner_result;
     bool smart = clh.get_streamliners() == command_line_helper::streamliner_opt::SMART;
-    bool run_again = false;
 
+    uint64_t timeout;
+    game_state::streamliner_options str_opt;
     if (smart) {
-        result = solv.run(millisec(clh.get_timeout() / 10));
-        run_again = result.sol_type != solver::result::type::SOLVED;
-        if (run_again)
-            streamliner_result = solv.run(millisec(clh.get_timeout()));
+        timeout = clh.get_timeout() / 10;
+        str_opt = game_state::streamliner_options::BOTH;
     } else {
-        result = solv.run(millisec(clh.get_timeout()));
+        timeout = clh.get_timeout();
+        str_opt = clh.get_streamliners_game_state();
     }
+    solve_sol solution = solve_game(rules, timeout, clh.get_cache_capacity(), str_opt, seed, in_doc);
+
+    bool run_again = smart && solution.second.sol_type != solver::result::type::SOLVED;
+    if (run_again)
+        if (!clh.get_classify()) cout << "Unsolvable using streamliner. Running again...\n";
+    optional<solve_sol> streamliner_solution = run_again
+            ? solve_game(rules, clh.get_timeout(), clh.get_cache_capacity(), game_state::streamliner_options::NONE, seed, in_doc)
+            : optional<solve_sol>();
 
     if (clh.get_classify()) {
-        cout << seed;
-        solver::print_result_csv(result);
+        solver::print_result_csv(solution.second);
         if (smart) {
             if (run_again) {
-                solver::print_result_csv(streamliner_result);
+                solver::print_result_csv(streamliner_solution->second);
             } else {
                 solver::print_null_seed_info();
             }
         }
         cout << "\n";
     } else {
-        if (run_again) {
-            cout << "Unsolvable using streamliner. Running again...\n";
-            result = streamliner_result;
-        }
+        pair<solver, solver::result> s = run_again ? *streamliner_solution : solution;
 
-        if (result.sol_type == solver::result::type::SOLVED) {
-            solv.print_solution();
+        if (s.second.sol_type == solver::result::type::SOLVED) {
+            s.first.print_solution();
         } else {
-            cout << "Deal:\n" << gs << "\n";
+            cout << "Deal:\n" << s.first.init_state << "\n";
         }
-        cout << result;
+        cout << s.second;
     }
+}
+
+pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout, uint64_t cache_capacity,
+                                        game_state::streamliner_options str_opts,
+                                        optional<int> seed, optional<const Document&> in_doc) {
+    game_state gs = seed ? game_state(rules, *seed, str_opts) : game_state(rules, *in_doc, str_opts);
+    solver sol(gs, cache_capacity);
+    solver::result res = sol.run(std::chrono::milliseconds(timeout));
+    return make_pair(sol, res);
 }

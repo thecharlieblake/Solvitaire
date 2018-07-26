@@ -51,6 +51,8 @@ public:
     static void print_null_seed_info();
     const std::vector<node> get_frontier() const;
 
+    const game_state init_state;
+
 private:
     typedef std::chrono::high_resolution_clock clock;
     typedef std::chrono::milliseconds millisec;
@@ -60,7 +62,6 @@ private:
     bool revert_to_last_node_with_children(boost::optional<lru_cache::item_list::iterator> = boost::none);
     void set_to_child();
 
-    const game_state init_state;
     game_state state;
     std::vector<node> frontier;
 
