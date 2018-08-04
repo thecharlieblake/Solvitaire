@@ -119,7 +119,7 @@ TEST(LegalMoveGen, SpacesPolAny) {
     vector<move> actual_moves = gs.get_legal_moves();
 
     vector<move> exp_moves = {
-            move(move::mtype::regular, 1, 0)
+    //        move(move::mtype::regular, 1, 0) // Now forbidden as always pointless
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
@@ -133,7 +133,7 @@ TEST(LegalMoveGen, SpacesPolKings) {
     game_state gs(sr, string_il{
             {},
             {"AC"},
-            {"KD"}
+            {"3S","KD"}
     });
     vector<move> actual_moves = gs.get_legal_moves();
 
@@ -239,6 +239,47 @@ TEST(LegalMoveGen, FoundationsRemovable) {
 
     vector<move> exp_moves = {
             move(move::mtype::regular, 0, 4)
+    };
+
+    ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
+}
+
+
+TEST(LegalMoveGen, TwoDecksFoundations) {
+    sol_rules sr;
+    sr.two_decks = true;
+    sr.foundations_removable = true;
+    sr.foundations_present = true;
+    sr.tableau_pile_count = 4;
+
+    game_state gs(sr, string_il{
+            {"AC"}, {}, {}, {}, {}, {}, {"AS"}, {},
+            {},
+            {"AH"},
+            {},
+            {"AD"},
+    });
+    vector<move> actual_moves = gs.get_legal_moves();
+
+    vector<move> exp_moves = {
+            // Aces up
+            move(move::mtype::regular, 9, 1),
+            move(move::mtype::regular, 9, 5),
+            move(move::mtype::regular, 11, 3),
+            move(move::mtype::regular, 11, 7),
+
+            // Aces down
+            move(move::mtype::regular, 0, 8),
+            move(move::mtype::regular, 0, 10),
+            move(move::mtype::regular, 6, 8),
+            move(move::mtype::regular, 6, 10),
+
+            // Aces across (forbidden now)
+            //move(move::mtype::regular, 9, 8),
+            //move(move::mtype::regular, 9, 10),
+            //move(move::mtype::regular, 11, 8),
+            //move(move::mtype::regular, 11, 10),
+
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;

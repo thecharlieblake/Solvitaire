@@ -14,6 +14,7 @@ using std::min;
 using std::list;
 using std::pair;
 using std::set;
+using std::greater;
 using namespace rapidjson;
 
 typedef sol_rules::build_policy pol;
@@ -33,14 +34,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Order:
     // Accordion moves
     // Foundations complete piles moves
-    // Tableau / cells / reserve / stock-waste to hole / foundation moves ---
+    // Tableau / cells / reserve / stock-waste (redeal) to hole / foundation moves
     // Cell to tableau moves
     // Sequence to sequence moves
     // Tableau to tableau moves
     // Tableau built group moves
-    // Stock-waste to tableau moves
+    // Stock-waste to tableau moves (redeal)
     // Reserve to tableau moves
     // Foundation to tableau moves
+    // Stock-waste to tableau moves (no redeal)
+    // Stock-waste (no redeal) to hole / foundation moves
     // Tableau / reserve / stock-waste to cell moves
     // Stock to all tableau moves
 
@@ -50,7 +53,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     if (rules.stock_size > 0 && stock_can_deal_all_tableau())
             moves.emplace_back(get_stock_to_all_tableau_move());
 
-    // Tableau / stock to cell moves
+    // Tableau / reserve / stock-waste to cell moves
     pile::ref empty_cell = 255;
     for (auto c : cells) {
         if (piles[c].empty()) empty_cell = c;
@@ -68,6 +71,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
             add_stock_to_cell_move(moves, empty_cell);
     }
+
+    // Stock-waste (no redeal) to hole / foundation moves
+    if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !rules.stock_redeal)
+            add_stock_to_hole_foundation_moves(moves);
+    }
+
+    // Stock-waste to tableau moves (no redeal)
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && !rules.stock_redeal)
+        add_stock_to_tableau_moves(moves);
 
     // Foundation to tableau / empty cell moves
     if (rules.foundations_removable) {
@@ -88,8 +101,8 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         add_valid_tableau_moves(moves, r);
     }
 
-    // Stock-waste to tableau moves
-    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
+    // Stock-waste to tableau moves (redeal)
+    if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && rules.stock_redeal)
         add_stock_to_tableau_moves(moves);
 
     // Tableau built group moves
@@ -108,9 +121,16 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // If only whole pile moves are available, doesn't make regular ones
     if (rules.move_built_group != bgt::WHOLE_PILE) {
         for (auto t_from : tableau_piles) {
-            if (piles[t_from].empty() || parent_move.to == t_from) continue;
+            // Forbids moves from empty piles, reversing parent moves, or from single-
+            // card piles to empty piles
+            if (piles[t_from].empty() || parent_move.to == t_from || tableau_space_and_auto_reserve()) continue;
 
-            add_valid_tableau_moves(moves, t_from);
+            for (auto to : tableau_piles) {
+                if (is_valid_tableau_move(t_from, to)
+                    && !(piles[t_from].size() == 1 && piles[to].empty())) {
+                    moves.emplace_back(move::mtype::regular, t_from, to);
+                }
+            }
         }
     }
 
@@ -126,10 +146,10 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         add_valid_tableau_moves(moves, c);
     }
 
-    // Tableau / cells / reserve / stock-waste to hole / foundation moves
+    // Tableau / cells / reserve / stock-waste (redeal) to hole / foundation moves
     if (rules.hole || (rules.foundations_present && !rules.foundations_only_comp_piles)) {
         // Stock
-        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE)
+        if (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && rules.stock_redeal)
             add_stock_to_hole_foundation_moves(moves);
 
         list<pile::ref> from_piles = tableau_piles;
@@ -182,8 +202,8 @@ move game_state::get_stock_to_all_tableau_move() const {
     return move(move::mtype::stock_to_all_tableau, 0, 0, stock_moves);
 }
 
-set<pair<int8_t, bool>> game_state::generate_k_plus_moves_to_check() const {
-    set<pair<int8_t, bool>> stock_moves_to_check;
+set<pair<int8_t, bool>, greater<>> game_state::generate_k_plus_moves_to_check() const {
+    set<pair<int8_t, bool>, greater<>> stock_moves_to_check;
 
     // If the waste isn't empty, adds the move from the top of the current waste
     if (!piles[waste].empty()) stock_moves_to_check.insert(pair<int8_t, bool>(0, false));

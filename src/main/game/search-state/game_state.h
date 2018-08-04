@@ -9,6 +9,7 @@
 #include <list>
 #include <string>
 #include <random>
+#include <functional>
 
 #include <boost/functional/hash.hpp>
 #include <boost/optional/optional.hpp>
@@ -95,7 +96,7 @@ private:
     bool stock_can_deal_all_tableau() const;
     move get_stock_to_all_tableau_move() const;
 
-    std::set<std::pair<int8_t, bool>> generate_k_plus_moves_to_check() const;
+    std::set<std::pair<int8_t, bool>, std::greater<>> generate_k_plus_moves_to_check() const;
     void add_stock_to_cell_move(std::vector<move>&, pile::ref) const;
     void add_stock_to_tableau_moves(std::vector<move>&) const;
     void add_stock_to_hole_foundation_moves(std::vector<move>&) const;
