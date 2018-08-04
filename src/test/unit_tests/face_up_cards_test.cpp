@@ -74,9 +74,9 @@ TEST(FaceUpCards, MoveTurnsFaceUp) {
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
-            {"3S"},
-            {"2s","AS"}, // from
-            {} // to
+            {"4S"},
+            {"3s","AS"}, // from
+            {"2S"} // to
     };
 
     test_helper::expected_moves_test(
@@ -84,7 +84,6 @@ TEST(FaceUpCards, MoveTurnsFaceUp) {
             piles,
             {
                     // Regular moves
-                    move(move::mtype::regular, 0, 2, 1, false),
                     move(move::mtype::regular, 1, 2, 1, true)
             }
     );
@@ -138,9 +137,9 @@ TEST(FaceUpCards, MoveAlreadyFaceUpNoChange) {
     sr.face_up = fu::TOP_CARDS;
 
     string_il piles = {
-            {"3S"},
-            {"2s","AS"}, // from
-            {} // to
+            {"4S"},
+            {"3s","AS"}, // from
+            {"2S"} // to
     };
 
     test_helper::expected_moves_test(
@@ -148,7 +147,6 @@ TEST(FaceUpCards, MoveAlreadyFaceUpNoChange) {
             piles,
             {
                     // Regular moves
-                    move(move::mtype::regular, 0, 2, 1, false),
                     move(move::mtype::regular, 1, 2, 1, true)
             }
     );
@@ -172,14 +170,13 @@ TEST(FaceUpCards, FaceDownNoBuiltGroup) {
     test_helper::expected_moves_test(
             sr,
             {
-                    {"3S"},
-                    {"2s","AS"},
-                    {}
+                    {"4S"},
+                    {"3s","AS"},
+                    {"2S"}
             },
             {
                     // Regular moves
-                    move(move::mtype::regular, 0, 2, 1, false),
-                    move(move::mtype::regular, 1, 2, 1, true),
+                    move(move::mtype::regular, 1, 2, 1, true)
             }
     );
 }
@@ -201,7 +198,6 @@ TEST(FaceUpCards, FaceUpBuiltGroup) {
             },
             {
                     // Regular moves
-                    move(mt::regular, 0, 2, 1),
                     move(mt::regular, 1, 2, 1),
 
                     // Built group moves
@@ -224,12 +220,11 @@ TEST(FaceUpCards, FaceUpBuiltGroup2Not3) {
             {
                     {"4S"},
                     {"3s","2S","AS"},
-                    {}
+                    {"3S"}
             },
             {
                     // Regular moves
-                    move(mt::regular, 0, 2, 1, false),
-                    move(mt::regular, 1, 2, 1, false),
+                    move(mt::regular, 2, 0, 1, false),
 
                     // Built group moves
                     move(mt::built_group, 1, 2, 2, true)

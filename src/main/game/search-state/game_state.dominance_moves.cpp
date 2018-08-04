@@ -15,7 +15,7 @@ using std::max;
 using boost::optional;
 
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
-    if (rules.foundations_only_comp_piles)
+    if (rules.foundations_only_comp_piles || rules.two_decks)
         return false;
     else if (   stream_opts     == sos::AUTO_FOUNDATIONS
              || stream_opts     == sos::BOTH

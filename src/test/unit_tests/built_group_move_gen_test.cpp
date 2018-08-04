@@ -177,8 +177,6 @@ TEST(BuiltGroupMoveGen, SameSuitOccupied) {
                     move(move::mtype::regular, 1, 4, 1),
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
-                    move(move::mtype::regular, 0, 4, 1),
-                    move(move::mtype::regular, 5, 4, 1),
                     move(move::mtype::regular, 5, 0, 1),
 
                     // Built group moves
@@ -212,8 +210,6 @@ TEST(BuiltGroupMoveGen, RedBlackOccupied) {
                     move(move::mtype::regular, 1, 4, 1),
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
-                    move(move::mtype::regular, 0, 4, 1),
-                    move(move::mtype::regular, 5, 4, 1),
 
                     // Built group moves
                     move(move::mtype::built_group, 2, 0, 3),
@@ -247,8 +243,6 @@ TEST(BuiltGroupMoveGen, AnySuitOccupied) {
                     move(move::mtype::regular, 1, 4, 1),
                     move(move::mtype::regular, 2, 4, 1),
                     move(move::mtype::regular, 3, 4, 1),
-                    move(move::mtype::regular, 0, 4, 1),
-                    move(move::mtype::regular, 5, 4, 1),
                     move(move::mtype::regular, 5, 0, 1),
 
                     // Built group moves

@@ -1177,7 +1177,214 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "stock": {
-    "size": 64
+    "size": 64,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "lucas",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "same-suit"
+  },
+  "stock": {
+    "size": 61,
+    "redeal": false
+  },
+  "foundations": {
+     "initial cards": "all"
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "maria",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black"
+  },
+  "stock": {
+    "size": 68,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "limited",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "same-suit"
+  },
+  "stock": {
+    "size": 68,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "streets",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "red-black"
+  },
+  "stock": {
+    "size": 64,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "rank-and-file",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 10,
+    "build policy": "red-black",
+    "face up cards": "top",
+    "move built group": "yes"
+  },
+  "stock": {
+    "size": 64,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+        {
+                "american-toad",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "same-suit",
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve-then-waste",
+    "wraps": true
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
+  },
+  "stock": {
+    "size": 75,
+    "deal count": 1,
+    "redeal": false
+  },
+  "reserve": {
+    "size": 20,
+    "stacked": true
+  },
+  "two decks": true
+}
+)"
+
+        },
+
+        {
+                "gargantua",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 59,
+    "deal count": 1,
+    "redeal": false
+  },
+  "two decks": true
+}
+)"
+
+        },
+
+        {
+                "gargantua-redeal",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 59,
+    "deal count": 1,
+    "redeal": true
+  },
+  "two decks": true
+}
+)"
+
+        },
+
+        {
+                "ultra-klondike-2-deck",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 26,
+    "deal count": 3,
+    "redeal": true
   },
   "two decks": true
 }

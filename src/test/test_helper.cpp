@@ -28,7 +28,7 @@ bool test_helper::is_solvable(const std::string& input_file, const std::string& 
     game_state gs(rules, in_doc, sos::NONE);
     solver sol(gs, 1000000);
 
-    return sol.run() == solver::sol_state::solved;
+    return sol.run().sol_type == solver::result::type::SOLVED;
 }
 
 void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
