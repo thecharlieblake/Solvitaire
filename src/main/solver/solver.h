@@ -29,15 +29,15 @@ public:
         enum class type { TIMEOUT, SOLVED, UNSOLVABLE, MEM_LIMIT };
 
         type sol_type;
-        int states_searched;
-        int unique_states_searched;
-        int backtracks;
-        int dominance_moves;
+        uint64_t states_searched;
+        uint64_t unique_states_searched;
+        uint64_t backtracks;
+        uint64_t dominance_moves;
         uint64_t states_removed_from_cache;
         lru_cache::item_list::size_type cache_size;
         lru_cache::item_list::size_type cache_bucket_count;
-        int max_depth;
-        int depth;
+        uint64_t max_depth;
+        uint64_t depth;
         std::chrono::milliseconds time;
     };
 
