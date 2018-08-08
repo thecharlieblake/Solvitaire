@@ -406,7 +406,8 @@ map<string, string> sol_preset_types::mp = {
     "count": 10,
     "build policy": "any-suit",
     "move built group": "yes",
-    "move built group policy": "same-suit"
+    "move built group policy": "same-suit",
+    "face up cards": "top"
   },
   "foundations": {
     "only complete pile moves": true
@@ -429,7 +430,8 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "any-suit",
     "move built group": "yes",
-    "move built group policy": "same-suit"
+    "move built group policy": "same-suit",
+    "face up cards": "top"
   },
   "foundations": {
     "only complete pile moves": true
@@ -1013,7 +1015,8 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "any-suit",
     "move built group": "yes",
     "move built group policy": "same-suit",
-    "diagonal deal": true
+    "diagonal deal": true,
+    "face up cards": "top"
   },
   "foundations": {
     "only complete pile moves": true
