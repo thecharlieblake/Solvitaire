@@ -97,9 +97,7 @@ const optional<sol_rules> gen_rules(command_line_helper& clh) {
 }
 
 void solve_random_game(int seed, const sol_rules& rules, command_line_helper& clh) {
-    if (clh.get_classify())
-        cout << seed;
-    else
+    if (!clh.get_classify())
         LOG_INFO ("Attempting to solve with seed: " << seed << "...");
     solve_game(rules, clh, seed, none);
 }
@@ -145,6 +143,7 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
             : optional<solve_sol>();
 
     if (clh.get_classify()) {
+        if (seed) cout << *seed;
         solver::print_result_csv(solution.second);
         if (smart) {
             if (run_again) {

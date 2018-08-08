@@ -217,7 +217,9 @@ pair<item_list::iterator, bool> lru_cache::insert(const game_state& gs) {
             cache.relocate(cache.begin(), prev(cache.end()));
 
             if (i == max_num_items) {
+#ifndef NDEBUG
                 LOG_ERROR("All items in cache are live and cache is full");
+#endif
                 throw runtime_error("All items in cache are live and cache is full");
             }
         }
