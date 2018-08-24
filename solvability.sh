@@ -10,13 +10,27 @@ fi
 seeds="$1"
 cores="$2"
 sol_command="$3"
-minramfree="100G"
 out="$4"
-time_command="/usr/bin/time -f \" %e, %U, %S\""
+
+time_command="/usr/bin/time -f \" %e, %U, %S, %M\""
 combine_command="sed -e 'H;\${x;s/\n/,/g;s/^,//;p;};d'"
 
-echo "Attempted Seed, Outcome, Time Taken(ms), States Searched, Unique States Searched, Backtracks, Dominance Moves, States Removed From Cache, Final States In Cache, Final Buckets In Cache, Maximum Search Depth, Final Search Depth, real (time), user (time), sys (time) " > "$out.csv"
+minramfree="100G"
+start=1
+increment=1
+completejobs=10
 
-seq "$seeds" | parallel --joblog $out.log --progress --memfree $minramfree -j"$cores" "exec $time_command $sol_command --ra {} --class 2>&1 | $combine_command >> $out.csv"
+echo "CL: $0 $@" >> "$out.experiment"
+echo "Host: $HOSTNAME: " >> "$out.experiment"
+echo "StartDate: " `date` >> "$out.experiment"
+
+echo "Attempted Seed, Outcome, Time Taken(ms), States Searched, Unique States Searched, Backtracks, Dominance Moves, States Removed From Cache, Final States In Cache, Final Buckets In Cache, Maximum Search Depth, Final Search Depth, real (time), user (time), sys (time) " >> "$out.experiment"
+
+seq $start $increment $seeds | parallel --nice 4 --joblog $out.log --progress --memfree $minramfree -j"$cores" "exec $time_command $sol_command --ra {} --class 2>&1 | $combine_command >> $out.csv"
+echo "MainRunEndDate: " `date` >> "$out.experiment"
+
+parallel --nice 4 --joblog $out.log --progress --retry-failed -j"$completejobs" 2>&1 
+
+echo "EndDate: " `date` >> "$out.experiment"
 
 

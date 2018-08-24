@@ -82,7 +82,7 @@ echo "Writing to $out_dir/"
 for i in "${arr[@]}"
 do
     echo "Running $i ..."
-    ./solvability.sh "$seeds" "$cores" "$sol_command --type $i" "$out_dir"/$i.csv &>/dev/null
+    ./solvability.sh "$seeds" "$cores" "$sol_command --type $i" "$out_dir"/$i
 done
 
 echo "Done!"
