@@ -1,0 +1,21 @@
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 59,
+    "deal count": 3,
+    "redeal": true
+  },
+  "two decks": true
+}
+
+
