@@ -1,0 +1,10 @@
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "red-black",
+    "move built group": "no",
+    "spaces policy": "kings"
+  }
+}
+
+

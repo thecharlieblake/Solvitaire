@@ -2,8 +2,9 @@
   "tableau piles": {
     "count": 8,
     "build policy": "red-black",
-    "spaces policy": "kings"
-  },
+    "move built group": "yes",
+    "spaces policy": "any"
+  }
 }
 
 

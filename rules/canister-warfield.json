@@ -1,0 +1,10 @@
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "spaces policy": "any"
+  }
+}
+
+
