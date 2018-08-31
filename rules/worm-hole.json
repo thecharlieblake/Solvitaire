@@ -1,0 +1,12 @@
+{
+  "tableau piles": {
+    "count": 17,
+    "build policy": "no-build"
+  },
+  "foundations": {
+    "present": false
+  },
+  "cells": 1,
+  "hole": true
+}
+
