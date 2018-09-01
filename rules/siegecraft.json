@@ -1,0 +1,12 @@
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit"
+  },
+  "foundations": {
+    "initial cards": "all"
+  },
+  "cells": 1
+}
+
+
