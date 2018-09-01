@@ -1,0 +1,13 @@
+{
+  "tableau piles": {
+    "count": 6,
+    "build policy": "any-suit",
+    "move built group": "yes"
+  },
+  "stock": {
+    "size": 16,
+    "deal count": 1,
+    "redeal": false
+  }
+}
+
