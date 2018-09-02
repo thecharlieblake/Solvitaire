@@ -1393,6 +1393,134 @@ map<string, string> sol_preset_types::mp = {
 }
 )"
 
+        },
+
+        {
+                "american-canister",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "red-black",
+    "move built group": "yes",
+    "spaces policy": "any"
+  }
+}
+)"
+
+        },
+
+        {
+                "british-canister",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "red-black",
+    "move built group": "no",
+    "spaces policy": "kings"
+  }
+}
+)"
+
+        },
+
+        {
+                "canister-warfield",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "spaces policy": "any"
+  }
+}
+)"
+
+        },
+
+        {
+                "beleaguered-castle",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit"
+  },
+  "foundations": {
+    "initial cards": "all"
+  }
+}
+)"
+
+        },
+
+        {
+                "klondike-two-deck-9",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 9,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 59,
+    "deal count": 3,
+    "redeal": true
+  },
+  "two decks": true
+}
+)"
+
+        },
+
+        {
+                "streets-and-alleys",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit"
+  },
+  "foundations": {
+    "initial cards": "none"
+  }
+}
+)"
+
+        },
+
+        {
+                "worm-hole",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 17,
+    "build policy": "no-build"
+  },
+  "foundations": {
+    "present": false
+  },
+  "cells": 1,
+  "hole": true
+}    
+)"
+
         }
 };
 

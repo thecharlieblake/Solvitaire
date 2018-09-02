@@ -286,7 +286,7 @@ void solver::print_header(long t, command_line_helper::streamliner_opt stream_op
 }
 
 void solver::print_result_csv(solver::result res) {
-    cout << ", " << res.sol_type
+    cout << "| " << res.sol_type
          << ", " << res.time.count()
          << ", " << res.states_searched
          << ", " << res.unique_states_searched
@@ -300,7 +300,7 @@ void solver::print_result_csv(solver::result res) {
 }
 
 void solver::print_null_seed_info() {
-    cout << ", , , , , , , , , , , , ";
+    cout << "| , , , , , , , , , , ";
 }
 
 const vector<solver::node> solver::get_frontier() const {
