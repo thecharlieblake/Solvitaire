@@ -511,7 +511,19 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Only twos in the far left column
                     if (space_loc.second == piles[sequences[i]].size() - 1) {
                         if (from_card.get_rank() == 2) {
-                            moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                            bool is_legal = false;
+
+                            if (rules.sequence_fixed_suit) {
+                                if (from_card.get_suit() == space_loc.first) {
+                                    is_legal = true;
+                                }
+                            } else {
+                                is_legal = true;
+                            }
+
+                            if (is_legal) {
+                                moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                            }
                         }
                     }
                     // Otherwise must agree with left neighbour
