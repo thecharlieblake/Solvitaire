@@ -121,6 +121,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.spaces_pol = s_pol::KINGS;
                     } else if (sp_str == "auto-reserve-then-waste") {
                         sr.spaces_pol = s_pol::AUTO_RESERVE_THEN_WASTE;
+                    } else if (sp_str == "auto-waste-then-stock") {
+                        sr.spaces_pol = s_pol::AUTO_WASTE_THEN_STOCK;
                     } else {
                         json_helper::json_parse_err("[tableau piles][spaces policy] is invalid");
                     }
@@ -543,7 +545,8 @@ string rules_parser::rules_schema_json() {
             "any",
             "no-build",
             "kings",
-            "auto-reserve-then-waste"
+            "auto-reserve-then-waste",
+            "auto-waste-then-stock"
           ]
         },
         "diagonal deal": {
