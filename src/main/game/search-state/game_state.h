@@ -132,6 +132,7 @@ private:
     /* Auto-foundation moves */
 
     boost::optional<move> auto_reserve_move() const;
+    boost::optional<move> auto_waste_stock_move() const;
     bool is_valid_auto_foundation_move(pile::ref) const;
     bool is_ordered_pile(pile::ref) const;
     bool dominance_blocks_foundation_move(pile::ref);

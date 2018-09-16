@@ -71,6 +71,9 @@ optional<move> game_state::get_dominance_move() const {
     if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) {
         optional<move> arm = auto_reserve_move();
         if (arm) return arm;
+    } else if (rules.spaces_pol == s_pol::AUTO_WASTE_THEN_STOCK) {
+        optional<move> awsm = auto_waste_stock_move();
+        if (awsm) return awsm;
     }
 
     // If there are 2 decks or no foundations, return
@@ -118,6 +121,23 @@ optional<move> game_state::auto_reserve_move() const {
         for (auto to : tableau_piles) {
             if (piles[to].empty()) {
                 return move(move::mtype::dominance, reserve.front(), to);
+            }
+        }
+    }
+    return boost::none;
+}
+
+optional<move> game_state::auto_waste_stock_move() const {
+    if (!piles[waste].empty()) {
+        for (auto to : tableau_piles) {
+            if (piles[to].empty()) {
+                return move(move::mtype::dominance, waste, to);
+            }
+        }
+    } else if (!piles[stock].empty()) {
+        for (auto to : tableau_piles) {
+            if (piles[to].empty()) {
+                return move(move::mtype::dominance, stock, to);
             }
         }
     }
