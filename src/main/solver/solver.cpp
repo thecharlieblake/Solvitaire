@@ -253,7 +253,7 @@ void solver::print_header(long t, command_line_helper::streamliner_opt stream_op
             ", Timed-out"
             ", Memory Limited, ";
     if (stream_opt == command_line_helper::streamliner_opt::SMART) {
-        cout << "| (Streamliner Results:) "
+        cout << ", (Streamliner Results:) "
                 "Attempted Seed"
                 ", Outcome"
                 ", Time Taken(ms)"
@@ -266,7 +266,7 @@ void solver::print_header(long t, command_line_helper::streamliner_opt stream_op
                 ", Final Buckets In Cache"
                 ", Maximum Search Depth"
                 ", Final Search Depth"
-                "| (Non-Streamliner Results:) ";
+                ", (Non-Streamliner Results:) ";
     }
     cout << "Attempted Seed"
             ", Outcome"
@@ -280,13 +280,13 @@ void solver::print_header(long t, command_line_helper::streamliner_opt stream_op
             ", Final Buckets In Cache"
             ", Maximum Search Depth"
             ", Final Search Depth"
-            ", Seeds In Progress ..."
+            ", Overall Result"
             "\n--- Timeout = " << t << " milliseconds ---\n";
     cout << fixed << setprecision(3);
 }
 
 void solver::print_result_csv(solver::result res) {
-    cout << "| " << res.sol_type
+    cout << ", " << res.sol_type
          << ", " << res.time.count()
          << ", " << res.states_searched
          << ", " << res.unique_states_searched
@@ -300,7 +300,7 @@ void solver::print_result_csv(solver::result res) {
 }
 
 void solver::print_null_seed_info() {
-    cout << "| , , , , , , , , , , ";
+    cout << ", , , , , , , , , , , , ";
 }
 
 const vector<solver::node> solver::get_frontier() const {
