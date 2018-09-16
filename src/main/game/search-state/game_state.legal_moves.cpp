@@ -510,8 +510,9 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                 if (rules.sequence_direction == dir::LEFT || rules.sequence_direction == dir::BOTH) {
                     // Only twos in the far left column
                     if (space_loc.second == piles[sequences[i]].size() - 1) {
-                        if (from_card.get_rank() == 2)
+                        if (from_card.get_rank() == 2) {
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
+                        }
                     }
                     // Otherwise must agree with left neighbour
                     else {
