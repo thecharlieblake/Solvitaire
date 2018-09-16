@@ -84,6 +84,7 @@ struct sol_rules {
     uint8_t sequence_count;
     direction sequence_direction;
     build_policy sequence_build_pol;
+    bool sequence_fixed_suit;
     uint8_t accordion_size;
     std::vector<std::pair<direction, uint8_t>> accordion_moves;
     std::vector<accordion_policy> accordion_pol;

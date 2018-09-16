@@ -445,6 +445,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
+            if (d["sequences"].HasMember("fixed suit")) {
+                if (d["sequences"]["fixed suit"].IsBool()) {
+                    sr.sequence_fixed_suit = d["sequences"]["fixed suit"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[fixed suit] must be a boolean");
+                }
+            }
+
             if (d["sequences"].HasMember("direction")) {
                 if (d["sequences"]["direction"].IsString()) {
                     string dir_str = d["sequences"]["direction"].GetString();
@@ -688,6 +696,9 @@ string rules_parser::rules_schema_json() {
             "R",
             "LR"
           ]
+        },
+        "fixed suit": {
+          "type": "boolean"
         },
         "build policy": {
           "type": "string",
