@@ -1,0 +1,14 @@
+{
+  "tableau piles": {
+    "count": 12,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "move built group policy": "same-suit",
+    "spaces policy": "any"
+  },
+  "foundations": {
+    "only complete pile moves": true
+  },
+  "two decks": true
+}
+

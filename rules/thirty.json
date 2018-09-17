@@ -1,0 +1,18 @@
+{
+  "tableau piles": {
+    "count": 5,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "spaces policy": "any",
+    "diagonal deal": false
+  },
+  "reserve": {
+    "size": 2
+  },
+  "foundations": {
+    "removable": false
+  },
+ "max rank": 8
+}
+
+
