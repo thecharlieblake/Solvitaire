@@ -149,9 +149,13 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
         if (smart) {
             if (run_again) {
                 solver::print_result_csv(streamliner_solution->second);
+                cout << ", " << streamliner_solution->second.sol_type;
             } else {
                 solver::print_null_seed_info();
+                cout << ", " << solution.second.sol_type;
             }
+        } else {
+            cout << ", " << solution.second.sol_type;
         }
         cout << "\n";
     } else {

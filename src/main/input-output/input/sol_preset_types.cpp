@@ -200,7 +200,8 @@ map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "count": 12,
-    "build policy": "same-suit"
+    "build policy": "same-suit",
+    "spaces policy": "auto-waste-then-stock"
   },
   "foundations": {
      "initial cards": "all"
