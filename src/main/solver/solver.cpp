@@ -245,13 +245,7 @@ std::ostream& operator<< (std::ostream& out, const solver::result& r) {
 }
 
 void solver::print_header(long t, command_line_helper::streamliner_opt stream_opt) {
-    cout << "Calculating solvability percentage...\n\n"
-            "Lower Bound"
-            ", Upper Bound"
-            ", Solvable"
-            ", Unsolvable"
-            ", Timed-out"
-            ", Memory Limited, ";
+    cout << "Calculating solvability percentage...\n\n";
     if (stream_opt == command_line_helper::streamliner_opt::SMART) {
         cout << ", (Streamliner Results:) "
                 "Attempted Seed"
