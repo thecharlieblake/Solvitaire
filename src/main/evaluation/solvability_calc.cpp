@@ -44,10 +44,8 @@ void solvability_calc::print_general_info(const seed_results& seed_res) {
 }
 
 void solvability_calc::print_seed_info(seed_result seed_res) {
-    int seed = seed_res.first;
     auto& res = seed_res.second;
 
-    cout << ", " << seed;
     solver::print_result_csv(res);
 }
 
@@ -127,15 +125,23 @@ void solvability_calc::solver_thread(solvability_calc* sc, uint core) {
         sc->seeds_in_progress.erase(my_seed);
         sc->seed_res.add_result(final_res->second.sol_type);
 
-        print_general_info(sc->seed_res);
+        cout << my_seed;
+        //print_general_info(sc->seed_res);
         if (sc->stream_opt == cmd_sos::SMART) {
             print_seed_info(*stream_res);
-            if (no_stream_res) print_seed_info(*no_stream_res);
-            else solver::print_null_seed_info();
+            if (no_stream_res) {
+                print_seed_info(*no_stream_res);
+                cout << ", " << no_stream_res->second.sol_type;
+            } else {
+                solver::print_null_seed_info();
+                cout << ", " << stream_res->second.sol_type;
+            }
         } else {
             print_seed_info(*no_stream_res);
+            cout << ", " << no_stream_res->second.sol_type;
         }
-        print_seeds_in_prog(sc->seeds_in_progress);
+        //print_seeds_in_prog(sc->seeds_in_progress);
+        cout << "\n";
 
         sc->results_mutex.unlock();
 
