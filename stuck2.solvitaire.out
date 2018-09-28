@@ -1,0 +1,1794 @@
+Solution:
+--- Foundations ---------
+10C	[]	[]	[]	
+--- Tableau Piles -------
+8S	QC	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+10S	
+9H	
+--- Stock | Waste -------
+JS	[]	
+5S		
+6C		
+3S		
+10H		
+QH		
+KC		
+QS		
+2C		
+AC		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+JC		
+AH		
+5H		
+9C		
+AS		
+7S		
+8D		
+7C		
+8C		
+===================================
+--- Foundations ---------
+JC	[]	[]	[]	
+--- Tableau Piles -------
+8S	QC	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+10S	
+9H	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+KC	5H	
+QS	AH	
+2C		
+AC		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+===================================
+--- Foundations ---------
+QC	[]	[]	[]	
+--- Tableau Piles -------
+8S	[]	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+10S	
+9H	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+KC	5H	
+QS	AH	
+2C		
+AC		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+===================================
+--- Foundations ---------
+QC	[]	[]	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+10S	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+KC	5H	
+QS	AH	
+2C		
+AC		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+===================================
+--- Foundations ---------
+QC	[]	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+KC	5H	
+QS	AH	
+2C		
+AC		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+===================================
+--- Foundations ---------
+KC	[]	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+	AC	
+	2C	
+	QS	
+===================================
+--- Foundations ---------
+AC	[]	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+QS	5H	
+2C	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	[]	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+10H	AS	
+QH	9C	
+QS	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	10H	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+JH	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+	QS	
+	QH	
+===================================
+--- Foundations ---------
+2C	JH	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+	QS	
+	QH	
+===================================
+--- Foundations ---------
+2C	QH	10S	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+--- Stock | Waste -------
+JS	8C	
+5S	7C	
+6C	8D	
+3S	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+	QS	
+===================================
+--- Foundations ---------
+2C	QH	JS	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+--- Stock | Waste -------
+5S	[]	
+6C		
+3S		
+QS		
+6D		
+8H		
+7H		
+KD		
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+2D		
+AH		
+5H		
+9C		
+AS		
+7S		
+8D		
+7C		
+8C		
+===================================
+--- Foundations ---------
+2C	QH	QS	[]	
+--- Tableau Piles -------
+8S	9H	4S	3C	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	QH	QS	[]	
+--- Tableau Piles -------
+[]	9H	4S	3C	
+	8S			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+2H	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	QH	QS	[]	
+--- Tableau Piles -------
+2H	9H	4S	3C	
+	8S			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+KH	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	KH	QS	[]	
+--- Tableau Piles -------
+2H	9H	4S	3C	
+	8S			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+KS	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	KH	KS	[]	
+--- Tableau Piles -------
+2H	9H	4S	3C	
+	8S			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	AH	
+	2D	
+	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+	3H	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+===================================
+--- Foundations ---------
+2C	KH	KS	[]	
+--- Tableau Piles -------
+2H	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	AH	
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+===================================
+--- Foundations ---------
+2C	AH	KS	[]	
+--- Tableau Piles -------
+2H	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+===================================
+--- Foundations ---------
+2C	2H	KS	[]	
+--- Tableau Piles -------
+[]	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+9D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+===================================
+--- Foundations ---------
+2C	2H	KS	[]	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H		
+3H		
+7D		
+9S		
+2S		
+QD		
+4C		
+3D		
+5C		
+6S		
+===================================
+--- Foundations ---------
+2C	3H	KS	[]	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+4H	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+===================================
+--- Foundations ---------
+2C	4H	KS	[]	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+10D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+===================================
+--- Foundations ---------
+2C	4H	KS	10D	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+JD	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+===================================
+--- Foundations ---------
+2C	4H	KS	JD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+	7D	
+===================================
+--- Foundations ---------
+2C	4H	KS	JD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+	7D			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+	5C	
+	3D	
+	4C	
+	QD	
+	2S	
+	9S	
+===================================
+--- Foundations ---------
+2C	4H	KS	QD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+	7D			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+--- Stock | Waste -------
+5S	8C	
+6C	7C	
+3S	8D	
+6D	7S	
+8H	AS	
+7H	9C	
+KD	5H	
+6H	6S	
+9S	5C	
+2S	3D	
+	4C	
+===================================
+--- Foundations ---------
+2C	4H	KS	QD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+	7D			
+	6C			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	8D	
+	7S	
+	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+	KD	
+	7H	
+	8H	
+	6D	
+	3S	
+===================================
+--- Foundations ---------
+2C	4H	KS	KD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+	7D			
+	6C			
+--- Reserve (Stacked) ---
+AD	
+4D	
+5D	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+2C	4H	KS	KD	
+--- Tableau Piles -------
+9D	9H	4S	3C	
+	8S		2D	
+	7D			
+	6C			
+	5D			
+--- Reserve (Stacked) ---
+AD	
+4D	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+2C	4H	KS	KD	
+--- Tableau Piles -------
+9D	9H	[]	3C	
+	8S		2D	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+AD	
+4D	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+2C	4H	KS	KD	
+--- Tableau Piles -------
+9D	9H	4D	3C	
+	8S		2D	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+AD	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+2C	4H	KS	AD	
+--- Tableau Piles -------
+9D	9H	4D	3C	
+	8S		2D	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+2C	4H	KS	2D	
+--- Tableau Piles -------
+9D	9H	4D	3C	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+3C	4H	KS	2D	
+--- Tableau Piles -------
+9D	9H	4D	[]	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	8D	
+8H	7S	
+7H	AS	
+	9C	
+	5H	
+	6S	
+	5C	
+	3D	
+	4C	
+	2S	
+	9S	
+	6H	
+===================================
+--- Foundations ---------
+3C	4H	KS	2D	
+--- Tableau Piles -------
+9D	9H	4D	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+8H		
+7H		
+6H		
+9S		
+2S		
+4C		
+3D		
+5C		
+6S		
+5H		
+9C		
+AS		
+7S		
+===================================
+--- Foundations ---------
+3C	5H	KS	2D	
+--- Tableau Piles -------
+9D	9H	4D	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	7S	
+8H	AS	
+7H	9C	
+6H		
+9S		
+2S		
+4C		
+3D		
+5C		
+6S		
+===================================
+--- Foundations ---------
+3C	5H	KS	3D	
+--- Tableau Piles -------
+9D	9H	4D	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	7S	
+8H	AS	
+7H	9C	
+6H	6S	
+9S	5C	
+2S		
+4C		
+===================================
+--- Foundations ---------
+3C	5H	KS	4D	
+--- Tableau Piles -------
+9D	9H	[]	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	7S	
+8H	AS	
+7H	9C	
+6H	6S	
+9S	5C	
+2S		
+4C		
+===================================
+--- Foundations ---------
+3C	5H	KS	4D	
+--- Tableau Piles -------
+9D	9H	7S	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+8H		
+7H		
+6H		
+9S		
+2S		
+4C		
+5C		
+6S		
+9C		
+AS		
+===================================
+--- Foundations ---------
+3C	5H	AS	4D	
+--- Tableau Piles -------
+9D	9H	7S	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+8H		
+7H		
+6H		
+9S		
+2S		
+4C		
+5C		
+6S		
+9C		
+===================================
+--- Foundations ---------
+4C	5H	AS	4D	
+--- Tableau Piles -------
+9D	9H	7S	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	9C	
+8H	6S	
+7H	5C	
+6H		
+9S		
+2S		
+===================================
+--- Foundations ---------
+5C	5H	AS	4D	
+--- Tableau Piles -------
+9D	9H	7S	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	9C	
+8H	6S	
+7H		
+6H		
+9S		
+2S		
+===================================
+--- Foundations ---------
+5C	6H	AS	4D	
+--- Tableau Piles -------
+9D	9H	7S	8D	
+	8S			
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	9C	
+8H	6S	
+7H	2S	
+	9S	
+===================================
+--- Foundations ---------
+5C	6H	AS	4D	
+--- Tableau Piles -------
+9D	9H	[]	8D	
+	8S		7S	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	9C	
+8H	6S	
+7H	2S	
+	9S	
+===================================
+--- Foundations ---------
+5C	6H	AS	4D	
+--- Tableau Piles -------
+9D	9H	9C	8D	
+	8S		7S	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+8H		
+7H		
+9S		
+2S		
+6S		
+===================================
+--- Foundations ---------
+5C	7H	AS	4D	
+--- Tableau Piles -------
+9D	9H	9C	8D	
+	8S		7S	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	6S	
+8H	2S	
+	9S	
+===================================
+--- Foundations ---------
+5C	8H	AS	4D	
+--- Tableau Piles -------
+9D	9H	9C	8D	
+	8S		7S	
+	7D			
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	6S	
+	2S	
+	9S	
+===================================
+--- Foundations ---------
+5C	8H	AS	4D	
+--- Tableau Piles -------
+9D	9H	9C	[]	
+	8S	8D		
+	7D	7S		
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D	6S	
+	2S	
+	9S	
+===================================
+--- Foundations ---------
+5C	8H	AS	4D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+9S		
+2S		
+===================================
+--- Foundations ---------
+5C	8H	2S	4D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+3S	7C	
+6D		
+9S		
+===================================
+--- Foundations ---------
+5C	8H	3S	4D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+	6C			
+	5D			
+	4S			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+	6D	
+===================================
+--- Foundations ---------
+5C	8H	4S	4D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+	6C			
+	5D			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+	6D	
+===================================
+--- Foundations ---------
+5C	8H	4S	5D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+	6C			
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+	6D	
+===================================
+--- Foundations ---------
+6C	8H	4S	5D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+	6D	
+===================================
+--- Foundations ---------
+6C	8H	4S	6D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+	7D	7S		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+===================================
+--- Foundations ---------
+6C	8H	4S	7D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+		7S		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+5S	8C	
+	7C	
+	9S	
+===================================
+--- Foundations ---------
+6C	8H	5S	7D	
+--- Tableau Piles -------
+9D	9H	9C	6S	
+	8S	8D		
+		7S		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	8H	6S	7D	
+--- Tableau Piles -------
+9D	9H	9C	[]	
+	8S	8D		
+		7S		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	8H	7S	7D	
+--- Tableau Piles -------
+9D	9H	9C	[]	
+	8S	8D		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	8H	8S	7D	
+--- Tableau Piles -------
+9D	9H	9C	[]	
+		8D		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	9H	8S	7D	
+--- Tableau Piles -------
+9D	[]	9C	[]	
+		8D		
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	9H	8S	8D	
+--- Tableau Piles -------
+9D	[]	9C	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	9H	8S	9D	
+--- Tableau Piles -------
+[]	[]	9C	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+9S	[]	
+7C		
+8C		
+===================================
+--- Foundations ---------
+6C	9H	9S	9D	
+--- Tableau Piles -------
+[]	[]	9C	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+7C	[]	
+8C		
+===================================
+--- Foundations ---------
+7C	9H	9S	9D	
+--- Tableau Piles -------
+[]	[]	9C	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+8C	[]	
+===================================
+--- Foundations ---------
+8C	9H	9S	9D	
+--- Tableau Piles -------
+[]	[]	9C	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+[]	[]	
+===================================
+--- Foundations ---------
+9C	9H	9S	9D	
+--- Tableau Piles -------
+[]	[]	[]	[]	
+--- Reserve (Stacked) ---
+[]	
+--- Stock | Waste -------
+[]	[]	
+===================================
+
+Solution Type: solved
+States Searched: 15506
+Unique States Searched: 8816
+Backtracks: 15439
+Dominance Moves: 4259
+States Removed From Cache: 0
+Final States In Cache: 4557
+Final Buckets In Cache: 6151
+Maximum Search Depth: 67
+Final Search Depth: 67
+Time Taken (milliseconds): 28

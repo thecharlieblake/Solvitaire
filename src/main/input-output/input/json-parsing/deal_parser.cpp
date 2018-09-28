@@ -264,15 +264,16 @@ bool deal_parser::parse_foundations(game_state &gs, const rapidjson::Document& d
     const Value& json_foundations = doc["foundations"];
     assert(json_foundations.IsArray());
 
+    card c;
     for (auto j = begin(json_foundations.GetArray()); j != end(json_foundations.GetArray()); j++) {
         assert(j->IsString());
-        card c = card(j->GetString());
+        c = card(j->GetString());
         gs.place_card(gs.foundations[c.get_suit()], c);
     }
 
     // If the game uses a random base for foundations, assume that the first card in the first foundation is that base
     if (!gs.rules.foundations_base) {
-        auto& first_found = gs.piles[gs.foundations[0]];
+        auto& first_found = gs.piles[gs.foundations[c.get_suit()]];
         gs.foundations_base = first_found[first_found.size() - 1].get_rank();
     }
 
