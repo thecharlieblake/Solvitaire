@@ -594,10 +594,14 @@ bool game_state::is_next_legal_card(pol p, card a, card b, bool wraps) const {
         default:;
     }
     // Checks rank
-    if (wraps) {
+    auto base = rules.foundations_base ? *rules.foundations_base : 0;
+    auto final_rank = base == 0
+                      ? rules.max_rank
+                      : base - card::rank_t(1);
+    if (wraps || b.get_rank() != final_rank) {
         return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
     } else {
-        return b.get_rank() + 1 == a.get_rank();
+        return false;
     }
 }
 
