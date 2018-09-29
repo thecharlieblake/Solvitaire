@@ -125,7 +125,7 @@ private:
     void add_sequence_moves(std::vector<move>&) const;
     bool tableau_space_and_auto_reserve() const;
 
-    bool is_next_legal_card(sol_rules::build_policy, card, card, bool) const;
+    bool is_next_legal_card(sol_rules::build_policy, card, card) const;
     bool is_next_legal_card(std::vector<sol_rules::accordion_policy>, card, card) const;
     void turn_face_down_cards(std::vector<move>&) const;
 

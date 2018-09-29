@@ -62,16 +62,16 @@ TEST(Canfield, MoveWholePile) {
     sol_rules sr = rules_parser::from_preset("simple-canfield");
 
     game_state gs(sr, string_il{
-            {"3C"},{},{},{}, // Foundations
+            {"AC"},{},{},{}, // Foundations
             {},{}, // Stock-waste
             {}, // Reserve
-            {"3H","2S","AH"},{"AS"},{"2D"} // Tableau piles
+            {"2C","AH"},{"3H"},{"3C","2D"} // Tableau piles
     });
 
     vector<move> actual_moves = gs.get_legal_moves();
     vector<move> exp_moves = {
-            move(move::mtype::built_group, 7, 8, 3),
-            move(move::mtype::built_group, 8, 9, 1),
+            move(move::mtype::built_group, 7, 8, 2),
+            move(move::mtype::regular, 7, 1, 1),
     };
 
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
