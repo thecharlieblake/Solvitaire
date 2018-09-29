@@ -201,14 +201,6 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 }
             }
 
-            if (d["tableau piles"].HasMember("wraps")) {
-                if (d["tableau piles"]["wraps"].IsBool()) {
-                    sr.tableau_wraps = d["tableau piles"]["wraps"].GetBool();
-                } else {
-                    json_helper::json_parse_err("[tableau piles][wraps] must be a boolean");
-                }
-            }
-
         } else {
             json_helper::json_parse_err("[tableau piles] must be an object");
         }
@@ -550,9 +542,6 @@ string rules_parser::rules_schema_json() {
           ]
         },
         "diagonal deal": {
-          "type": "boolean"
-        },
-        "wraps": {
           "type": "boolean"
         },
         "move built group": {

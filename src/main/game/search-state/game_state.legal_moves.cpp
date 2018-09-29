@@ -313,7 +313,7 @@ bool game_state::is_valid_tableau_move(const card rem_c,
 }
 
 bool game_state::is_next_tableau_card(card a, card b) const {
-    return is_next_legal_card(rules.build_pol, a, b, rules.tableau_wraps);
+    return is_next_legal_card(rules.build_pol, a, b);
 }
 
 bool game_state::is_valid_foundations_move(const pile::ref rem_ref,
@@ -447,7 +447,7 @@ pile::size_type game_state::get_built_group_height(pile::ref ref) const {
 }
 
 bool game_state::is_next_built_group_card(card a, card b) const {
-    return is_next_legal_card(rules.built_group_pol, a, b, rules.tableau_wraps);
+    return is_next_legal_card(rules.built_group_pol, a, b);
 }
 
 // Loops through each possible built group move to an empty pile and adds it to the list
@@ -529,7 +529,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with left neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second + 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card, false))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, from_card, neighbour_card))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -543,7 +543,7 @@ void game_state::add_sequence_moves(std::vector<move>& moves) const {
                     // Otherwise must agree with right neighbour
                     else {
                         card neighbour_card = piles[sequences[space_loc.first]][space_loc.second - 1];
-                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card, false))
+                        if (neighbour_card != "AS" && is_next_legal_card(rules.sequence_build_pol, neighbour_card, from_card))
                             moves.emplace_back(move::mtype::sequence, from_idx, space_idx);
                     }
                 }
@@ -582,7 +582,7 @@ bool game_state::tableau_space_and_auto_reserve() const {
 
 ///////////////////////
 
-bool game_state::is_next_legal_card(pol p, card a, card b, bool wraps) const {
+bool game_state::is_next_legal_card(pol p, card a, card b) const {
     // Checks build pol violations
     switch(p) {
         case sol_rules::build_policy::SAME_SUIT:
@@ -594,14 +594,13 @@ bool game_state::is_next_legal_card(pol p, card a, card b, bool wraps) const {
         default:;
     }
     // Checks rank
-    auto base = rules.foundations_base ? *rules.foundations_base : 0;
-    auto final_rank = base == 0
+    auto final_rank = foundations_base == 1
                       ? rules.max_rank
-                      : base - card::rank_t(1);
-    if (wraps || b.get_rank() != final_rank) {
-        return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
-    } else {
+                      : foundations_base - card::rank_t(1);
+    if (b.get_rank() == final_rank) {
         return false;
+    } else {
+        return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
     }
 }
 

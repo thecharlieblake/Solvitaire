@@ -25,7 +25,6 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "any-suit",
     "spaces policy": "any",
     "diagonal deal": false,
-    "wraps": false,
     "move built group": "no",
     "move built group policy": "same-as-build",
     "face up cards": "all"
@@ -279,8 +278,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black",
     "move built group": "whole-pile",
-    "spaces policy": "auto-reserve-then-waste",
-    "wraps": true
+    "spaces policy": "auto-reserve-then-waste"
   },
   "foundations": {
     "initial cards": "one",
@@ -308,8 +306,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 3,
     "build policy": "red-black",
     "move built group": "whole-pile",
-    "spaces policy": "auto-reserve-then-waste",
-    "wraps": true
+    "spaces policy": "auto-reserve-then-waste"
   },
   "foundations": {
     "initial cards": "one",
@@ -1316,8 +1313,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 8,
     "build policy": "same-suit",
     "move built group": "whole-pile",
-    "spaces policy": "auto-reserve-then-waste",
-    "wraps": true
+    "spaces policy": "auto-reserve-then-waste"
   },
   "foundations": {
     "initial cards": "one",
