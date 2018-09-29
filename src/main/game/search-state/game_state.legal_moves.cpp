@@ -157,7 +157,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         if (rules.reserve_size > 0) from_piles.insert(from_piles.end(), reserve.begin(), reserve.end());
 
         for (auto fp : from_piles) {
-            if (piles[fp].empty() || parent_move.to == fp) continue;
+            if (piles[fp].empty() || (parent_move.to == fp && parent_move.type != move::mtype::dominance)) continue;
 
             for (auto f : foundations)
                 if (is_valid_foundations_move(fp, f))
