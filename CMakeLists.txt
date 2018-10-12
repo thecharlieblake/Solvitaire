@@ -162,24 +162,24 @@ set_property(TARGET solvitaire PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # For
 target_link_libraries(solvitaire LINK_PUBLIC ${Boost_LIBRARIES})
 
 # add a separete executable for the 'no pile symmetry' version of the solver
-add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-pile-symmetry PROPERTIES COMPILE_FLAGS -DNO_PILE_SYMMETRY)
+#add_executable(solvitaire-no-pile-symmetry ${main} ${sources})
+#target_link_libraries(solvitaire-no-pile-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
+#set_target_properties(solvitaire-no-pile-symmetry PROPERTIES COMPILE_FLAGS -DNO_PILE_SYMMETRY)
 
 # add a separete executable for the 'no suit symmetry' version of the solver
-add_executable(solvitaire-no-suit-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-suit-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-suit-symmetry PROPERTIES COMPILE_FLAGS -DNO_SUIT_SYMMETRY)
+#add_executable(solvitaire-no-suit-symmetry ${main} ${sources})
+#target_link_libraries(solvitaire-no-suit-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
+#set_target_properties(solvitaire-no-suit-symmetry PROPERTIES COMPILE_FLAGS -DNO_SUIT_SYMMETRY)
 
 # add a separete executable for the 'no symmetry' version of the solver
-add_executable(solvitaire-no-symmetry ${main} ${sources})
-target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_SUIT_SYMMETRY -DNO_PILE_SYMMETRY")
+#add_executable(solvitaire-no-symmetry ${main} ${sources})
+#target_link_libraries(solvitaire-no-symmetry LINK_PUBLIC ${Boost_LIBRARIES})
+#set_target_properties(solvitaire-no-symmetry PROPERTIES COMPILE_FLAGS "-DNO_SUIT_SYMMETRY -DNO_PILE_SYMMETRY")
 
 # add a separete executable for the 'no auto foundations' version of the solver
-add_executable(solvitaire-no-auto-foundations ${main} ${sources})
-target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES})
-set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
+#add_executable(solvitaire-no-auto-foundations ${main} ${sources})
+#target_link_libraries(solvitaire-no-auto-foundations LINK_PUBLIC ${Boost_LIBRARIES})
+#set_target_properties(solvitaire-no-auto-foundations PROPERTIES COMPILE_FLAGS -DNO_AUTO_FOUNDATIONS)
 
 
 ###############################################################################
