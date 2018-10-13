@@ -56,9 +56,10 @@ command_line_helper::command_line_helper()
                     " runs first with both streamliners and a 10% timeout. If this"
                     " is unsuccessful (unsolvable or timeout), then runs again without streamliners.")
             ("benchmark", "outputs performance statistics for the solver on the "
-                    "supplied solitaire game. Must supply "
-                    "either 'random', 'benchmark', 'solvability' or list of deals to be "
-                    "solved.");
+                          "supplied solitaire game. Must supply "
+                          "either 'random', 'benchmark', 'solvability' or list of deals to be "
+                          "solved.");
+            ("deal-only", "outputs the starting deal for a given game / random deal as json");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -96,6 +97,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     }
 
     classify = (vm.count("classify") != 0);
+
+    deal_only = (vm.count("deal-only") != 0);
 
     if (vm.count("input-files")) {
         input_files = vm["input-files"].as<vector<string>>();
@@ -271,6 +274,10 @@ int command_line_helper::get_random_deal() {
 
 bool command_line_helper::get_classify() {
     return classify;
+}
+
+bool command_line_helper::get_deal_only() {
+    return deal_only;
 }
 
 uint64_t command_line_helper::get_cache_capacity() {
