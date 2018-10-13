@@ -27,6 +27,7 @@ class game_state {
     friend class deal_parser;
     friend class state_printer;
     friend class test_helper;
+    friend class json_helper;
 public:
     enum class streamliner_options {NONE, AUTO_FOUNDATIONS, SUIT_SYMMETRY, BOTH};
 

@@ -19,6 +19,7 @@ public:
     const std::string get_rules_file();
     int get_random_deal();
     bool get_classify();
+    bool get_deal_only();
     int get_solvability();
     uint get_cores();
     bool get_available_game_types();
@@ -40,7 +41,6 @@ private:
     void print_too_many_opts_error();
     void print_resume_error();
     void print_streamliner_error(const std::string&);
-    void print_streamliner_solvability_error();
 
     boost::program_options::options_description cmdline_options;
     boost::program_options::options_description main_options;
@@ -53,6 +53,7 @@ private:
     int random_deal;
     bool help;
     bool classify;
+    bool deal_only;
     int solvability;
     std::vector<int> resume;
     uint cores;

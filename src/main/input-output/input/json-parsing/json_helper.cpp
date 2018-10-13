@@ -12,6 +12,9 @@
 using namespace std;
 using namespace rapidjson;
 
+using boost::property_tree::ptree;
+using boost::property_tree::write_json;
+
 Document json_helper::get_file_json(const string& filename) {
     // Reads the file into a string
     std::ifstream ifstr(filename);
@@ -55,4 +58,53 @@ const string json_helper::schema_err_str(const SchemaValidator& validator) {
 
     ret += sb.GetString();
     return ret;
+}
+
+void json_helper::print_game_state_as_json(const game_state& gs) {
+    ptree pt;
+    if (!gs.tableau_piles.empty()) pt.add_child("tableau piles", piles_to_ptree(gs, gs.tableau_piles));
+    if (!gs.cells.empty()) pt.add_child("cells", piles_to_ptree(gs, gs.cells));
+    if (!gs.reserve.empty()) pt.add_child("reserve", piles_to_ptree(gs, gs.reserve));
+    if (!gs.foundations.empty()) pt.add_child("foundations", piles_to_ptree(gs, gs.foundations));
+    if (!gs.sequences.empty()) pt.add_child("sequences", piles_to_ptree(gs, gs.sequences));
+    if (!gs.accordion.empty()) pt.add_child("accordion", piles_to_ptree(gs, gs.accordion));
+    if (gs.rules.stock_size > 0) {
+        pt.add_child("stock", pile_to_ptree(gs.piles[gs.stock]));
+        if (gs.rules.stock_deal_t == sol_rules::stock_deal_type::WASTE) {
+            pt.add_child("waste", pile_to_ptree(gs.piles[gs.waste]));
+        }
+    }
+    if (gs.rules.hole) pt.add_child("hole", pile_to_ptree(gs.piles[gs.hole]));
+
+    write_json (cout, pt);
+}
+
+ptree json_helper::piles_to_ptree(const game_state& gs, const std::list<pile::ref>& piles) {
+    ptree pt;
+    for (pile::ref pr : piles) {
+        pt.push_back(make_pair("", pile_to_ptree(gs.piles[pr])));
+    }
+    return pt;
+}
+
+ptree json_helper::piles_to_ptree(const game_state& gs, const std::vector<pile::ref>& piles) {
+    ptree pt;
+    for (pile::ref pr : piles) {
+        pt.push_back(make_pair("", pile_to_ptree(gs.piles[pr])));
+    }
+    return pt;
+}
+
+ptree json_helper::pile_to_ptree(const pile& pile) {
+    ptree pt;
+    for (pile::size_type i = pile.size(); i-->0; ) {
+        pt.push_back(make_pair("", card_to_ptree(pile[i])));
+    }
+    return pt;
+}
+
+ptree json_helper::card_to_ptree(const card& card) {
+    ptree pt;
+    pt.put("", card.to_string());
+    return pt;
 }
