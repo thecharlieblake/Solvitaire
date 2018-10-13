@@ -294,7 +294,7 @@ void solver::print_result_csv(solver::result res) {
 }
 
 void solver::print_null_seed_info() {
-    cout << ", , , , , , , , , , , , ";
+    cout << ", , , , , , , , , , , ";
 }
 
 const vector<solver::node> solver::get_frontier() const {

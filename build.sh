@@ -45,6 +45,9 @@ if [ "$error" = true ]; then
     echo "(default args = --release --solvitaire)"
     exit 1
 else
+    cmake [-G "CodeBlocks - Unix Makefiles"] \
+    "-DCMAKE_BUILD_TYPE=${build^^}" \
+    "-Bcmake-build-$build" -H. 
     cmake --build "cmake-build-$build" -- "$target"
     exit 0
 fi
