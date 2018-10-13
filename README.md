@@ -26,6 +26,11 @@ _Dockerfile_ should be a good guide to the required dependencies, although bear
 in mind that on older Linux systems the required versions of dependencies may
 not be available through _rpm_ / _deb_.
 
+(Note: on one system I had to run `sudo usermod -aG docker $USER`
+and then restart my machine before docker would allow me sufficient
+permissions. Just making a note of this here in case others encounter a similar
+problem)
+
 ## Using the Docker image
 
 To use the docker image, simply run:
