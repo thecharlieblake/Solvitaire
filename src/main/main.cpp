@@ -53,6 +53,12 @@ int main(int argc, const char* argv[]) {
     const optional<sol_rules> rules = gen_rules(clh);
     if (!rules) return EXIT_FAILURE;
 
+    if (clh.get_deal_only()) {
+        game_state gs(*rules, clh.get_random_deal(), game_state::streamliner_options::NONE);
+        json_helper::print_game_state_as_json(gs);
+        return EXIT_SUCCESS;
+    }
+
     // If the user has asked for a solvability percentage, calculates it
     if (clh.get_solvability() > 0) {
         solvability_calc solv_c(*rules, clh.get_cache_capacity());

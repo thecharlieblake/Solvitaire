@@ -58,8 +58,8 @@ command_line_helper::command_line_helper()
             ("benchmark", "outputs performance statistics for the solver on the "
                           "supplied solitaire game. Must supply "
                           "either 'random', 'benchmark', 'solvability' or list of deals to be "
-                          "solved.");
-            ("deal-only", "outputs the starting deal for a given game / random deal as json");
+                          "solved.")
+            ("deal-only", "outputs the starting deal for a given game type & random seed as json");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
