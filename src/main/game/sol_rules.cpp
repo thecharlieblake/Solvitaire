@@ -29,6 +29,7 @@ sol_rules::sol_rules() :
         foundations_only_comp_piles(false),
         diagonal_deal(false),
         cells(0),
+        cells_pre_filled(0),
         stock_size(0),
         stock_deal_t(sdt::TABLEAU_PILES),
         stock_deal_count(1),
