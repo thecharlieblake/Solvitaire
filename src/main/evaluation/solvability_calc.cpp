@@ -180,5 +180,7 @@ void solvability_calc::seed_results::add_result(solver::result::type t) {
         case solver::result::type ::MEM_LIMIT:
             mem_limit++;
             break;
+        case solver::result::type ::TERMINATED:
+            break;
     }
 }

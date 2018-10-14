@@ -26,7 +26,7 @@ public:
     };
 
     struct result {
-        enum class type { TIMEOUT, SOLVED, UNSOLVABLE, MEM_LIMIT };
+        enum class type { TIMEOUT, SOLVED, UNSOLVABLE, MEM_LIMIT, TERMINATED };
 
         type sol_type;
         uint64_t states_searched;
@@ -73,6 +73,6 @@ private:
 
 std::ostream& operator<< (std::ostream&, const solver::result::type&);
 std::ostream& operator<< (std::ostream&, const solver::result&);
-
+void sigint_handler(int i);
 
 #endif //SOLVITAIRE_SOLVER_H
