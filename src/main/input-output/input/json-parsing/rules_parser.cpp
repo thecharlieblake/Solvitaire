@@ -142,6 +142,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.move_built_group = bgt::NO;
                     } else if (mbg_str == "whole-pile") {
                         sr.move_built_group = bgt::WHOLE_PILE;
+                    }  else if (mbg_str == "maximal-group") {
+                        sr.move_built_group = bgt::MAXIMAL_GROUP;
                     } else {
                         json_helper::json_parse_err("[tableau piles][move built group] is invalid");
                     }
@@ -563,7 +565,8 @@ string rules_parser::rules_schema_json() {
           "enum": [
             "yes",
             "no",
-            "whole-pile"
+            "whole-pile",
+            "maximal-group"
           ]
         },
         "move built group policy": {
