@@ -10,6 +10,7 @@
 #include <malloc.h>
 #include <chrono>
 #include <iomanip>
+#include <signal.h>
 
 #include "solver.h"
 #include "../game/move.h"
@@ -28,6 +29,13 @@ using std::end;
 using boost::optional;
 using std::fixed;
 using std::setprecision;
+
+static bool sigint = false;
+
+void sigint_handler(int i) {
+    // So it doesn't complain about unused param
+    sigint = i == 1 ? true : true;
+}
 
 solver::solver(const game_state& gs, uint64_t cache_capacity)
         : cache(lru_cache(gs, cache_capacity))
@@ -52,6 +60,10 @@ solver::node::node(const move m)
 }
 
 solver::result solver::run(boost::optional<millisec> timeout) {
+    // Set interrupt handler
+    signal(SIGINT, sigint_handler);
+
+    // Set timings
     const clock::time_point start_time = clock::now();
     result::type res_type = timeout ? dfs(start_time + *timeout) : dfs();
     res.sol_type = res_type;
@@ -66,9 +78,10 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
     bool states_exhausted = false;
 
     while(!(state.is_solved() || states_exhausted)) {
-        // If the terminate flag was supplied and has been set to true, return
         if (end_time && clock::now() >= *end_time) {
             return result::type::TIMEOUT;
+        } else if (sigint) {
+            return result::type::TERMINATED;
         }
 
 #ifndef NDEBUG
@@ -224,6 +237,9 @@ std::ostream& operator<< (std::ostream& out, const solver::result::type& rt) {
             break;
         case solver::result::type::MEM_LIMIT:
             out << "memory-limit-reached";
+            break;
+        case solver::result::type::TERMINATED:
+            out << "terminated";
             break;
     }
     return out;
