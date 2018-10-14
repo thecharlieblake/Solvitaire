@@ -37,7 +37,9 @@ map<string, string> sol_preset_types::mp = {
     "only complete pile moves": false
   },
   "hole": false,
-  "cells": 0,
+  "cells": {
+    "count": 0
+  },
   "stock": {
     "size": 0,
     "deal type": "waste",
@@ -104,7 +106,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "red-black"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -118,7 +122,9 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black"
   },
-  "cells": 1,
+  "cells": {
+    "count": 1
+  },
   "max rank": 4
 }
 )"
@@ -555,7 +561,9 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "removable": true
   },
-  "cells": 1
+  "cells": {
+    "count": 1
+  }
 }
 )"
 
@@ -622,7 +630,9 @@ map<string, string> sol_preset_types::mp = {
     "initial cards": "all",
     "removable": true
   },
-  "cells": 1
+  "cells": {
+    "count": 1
+  }
 }
 )"
 
@@ -640,7 +650,9 @@ map<string, string> sol_preset_types::mp = {
     "initial cards": "all",
     "removable": true
   },
-  "cells": 2
+  "cells": {
+    "count": 2
+  }
 }
 )"
 
@@ -653,7 +665,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "red-black"
   },
-  "cells": 3
+  "cells": {
+    "count": 3
+  }
 }
 )"
 
@@ -666,7 +680,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "red-black"
   },
-  "cells": 2
+  "cells": {
+    "count": 2
+  }
 }
 )"
 
@@ -679,7 +695,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "red-black"
   },
-  "cells": 1
+  "cells": {
+    "count": 1
+  }
 }
 )"
 
@@ -691,8 +709,7 @@ map<string, string> sol_preset_types::mp = {
 {
   "tableau piles": {
     "build policy": "red-black"
-  },
-  "cells": 0
+  }
 }
 )"
 
@@ -706,7 +723,9 @@ map<string, string> sol_preset_types::mp = {
     "count": 7,
     "build policy": "red-black"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -720,7 +739,9 @@ map<string, string> sol_preset_types::mp = {
     "count": 6,
     "build policy": "red-black"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -734,7 +755,9 @@ map<string, string> sol_preset_types::mp = {
     "count": 5,
     "build policy": "red-black"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -748,7 +771,9 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -761,7 +786,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "same-suit"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -775,7 +802,10 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit",
     "spaces policy": "kings"
   },
-  "cells": 8
+  "cells": {
+    "count": 8,
+    "pre-filled": 4
+  }
 }
 )"
 
@@ -788,7 +818,9 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "build policy": "same-suit"
   },
-  "cells": 8
+  "cells": {
+    "count": 8
+  }
 }
 )"
 
@@ -802,7 +834,27 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "spaces policy": "kings"
   },
-  "cells": 4
+  "cells": {
+    "count": 4,
+    "pre-filled": 4
+  }
+}
+)"
+
+        },
+        {
+                "fore-cell-same-suit",
+
+                R"(
+{
+  "tableau piles": {
+    "build policy": "same-suit",
+    "spaces policy": "kings"
+  },
+  "cells": {
+    "count": 4,
+    "pre-filled": 4
+  }
 }
 )"
 
@@ -818,7 +870,9 @@ map<string, string> sol_preset_types::mp = {
     "move built group": "yes",
     "spaces policy": "kings"
   },
-  "cells": 7,
+  "cells": {
+    "count": 7
+  },
   "foundations": {
     "initial cards": "all"
   }
@@ -837,7 +891,9 @@ map<string, string> sol_preset_types::mp = {
     "move built group": "yes",
     "spaces policy": "kings"
   },
-  "cells": 4
+  "cells": {
+    "count": 4
+  }
 }
 )"
 
@@ -1536,7 +1592,9 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "present": false
   },
-  "cells": 1,
+  "cells": {
+    "count": 1
+  },
   "hole": true
 }    
 )"

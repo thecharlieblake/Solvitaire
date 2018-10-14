@@ -75,6 +75,7 @@ struct sol_rules {
     bool foundations_only_comp_piles;
     bool diagonal_deal;
     uint8_t cells;
+    uint8_t cells_pre_filled;
     uint8_t stock_size;
     stock_deal_type stock_deal_t;
     uint8_t stock_deal_count;

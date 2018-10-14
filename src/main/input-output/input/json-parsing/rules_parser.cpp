@@ -280,10 +280,24 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     }
 
     if (d.HasMember("cells")) {
-        if (d["cells"].IsInt()) {
-            sr.cells = static_cast<uint8_t>(d["cells"].GetInt());
+        if (d["cells"].IsObject()) {
+            if (d["cells"].HasMember("count")) {
+                if (d["cells"]["count"].IsInt()) {
+                    sr.cells = static_cast<uint8_t>(d["cells"]["count"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[cells][count] must be an integer");
+                }
+            }
+
+            if (d["cells"].HasMember("pre-filled")) {
+                if (d["cells"]["pre-filled"].IsInt()) {
+                    sr.cells_pre_filled = static_cast<uint8_t>(d["cells"]["pre-filled"].GetInt());
+                } else {
+                    json_helper::json_parse_err("[cells][pre-filled] must be an integer");
+                }
+            }
         } else {
-            json_helper::json_parse_err("[cells] must be an integer");
+            json_helper::json_parse_err("[cells] must be an object");
         }
     }
 
@@ -606,8 +620,18 @@ string rules_parser::rules_schema_json() {
       "type": "boolean"
     },
     "cells": {
-      "type": "integer",
-      "minimum": 0
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pre-filled": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
     },
     "stock": {
       "type": "object",

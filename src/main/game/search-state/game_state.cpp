@@ -166,6 +166,15 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
         place_card(foundations[(f_idx + rand_suit)], c);
     }
 
+    // If there are pre-filled cells, deals to them
+    auto it = begin(original_cells);
+    for (uint8_t i = 0; i < rules.cells_pre_filled; i++) {
+        pile::ref r = *it;
+        place_card(r, deck.back());
+        deck.pop_back();
+        it++;
+    }
+
     // If there is a stock, deals to it and set up a waste pile too
     if (rules.stock_size > 0) {
         for (unsigned int i = 0; i < rules.stock_size; i++) {
