@@ -108,7 +108,10 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Tableau built group moves
     switch (rules.move_built_group) {
         case sol_rules::built_group_type::YES:
-            add_built_group_moves(moves);
+            add_built_group_moves(moves, false);
+            break;
+        case sol_rules::built_group_type::MAXIMAL_GROUP:
+            add_built_group_moves(moves, true);
             break;
         case sol_rules::built_group_type::WHOLE_PILE:
             add_whole_pile_moves(moves);
@@ -369,8 +372,9 @@ void game_state::add_valid_tableau_moves(std::vector<move>& moves, pile::ref fro
     }
 }
 
-void game_state::add_built_group_moves(vector<move>& moves) const {
+void game_state::add_built_group_moves(vector<move>& moves, bool only_maximal) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
+    if (tableau_space_and_auto_reserve()) return;
 
     // Cycles through each pile to see if it contains a built group
     for (auto rem_ref : tableau_piles) {
@@ -379,11 +383,12 @@ void game_state::add_built_group_moves(vector<move>& moves) const {
         auto built_group_height = get_built_group_height(rem_ref);
         if (built_group_height == 1) continue;
 
-        add_built_group_moves(moves, rem_ref, built_group_height);
+        add_built_group_moves(moves, rem_ref, built_group_height, only_maximal);
     }
 }
 
-void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height) const {
+void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height,
+                                       bool only_maximal) const {
     // We have found a built group. Cycles through each pile to see if it can be added
     for (auto add_ref : tableau_piles) {
         if (add_ref == rem_ref) continue;
@@ -395,12 +400,12 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
 
         if (piles[add_ref].empty()) {
             if (rules.spaces_pol == s_pol::ANY) {
-                add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down);
+                add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal);
             } else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
                 add_kings_only_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
             }
         } else {
-            add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
+            add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal);
         }
     }
 }
@@ -452,9 +457,10 @@ bool game_state::is_next_built_group_card(card a, card b) const {
 
 // Loops through each possible built group move to an empty pile and adds it to the list
 void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             pile::size_type built_group_height, bool base_face_down) const {
-
-    for (pile::size_type card_idx = 1; card_idx < built_group_height; card_idx++) {
+                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal)
+const {
+    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
+    for (pile::size_type card_idx = start_idx; card_idx < built_group_height; card_idx++) {
         bool is_reveal_move = card_idx + 1 == built_group_height && base_face_down;
         moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, card_idx + 1, is_reveal_move);
     }
@@ -466,13 +472,14 @@ void game_state::add_kings_only_built_group_move(vector<move>& moves, pile::ref 
     moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height, base_face_down);
 }
 
-// Loops through each possible built group move to an empty pile and adds it to the list
 void game_state::add_non_empty_built_group_move(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             pile::size_type built_group_height, bool base_face_down) const {
+                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal) const {
+
+    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
 
     // Given rank of add pile, get card of that rank - 1 in rem pile and see if next bg card
     // For each card going down from top card in rem pile, check if is next bg card
-    for (pile::ref r = 1; r < built_group_height; r++) {
+    for (pile::ref r = start_idx; r < built_group_height; r++) {
         if (is_next_built_group_card(piles[add_ref].top_card(),  piles[rem_ref][r])) {
 
             bool is_reveal_move = r + 1 == built_group_height && base_face_down;

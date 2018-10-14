@@ -51,7 +51,8 @@ struct sol_rules {
     enum class built_group_type {
         YES,
         NO,
-        WHOLE_PILE
+        WHOLE_PILE,
+        MAXIMAL_GROUP
     };
     enum class foundations_init_type {
         NONE,
@@ -64,7 +65,6 @@ struct sol_rules {
     spaces_policy spaces_pol;
     built_group_type move_built_group;
     build_policy built_group_pol;
-    bool tableau_wraps;
     bool two_decks;
     uint8_t max_rank;
     bool hole;
