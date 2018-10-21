@@ -23,6 +23,7 @@ struct cached_game_state {
 
     explicit cached_game_state(const game_state&);
     void add_pile(pile::ref, const game_state&);
+    void add_pile_in_reverse(pile::ref, const game_state&);
     void add_card(card, const game_state&);
     void add_card_divider();
 
