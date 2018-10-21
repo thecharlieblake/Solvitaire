@@ -49,12 +49,21 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
 
     if (gs.rules.stock_size > 0) {
         add_pile(gs.stock, gs);
-        add_card_divider();
 
         if (gs.rules.stock_deal_t == sdt::WASTE) {
-            add_pile(gs.waste, gs);
-            add_card_divider();
+            bool waste_deal_symmetry = gs.rules.stock_redeal
+                    && gs.piles[gs.waste].size() % gs.rules.stock_deal_count == 0;
+
+            if (waste_deal_symmetry) {
+                add_pile_in_reverse(gs.waste, gs);
+                add_card_divider();
+            } else {
+                add_card_divider();
+                add_pile_in_reverse(gs.waste, gs);
+            }
         }
+        
+        add_card_divider();
     }
 
     for (pile::ref pr : gs.reserve) {
@@ -82,6 +91,13 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
 
 void cached_game_state::add_pile(pile::ref pr, const game_state& gs) {
     for (card c : gs.piles[pr].pile_vec) {
+        add_card(c, gs);
+    }
+}
+
+void cached_game_state::add_pile_in_reverse(pile::ref pr, const game_state& gs) {
+    for (auto i = gs.piles[pr].pile_vec.size(); i-->0;) {
+        card c = gs.piles[pr].pile_vec[i];
         add_card(c, gs);
     }
 }
