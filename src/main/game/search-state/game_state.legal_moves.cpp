@@ -222,12 +222,23 @@ set<pair<int8_t, bool>, greater<>> game_state::generate_k_plus_moves_to_check() 
     bool flip_waste = rules.stock_redeal;
     stock_moves_to_check.insert(pair<int8_t, bool>(static_cast<int8_t>(piles[stock].size()), flip_waste));
 
-    // If the stock can be redealt, searches through the waste then the stock again
-    if (rules.stock_redeal)
-        for (auto count = static_cast<int8_t>(-piles[waste].size() + rules.stock_deal_count);
-                count < piles[stock].size();
-                count += rules.stock_deal_count)
-            stock_moves_to_check.insert(pair<int8_t, bool>(count, false));
+    // If the stock can be redealt, searches through the waste then (if necessary) the stock again
+    if (rules.stock_redeal) {
+	// we do not need to go through waste and stock if the waste is a multiple of deal count 
+	//
+        if(piles[waste].size() % rules.stock_deal_count == 0) { 
+            for (auto count = static_cast<int8_t>(-piles[waste].size() + rules.stock_deal_count);
+                    count < 0;
+                    count += rules.stock_deal_count)
+                stock_moves_to_check.insert(pair<int8_t, bool>(count, false));
+	}
+	else {
+            for (auto count = static_cast<int8_t>(-piles[waste].size() + rules.stock_deal_count);
+                    count < piles[stock].size();
+                    count += rules.stock_deal_count)
+                stock_moves_to_check.insert(pair<int8_t, bool>(count, false));
+	}
+    }
 
     return stock_moves_to_check;
 }
