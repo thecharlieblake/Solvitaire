@@ -86,8 +86,8 @@ optional<move> game_state::get_dominance_move() const {
         // Don't move foundation cards, hole, waste or stock cards to the foundations
         if ((pr >= foundations.front() && pr <= foundations.back())
             || (rules.hole && pr == hole)
-            || (rules.stock_size > 0 && pr == stock)
-            || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste)
+           || (rules.stock_size > 0 && pr == stock && (rules.stock_deal_count != 1 || !rules.stock_redeal))
+            || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste  && (rules.stock_deal_count != 1 || !rules.stock_redeal))
             || (piles[pr].empty())) {
             continue;
         }
