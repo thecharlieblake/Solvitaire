@@ -56,7 +56,6 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
 
             if (waste_deal_symmetry) {
                 add_pile_in_reverse(gs.waste, gs);
-                add_card_divider();
             } else {
                 add_card_divider();
                 add_pile_in_reverse(gs.waste, gs);
