@@ -122,7 +122,11 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
     // Tableau to tableau moves
     // If only whole pile moves are available, doesn't make regular ones
-    if (rules.move_built_group != bgt::WHOLE_PILE) {
+//
+//     if (rules.move_built_group != bgt::WHOLE_PILE && (rules.move_built_group != bgt::MAXIMAL_GROUP) 
+    if ((rules.move_built_group != bgt::WHOLE_PILE) && (rules.move_built_group != bgt::MAXIMAL_GROUP)) {
+
+//     if (rules.move_built_group != bgt::WHOLE_PILE) {
         for (auto t_from : tableau_piles) {
             // Forbids moves from empty piles, reversing parent moves, or from single-
             // card piles to empty piles
@@ -389,12 +393,20 @@ void game_state::add_built_group_moves(vector<move>& moves, bool only_maximal) c
 
     // Cycles through each pile to see if it contains a built group
     for (auto rem_ref : tableau_piles) {
-        if (piles[rem_ref].size() < 2) continue;
 
-        auto built_group_height = get_built_group_height(rem_ref);
-        if (built_group_height == 1) continue;
-
-        add_built_group_moves(moves, rem_ref, built_group_height, only_maximal);
+	// if enforcing maximal piles then allow size one groups
+        if (only_maximal) {
+            if (piles[rem_ref].size() == 0) continue;
+            auto built_group_height = get_built_group_height(rem_ref);
+            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal); 
+        } 
+	// otherwise size 1 groups are single cards and found elsewhere
+        else { 
+            if (piles[rem_ref].size() < 2) continue;
+            auto built_group_height = get_built_group_height(rem_ref);
+            if (built_group_height == 1) continue;
+            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal);
+        }
     }
 }
 
@@ -472,6 +484,7 @@ void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_
 const {
     auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
     for (pile::size_type card_idx = start_idx; card_idx < built_group_height; card_idx++) {
+
         bool is_reveal_move = card_idx + 1 == built_group_height && base_face_down;
         moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, card_idx + 1, is_reveal_move);
     }
