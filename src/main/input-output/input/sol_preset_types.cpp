@@ -83,22 +83,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "simple-spanish-patience",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 3
-  },
-  "foundations": {
-    "removable": true
-  },
-  "max rank": 2
-}
-)"
-
-        },
-        {
                 "free-cell",
 
                 R"(
@@ -109,23 +93,6 @@ map<string, string> sol_preset_types::mp = {
   "cells": {
     "count": 4
   }
-}
-)"
-
-        },
-        {
-                "simple-free-cell",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "red-black"
-  },
-  "cells": {
-    "count": 1
-  },
-  "max rank": 4
 }
 )"
 
@@ -147,23 +114,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "simple-bakers-dozen",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 3,
-    "spaces policy": "no-build"
-  },
-  "foundations": {
-    "removable": true
-  },
-  "max rank": 3
-}
-)"
-
-        },
-        {
                 "black-hole",
 
                 R"(
@@ -176,24 +126,6 @@ map<string, string> sol_preset_types::mp = {
     "present": false
   },
   "hole": true
-}
-)"
-
-        },
-        {
-                "simple-black-hole",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "no-build"
-  },
-  "foundations": {
-    "present": false
-  },
-  "hole": true,
-  "max rank": 5
 }
 )"
 
@@ -219,26 +151,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "simple-fortunes-favor",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 3,
-    "build policy": "same-suit"
-  },
-  "foundations": {
-     "initial cards": "all"
-  },
-  "stock": {
-     "size": 3
-  },
-  "max rank": 4
-}
-)"
-
-        },
-        {
                 "flower-garden",
 
                 R"(
@@ -257,26 +169,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "simple-flower-garden",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 3
-  },
-  "reserve": {
-    "size": 3
-  },
-  "foundations": {
-    "removable": true
-  },
-  "max rank": 3
-}
-)"
-
-        },
-        {
-                "canfield",
+                "canfield-strict",
 
                 R"(
 {
@@ -303,15 +196,15 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-        {
-                "simple-canfield",
+	{
+                "canfield",
 
                 R"(
 {
   "tableau piles": {
-    "count": 3,
+    "count": 4,
     "build policy": "red-black",
-    "move built group": "whole-pile",
+    "move built group": "yes",
     "spaces policy": "auto-reserve-then-waste"
   },
   "foundations": {
@@ -319,15 +212,14 @@ map<string, string> sol_preset_types::mp = {
     "base card": "random"
   },
   "stock": {
-    "size": 6,
+    "size": 34,
     "deal count": 3,
     "redeal": true
   },
   "reserve": {
-    "size": 2,
+    "size": 13,
     "stacked": true
-  },
-  "max rank": 3
+  }
 }
 )"
 
@@ -350,24 +242,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "simple-somerset",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "red-black",
-    "diagonal deal": true
-  },
-  "foundations": {
-    "removable": true
-  },
-  "max rank": 2
-}
-)"
-
-        },
-        {
                 "alpha-star",
 
                 R"(
@@ -380,24 +254,6 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "initial cards": "all"
   }
-}
-)"
-
-        },
-        {
-                "simple-alpha-star",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 3,
-    "build policy": "same-suit",
-    "move built group": "yes"
-  },
-  "foundations": {
-    "initial cards": "all"
-  },
-  "max rank": 6
 }
 )"
 
@@ -426,53 +282,7 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-        {
-                "simple-spider",
 
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "any-suit",
-    "move built group": "yes",
-    "move built group policy": "same-suit",
-    "face up cards": "top"
-  },
-  "foundations": {
-    "only complete pile moves": true
-  },
-  "stock": {
-    "size": 12,
-    "deal type": "tableau piles"
-  },
-  "two decks": true,
-  "max rank": 3
-}
-)"
-
-        },
-
-        {
-                "simple-klondike",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 4,
-    "build policy": "red-black",
-    "move built group": "yes",
-    "diagonal deal": true,
-    "face up cards": "top"
-  },
-  "stock": {
-    "size": 6,
-    "deal count": 3,
-    "redeal": true
-  },
-  "max rank": 4
-}
-)"
-        },
         // --- END OF 'CANONICAL' GAMES ---
 
         {
@@ -517,6 +327,29 @@ map<string, string> sol_preset_types::mp = {
     "size": 24,
     "deal count": 1,
     "redeal": true
+  }
+}
+)"
+
+        },
+	{
+                "klondike-reserve",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "reserve": {
+    "size": 24
   }
 }
 )"
@@ -819,7 +652,8 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "same-suit"
   },
   "cells": {
-    "count": 8
+    "count": 8,
+    "pre-filled": 4
   }
 }
 )"
@@ -1125,7 +959,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "gaps",
+                "gaps-one-deal",
 
                 R"(
 {
@@ -1166,48 +1000,7 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-        {
-                "simple-gaps",
-
-                R"(
-{
-  "foundations": {
-    "present": false
-  },
-  "tableau piles": {
-    "count": 0
-  },
-  "sequences": {
-    "count": 4,
-    "direction": "L",
-    "build policy": "same-suit"
-  },
-  "max rank": 4
-}
-)"
-
-        },
-        {
-                "simple-accordion",
-
-                R"(
-{
-  "foundations": {
-    "present": false
-  },
-  "tableau piles": {
-    "count": 0
-  },
-  "accordion": {
-    "size": 10,
-    "moves": ["L1", "L3"],
-    "build policies": ["same-suit", "same-rank"]
-  }
-}
-)"
-
-        },
-        {
+	{
                 "accordion-knuth",
 
                 R"(
@@ -1248,7 +1041,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "forty-theives",
+                "forty-thieves",
 
                 R"(
 {
@@ -1503,21 +1296,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
 
-        {
-                "canister-warfield",
-
-                R"(
-{
-  "tableau piles": {
-    "count": 8,
-    "build policy": "any-suit",
-    "move built group": "yes",
-    "spaces policy": "any"
-  }
-}
-)"
-
-        },
 
         {
                 "beleaguered-castle",
@@ -1562,6 +1340,26 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
+	{
+		"mrs-mop",
+
+		R"(
+
+{
+  "tableau piles": {
+    "count": 13,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "move built group policy": "same-suit",
+    "spaces policy": "any"
+  },
+  "foundations": {
+    "only complete pile moves": true
+  },
+  "two decks": true
+}
+)"
+	},
 
         {
                 "streets-and-alleys",
@@ -1579,6 +1377,76 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
+
+        {
+                "thirty",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 5,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "spaces policy": "any",
+    "diagonal deal": false
+  },
+  "reserve": {
+    "size": 2
+  },
+  "foundations": {
+    "removable": false
+  },
+ "max rank": 8
+}
+)"
+	},
+
+        {
+                "thirtysix",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 6,
+    "build policy": "any-suit",
+    "move built group": "yes"
+  },
+  "stock": {
+    "size": 16,
+    "deal count": 1,
+    "redeal": false
+  }
+}
+)"
+	},
+
+        {
+                "trigon",
+
+                R"(
+
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "same-suit",
+    "spaces policy": "kings",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": false
+  },
+  "stock": {
+    "size": 24,
+    "deal count": 1,
+    "redeal": true
+  }
+}
+)"
+	},
+
 
         {
                 "worm-hole",
