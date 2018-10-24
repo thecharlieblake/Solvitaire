@@ -86,30 +86,48 @@ optional<move> game_state::get_dominance_move() const {
         // Don't move foundation cards, hole, waste or stock cards to the foundations
         if ((pr >= foundations.front() && pr <= foundations.back())
             || (rules.hole && pr == hole)
-           || (rules.stock_size > 0 && pr == stock && (rules.stock_deal_count != 1 || !rules.stock_redeal))
+            || (rules.stock_size > 0 && pr == stock && (rules.stock_deal_count != 1 || !rules.stock_redeal))
             || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste  && (rules.stock_deal_count != 1 || !rules.stock_redeal))
             || (piles[pr].empty())) {
             continue;
         }
 
-        card c = piles[pr].top_card();
-        pile::ref target_foundation = foundations[c.get_suit()];
+       if (pr==stock) { 
+		assert(rules.stock_deal_count == 1 && !rules.stock_redeal);
+		// multiple cards to deal with
+	        for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
+		    	card c = stock_card_from_count(k_plus_mv.first);
+			pile::ref target_foundation = foundations[c.get_suit()];
+			// If the card is the right rank and the auto-move boolean is true, then
+			// returns the move
+			card::rank_t target_rank = piles[target_foundation].empty()
+						   ? card::rank_t(1)
+						   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
+			if (target_rank == foundation_base_convert(c.get_rank()) &&
+			    auto_foundation_moves[c.get_suit()]) {
+			    move m(move::mtype::stock_k_plus, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second);
+			    return m;
+			}
+		}
+        } else { 
+		// only one card to deal with
+		card c = piles[pr].top_card();
+		pile::ref target_foundation = foundations[c.get_suit()];
+		// If the card is the right rank and the auto-move boolean is true, then
+		// returns the move
+		card::rank_t target_rank = piles[target_foundation].empty()
+					   ? card::rank_t(1)
+					   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
+		if (target_rank == foundation_base_convert(c.get_rank()) &&
+		    auto_foundation_moves[c.get_suit()]) {
+		    move m(move::mtype::dominance, pr, target_foundation);
 
-        // If the card is the right rank and the auto-move boolean is true, then
-        // returns the move
-        card::rank_t target_rank = piles[target_foundation].empty()
-                                   ? card::rank_t(1)
-                                   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
-        if (target_rank == foundation_base_convert(c.get_rank()) &&
-            auto_foundation_moves[c.get_suit()]) {
-            move m(move::mtype::dominance, pr, target_foundation);
-
-            // If this dominance move reveals a card, adds this to the move
-            if (piles[pr].size() > 1 && piles[pr][1].is_face_down())
-                m.make_reveal_move();
-
-            return m;
-        }
+		    // If this dominance move reveals a card, adds this to the move
+		    if (piles[pr].size() > 1 && piles[pr][1].is_face_down())
+			m.make_reveal_move();
+		    return m;
+	        }
+            }
     }
 #endif
 
