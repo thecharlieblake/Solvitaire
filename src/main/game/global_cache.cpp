@@ -56,7 +56,6 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
 
             if (waste_deal_symmetry) {
                 add_pile_in_reverse(gs.waste, gs);
-                add_card_divider();
             } else {
                 add_card_divider();
                 add_pile_in_reverse(gs.waste, gs);
@@ -68,7 +67,7 @@ cached_game_state::cached_game_state(const game_state& gs) : live(true) {
 
     for (pile::ref pr : gs.reserve) {
         add_pile(pr, gs);
-    }
+        }
     if (gs.rules.reserve_size > 0) {
         add_card_divider();
     }
@@ -118,10 +117,10 @@ void cached_game_state::add_card(card c, const game_state& gs) {
                 target.emplace_back(c);
                 break;
             case pol::RED_BLACK:
-                target.emplace_back(c.get_colour(), c.get_rank(), c.is_face_down());
+                target.emplace_back(card(c.get_colour(), c.get_rank(), c.is_face_down()));
                 break;
             default:
-                target.emplace_back(0, c.get_rank(), c.is_face_down());
+                target.emplace_back(card(0, c.get_rank(), c.is_face_down()));
                 break;
         }
     } else {
@@ -130,7 +129,7 @@ void cached_game_state::add_card(card c, const game_state& gs) {
 }
 
 void cached_game_state::add_card_divider() {
-    data.emplace_back(0, 0);
+    data.emplace_back(card::divider);
 }
 
 bool operator==(const cached_game_state& a, const cached_game_state& b) {
@@ -184,7 +183,7 @@ size_t hasher::hash_value(card const& c) const {
         suit_val = c.get_suit();
     }
 
-    auto raw_val = static_cast<uint8_t>(suit_val * 13 + c.get_rank());
+    auto raw_val = static_cast<uint8_t>(suit_val * 26 + 2*c.get_rank() + c.is_face_down());
     return boost_hasher(raw_val);
 }
 
