@@ -715,9 +715,8 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "sea-towers",
+                "seahaven-towers",
                 R"(
-
 {
   "tableau piles": {
     "count": 10,
@@ -726,7 +725,8 @@ map<string, string> sol_preset_types::mp = {
     "spaces policy": "kings"
   },
   "cells": {
-    "count": 4
+    "count": 4,
+    "pre-filled": 2
   }
 }
 )"
