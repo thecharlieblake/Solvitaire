@@ -9,7 +9,7 @@
 typedef test_helper th;
 
 const static std::string path = "resources/gaps/";
-const static std::string type = "simple-gaps";
+const static std::string type = "-test-gaps";
 
 TEST(Gaps, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));

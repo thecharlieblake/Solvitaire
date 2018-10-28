@@ -15,7 +15,7 @@ typedef game_state::streamliner_options so;
 typedef std::initializer_list<std::initializer_list<std::string>> string_il;
 
 const static std::string path = "resources/canfield/";
-const static std::string type = "simple-canfield";
+const static std::string type = "-test-canfield";
 
 TEST(Canfield, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));
@@ -41,7 +41,7 @@ TEST(Canfield, FoundationSingleCard) {
 }
 
 TEST(Canfield, FoundationWraps) {
-    sol_rules sr = rules_parser::from_preset("simple-canfield");
+    sol_rules sr = rules_parser::from_preset("-test-canfield");
 
     game_state gs(sr, string_il{
             {"3C"},{},{},{}, // Foundations
@@ -59,7 +59,7 @@ TEST(Canfield, FoundationWraps) {
 }
 
 TEST(Canfield, MoveWholePile) {
-    sol_rules sr = rules_parser::from_preset("simple-canfield");
+    sol_rules sr = rules_parser::from_preset("-test-canfield");
 
     game_state gs(sr, string_il{
             {"AC"},{},{},{}, // Foundations
@@ -78,7 +78,7 @@ TEST(Canfield, MoveWholePile) {
 }
 
 TEST(Canfield, MoveWholePileNotSpace) {
-    sol_rules sr = rules_parser::from_preset("simple-canfield");
+    sol_rules sr = rules_parser::from_preset("-test-canfield");
 
     game_state gs(sr, string_il{
             {"3C"},{},{},{}, // Foundations
@@ -94,7 +94,7 @@ TEST(Canfield, MoveWholePileNotSpace) {
 }
 
 TEST(Canfield, AutoReserve) {
-    sol_rules sr = rules_parser::from_preset("simple-canfield");
+    sol_rules sr = rules_parser::from_preset("-test-canfield");
 
     game_state gs(sr, string_il{
             {"2C"},{},{},{}, // Foundations
@@ -115,7 +115,7 @@ TEST(Canfield, AutoReserve) {
 }
 
 TEST(Canfield, AutoReserveThenWaste) {
-    sol_rules sr = rules_parser::from_preset("simple-canfield");
+    sol_rules sr = rules_parser::from_preset("-test-canfield");
 
     game_state gs(sr, string_il{
             {"3C"},{},{},{}, // Foundations

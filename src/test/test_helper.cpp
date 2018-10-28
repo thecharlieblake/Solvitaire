@@ -33,7 +33,7 @@ bool test_helper::is_solvable(const std::string& input_file, const std::string& 
 
 void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
                                                  std::vector<card> cards) {
-    sol_rules rules = rules_parser::from_preset("simple-free-cell");
+    sol_rules rules = rules_parser::from_preset("-test-free-cell");
     rules.build_pol = policy;
     rules.foundations_removable = false;
     rules.cells = 0;
