@@ -116,7 +116,7 @@ void card::turn_face_down() {
 const card card::divider = card();
 
 bool operator==(const card& l, const card& r) {
-    return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit();
+    return l.get_rank() == r.get_rank() && l.get_suit() == r.get_suit() && l.is_face_down() == r.is_face_down();
 }
 
 bool operator!=(const card& l, const card& r) {

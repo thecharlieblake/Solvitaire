@@ -299,6 +299,8 @@ TEST(FaceUpCards, CacheEncodesFaceDown) {
     lru_cache cache(gs, 1000);
     bool new_state;
 
+    cache.insert(gs);
+
     gs.make_move(move(mt::regular, 1, 2, 1, true));
     new_state = cache.insert(gs).second;
     ASSERT_TRUE(new_state) << "AH to empty pile";

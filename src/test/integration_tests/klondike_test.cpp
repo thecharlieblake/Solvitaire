@@ -9,7 +9,7 @@
 typedef test_helper th;
 
 const static std::string path = "resources/klondike/";
-const static std::string type = "simple-klondike";
+const static std::string type = "-test-klondike";
 
 TEST(Klondike, SimpleSolvable) {
     EXPECT_TRUE(th::is_solvable(path + "SimpleSolvable.json", type));

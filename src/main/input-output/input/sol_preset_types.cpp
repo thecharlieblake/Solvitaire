@@ -715,9 +715,8 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "sea-towers",
+                "seahaven-towers",
                 R"(
-
 {
   "tableau piles": {
     "count": 10,
@@ -726,7 +725,8 @@ map<string, string> sol_preset_types::mp = {
     "spaces policy": "kings"
   },
   "cells": {
-    "count": 4
+    "count": 4,
+    "pre-filled": 2
   }
 }
 )"
@@ -1467,14 +1467,283 @@ map<string, string> sol_preset_types::mp = {
 }    
 )"
 
+        },
+        
+        /////////////////////
+        // TEST GAME TYPES //
+        /////////////////////
+        
+        {
+                "-test-spanish-patience",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3
+  },
+  "foundations": {
+    "removable": true
+  },
+  "max rank": 2
+}
+)"
+
+        },
+        {
+                "-test-free-cell",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black"
+  },
+  "cells": {
+    "count": 1
+  },
+  "max rank": 4
+}
+)"
+
+        },
+        {
+                "-test-bakers-dozen",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "spaces policy": "no-build"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "max rank": 3
+}
+)"
+
+        },
+        {
+                "-test-black-hole",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "no-build"
+  },
+  "foundations": {
+    "present": false
+  },
+  "hole": true,
+  "max rank": 5
+}
+)"
+
+        },
+        {
+                "-test-fortunes-favor",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "same-suit"
+  },
+  "foundations": {
+     "initial cards": "all"
+  },
+  "stock": {
+     "size": 3
+  },
+  "max rank": 4
+}
+)"
+
+        },
+        {
+                "-test-flower-garden",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3
+  },
+  "reserve": {
+    "size": 3
+  },
+  "foundations": {
+    "removable": true
+  },
+  "max rank": 3
+}
+)"
+
+        },
+        {
+                "-test-canfield",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "red-black",
+    "move built group": "whole-pile",
+    "spaces policy": "auto-reserve-then-waste"
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
+  },
+  "stock": {
+    "size": 6,
+    "deal count": 3,
+    "redeal": true
+  },
+  "reserve": {
+    "size": 2,
+    "stacked": true
+  },
+  "max rank": 3
+}
+)"
+
+        },
+        {
+                "-test-somerset",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "diagonal deal": true
+  },
+  "foundations": {
+    "removable": true
+  },
+  "max rank": 2
+}
+)"
+
+        },
+        {
+                "-test-alpha-star",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 3,
+    "build policy": "same-suit",
+    "move built group": "yes"
+  },
+  "foundations": {
+    "initial cards": "all"
+  },
+  "max rank": 6
+}
+)"
+
+        },
+        {
+                "-test-spider",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "any-suit",
+    "move built group": "yes",
+    "move built group policy": "same-suit",
+    "face up cards": "top"
+  },
+  "foundations": {
+    "only complete pile moves": true
+  },
+  "stock": {
+    "size": 12,
+    "deal type": "tableau piles"
+  },
+  "two decks": true,
+  "max rank": 3
+}
+)"
+
+        },
+
+        {
+                "-test-klondike",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "stock": {
+    "size": 6,
+    "deal count": 3,
+    "redeal": true
+  },
+  "max rank": 4
+}
+)"
+        },
+        {
+                "-test-gaps",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "sequences": {
+    "count": 4,
+    "direction": "L",
+    "build policy": "same-suit"
+  },
+  "max rank": 4
+}
+)"
+
+        },
+        {
+                "-test-accordion",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 10,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
         }
+
+
 };
 
 void sol_preset_types::print_available_games() {
     cout << "The following game types can be supplied to solvitaire using the "
             "'--type [name of game]' option:\n\n";
     for (auto const& x : mp) {
-        cout << x.first << "\n";
+        if (x.first[0] != '-') {
+            cout << x.first << "\n";
+        }
     }
     cout << "\nUse the '--describe-game-rules [name of game]' option for an "
             "overview of the rules of each game:\n";
