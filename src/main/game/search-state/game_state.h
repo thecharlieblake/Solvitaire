@@ -137,7 +137,6 @@ private:
     bool is_valid_auto_foundation_move(pile::ref) const;
     bool is_ordered_pile(pile::ref) const;
     bool dominance_blocks_foundation_move(pile::ref);
-    void update_auto_foundation_moves(pile::ref);
     card::rank_t foundation_base_convert(card::rank_t) const;
 
     /* Game rules */
@@ -163,10 +162,6 @@ private:
     std::vector<pile::ref> original_tableau_piles;
     std::vector<pile::ref> original_cells;
     std::vector<pile::ref> original_reserve;
-
-    /* Auto-foundation moves state */
-
-    std::vector<bool> auto_foundation_moves;
 
     /* Core piles */
 

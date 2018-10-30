@@ -63,7 +63,6 @@ game_state::game_state(const sol_rules& s_rules, streamliner_options stream_opts
         for (uint8_t i = 0; i < 4*(rules.two_decks ? 2:1); i++) {
             piles.emplace_back();
             foundations.push_back(static_cast<pile::ref>(piles.size() - 1));
-            auto_foundation_moves.push_back(true);
         }
     }
 
@@ -397,9 +396,6 @@ void game_state::make_regular_move(const move m) {
         piles[m.from][0].turn_face_up();
     }
 
-#ifndef NO_AUTO_FOUNDATIONS
-    update_auto_foundation_moves(m.to);
-#endif
 }
 
 void game_state::undo_regular_move(const move m) {
@@ -413,9 +409,6 @@ void game_state::undo_regular_move(const move m) {
 
     place_card(m.from, take_card(m.to));
 
-#ifndef NO_AUTO_FOUNDATIONS
-    update_auto_foundation_moves(m.from);
-#endif
 }
 
 void game_state::make_built_group_move(move m) {
