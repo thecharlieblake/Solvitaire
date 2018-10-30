@@ -87,7 +87,7 @@ optional<move> game_state::get_dominance_move() const {
         if ((pr >= foundations.front() && pr <= foundations.back())
             || (rules.hole && pr == hole)
             || (rules.stock_size > 0 && pr == stock && (rules.stock_deal_count != 1 || !rules.stock_redeal))
-            || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste  && (rules.stock_deal_count != 1 || !rules.stock_redeal))
+            || (rules.stock_size > 0 && rules.stock_deal_t == sdt::WASTE && pr == waste) // && (rules.stock_deal_count != 1 || !rules.stock_redeal))
             || (piles[pr].empty())) {
             continue;
         }
@@ -105,7 +105,7 @@ optional<move> game_state::get_dominance_move() const {
 						   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
 			if (target_rank == foundation_base_convert(c.get_rank()) &&
 			    auto_foundation_moves[c.get_suit()]) {
-			    move m(move::mtype::stock_k_plus, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second);
+			    move m(move::mtype::dominance, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second);
 			    return m;
 			}
 		}
