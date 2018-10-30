@@ -498,6 +498,10 @@ void game_state::make_stock_k_plus_move(const move m) {
         }
     }
 
+#ifndef NO_AUTO_FOUNDATIONS
+    update_auto_foundation_moves(m.to);
+#endif
+
 #ifndef NDEBUG
     auto sz_after = piles[stock].size() + piles[waste].size();
     assert(sz_before == sz_after + 1);
@@ -532,6 +536,10 @@ void game_state::undo_stock_k_plus_move(move m) {
             place_card(waste, take_card(stock));
         }
     }
+
+#ifndef NO_AUTO_FOUNDATIONS
+    update_auto_foundation_moves(m.to);
+#endif
 
 #ifndef NDEBUG
     auto sz_before = piles[stock].size() + piles[waste].size();

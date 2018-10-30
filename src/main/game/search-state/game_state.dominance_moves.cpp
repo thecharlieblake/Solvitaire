@@ -93,7 +93,7 @@ optional<move> game_state::get_dominance_move() const {
         }
 
        if (pr==stock) { 
-		assert(rules.stock_deal_count == 1 && !rules.stock_redeal);
+		assert(rules.stock_deal_count == 1 && rules.stock_redeal);
 		// multiple cards to deal with
 	        for (auto k_plus_mv : generate_k_plus_moves_to_check()) {
 		    	card c = stock_card_from_count(k_plus_mv.first);
