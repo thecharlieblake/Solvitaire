@@ -104,7 +104,7 @@ optional<move> game_state::get_dominance_move() const {
 						   ? card::rank_t(1)
 						   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
 			if (target_rank == foundation_base_convert(c.get_rank()) &&
-			    auto_foundation_moves[c.get_suit()]) {
+                            is_valid_auto_foundation_move(target_foundation)) {
 			    move m(move::mtype::dominance, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second);
 			    return m;
 			}
@@ -119,7 +119,7 @@ optional<move> game_state::get_dominance_move() const {
 					   ? card::rank_t(1)
 					   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
 		if (target_rank == foundation_base_convert(c.get_rank()) &&
-		    auto_foundation_moves[c.get_suit()]) {
+                    is_valid_auto_foundation_move(target_foundation)) {
 		    move m(move::mtype::dominance, pr, target_foundation);
 
 		    // If this dominance move reveals a card, adds this to the move
@@ -185,22 +185,6 @@ bool game_state::dominance_blocks_foundation_move(pile::ref target_pile) {
     piles[target_pile].place(target_card);
 
     return blocked;
-}
-
-// Decides which 'auto foundation' booleans should be 'true' currently
-void game_state::update_auto_foundation_moves(pile::ref target_pile) {
-    // If there are no foundations, or this is not a foundation move, do nothing
-    if (!rules.foundations_present
-        || target_pile < foundations.front()
-        || target_pile > foundations.back()) {
-        return;
-    }
-
-    // Turns the 'auto' boolean for the target foundation false
-
-    for (pile::ref pr : foundations) {
-        auto_foundation_moves[pr] = is_valid_auto_foundation_move(pr);
-    }
 }
 
 card::rank_t game_state::foundation_base_convert(card::rank_t r) const {
