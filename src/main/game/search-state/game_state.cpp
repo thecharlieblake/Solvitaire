@@ -325,12 +325,7 @@ void game_state::shuffle(RandomIt first, RandomIt last, URBG&& g) {
 void game_state::make_move(const move m) {
     switch (m.type) {
         case move::mtype::regular:
-        case move::mtype::dominance:
-            if (m.from == stock) { // must be a stock_k_plus_move 
-		// at least while this is only type of dominance move allowed
-		make_stock_k_plus_move(m); } 
-            else {
-		make_regular_move(m); }
+	    make_regular_move(m); 
             break;
         case move::mtype::built_group:
             make_built_group_move(m);
@@ -360,12 +355,7 @@ void game_state::make_move(const move m) {
 void game_state::undo_move(const move m) {
     switch (m.type) {
         case move::mtype::regular:
-        case move::mtype::dominance:
-            if (m.from == stock) { // must be a stock_k_plus_move 
-		// at least while this is only type of dominance move allowed
-		undo_stock_k_plus_move(m); } 
-            else {
-		undo_regular_move(m); }
+	    undo_regular_move(m); 
             break;
         case move::mtype::built_group:
             undo_built_group_move(m);

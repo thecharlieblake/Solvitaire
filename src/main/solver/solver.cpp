@@ -85,7 +85,7 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
         }
 
 #ifndef NDEBUG
-        if (current_node->mv.type == move::mtype::dominance) {
+        if (current_node->mv.dominance_move) {
             LOG_DEBUG("(dominance move)");
         }
         LOG_DEBUG(state);
@@ -132,7 +132,7 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
             state.make_move(current_node->mv);
             res.depth++;
             res.max_depth = max(res.depth, res.max_depth);
-            if (current_node->mv.type == move::mtype::dominance) res.dominance_moves++;
+            if (current_node->mv.dominance_move) res.dominance_moves++;
         }
 
         res.states_searched++;
@@ -168,7 +168,7 @@ bool solver::revert_to_last_node_with_children(optional<lru_cache::item_list::it
     // Checks that the state after the undo is in the cache
     // (as long as the move wasn't a dominance move)
 
-    if (current_node->mv.type != move::mtype::dominance) {
+    if (! current_node->mv.dominance_move) {
         if (cache.get_states_removed_from_cache() == 0) {
             assert(cache.contains(state));
         }

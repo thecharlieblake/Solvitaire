@@ -57,7 +57,7 @@ void test_helper::run_foundations_dominance_test(sol_rules::build_policy policy,
 
     for (card c : cards) {
         i++;
-        ASSERT_TRUE(i->mv.type == move::mtype::dominance);
+        ASSERT_TRUE(i->mv.dominance_move);
         ASSERT_TRUE(gs.get_data()[i->mv.from].top_card() == c);
         ASSERT_TRUE(i->mv.to >= 0 && i->mv.to <= 4);
         gs.make_move(i->mv);

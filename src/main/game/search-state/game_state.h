@@ -124,6 +124,7 @@ private:
     void add_kings_only_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool) const;
     void add_non_empty_built_group_move(std::vector<move>&, pile::ref, pile::ref, pile::size_type, bool, bool) const;
     void add_sequence_moves(std::vector<move>&) const;
+    bool creates_immediate_loop(pile::ref, pile::ref) const;
     bool tableau_space_and_auto_reserve() const;
 
     bool is_next_legal_card(sol_rules::build_policy, card, card) const;

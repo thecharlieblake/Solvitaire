@@ -105,7 +105,8 @@ optional<move> game_state::get_dominance_move() const {
 						   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
 			if (target_rank == foundation_base_convert(c.get_rank()) &&
                             is_valid_auto_foundation_move(target_foundation)) {
-			    move m(move::mtype::dominance, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second);
+		   	// create dominance stock_k_plus move
+			    move m(move::mtype::stock_k_plus, stock, target_foundation, k_plus_mv.first, false, k_plus_mv.second, true);
 			    return m;
 			}
 		}
@@ -120,11 +121,8 @@ optional<move> game_state::get_dominance_move() const {
 					   : foundation_base_convert(piles[target_foundation].top_card().get_rank() + card::rank_t(1));
 		if (target_rank == foundation_base_convert(c.get_rank()) &&
                     is_valid_auto_foundation_move(target_foundation)) {
-		    move m(move::mtype::dominance, pr, target_foundation);
-
-		    // If this dominance move reveals a card, adds this to the move
-		    if (piles[pr].size() > 1 && piles[pr][1].is_face_down())
-			m.make_reveal_move();
+		    // make move which is definitely dominance and might be a reveal move
+		    move m(move::mtype::regular, pr, target_foundation, 1, (piles[pr].size() > 1 && piles[pr][1].is_face_down()), false, true);
 		    return m;
 	        }
             }
@@ -138,7 +136,7 @@ optional<move> game_state::auto_reserve_move() const {
     if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE && !piles[reserve.front()].empty()) {
         for (auto to : tableau_piles) {
             if (piles[to].empty()) {
-                return move(move::mtype::dominance, reserve.front(), to);
+                return move(move::mtype::regular, reserve.front(), to, 1, false, false, true);
             }
         }
     }
@@ -149,13 +147,13 @@ optional<move> game_state::auto_waste_stock_move() const {
     if (!piles[waste].empty()) {
         for (auto to : tableau_piles) {
             if (piles[to].empty()) {
-                return move(move::mtype::dominance, waste, to);
+                return move(move::mtype::regular, waste, to, 1, false, false, true);
             }
         }
     } else if (!piles[stock].empty()) {
         for (auto to : tableau_piles) {
             if (piles[to].empty()) {
-                return move(move::mtype::dominance, stock, to);
+                return move(move::mtype::regular, stock, to, 1, false, false, true);
             }
         }
     }

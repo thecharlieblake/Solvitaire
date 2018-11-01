@@ -165,7 +165,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
         if (rules.reserve_size > 0) from_piles.insert(from_piles.end(), reserve.begin(), reserve.end());
 
         for (auto fp : from_piles) {
-            if (piles[fp].empty() || (parent_move.to == fp && parent_move.type != move::mtype::dominance)) continue;
+            if (piles[fp].empty() || (parent_move.to == fp && !parent_move.dominance_move)) continue;
 
             for (auto f : foundations)
                 if (is_valid_foundations_move(fp, f))
@@ -602,6 +602,13 @@ void game_state::add_accordion_moves(vector<move>& moves) const {
                 moves.emplace_back(move::mtype::accordion, *from_it, *to_it, piles[*from_it].size());
         }
     }
+}
+
+// A move could have been done last move 
+
+bool game_state::creates_immediate_loop(pile::ref from, pile::ref to) const {
+
+	return (from == to) && false;
 }
 
 // If auto-reserve is enabled and there is a space, returns

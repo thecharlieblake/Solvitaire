@@ -8,12 +8,13 @@
 #include "pile.h"
 
 struct move {
-    enum class mtype : uint8_t {regular, dominance, built_group, stock_k_plus, stock_to_all_tableau, sequence, accordion, null};
+    enum class mtype : uint8_t {regular, built_group, stock_k_plus, stock_to_all_tableau, sequence, accordion, null};
 
-    explicit move(mtype, pile::ref = 255 , pile::ref = 255, int8_t = 1, bool reveal_move_ = false, bool flip_waste_ = false);
+    explicit move(mtype, pile::ref = 255 , pile::ref = 255, int8_t = 1, bool reveal_move_ = false, bool flip_waste_ = false, bool dominance_move_ = false);
     friend bool operator==(const move&, const move&);
 
     void make_reveal_move();
+    void make_dominance_move();
 
     mtype type;
     pile::ref from;
@@ -23,6 +24,7 @@ struct move {
     int8_t count;
     bool reveal_move;
     bool flip_waste;
+    bool dominance_move;
 };
 
 #endif //SOLVITAIRE_MOVE_H

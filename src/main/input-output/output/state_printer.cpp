@@ -160,9 +160,6 @@ void state_printer::print_move(std::ostream& s, const move m) {
         case move::mtype::regular:
             s << "regular";
             break;
-        case move::mtype::dominance:
-            s << "dominance";
-            break;
         case move::mtype::built_group:
             s << "built group";
             break;
@@ -189,6 +186,8 @@ void state_printer::print_move(std::ostream& s, const move m) {
       << ", "
       << int(m.count)
       << ", "
-      << (m.reveal_move ? "true" : "false")
+      << (m.reveal_move ? "true" : "false") 
+      << ", "
+      << (m.dominance_move ? "dominance" : "regular")
       << ")\n";
 }

@@ -109,7 +109,7 @@ TEST(Canfield, AutoReserve) {
     ASSERT_TRUE(test_helper::moves_eq(exp_moves, actual_moves)) << actual_moves;
 
     boost::optional<move> actual_dom_move = gs.get_dominance_move();
-    boost::optional<move> exp_dom_move = move(move::mtype::dominance, 6, 8, 1);
+    boost::optional<move> exp_dom_move = move(move::mtype::regular, 6, 8, 1, false, false, true);
 
     ASSERT_EQ(exp_dom_move, actual_dom_move) << *actual_dom_move;
 }
