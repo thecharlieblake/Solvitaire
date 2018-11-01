@@ -129,9 +129,11 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
 //     if (rules.move_built_group != bgt::WHOLE_PILE) {
         for (auto t_from : tableau_piles) {
-            // Forbids moves from empty piles, reversing parent moves (unless it turned a card), or from single-
+            // Forbids moves from empty piles, reversing parent moves (unless it turned a card or was dominance), or from single-
             // card piles to empty piles
-            if (piles[t_from].empty() || ((parent_move.to == t_from) && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
+            // Also forbids moves of card just placed here 
+            //
+            if (piles[t_from].empty() || (parent_move.to == t_from && !parent_move.dominance_move && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
 
             for (auto to : tableau_piles) {
                 if (is_valid_tableau_move(t_from, to)
