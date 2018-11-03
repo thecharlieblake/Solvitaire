@@ -57,8 +57,10 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
     bool other_within_2 = other_rank_diff <= 2;
     bool same_within_3 = same_rank_diff <= 3;
 
+
     if (rules.build_pol == pol::RED_BLACK) {
         return other_within_1 || (other_within_2 && same_within_3);
+// ?? Only valid other_winin_1 if no worrying back? 
     } else {
         assert(rules.build_pol == pol::ANY_SUIT);
         return other_within_2;
@@ -186,7 +188,7 @@ bool game_state::dominance_blocks_foundation_move(pile::ref target_pile) {
 }
 
 card::rank_t game_state::foundation_base_convert(card::rank_t r) const {
-    card::rank_t s = r - (foundations_base - card::rank_t(1));
-    if (s < 1) s += rules.max_rank;
+    card::rank_t s = (r - (foundations_base - card::rank_t(1)) + rules.max_rank) % rules.max_rank;
+    if (s == 0) return rules.max_rank;
     return s;
 }
