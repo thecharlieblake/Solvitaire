@@ -20,7 +20,7 @@ combine_command="sed -e 'H;\${x;s/\n/,/g;s/^,//;p;};d'"
 
 #completejobs=10
 
-cp $seeds $out
+sort -R $seeds > $out
 
 echo "CL: $0 $@" >> "$out.experiment"
 echo "Host: $HOSTNAME: " >> "$out.experiment"
@@ -28,7 +28,7 @@ echo "StartDate: " `date` >> "$out.experiment"
 
 echo "Attempted Seed, Outcome, Time Taken(ms), States Searched, Unique States Searched, Backtracks, Dominance Moves, States Removed From Cache, Final States In Cache, Final Buckets In Cache, Maximum Search Depth, Final Search Depth, real (time), user (time), sys (time) " >> "$out.experiment"
 
-cat $out | parallel --joblog $out.log --memfree $minramfree -j"$cores" "exec $time_command $sol_command --ra {} --class 2>&1 | $combine_command >> $out.csv"
+cat $out | parallel --progress --joblog $out.log --memfree $minramfree -j"$cores" "exec $time_command $sol_command --ra {} --class 2>&1 | $combine_command >> $out.csv"
 
 echo "MainRunEndDate: " `date` >> "$out.experiment"
 

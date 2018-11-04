@@ -53,15 +53,15 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
         }
     }
 
-    // bool other_within_1 = other_rank_diff <= 1;
+    bool other_within_1 = other_rank_diff <= 1;
     bool other_within_2 = other_rank_diff <= 2;
     bool same_within_3 = same_rank_diff <= 3;
 
 
     if (rules.build_pol == pol::RED_BLACK) {
-        return (other_within_2 && same_within_3); //  || (other_within_1 && !rules.foundations_removable);
-// ?? Only valid other_winin_1 if no worrying back? 
-// And why within_1?
+//  Only valid other_winin_1 if no worrying back? 
+//  E.g. see King Albert deal 
+        return (other_within_2 && same_within_3) || (other_within_1 && !rules.foundations_removable);
     } else {
         assert(rules.build_pol == pol::ANY_SUIT);
         return other_within_2;
@@ -79,8 +79,8 @@ optional<move> game_state::get_dominance_move() const {
         if (awsm) return awsm;
     }
 
-    // If there are 2 decks or no foundations, return
-    if (!rules.foundations_present || rules.two_decks)
+    // If there are 2 decks or no foundations or using spider type winning rules, return
+    if (!rules.foundations_present || rules.two_decks || rules.foundations_only_comp_piles)
         return boost::none;
 
     // Cycles through the piles and sees if any cards can be automatically moved
