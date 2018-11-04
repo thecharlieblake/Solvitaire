@@ -53,14 +53,15 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
         }
     }
 
-    bool other_within_1 = other_rank_diff <= 1;
+    // bool other_within_1 = other_rank_diff <= 1;
     bool other_within_2 = other_rank_diff <= 2;
     bool same_within_3 = same_rank_diff <= 3;
 
 
     if (rules.build_pol == pol::RED_BLACK) {
-        return other_within_1 || (other_within_2 && same_within_3);
+        return (other_within_2 && same_within_3); //  || (other_within_1 && !rules.foundations_removable);
 // ?? Only valid other_winin_1 if no worrying back? 
+// And why within_1?
     } else {
         assert(rules.build_pol == pol::ANY_SUIT);
         return other_within_2;
