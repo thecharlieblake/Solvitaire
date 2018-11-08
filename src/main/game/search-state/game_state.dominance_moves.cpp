@@ -14,6 +14,9 @@ typedef sol_rules::spaces_policy s_pol;
 using std::max;
 using boost::optional;
 
+// Notes by IPG
+// Think we need to disallow some dominances when worrying back allowed
+//
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
     if (rules.foundations_only_comp_piles || rules.two_decks)
         return false;
@@ -78,8 +81,8 @@ optional<move> game_state::get_dominance_move() const {
         if (awsm) return awsm;
     }
 
-    // If there are 2 decks or no foundations, return
-    if (!rules.foundations_present || rules.two_decks)
+    // If there are 2 decks or no foundations or spider type complete piles, return
+    if (!rules.foundations_present || rules.two_decks || rules.foundations_only_comp_piles)
         return boost::none;
 
     // Cycles through the piles and sees if any cards can be automatically moved
