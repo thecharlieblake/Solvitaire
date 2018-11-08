@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in *.cc # or whatever other pattern...
+for i in $* # or whatever other pattern...
 do
   if ! grep -q Copyright "$i"
   then
