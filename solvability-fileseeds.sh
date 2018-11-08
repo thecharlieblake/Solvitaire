@@ -20,7 +20,7 @@ combine_command="sed -e 'H;\${x;s/\n/,/g;s/^,//;p;};d'"
 
 #completejobs=10
 
-cp $seeds $out
+sort -R $seeds > $out
 
 echo "CL: $0 $@" >> "$out.experiment"
 echo "Host: $HOSTNAME: " >> "$out.experiment"
