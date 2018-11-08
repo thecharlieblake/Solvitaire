@@ -59,8 +59,10 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 
 
     if (rules.build_pol == pol::RED_BLACK) {
-//  Only valid other_winin_1 if no worrying back? 
-//  E.g. see King Albert deal 
+//  Only valid other_with_1 if no worrying back.
+//  E.g. see Shoot Me Klondike game 39209. Essential to worry back a long way and impossible 
+//  with old rules
+//  Also seen in King Albert deals
         return (other_within_2 && same_within_3) || (other_within_1 && !rules.foundations_removable);
     } else {
         assert(rules.build_pol == pol::ANY_SUIT);
