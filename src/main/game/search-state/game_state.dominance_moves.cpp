@@ -14,9 +14,6 @@ typedef sol_rules::spaces_policy s_pol;
 using std::max;
 using boost::optional;
 
-// Notes by IPG
-// Think we need to disallow some dominances when worrying back allowed
-//
 bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
     if (rules.foundations_only_comp_piles || rules.two_decks)
         return false;
