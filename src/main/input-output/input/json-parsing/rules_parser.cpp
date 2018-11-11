@@ -163,6 +163,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.move_built_group = bgt::WHOLE_PILE;
                     }  else if (mbg_str == "maximal-group") {
                         sr.move_built_group = bgt::MAXIMAL_GROUP;
+                    }  else if (mbg_str == "partial-if-card-above-buildable") {
+                        sr.move_built_group = bgt::PARTIAL_IF_CARD_ABOVE_BUILDABLE;
                     } else {
                         json_helper::json_parse_err("[tableau piles][move built group] is invalid");
                     }
@@ -585,7 +587,8 @@ string rules_parser::rules_schema_json() {
             "yes",
             "no",
             "whole-pile",
-            "maximal-group"
+            "maximal-group",
+            "partial-if-card-above-buildable"
           ]
         },
         "move built group policy": {

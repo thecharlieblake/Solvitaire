@@ -66,6 +66,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Tableau / reserve / stock-waste to cell moves
     // Stock to all tableau moves
 
+
     vector<move> moves;
 
     // Stock to all tableau moves
@@ -128,25 +129,26 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Tableau built group moves
     switch (rules.move_built_group) {
         case sol_rules::built_group_type::YES:
-            add_built_group_moves(moves, false);
+            add_built_group_moves(moves, false, false);
             break;
         case sol_rules::built_group_type::MAXIMAL_GROUP:
-            add_built_group_moves(moves, true);
+            add_built_group_moves(moves, true, false);
             break;
         case sol_rules::built_group_type::WHOLE_PILE:
             add_whole_pile_moves(moves);
             break;
+        case sol_rules::built_group_type::PARTIAL_IF_CARD_ABOVE_BUILDABLE:
+	    add_built_group_moves(moves, false, true);
+	    break;
         case sol_rules::built_group_type::NO:
             break;
     }
 
     // Tableau to tableau moves
-    // If only whole pile moves are available, doesn't make regular ones
+    // If only whole pile moves are available, or we are dealing with single card moves as built groups, doesn't make regular ones
 //
-//     if (rules.move_built_group != bgt::WHOLE_PILE && (rules.move_built_group != bgt::MAXIMAL_GROUP) 
-    if ((rules.move_built_group != bgt::WHOLE_PILE) && (rules.move_built_group != bgt::MAXIMAL_GROUP)) {
+    if ((rules.move_built_group != bgt::WHOLE_PILE) && (rules.move_built_group != bgt::MAXIMAL_GROUP) && (rules.move_built_group != bgt::PARTIAL_IF_CARD_ABOVE_BUILDABLE)) {
 
-//     if (rules.move_built_group != bgt::WHOLE_PILE) {
         for (auto t_from : tableau_piles) {
             // Forbids moves from empty piles, reversing parent moves (unless it turned a card or was dominance), or from single-
             // card piles to empty piles
@@ -409,31 +411,31 @@ void game_state::add_valid_tableau_moves(std::vector<move>& moves, pile::ref fro
     }
 }
 
-void game_state::add_built_group_moves(vector<move>& moves, bool only_maximal) const {
+void game_state::add_built_group_moves(vector<move>& moves, bool only_maximal, bool card_above_buildable) const {
     assert(rules.built_group_pol != pol::NO_BUILD);
     if (tableau_space_and_auto_reserve()) return;
 
     // Cycles through each pile to see if it contains a built group
     for (auto rem_ref : tableau_piles) {
 
-	// if enforcing maximal piles then allow size one groups
-        if (only_maximal) {
+	// if enforcing maximal piles or enforcing check on card above pile then allow size one groups
+        if (only_maximal || card_above_buildable) {
             if (piles[rem_ref].size() == 0) continue;
             auto built_group_height = get_built_group_height(rem_ref);
-            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal); 
+            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal, card_above_buildable); 
         } 
 	// otherwise size 1 groups are single cards and found elsewhere
         else { 
             if (piles[rem_ref].size() < 2) continue;
             auto built_group_height = get_built_group_height(rem_ref);
             if (built_group_height == 1) continue;
-            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal);
+            add_built_group_moves(moves, rem_ref, built_group_height, only_maximal, card_above_buildable);
         }
     }
 }
 
 void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::size_type built_group_height,
-                                       bool only_maximal) const {
+                                       bool only_maximal, bool card_above_buildable) const {
     // We have found a built group. Cycles through each pile to see if it can be added
     for (auto add_ref : tableau_piles) {
         if (add_ref == rem_ref) continue;
@@ -450,7 +452,7 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
                 add_kings_only_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
             }
         } else {
-            add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal);
+            add_non_empty_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal, card_above_buildable);
         }
     }
 }
@@ -502,8 +504,7 @@ bool game_state::is_next_built_group_card(card a, card b) const {
 
 // Loops through each possible built group move to an empty pile and adds it to the list
 void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal)
-const {
+                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal) const {
     auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
     for (pile::size_type card_idx = start_idx; card_idx < built_group_height; card_idx++) {
 
@@ -519,15 +520,29 @@ void game_state::add_kings_only_built_group_move(vector<move>& moves, pile::ref 
 }
 
 void game_state::add_non_empty_built_group_move(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal) const {
+                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal, bool card_above_buildable) const {
 
-    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
+    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : (card_above_buildable ? 0 : 1));
 
+    
     // Given rank of add pile, get card of that rank - 1 in rem pile and see if next bg card
     // For each card going down from top card in rem pile, check if is next bg card
     for (pile::ref r = start_idx; r < built_group_height; r++) {
         if (is_next_built_group_card(piles[add_ref].top_card(),  piles[rem_ref][r])) {
+           if (card_above_buildable && r+1 < built_group_height)  {
+	//	std::cout << "hello\n" ;
 
+           	bool card_in_partial_pile_buildable = false;
+            	for (auto f : foundations) {
+                    if (is_valid_foundations_move(piles[rem_ref][r+1], f)) {
+                       card_in_partial_pile_buildable = true;
+                       break; 
+                    } 
+                }
+	//	std::cout << card_in_partial_pile_buildable << std::endl; 
+                if (!card_in_partial_pile_buildable) continue ; // can't build card above so skip it
+            }
+	    // This is a valid move so add it
             bool is_reveal_move = r + 1 == built_group_height && base_face_down;
             moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, r + 1, is_reveal_move);
             break;

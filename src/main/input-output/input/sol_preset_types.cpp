@@ -216,6 +216,33 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
+                "canfield-partial-piles-restricted",
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": "partial-if-card-above-buildable",
+    "spaces policy": "auto-reserve-then-waste"
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
+  },
+  "stock": {
+    "size": 34,
+    "deal count": 3,
+    "redeal": true
+  },
+  "reserve": {
+    "size": 13,
+    "stacked": true
+  }
+}
+)"
+
+        },
+	{
                 "canfield",
 
                 R"(
@@ -376,6 +403,32 @@ map<string, string> sol_preset_types::mp = {
         },
 
         {
+                "klondike-partial-piles-restricted",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "partial-if-card-above-buildable",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 24,
+    "deal count": 3,
+    "redeal": true
+  }
+}
+)"
+
+        },
+
+	{
                 "klondike",
 
                 R"(

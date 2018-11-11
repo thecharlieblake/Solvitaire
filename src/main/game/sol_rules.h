@@ -71,7 +71,8 @@ struct sol_rules {
         YES,
         NO,
         WHOLE_PILE,
-        MAXIMAL_GROUP
+        MAXIMAL_GROUP,
+        PARTIAL_IF_CARD_ABOVE_BUILDABLE
     };
     enum class foundations_init_type {
         NONE,
