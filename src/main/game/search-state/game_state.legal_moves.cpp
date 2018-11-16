@@ -144,7 +144,7 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             break;
     }
 
-    // Tableau to tableau moves
+    // Tableau to tableau single card moves
     // If only whole pile moves are available, or we are dealing with single card moves as built groups, doesn't make regular ones
 //
     if ((rules.move_built_group != bgt::WHOLE_PILE) && (rules.move_built_group != bgt::MAXIMAL_GROUP) && (rules.move_built_group != bgt::PARTIAL_IF_CARD_ABOVE_BUILDABLE)) {
@@ -154,6 +154,8 @@ vector<move> game_state::get_legal_moves(move parent_move) {
             // card piles to empty piles
             // Also forbids moves of card just placed here 
             //
+/// CHANGE 
+            // if (piles[t_from].empty()) continue; // || (parent_move.to == t_from && !parent_move.dominance_move && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
             if (piles[t_from].empty() || (parent_move.to == t_from && !parent_move.dominance_move && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
 
             for (auto to : tableau_piles) {
@@ -446,8 +448,9 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
                 && piles[rem_ref][built_group_height].is_face_down();
 
         if (piles[add_ref].empty()) {
-            if (rules.spaces_pol == s_pol::ANY) {
-                add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal);
+            if (rules.spaces_pol == s_pol::ANY || rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) ///  NEED TO CHANGE THIS!!!  To new policy
+ {
+                add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal, card_above_buildable);
             } else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
                 add_kings_only_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
             }
@@ -479,7 +482,7 @@ void game_state::add_whole_pile_moves(vector<move>& moves, pile::ref rem_ref, pi
         card bg_high = piles[rem_ref][built_group_height - 1];
 
         if (piles[add_ref].empty()) {
-            if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)) {
+            if (rules.spaces_pol == s_pol::ANY || (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13)) {  // NEED TO Add new policy
                 moves.emplace_back(move::mtype::built_group, rem_ref, add_ref, built_group_height);
             }
         } else if (is_next_built_group_card(piles[add_ref].top_card(),  bg_high)) {
@@ -504,8 +507,8 @@ bool game_state::is_next_built_group_card(card a, card b) const {
 
 // Loops through each possible built group move to an empty pile and adds it to the list
 void game_state::add_empty_built_group_moves(vector<move>& moves, pile::ref rem_ref, pile::ref add_ref,
-                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal) const {
-    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : 1);
+                                             pile::size_type built_group_height, bool base_face_down, bool only_maximal, bool card_above_buildable) const {
+    auto start_idx = static_cast<pile::size_type>(only_maximal ? built_group_height - 1 : (card_above_buildable ? 0 : 1));
     for (pile::size_type card_idx = start_idx; card_idx < built_group_height; card_idx++) {
 
         bool is_reveal_move = card_idx + 1 == built_group_height && base_face_down;
@@ -649,6 +652,7 @@ bool game_state::creates_immediate_loop(pile::ref from, pile::ref to) const {
 
 // If auto-reserve is enabled and there is a space, returns
 bool game_state::tableau_space_and_auto_reserve() const {
+    return false;  /// NEED TO CHANGE THIS AFTER INTRODUCING NEW POLICY
     if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE)
         for (auto to : tableau_piles)
             if (piles[to].empty()) return true;
@@ -669,14 +673,11 @@ bool game_state::is_next_legal_card(pol p, card a, card b) const {
         default:;
     }
     // Checks rank
-    auto final_rank = foundations_base == 1
-                      ? rules.max_rank
-                      : foundations_base - card::rank_t(1);
-    if (b.get_rank() == final_rank) {
-        return false;
-    } else {
-        return (b.get_rank() % rules.max_rank) + 1 == a.get_rank();
-    }
+
+    auto a_rank = foundation_base_convert(a.get_rank());
+    auto b_rank = foundation_base_convert(b.get_rank());
+
+    return b_rank + 1 == a_rank;
 }
 
 bool game_state::is_next_legal_card(vector<acc_pol> vp, card a, card b) const {
@@ -706,3 +707,7 @@ void game_state::turn_face_down_cards(vector<move>& moves) const {
         }
     }
 }
+
+
+
+

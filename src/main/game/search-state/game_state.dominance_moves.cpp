@@ -91,7 +91,6 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 
 // Returns a dominance move if one is available
 optional<move> game_state::get_dominance_move() const {
-#ifndef NO_AUTO_FOUNDATIONS
     if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) {
         optional<move> arm = auto_reserve_move();
         if (arm) return arm;
@@ -100,6 +99,7 @@ optional<move> game_state::get_dominance_move() const {
         if (awsm) return awsm;
     }
 
+#ifndef NO_AUTO_FOUNDATIONS
     // If there are 2 decks or no foundations or using spider type winning rules, return
     if (!rules.foundations_present || rules.two_decks || rules.foundations_only_comp_piles)
         return boost::none;
