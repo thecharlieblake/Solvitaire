@@ -146,20 +146,31 @@ vector<move> game_state::get_legal_moves(move parent_move) {
 
     // Tableau to tableau single card moves
     // If only whole pile moves are available, or we are dealing with single card moves as built groups, doesn't make regular ones
-//
+
     if ((rules.move_built_group != bgt::WHOLE_PILE) && (rules.move_built_group != bgt::MAXIMAL_GROUP) && (rules.move_built_group != bgt::PARTIAL_IF_CARD_ABOVE_BUILDABLE)) {
 
         for (auto t_from : tableau_piles) {
-            // Forbids moves from empty piles, reversing parent moves (unless it turned a card or was dominance), or from single-
-            // card piles to empty piles
-            // Also forbids moves of card just placed here 
+            
+            if (piles[t_from].empty() || tableau_space_and_auto_reserve()) continue; 
             //
-/// CHANGE 
-            // if (piles[t_from].empty()) continue; // || (parent_move.to == t_from && !parent_move.dominance_move && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
-            if (piles[t_from].empty() || (parent_move.to == t_from && !parent_move.dominance_move && !parent_move.reveal_move)|| tableau_space_and_auto_reserve()) continue;
+            // Above forbids moves from empty piles, 
+            // 
+            // Used to forbid reversing partent moves (unless it turned a card or was a dominance)
+            // However even this can be too restrictive for some combinations of rules. 
+            // For example if any card is allowed in a space and partial built groups can be moved.  
+            // If we have a built pile in a space we might want to move that pile to another tableau
+            // pile where it can be built, and then immediately put the bottom card of the pile into the 
+            // space we have just released, to get access to the card it is covering. 
+            //
+            // Note the above example has different pile sizes moved in the two cases so is not truly identical.
+            // It should be safe to reverse identical moves except in rare cases like a card being turned
+            // or a dominance, but the point of this optimisation was only to save time because a true 
+            // reverse would be immediately caught in the cache/transposition table. So although desirable 
+            // for efficiency, this is commented out for safety reasons.
 
             for (auto to : tableau_piles) {
                 if (is_valid_tableau_move(t_from, to)
+            // Forbid moves from single-card piles to empty piles
                     && !(piles[t_from].size() == 1 && piles[to].empty())) {
                     moves.emplace_back(move::mtype::regular, t_from, to);
                 }
@@ -448,8 +459,10 @@ void game_state::add_built_group_moves(vector<move>& moves, pile::ref rem_ref, p
                 && piles[rem_ref][built_group_height].is_face_down();
 
         if (piles[add_ref].empty()) {
-            if (rules.spaces_pol == s_pol::ANY || rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) ///  NEED TO CHANGE THIS!!!  To new policy
- {
+            if (rules.spaces_pol == s_pol::ANY || rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_ANY) {
+		// Note that when we have AUTO_RESERVE_THEN_ANY we must have nothing left in reserve 
+		// or this would have been a dominance move
+		assert( rules.spaces_pol == s_pol::ANY || piles[reserve.front()].empty() );
                 add_empty_built_group_moves(moves, rem_ref, add_ref, built_group_height, base_face_down, only_maximal, card_above_buildable);
             } else if (rules.spaces_pol == s_pol::KINGS && bg_high.get_rank() == 13) {
                 add_kings_only_built_group_move(moves, rem_ref, add_ref, built_group_height, base_face_down);
@@ -650,9 +663,12 @@ bool game_state::creates_immediate_loop(pile::ref from, pile::ref to) const {
 	return (from == to) && false;
 }
 
-// If auto-reserve is enabled and there is a space, returns
+// If auto-reserve-then-waste is enabled and there is a space, returns true
+// For auto-reserve-then-any it returns false because auto-reserve moves
+// will have been made as dominances so if we are in this part of the code
+// there cannot be one available.  
+
 bool game_state::tableau_space_and_auto_reserve() const {
-    return false;  /// NEED TO CHANGE THIS AFTER INTRODUCING NEW POLICY
     if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE)
         for (auto to : tableau_piles)
             if (piles[to].empty()) return true;

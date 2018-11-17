@@ -223,7 +223,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black",
     "move built group": "partial-if-card-above-buildable",
-    "spaces policy": "auto-reserve-then-waste"
+    "spaces policy": "auto-reserve-then-any"
   },
   "foundations": {
     "initial cards": "one",
@@ -251,7 +251,7 @@ map<string, string> sol_preset_types::mp = {
     "count": 4,
     "build policy": "red-black",
     "move built group": "yes",
-    "spaces policy": "auto-reserve-then-waste"
+    "spaces policy": "auto-reserve-then-any"
   },
   "foundations": {
     "initial cards": "one",

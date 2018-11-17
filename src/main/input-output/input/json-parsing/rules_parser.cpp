@@ -138,6 +138,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                         sr.spaces_pol = s_pol::NO_BUILD;
                     } else if (sp_str == "kings") {
                         sr.spaces_pol = s_pol::KINGS;
+                    } else if (sp_str == "auto-reserve-then-any") {
+                        sr.spaces_pol = s_pol::AUTO_RESERVE_THEN_ANY;
                     } else if (sp_str == "auto-reserve-then-waste") {
                         sr.spaces_pol = s_pol::AUTO_RESERVE_THEN_WASTE;
                     } else if (sp_str == "auto-waste-then-stock") {
@@ -574,6 +576,7 @@ string rules_parser::rules_schema_json() {
             "any",
             "no-build",
             "kings",
+            "auto-reserve-then-any",
             "auto-reserve-then-waste",
             "auto-waste-then-stock"
           ]

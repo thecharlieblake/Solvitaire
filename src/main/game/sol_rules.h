@@ -45,6 +45,7 @@ struct sol_rules {
         NO_BUILD,
         KINGS,
         ANY,
+        AUTO_RESERVE_THEN_ANY,
         AUTO_RESERVE_THEN_WASTE,
         AUTO_WASTE_THEN_STOCK
     };
