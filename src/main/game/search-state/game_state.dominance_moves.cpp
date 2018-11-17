@@ -91,7 +91,7 @@ bool game_state::is_valid_auto_foundation_move(pile::ref target_pile) const {
 
 // Returns a dominance move if one is available
 optional<move> game_state::get_dominance_move() const {
-    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE) {
+    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE || rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_ANY) {
         optional<move> arm = auto_reserve_move();
         if (arm) return arm;
     } else if (rules.spaces_pol == s_pol::AUTO_WASTE_THEN_STOCK) {
@@ -157,7 +157,8 @@ optional<move> game_state::get_dominance_move() const {
 }
 
 optional<move> game_state::auto_reserve_move() const {
-    if (rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE && !piles[reserve.front()].empty()) {
+    if ((rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_WASTE || rules.spaces_pol == s_pol::AUTO_RESERVE_THEN_ANY) 
+	&& !piles[reserve.front()].empty()) {
         for (auto to : tableau_piles) {
             if (piles[to].empty()) {
                 return move(move::mtype::regular, reserve.front(), to, 1, false, false, true);
