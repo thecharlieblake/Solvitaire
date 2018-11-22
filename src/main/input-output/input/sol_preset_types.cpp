@@ -216,6 +216,34 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
+                "canfield-auto-reserve-then-waste",
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": "partial-if-card-above-buildable",
+    "spaces policy": "auto-reserve-then-waste"
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
+  },
+  "stock": {
+    "size": 34,
+    "deal count": 3,
+    "redeal": true
+  },
+  "reserve": {
+    "size": 13,
+    "stacked": true
+  }
+}
+)"
+
+        },
+
+	{
                 "canfield-partial-piles-restricted",
                 R"(
 {
@@ -352,8 +380,7 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-
-        {
+{
                 "klondike-deal-1",
 
                 R"(
@@ -363,6 +390,31 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "spaces policy": "kings",
     "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 24,
+    "deal count": 1,
+    "redeal": true
+  }
+}
+)"
+
+        },
+        {
+                "klondike-deal-1-partial-piles-restricted",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "partial-if-card-above-buildable",
     "diagonal deal": true,
     "face up cards": "top"
   },
@@ -766,27 +818,6 @@ map<string, string> sol_preset_types::mp = {
 
         },
         {
-                "penguin",
-                R"(
-
-{
-  "tableau piles": {
-    "count": 7,
-    "build policy": "same-suit",
-    "move built group": "yes",
-    "spaces policy": "kings"
-  },
-  "cells": {
-    "count": 7
-  },
-  "foundations": {
-    "initial cards": "all"
-  }
-}
-)"
-
-        },
-        {
                 "seahaven-towers",
                 R"(
 {
@@ -877,27 +908,6 @@ map<string, string> sol_preset_types::mp = {
   },
   "foundations": {
     "removable": true
-  }
-}
-)"
-
-        },
-        {
-                "blind-alleys",
-                R"(
-
-{
-  "tableau piles": {
-    "count": 6,
-    "build policy": "red-black",
-    "move built group": "yes"
-  },
-  "foundations": {
-    "initial cards": "all",
-    "removable": true
-  },
-  "stock": {
-    "size": 30
   }
 }
 )"
@@ -1444,6 +1454,45 @@ map<string, string> sol_preset_types::mp = {
   },
   "foundations": {
     "initial cards": "none"
+  }
+}
+)"
+
+        },
+
+        {
+                "siegecraft",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit"
+  },
+  "foundations": {
+    "initial cards": "all"
+  },
+  "cells": {
+    "count": 1 
+  }
+}
+)"
+
+        },
+        {
+                "stronghold",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 8,
+    "build policy": "any-suit"
+  },
+  "foundations": {
+    "initial cards": "none"
+  },
+  "cells": {
+    "count": 1 
   }
 }
 )"
