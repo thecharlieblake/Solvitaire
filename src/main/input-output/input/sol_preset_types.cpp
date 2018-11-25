@@ -116,22 +116,7 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-        {
-                "bakers-dozen",
 
-                R"(
-{
-  "tableau piles": {
-    "count": 13,
-    "spaces policy": "no-build"
-  },
-  "foundations": {
-    "removable": true
-  }
-}
-)"
-
-        },
         {
                 "black-hole",
 
@@ -557,23 +542,7 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-        {
-                "martha",
 
-                R"(
-{
-  "tableau piles": {
-    "count": 12,
-    "build policy": "red-black"
-  },
-  "foundations": {
-    "initial cards": "all",
-    "removable": true
-  }
-}
-)"
-
-        },
         {
                 "one-cell",
 
