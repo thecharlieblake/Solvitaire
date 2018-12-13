@@ -201,7 +201,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
-                "canfield-auto-reserve-then-waste",
+                "canfield-auto-reserve-then-waste-partial-piles-restricted",
                 R"(
 {
   "tableau piles": {
@@ -904,16 +904,18 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
+
+
         {
                 "northwest-territory",
                 R"(
-
 {
   "tableau piles": {
     "build policy": "red-black",
     "move built group": "yes",
     "spaces policy": "kings",
-    "diagonal deal": true
+    "diagonal deal": true,
+    "face up cards": "top"
   },
   "foundations": {
     "removable": true
@@ -923,8 +925,30 @@ map<string, string> sol_preset_types::mp = {
   }
 }
 )"
-
         },
+
+        {
+                "northwest-territory-partial-piles-restricted",
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black",
+    "move built group": "partial-if-card-above-buildable",
+    "spaces policy": "kings",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "reserve": {
+    "size": 16
+  }
+}
+)"
+        },
+
+
         {
                 "king-albert",
                 R"(
