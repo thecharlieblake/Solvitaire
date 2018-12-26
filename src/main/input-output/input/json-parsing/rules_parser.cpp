@@ -297,10 +297,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
     }
 
     if (d.HasMember("hole")) {
-        if (d["hole"].IsBool()) {
-            sr.hole = d["hole"].GetBool();
-        } else {
-            json_helper::json_parse_err("[hole] must be a boolean");
+        if (d["hole"].IsObject()) {
+            if (d["hole"].HasMember("present")) {
+                if (d["hole"]["present"].IsBool()) {
+                    sr.hole = d["hole"]["present"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[hole] must be a boolean");
+                }
+            }
         }
     }
 
@@ -645,7 +649,15 @@ string rules_parser::rules_schema_json() {
       "additionalProperties": false
     },
     "hole": {
-      "type": "boolean"
+      "type": "object",
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "build loops": {
+          "type": "boolean"
+        }
+      }
     },
     "cells": {
       "type": "object",
@@ -672,7 +684,8 @@ string rules_parser::rules_schema_json() {
           "type": "string",
           "enum": [
             "waste",
-            "tableau piles"
+            "tableau piles",
+            "hole"
           ]
         },
         "deal count": {
