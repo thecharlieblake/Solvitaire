@@ -57,7 +57,8 @@ struct sol_rules {
     };
     enum class stock_deal_type {
         WASTE,
-        TABLEAU_PILES
+        TABLEAU_PILES,
+        HOLE
     };
     enum class face_up_policy {
         ALL,
@@ -89,6 +90,7 @@ struct sol_rules {
     bool two_decks;
     uint8_t max_rank;
     bool hole;
+    bool hole_build_loops;
     bool foundations_present;
     foundations_init_type foundations_init_cards;
     boost::optional<card::rank_t> foundations_base;

@@ -302,7 +302,14 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 if (d["hole"]["present"].IsBool()) {
                     sr.hole = d["hole"]["present"].GetBool();
                 } else {
-                    json_helper::json_parse_err("[hole] must be a boolean");
+                    json_helper::json_parse_err("[hole][present] must be a boolean");
+                }
+            }
+            if (d["hole"].HasMember("build loops")) {
+                if (d["hole"]["build loops"].IsBool()) {
+                    sr.hole_build_loops = d["hole"]["build loops"].GetBool();
+                } else {
+                    json_helper::json_parse_err("[hole][build loops] must be a boolean");
                 }
             }
         }
@@ -344,6 +351,8 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                 if (d["stock"]["deal type"].IsString()) {
                     if(string(d["stock"]["deal type"].GetString()) == "waste") {
                         sr.stock_deal_t = sdt::WASTE;
+                    } else if(string(d["stock"]["deal type"].GetString()) == "hole") {
+                        sr.stock_deal_t = sdt::HOLE;
                     } else {
                         sr.stock_deal_t = sdt::TABLEAU_PILES;
                     }

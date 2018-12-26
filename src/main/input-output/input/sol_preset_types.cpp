@@ -57,7 +57,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": false,
-    "build loops": false
+    "build loops": true
   },
   "cells": {
     "count": 0
@@ -1590,7 +1590,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
 
-/*        {
+        {
                 "golf",
 
                 R"(
@@ -1608,12 +1608,12 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": true,
-    "build loops": true
+    "build loops": false
   }
 }
 )"
 
-        },*/
+        },
         
         /////////////////////
         // TEST GAME TYPES //
