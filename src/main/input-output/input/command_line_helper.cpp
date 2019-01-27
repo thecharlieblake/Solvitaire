@@ -40,6 +40,7 @@ command_line_helper::command_line_helper()
 
     main_options.add_options()
             ("help", "produce help message")
+            ("version", "the version of Solvitaire being used")
             ("type", po::value<string>(),
              "specify the type of the solitaire game to be solved from the list "
                      "of preset games. Must supply either this 'type' option, "
@@ -110,6 +111,8 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
     help = (vm.count("help") != 0);
 
     available_game_types = (vm.count("available-game-types") != 0);
+
+    version = (vm.count("version") != 0);
 
     if (vm.count("describe-game-rules")) {
         describe_game_rules = vm["describe-game-rules"].as<string>();
@@ -329,6 +332,10 @@ string command_line_helper::get_describe_game_rules() {
 
 bool command_line_helper::get_benchmark() {
     return benchmark;
+}
+
+bool command_line_helper::get_version() {
+    return version;
 }
 
 command_line_helper::streamliner_opt command_line_helper::get_streamliners() {
