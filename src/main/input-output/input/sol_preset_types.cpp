@@ -55,7 +55,10 @@ map<string, string> sol_preset_types::mp = {
     "removable": false,
     "only complete pile moves": false
   },
-  "hole": false,
+  "hole": {
+    "present": false,
+    "build loops": true
+  },
   "cells": {
     "count": 0
   },
@@ -129,7 +132,9 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "present": false
   },
-  "hole": true
+  "hole": {
+    "present": true
+  }
 }
 )"
 
@@ -1577,8 +1582,35 @@ map<string, string> sol_preset_types::mp = {
   "cells": {
     "count": 1
   },
-  "hole": true
+  "hole": {
+    "present": true
+  }
 }    
+)"
+
+        },
+
+        {
+                "golf",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "no-build"
+  },
+  "foundations": {
+    "present": false
+  },
+  "stock": {
+    "size": 16,
+    "deal type": "hole"
+  },
+  "hole": {
+    "present": true,
+    "build loops": false
+  }
+}
 )"
 
         },
@@ -1649,7 +1681,9 @@ map<string, string> sol_preset_types::mp = {
   "foundations": {
     "present": false
   },
-  "hole": true,
+  "hole": {
+    "present": true
+  },
   "max rank": 5
 }
 )"

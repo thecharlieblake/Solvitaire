@@ -51,6 +51,7 @@ typedef sol_rules::built_group_type bgt;
 // Note that the moves added last here, are tried first
 vector<move> game_state::get_legal_moves(move parent_move) {
     // Order:
+    // Stock waste deal type move
     // Accordion moves
     // Foundations complete piles moves
     // Tableau / cells / reserve / stock-waste (redeal) to hole / foundation moves
@@ -65,9 +66,14 @@ vector<move> game_state::get_legal_moves(move parent_move) {
     // Stock-waste (no redeal) to hole / foundation moves
     // Tableau / reserve / stock-waste to cell moves
     // Stock to all tableau moves
+    // Stock-hole deal type move
 
 
     vector<move> moves;
+
+    // Stock-hole deal type move
+    if (rules.stock_deal_t == sdt::HOLE && !piles[stock].empty())
+        add_stock_hole_move(moves);
 
     // Stock to all tableau moves
     if (rules.stock_size > 0 && stock_can_deal_all_tableau())
@@ -402,11 +408,16 @@ bool game_state::is_valid_hole_move(const pile::ref rem_ref) const {
 bool game_state::is_valid_hole_move(const card c) const {
     card::rank_t rank = c.get_rank();
     card::rank_t hole_rank = piles[hole].top_card().get_rank();
-
-    return rank + 1 == hole_rank
-           || rank - 1 == hole_rank
-           || (rank == rules.max_rank && hole_rank == 1)
-           || (rank == 1 && hole_rank == rules.max_rank);
+    
+    bool one_diff = (rank + 1 == hole_rank) || (rank == hole_rank + 1);
+    
+    if (!rules.hole_build_loops) {
+        return one_diff;
+    } else {
+        bool loop_one_diff = (rank == rules.max_rank && hole_rank == 1) 
+                || (rank == 1 && hole_rank == rules.max_rank);
+        return one_diff || loop_one_diff;
+    }
 }
 
 
@@ -654,6 +665,10 @@ void game_state::add_accordion_moves(vector<move>& moves) const {
                 moves.emplace_back(move::mtype::accordion, *from_it, *to_it, piles[*from_it].size());
         }
     }
+}
+
+void game_state::add_stock_hole_move(vector<move>& moves) const {
+    moves.emplace_back(move::mtype::regular, stock, hole);
 }
 
 // A move could have been done last move 

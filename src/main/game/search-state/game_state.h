@@ -123,6 +123,7 @@ private:
     card stock_card_from_count(int8_t) const;
     void add_foundation_complete_piles_moves(std::vector<move> &) const;
     void add_accordion_moves(std::vector<move>&) const;
+    void add_stock_hole_move(std::vector<move>&) const;
 
     bool is_valid_tableau_move(pile::ref, pile::ref) const;
     bool is_valid_tableau_move(card, pile::ref) const;
