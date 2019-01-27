@@ -78,6 +78,7 @@ private:
     std::vector<int> resume;
     uint cores;
     bool available_game_types;
+    bool version;
     bool benchmark;
     streamliner_opt streamliners;
     uint64_t cache_capacity;

@@ -46,9 +46,13 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
 pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout, uint64_t cache_capacity,
                                         game_state::streamliner_options str_opts,
                                         optional<int> seed, optional<const Document&> in_doc);
+void print_version();
+
+static const string VERSION = "0.09";
 
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
+    print_version();
 
     // Parses the command-line options
     command_line_helper clh;
@@ -59,6 +63,11 @@ int main(int argc, const char* argv[]) {
     // If the user has asked for the list of preset game types, prints it
     if (clh.get_available_game_types()) {
         sol_preset_types::print_available_games();
+        return EXIT_SUCCESS;
+    }
+
+    // If the user has asked for the version, prints it
+    if (clh.get_version()) {
         return EXIT_SUCCESS;
     }
 
@@ -103,6 +112,10 @@ int main(int argc, const char* argv[]) {
     }
 
     return EXIT_SUCCESS;
+}
+
+void print_version() {
+    LOG_INFO("(Solvitaire version: " << VERSION << ")");
 }
 
 // Generates the game rules given the command line options
