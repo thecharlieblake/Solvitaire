@@ -201,7 +201,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
-                "canfield-auto-reserve-then-waste-partial-piles-restricted",
+                "canfield-auto-reserve-then-waste",
                 R"(
 {
   "tableau piles": {
@@ -255,8 +255,35 @@ map<string, string> sol_preset_types::mp = {
 )"
 
         },
-	{
+        {
                 "canfield",
+                R"(
+{
+  "tableau piles": {
+    "count": 4,
+    "build policy": "red-black",
+    "move built group": "partial-if-card-above-buildable",
+    "spaces policy": "auto-reserve-then-any"
+  },
+  "foundations": {
+    "initial cards": "one",
+    "base card": "random"
+  },
+  "stock": {
+    "size": 34,
+    "deal count": 3,
+    "redeal": true
+  },
+  "reserve": {
+    "size": 13,
+    "stacked": true
+  }
+}
+)"
+
+        },
+        {
+                "canfield-arbitrary-built-moves", // i.e. not using partial piles optimisation
 
                 R"(
 {
@@ -366,7 +393,7 @@ map<string, string> sol_preset_types::mp = {
 
         },
 {
-                "klondike-deal-1",
+                "klondike-deal-1-arbitrary-built-moves", // i.e. not using partial piles optimisation
 
                 R"(
 {
@@ -375,6 +402,31 @@ map<string, string> sol_preset_types::mp = {
     "build policy": "red-black",
     "spaces policy": "kings",
     "move built group": "yes",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 24,
+    "deal count": 1,
+    "redeal": true
+  }
+}
+)"
+
+        },
+        {
+                "klondike-deal-1",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "partial-if-card-above-buildable",
     "diagonal deal": true,
     "face up cards": "top"
   },
@@ -440,6 +492,32 @@ map<string, string> sol_preset_types::mp = {
         },
 
         {
+                "klondike",
+
+                R"(
+{
+  "tableau piles": {
+    "count": 7,
+    "build policy": "red-black",
+    "spaces policy": "kings",
+    "move built group": "partial-if-card-above-buildable",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "stock": {
+    "size": 24,
+    "deal count": 3,
+    "redeal": true
+  }
+}
+)"
+
+        },
+
+        {
                 "klondike-partial-piles-restricted",
 
                 R"(
@@ -466,7 +544,7 @@ map<string, string> sol_preset_types::mp = {
         },
 
 	{
-                "klondike",
+                "klondike-arbitrary-built-moves", // i.e. not using partial piles optimisation
 
                 R"(
 {
@@ -907,7 +985,7 @@ map<string, string> sol_preset_types::mp = {
 
 
         {
-                "northwest-territory",
+                "northwest-territory-arbitrary-built-moves", // i.e. not using partial piles optimisation
                 R"(
 {
   "tableau piles": {
@@ -929,6 +1007,27 @@ map<string, string> sol_preset_types::mp = {
 
         {
                 "northwest-territory-partial-piles-restricted",
+                R"(
+{
+  "tableau piles": {
+    "build policy": "red-black",
+    "move built group": "partial-if-card-above-buildable",
+    "spaces policy": "kings",
+    "diagonal deal": true,
+    "face up cards": "top"
+  },
+  "foundations": {
+    "removable": true
+  },
+  "reserve": {
+    "size": 16
+  }
+}
+)"
+        },
+
+        {
+                "northwest-territory",
                 R"(
 {
   "tableau piles": {
