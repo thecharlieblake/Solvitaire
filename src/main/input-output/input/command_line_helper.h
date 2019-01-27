@@ -49,6 +49,7 @@ public:
     uint64_t get_cache_capacity();
     std::string get_describe_game_rules();
     uint64_t get_timeout();
+    bool get_version();
     static game_state::streamliner_options convert_streamliners(streamliner_opt);
 
 private:
