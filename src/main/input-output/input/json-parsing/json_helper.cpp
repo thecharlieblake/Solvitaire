@@ -93,7 +93,7 @@ void json_helper::print_game_state_as_json(const game_state& gs) {
             pt.add_child("waste", pile_to_ptree(gs.piles[gs.waste]));
         }
     }
-    if (gs.rules.hole) pt.add_child("hole", pile_to_ptree(gs.piles[gs.hole]));
+    if (gs.rules.hole) pt.add_child("hole", card_to_ptree(gs.piles[gs.hole][0]));
 
     write_json (cout, pt);
 }
