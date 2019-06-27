@@ -8,10 +8,10 @@ The easiest way to install (and run) Solvitaire is by using the supplied
 Docker image. For more information about installing Docker, head to 
 <https://www.docker.com/get-started>
 
-Currently instructions for running/building outside of the docker image are not
+Currently instructions for installing/building outside of the docker image are not
 provided, but the required setup/dependencies should be clear from the docker file
 (they aren't complex). Please get in touch if you would like this documented
-properly, or pre-build binaries to be provided.
+properly, or pre-built binaries to be provided.
 
 With Docker installed, simply run:
 
