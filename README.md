@@ -8,6 +8,11 @@ The easiest way to install (and run) Solvitaire is by using the supplied
 Docker image. For more information about installing Docker, head to 
 <https://www.docker.com/get-started>
 
+Currently instructions for running/building outside of the docker image are not
+provided, but the required setup/dependencies should be clear from the docker file
+(they aren't complex). Please get in touch if you would like this documented
+properly, or pre-build binaries to be provided.
+
 With Docker installed, simply run:
 
 ```
@@ -91,6 +96,10 @@ To run Solvitaire from within the container, simply run either:
 ```
 $ ./solvitaire
 $ ./solvitaire-debug
+
+Or from outside the container:
+
+$ ./enter-container.sh "./solvitaire"
 ```
 
 and for the unit tests (note, these must be
@@ -100,11 +109,9 @@ run inside src/test for the integration tests to pass):
 $ cd src/test
 $ ../../unit-tests
 $ ../../unit-tests-debug
-```
 
 Or from outside the container:
 
-```
 $ ./enter-container.sh "cd src/test; ../../unit-tests"
 ```
 
