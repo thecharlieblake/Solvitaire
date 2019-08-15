@@ -51,6 +51,7 @@ set(sources src/main/input-output/input/command_line_helper.cpp
         src/main/game/search-state/game_state.dominance_moves.cpp
         src/main/game/search-state/game_state.pile_order.cpp
         src/main/game/move.cpp
+        src/main/game/search-state/random.cpp
         src/main/game/move.h src/main/evaluation/binomial_ci.cpp src/main/evaluation/binomial_ci.h)
 set(sources_test
         src/test/test_helper.cpp

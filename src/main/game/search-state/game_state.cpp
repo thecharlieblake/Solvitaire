@@ -37,6 +37,7 @@
 #include "../../input-output/output/log_helper.h"
 #include "../move.h"
 #include "../sol_rules.h"
+#include "random.h"
 
 using namespace rapidjson;
 using std::vector;
@@ -149,8 +150,8 @@ game_state::game_state(const sol_rules& s_rules, const Document& doc, streamline
 // Constructs an initial game state from a seed
 game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s_opts)
         : game_state(s_rules, s_opts) {
-    auto rng = mt19937(seed);
-    vector<card> deck = gen_shuffled_deck(rules.max_rank, rules.two_decks, rng);
+    set_seed(seed);
+    vector<card> deck = gen_shuffled_deck(rules.max_rank, rules.two_decks);
 
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
@@ -161,10 +162,8 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
     // If the foundation base is random, selects a random rank and suit
     card::suit_t rand_suit = 0;
     if (!rules.foundations_base) {
-        boost::random::uniform_int_distribution<card::rank_t> distr_rank(1, rules.max_rank);
-        foundations_base = distr_rank(rng);
-        boost::random::uniform_int_distribution<card::suit_t> distr_suit(0, 3);
-        rand_suit = distr_suit(rng);
+        foundations_base = int_in_range_inclusive(1, rules.max_rank);
+        rand_suit = int_in_range_inclusive(0, 3);
     }
 
     // If the foundations begin filled, then fills them
@@ -304,7 +303,7 @@ game_state::game_state(const sol_rules& s_rules,
 
 // Generates a randomly ordered vector of cards
 vector<card> game_state::gen_shuffled_deck(card::rank_t max_rank,
-                                           bool two_decks, mt19937 rng) {
+                                           bool two_decks) {
     vector<card> deck;
 
     for (int deck_count = 1; deck_count <= (two_decks ? 2 : 1); deck_count++) {
@@ -317,10 +316,19 @@ vector<card> game_state::gen_shuffled_deck(card::rank_t max_rank,
 
     assert(deck.size() == pile::size_type(max_rank * (two_decks ? 8 : 4)));
 
-    game_state::shuffle(begin(deck), end(deck), rng);
+    game_state::shuffle(begin(deck), end(deck));
     return deck;
 }
 
+void game_state::shuffle(vector<card>::iterator first, vector<card>::iterator last) {
+    int n = last - first;
+    for (int i = n-1; i > 0; --i) {
+        using std::swap;
+        swap(first[i], first[int_in_range_inclusive(0, i)]);
+    }
+}
+
+/*
 template<class RandomIt, class URBG>
 void game_state::shuffle(RandomIt first, RandomIt last, URBG&& g) {
     typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
@@ -333,7 +341,7 @@ void game_state::shuffle(RandomIt first, RandomIt last, URBG&& g) {
         using std::swap;
         swap(first[i], first[D(g, param_t(0, i))]);
     }
-}
+}*/
 
 
 

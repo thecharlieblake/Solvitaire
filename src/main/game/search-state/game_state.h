@@ -84,8 +84,8 @@ private:
     /* Constructors (& helper function) */
 
     explicit game_state(const sol_rules&, streamliner_options);
-    static std::vector<card> gen_shuffled_deck(card::rank_t, bool, std::mt19937);
-    template<class RandomIt, class URBG> static void shuffle(RandomIt, RandomIt, URBG&&);
+    static std::vector<card> gen_shuffled_deck(card::rank_t, bool);
+    static void shuffle(std::vector<card>::iterator, std::vector<card>::iterator);
 
     /* Pile order logic */
 
