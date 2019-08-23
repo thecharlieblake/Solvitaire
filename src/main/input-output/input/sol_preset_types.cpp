@@ -60,7 +60,8 @@ map<string, string> sol_preset_types::mp = {
     "build loops": true
   },
   "cells": {
-    "count": 0
+    "count": 0,
+    "pre-filled": 0
   },
   "stock": {
     "size": 0,
