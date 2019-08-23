@@ -154,9 +154,18 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
 
     // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
-        deck.erase(find(begin(deck), end(deck), card("AS")));
-        place_card(hole, card("AS"));
+        if(!rules.hole_base) { 	// random base card selected
+            card base_card = deck.front();
+            deck.erase(find(begin(deck), end(deck), base_card));
+            place_card(hole, base_card);
+	} else { 
+	    // Note following line introduces slight bias if there is  more than one deck.
+            deck.erase(find(begin(deck), end(deck), card(rules.hole_base->c_str())));
+            place_card(hole, card(rules.hole_base->c_str()));
+	}
     }
+
+
 
 
     // If the foundation base is random, picks the first card in the shuffled deck to be the base

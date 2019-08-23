@@ -200,6 +200,8 @@ bool command_line_helper::assess_errors() {
         return false;
     }
 
+    if (version) { return true; } 
+
     if (available_game_types || !describe_game_rules.empty()) return true;
 
     if (solvability > 0 && resume.size() != 3 + cores) {

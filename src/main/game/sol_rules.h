@@ -90,6 +90,7 @@ struct sol_rules {
     bool two_decks;
     uint8_t max_rank;
     bool hole;
+    boost::optional<std::string> hole_base;
     bool hole_build_loops;
     bool foundations_present;
     foundations_init_type foundations_init_cards;

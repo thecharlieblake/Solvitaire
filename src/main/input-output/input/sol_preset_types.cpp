@@ -57,6 +57,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": false,
+    "base card": "AS",
     "build loops": true
   },
   "cells": {
@@ -1728,6 +1729,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": true,
+    "base card": "random",
     "build loops": false
   }
 }

@@ -20,6 +20,7 @@
 #include <boost/program_options.hpp>
 #include <boost/optional.hpp>
 
+#include "version.h"
 #include "../../lib/rapidjson/document.h"
 #include "input-output/input/command_line_helper.h"
 #include "input-output/input/sol_preset_types.h"
@@ -48,11 +49,8 @@ pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout
                                         optional<int> seed, optional<const Document&> in_doc);
 void print_version();
 
-static const string VERSION = "0.09";
-
 // Decides what to do given supplied command-line options
 int main(int argc, const char* argv[]) {
-    print_version();
 
     // Parses the command-line options
     command_line_helper clh;
@@ -68,6 +66,7 @@ int main(int argc, const char* argv[]) {
 
     // If the user has asked for the version, prints it
     if (clh.get_version()) {
+        print_version();
         return EXIT_SUCCESS;
     }
 
@@ -115,7 +114,7 @@ int main(int argc, const char* argv[]) {
 }
 
 void print_version() {
-    LOG_INFO("(Solvitaire version: " << VERSION << ")");
+    LOG_INFO("(Solvitaire version: " << SOLVITAIRE_VERSION_H << ")");
 }
 
 // Generates the game rules given the command line options

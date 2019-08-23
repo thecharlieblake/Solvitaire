@@ -305,6 +305,21 @@ void rules_parser::modify_sol_rules(sol_rules& sr, Document& d) {
                     json_helper::json_parse_err("[hole][present] must be a boolean");
                 }
             }
+
+            if (d["hole"].HasMember("base card")) {
+	 	// Default will be "AS" if not specified
+                if (d["hole"]["base card"].IsString()) {
+                    string base_card_str = d["hole"]["base card"].GetString();
+                    if (base_card_str == "random") {
+                        sr.hole_base = boost::none;
+                    } else {
+                        sr.hole_base = base_card_str;
+                    }
+                } else {
+                    json_helper::json_parse_err("[hole][base card] must be a string");
+                }
+            }
+
             if (d["hole"].HasMember("build loops")) {
                 if (d["hole"]["build loops"].IsBool()) {
                     sr.hole_build_loops = d["hole"]["build loops"].GetBool();
@@ -662,6 +677,13 @@ string rules_parser::rules_schema_json() {
       "properties": {
         "present": {
           "type": "boolean"
+        },
+        "base card": {
+          "type": "string",
+          "oneOf":[
+          	{"pattern": "^(([0-9]|1[0-3]|a|A|j|J|q|Q|k|K)(c|C|d|D|s|S|h|H))$"},
+          	{"enum": ["random"]}
+          ]
         },
         "build loops": {
           "type": "boolean"
