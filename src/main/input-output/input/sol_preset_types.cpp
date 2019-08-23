@@ -1180,7 +1180,27 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
-                "accordion-knuth",
+                "late-binding-solitaire",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 18,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+	{
+                "accordion-knuth", // alternative name for late-binding-solitaire
 
                 R"(
 {

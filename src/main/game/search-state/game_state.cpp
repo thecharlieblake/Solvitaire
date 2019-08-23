@@ -158,13 +158,13 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
         place_card(hole, card("AS"));
     }
 
-    // If the foundation base is random, selects a random rank and suit
+
+    // If the foundation base is random, picks the first card in the shuffled deck to be the base
     card::suit_t rand_suit = 0;
-    if (!rules.foundations_base) {
-        boost::random::uniform_int_distribution<card::rank_t> distr_rank(1, rules.max_rank);
-        foundations_base = distr_rank(rng);
-        boost::random::uniform_int_distribution<card::suit_t> distr_suit(0, 3);
-        rand_suit = distr_suit(rng);
+    if (!rules.foundations_base) { 
+	card base_card = deck.front();
+        foundations_base = base_card.get_rank();
+        rand_suit = base_card.get_suit();
     }
 
     // If the foundations begin filled, then fills them
