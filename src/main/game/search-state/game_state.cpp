@@ -152,7 +152,6 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
     auto rng = mt19937(seed);
     vector<card> deck = gen_shuffled_deck(rules.max_rank, rules.two_decks, rng);
 
-    // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
         if(!rules.hole_base) { 	// random base card selected
             card base_card = deck.front();
