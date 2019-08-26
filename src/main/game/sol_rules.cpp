@@ -42,6 +42,7 @@ sol_rules::sol_rules() :
         two_decks(false),
         max_rank(13),
         hole(false),
+        hole_base("AS"),
         hole_build_loops(true),
         foundations_present(false),
         foundations_init_cards(fit::NONE),

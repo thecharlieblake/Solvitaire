@@ -57,10 +57,12 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": false,
+    "base card": "AS",
     "build loops": true
   },
   "cells": {
-    "count": 0
+    "count": 0,
+    "pre-filled": 0
   },
   "stock": {
     "size": 0,
@@ -1180,7 +1182,27 @@ map<string, string> sol_preset_types::mp = {
 
         },
 	{
-                "accordion-knuth",
+                "late-binding-solitaire",
+
+                R"(
+{
+  "foundations": {
+    "present": false
+  },
+  "tableau piles": {
+    "count": 0
+  },
+  "accordion": {
+    "size": 18,
+    "moves": ["L1", "L3"],
+    "build policies": ["same-suit", "same-rank"]
+  }
+}
+)"
+
+        },
+	{
+                "accordion-knuth", // alternative name for late-binding-solitaire
 
                 R"(
 {
@@ -1707,6 +1729,7 @@ map<string, string> sol_preset_types::mp = {
   },
   "hole": {
     "present": true,
+    "base card": "random",
     "build loops": false
   }
 }

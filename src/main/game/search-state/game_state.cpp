@@ -152,19 +152,27 @@ game_state::game_state(const sol_rules& s_rules, int seed, streamliner_options s
     auto rng = mt19937(seed);
     vector<card> deck = gen_shuffled_deck(rules.max_rank, rules.two_decks, rng);
 
-    // If there is a hole, moves the ace of spades to it
     if (rules.hole) {
-        deck.erase(find(begin(deck), end(deck), card("AS")));
-        place_card(hole, card("AS"));
+        if(!rules.hole_base) { 	// random base card selected
+            card base_card = deck.front();
+            deck.erase(find(begin(deck), end(deck), base_card));
+            place_card(hole, base_card);
+	} else { 
+	    // Note following line introduces slight bias if there is  more than one deck.
+            deck.erase(find(begin(deck), end(deck), card(rules.hole_base->c_str())));
+            place_card(hole, card(rules.hole_base->c_str()));
+	}
     }
 
-    // If the foundation base is random, selects a random rank and suit
+
+
+
+    // If the foundation base is random, picks the first card in the shuffled deck to be the base
     card::suit_t rand_suit = 0;
-    if (!rules.foundations_base) {
-        boost::random::uniform_int_distribution<card::rank_t> distr_rank(1, rules.max_rank);
-        foundations_base = distr_rank(rng);
-        boost::random::uniform_int_distribution<card::suit_t> distr_suit(0, 3);
-        rand_suit = distr_suit(rng);
+    if (!rules.foundations_base) { 
+	card base_card = deck.front();
+        foundations_base = base_card.get_rank();
+        rand_suit = base_card.get_suit();
     }
 
     // If the foundations begin filled, then fills them
