@@ -878,7 +878,7 @@ map<string, string> sol_preset_types::mp = {
   "tableau piles": {
     "count": 10,
     "build policy": "same-suit",
-    "move built group": "yes",
+    "move built group": "no",
     "spaces policy": "kings"
   },
   "cells": {
