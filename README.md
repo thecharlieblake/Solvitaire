@@ -1,6 +1,6 @@
 # Solvitaire: A general solver for perfect-information solitaire games
 
-[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![GitHub release](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.09)](https://github.com/thecharlesblake/Solvitaire/releases/tag/v0.10/2)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![GitHub release](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.10.2)](https://github.com/thecharlesblake/Solvitaire/releases/tag/v0.10/2)
 [![DOI](https://zenodo.org/badge/103662666.svg)](https://zenodo.org/badge/latestdoi/103662666)
 
 ## Install
