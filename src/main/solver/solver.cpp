@@ -74,7 +74,7 @@ solver::solver(const game_state& gs, uint64_t cache_capacity)
     res.depth = 0;
 }
 
-solver::node::node(const move m)
+solver::node::node(const move m) noexcept
         : mv(m), child_moves(), cache_state() {
 }
 
@@ -139,7 +139,7 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
                     res.unique_states_searched--;
                     states_exhausted = revert_to_last_node_with_children();
                 }
-            } catch (const std::runtime_error e) {
+            } catch (const std::runtime_error &e) {
                 return result::type::MEM_LIMIT;
             }
         }
