@@ -38,7 +38,7 @@ public:
     lru_cache cache;
 
     struct node {
-        node(move);
+        node(move) noexcept;
         const move mv;
         std::vector<move> child_moves;
         boost::optional<lru_cache::item_list::iterator> cache_state; // Optional, as dominance moves aren't cached
