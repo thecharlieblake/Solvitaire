@@ -26,6 +26,15 @@
         "design",
         "ideas"
       ]
+    },
+    {
+      "login": "shlomif",
+      "name": "Shlomi Fish",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3150?v=4",
+      "profile": "http://www.shlomifish.org/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
