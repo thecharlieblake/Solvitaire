@@ -19,7 +19,7 @@ before_install:
 install:
     - true # if test "$WHAT" = "normal"; then . fc-solve/scripts/ci-install-stage.bash ; elif test "$WHAT" = "buildproc"; then . fc-solve/scripts/ci-docker-test--install.bash ; fi
 script:
-    - if test "$WHAT" = "normal"; then cmake -DCMAKE_BUILD_TYPE=Debug -Bcmake-build-debug -H. && cmake -Bcmake-build-debug && cd src/test && ../../unit-tests-debug; fi
+    - if test "$WHAT" = "normal"; then cmake -DCMAKE_BUILD_TYPE=Debug -Bcmake-build-debug -H. && cmake --build cmake-build-debug && cd src/test && ../../unit-tests-debug; fi
 cache:
     ccache: true
     directories:
