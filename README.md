@@ -1,6 +1,6 @@
 # Solvitaire: A general solver for perfect-information solitaire games
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) [![GitHub release](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.10.2)](https://github.com/thecharlesblake/Solvitaire/releases/tag/v0.10/2)
@@ -133,9 +133,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
-  <tr
+  <tr>
     <td align="center"><a href="http://thecharlesblake.co.uk/"><img src="https://avatars1.githubusercontent.com/u/17354715?v=4" width="100px;" alt=""/><br /><sub><b>Charlie Blake</b></sub></a><br /><a href="https://github.com/thecharlesblake/Solvitaire/commits?author=thecharlesblake" title="Code">💻</a> <a href="#design-thecharlesblake" title="Design">🎨</a> <a href="#ideas-thecharlesblake" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="http://ian.gent"><img src="https://avatars0.githubusercontent.com/u/2893913?v=4" width="100px;" alt=""/><br /><sub><b>Ian Gent</b></sub></a><br /><a href="https://github.com/thecharlesblake/Solvitaire/commits?author=turingfan" title="Code">💻</a> <a href="#design-turingfan" title="Design">🎨</a> <a href="#ideas-turingfan" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://www.shlomifish.org/"><img src="https://avatars1.githubusercontent.com/u/3150?v=4" width="100px;" alt=""/><br /><sub><b>Shlomi Fish</b></sub></a><br /><a href="https://github.com/thecharlesblake/Solvitaire/commits?author=shlomif" title="Code">💻</a></td>
   </tr>
 </table>
 
