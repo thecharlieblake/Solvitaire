@@ -134,7 +134,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="http://thecharlesblake.co.uk/"><img src="https://avatars1.githubusercontent.com/u/17354715?v=4" width="100px;" alt=""/><br /><sub><b>Charlie Blake</b></sub></a><br /><a href="https://github.com/thecharlesblake/Solvitaire/commits?author=thecharlesblake" title="Code">💻</a> <a href="#design-thecharlesblake" title="Design">🎨</a></td>
+    <td align="center"><a href="http://thecharlesblake.co.uk/"><img src="https://avatars1.githubusercontent.com/u/17354715?v=4" width="100px;" alt=""/><br /><sub><b>Charlie Blake</b></sub></a><br /><a href="https://github.com/thecharlesblake/Solvitaire/commits?author=thecharlesblake" title="Code">💻</a> <a href="#design-thecharlesblake" title="Design">🎨</a> <a href="#ideas-thecharlesblake" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
