@@ -6,6 +6,17 @@
   "commit": false,
   "contributors": [
     {
+      "login": "thecharlesblake",
+      "name": "Charlie Blake",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17354715?v=4",
+      "profile": "http://thecharlesblake.co.uk/",
+      "contributions": [
+        "code",
+        "design",
+        "ideas"
+      ]
+    },
+    {
       "login": "turingfan",
       "name": "Ian Gent",
       "avatar_url": "https://avatars0.githubusercontent.com/u/2893913?v=4",
