@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "thecharlesblake",
+      "name": "Charlie Blake",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17354715?v=4",
+      "profile": "http://thecharlesblake.co.uk/",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "Solvitaire",
+  "projectOwner": "thecharlesblake",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
