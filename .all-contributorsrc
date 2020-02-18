@@ -15,6 +15,17 @@
         "design",
         "ideas"
       ]
+    },
+    {
+      "login": "turingfan",
+      "name": "Ian Gent",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/2893913?v=4",
+      "profile": "http://ian.gent",
+      "contributions": [
+        "code",
+        "design",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
