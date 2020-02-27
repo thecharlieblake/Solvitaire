@@ -1,0 +1,36 @@
+addons:
+    apt:
+        update: true
+        packages:
+            - cmake
+            - cmake-data
+            - git
+            - libboost-all-dev
+            - parallel
+            - python3
+            - vim
+os: linux
+# dist: trusty
+# dist: xenial
+dist: bionic
+language: cpp
+before_install:
+    - true # if test "$WHAT" = "normal"; then . fc-solve/scripts/ci-before-install.bash ; fi
+install:
+    - true # if test "$WHAT" = "normal"; then . fc-solve/scripts/ci-install-stage.bash ; elif test "$WHAT" = "buildproc"; then . fc-solve/scripts/ci-docker-test--install.bash ; fi
+script:
+    - if test "$WHAT" = "normal"; then cmake -DCMAKE_BUILD_TYPE=Debug -Bcmake-build-debug -H. && cmake --build cmake-build-debug && cd src/test && ../../unit-tests-debug; fi
+cache:
+    ccache: true
+    directories:
+        - $HOME/perl_modules
+matrix:
+    include:
+        - os: linux
+          env:
+              - WHAT=normal
+        # - os: linux
+        #  env:
+        #      - WHAT=buildproc
+services:
+    - docker
