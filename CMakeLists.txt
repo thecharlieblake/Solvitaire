@@ -88,7 +88,7 @@ include_directories(lib/rapidjson)
 ## Boost setup ################################################################
 ###############################################################################
 
-set(Boost_USE_STATIC_LIBS ON)
+# set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
@@ -196,8 +196,8 @@ target_link_libraries(unit_tests gtest_main ${Boost_LIBRARIES})
 
 ENABLE_TESTING()
 ADD_TEST(NAME unit_tests
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-        COMMAND unit_tests)
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/test"
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/bin/unit_tests")
 
 ###############################################################################
 ## packaging ##################################################################
