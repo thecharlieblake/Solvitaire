@@ -205,6 +205,13 @@ ADD_TEST(NAME trailing_space
         "--gametype" "klondike"
         "--board" "${CMAKE_CURRENT_SOURCE_DIR}/resources/deal-presets/klondikeSM1.json"
 )
+ADD_TEST(NAME trailing_space_free_cell
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/test"
+        COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/src/test/check_for_no_trailing_space_in_output.py"
+        "--exe" "${CMAKE_CURRENT_BINARY_DIR}/bin/solvitaire"
+        "--gametype" "free-cell"
+        "--board" "${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources/free_cell/fc-pro-3.json"
+)
 
 ###############################################################################
 ## packaging ##################################################################
