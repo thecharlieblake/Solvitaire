@@ -14,10 +14,10 @@ import subprocess
 @click.command()
 @click.option('--exe', required='True')
 @click.option('--gametype', required='True')
-@click.option('--board', required='True')
-def main(exe, gametype, board):
+@click.option('--deal', required='True')
+def main(exe, gametype, deal):
     out = subprocess.check_output(
-        [exe, '--type', gametype, board]).decode('utf-8')
+        [exe, '--type', gametype, deal]).decode('utf-8')
     assert re.search('[ \\t](?:\\n|\\Z)', out, flags=(re.M | re.S)) is None
 
 
