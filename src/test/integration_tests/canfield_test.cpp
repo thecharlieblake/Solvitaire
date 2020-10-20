@@ -21,6 +21,7 @@
 // Created by thecharlesblake on 10/4/17.
 //
 
+#include <boost/optional/optional_io.hpp>
 #include <gtest/gtest.h>
 
 #include "../test_helper.h"
