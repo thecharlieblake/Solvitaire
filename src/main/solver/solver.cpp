@@ -84,23 +84,82 @@ solver::result solver::run(boost::optional<millisec> timeout) {
 
     // Set timings
     const clock::time_point start_time = clock::now();
-    result::type res_type = timeout ? dfs(start_time + *timeout) : dfs();
-    res.sol_type = res_type;
+
+    // non-optimal solution:
+    result dfs_reult = timeout ? dfs(start_time + *timeout) : dfs();
+    res.sol_type = dfs_reult.sol_type;
     res.states_removed_from_cache = cache.get_states_removed_from_cache();
     res.cache_size = cache.size();
     res.cache_bucket_count = cache.bucket_count();
     res.time = std::chrono::duration_cast<millisec>(clock::now() - start_time);
+
+     return res;
+}
+
+// solver::result solver::run_IDDFS(uint64_t depth_limit, boost::optional<millisec> timeout) {
+//     // Set interrupt handler
+//     signal(SIGINT, sigint_handler);
+//     // Set timings
+//     const clock::time_point start_time = clock::now();
+    
+//     // Optimal solution:
+//     result iddfs_result = timeout ? iddfs(depth_limit, start_time + *timeout) : iddfs(depth_limit);
+//     res.sol_type = iddfs_result.sol_type;
+//     res.states_removed_from_cache = cache.get_states_removed_from_cache();
+//     res.cache_size = cache.size();
+//     res.cache_bucket_count = cache.bucket_count();
+//     res.time = std::chrono::duration_cast<millisec>(clock::now() - start_time);
+//     return res;
+// }
+
+solver::result solver::run_DLS(uint64_t depth_limit, boost::optional<millisec> timeout) {
+    // Set interrupt handler
+    signal(SIGINT, sigint_handler);
+
+    // Set timings
+    const clock::time_point start_time = clock::now();
+
+    result dls_reult = timeout ? dls(depth_limit, start_time + *timeout) : dls(depth_limit);
+    res.sol_type = dls_reult.sol_type;
+    res.states_removed_from_cache = cache.get_states_removed_from_cache();
+    res.cache_size = cache.size();
+    res.cache_bucket_count = cache.bucket_count();
+    res.time = std::chrono::duration_cast<millisec>(clock::now() - start_time);
+   
     return res;
 }
 
-solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
+
+
+// // iterative deepening DFS, call to DFS with a bound on the depth_max_limit
+// solver::result solver::iddfs(uint64_t depth_limit, boost::optional<clock::time_point> end_time) {   
+//     solver::result dls_result;
+//     for (uint64_t depth = 1; depth < depth_limit; depth++) {
+//         cout << "check for solution at depth: " << depth;
+//         std::flush(cout);
+
+//         dls_result = dls(depth, end_time); 
+
+//         if (dls_result.sol_type != solver::result::type::UNSOLVABLE) { 
+//             //type = {TIMEOUT, SOLVED, MEM_LIMIT, TERMINATED}
+//             return dls_result;
+//         } // UNSOLVABLE -> search solution in depth++
+//     }
+//     dls_result.sol_type = solver::result::type::UNSOLVABLE;
+//     return dls_result;
+// }
+
+solver::result solver::dfs(boost::optional<clock::time_point> end_time) {
     bool states_exhausted = false;
+    result result;
 
     while(!(state.is_solved() || states_exhausted)) {
         if (end_time && clock::now() >= *end_time) {
-            return result::type::TIMEOUT;
+            result.sol_type = solver::result::type::TIMEOUT;
+            return result;
         } else if (sigint) {
-            return result::type::TERMINATED;
+            result.sol_type = solver::result::type::TERMINATED;
+            return result;
         }
 
 #ifndef NDEBUG
@@ -122,7 +181,7 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
                 pair<lru_cache::item_list::iterator, bool> insert_res = cache.insert(state);
                 current_node->cache_state = insert_res.first;
                 bool is_new_state = insert_res.second;
-
+                
                 if (is_new_state) {
                     // Gets the legal moves in the current state
                     vector<move> next_moves = state.get_legal_moves(current_node->mv);
@@ -140,7 +199,8 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
                     states_exhausted = revert_to_last_node_with_children();
                 }
             } catch (const std::runtime_error &e) {
-                return result::type::MEM_LIMIT;
+                result.sol_type = solver::result::type::MEM_LIMIT;
+                return result;
             }
         }
 
@@ -159,10 +219,96 @@ solver::result::type solver::dfs(boost::optional<clock::time_point> end_time) {
     }
 
     if (state.is_solved()) {
-        return result::type::SOLVED;
+        result.sol_type = solver::result::type::SOLVED;
+        return result;
     } else {
         assert(states_exhausted);
-        return result::type::UNSOLVABLE;
+        result.sol_type = solver::result::type::UNSOLVABLE;
+        return result;
+    }
+}
+
+
+
+solver::result solver::dls(uint64_t depth_limit, boost::optional<clock::time_point> end_time) {
+    bool states_exhausted = false;
+    result result_dls;
+
+    while(!(state.is_solved() || states_exhausted)) {
+        if (end_time && clock::now() >= *end_time) {
+            result_dls.sol_type = solver::result::type::TIMEOUT;
+            return result_dls;
+        } else if (sigint) {
+            result_dls.sol_type = solver::result::type::TERMINATED;
+            return result_dls;
+        }
+
+#ifndef NDEBUG
+        if (current_node->mv.dominance_move) {
+            LOG_DEBUG("(dominance move)");
+        }
+        LOG_DEBUG(state);
+#endif
+
+        // If there is a dominance move available, adds it to the search tree
+        // and repeats. Doesn't cache the state.
+        optional<move> dominance_move = state.get_dominance_move();
+        if (dominance_move && res.depth < depth_limit) {
+            // Adds the dominance move as a child of the current search node;
+            current_node->child_moves.emplace_back(*dominance_move);
+        } else {
+            try {
+                // Caches the current state
+                pair<lru_cache::item_list::iterator, bool> insert_res = cache.insert(state);
+                current_node->cache_state = insert_res.first;
+                bool is_new_state = insert_res.second;
+                if (is_new_state) {
+                    // search up to depth: depth_limit.
+                    vector<move> next_moves;
+                    if (res.depth < depth_limit) { 
+                    // Gets the legal moves in the current state
+                         next_moves = state.get_legal_moves(current_node->mv);
+                    }
+
+                    // If there are none, reverts to the last node with children
+                    if (next_moves.empty()) {
+                        states_exhausted = revert_to_last_node_with_children(insert_res.first);
+                    } else {
+                        current_node->child_moves = std::move(next_moves);
+                    }
+                }
+                    // If the state is not a new one, reverts to the last node with children
+                else {
+                    res.unique_states_searched--;
+                    states_exhausted = revert_to_last_node_with_children();
+                }
+            } catch (const std::runtime_error &e) {
+                result_dls.sol_type = solver::result::type::MEM_LIMIT;
+                return result_dls;
+            }
+        }
+
+        // Sets the current node to one of its children
+        assert(states_exhausted == current_node->child_moves.empty());
+        if (!states_exhausted) {
+            set_to_child();
+            state.make_move(current_node->mv);
+            res.depth++;
+            res.max_depth = max(res.depth, res.max_depth);
+            if (current_node->mv.dominance_move) res.dominance_moves++;
+        }
+
+        res.states_searched++;
+        res.unique_states_searched++;
+    }
+
+    if (state.is_solved()) {
+        result_dls.sol_type = solver::result::type::SOLVED;
+        return result_dls;
+    } else {
+        assert(states_exhausted);
+        result_dls.sol_type = solver::result::type::UNSOLVABLE;
+        return result_dls;
     }
 }
 

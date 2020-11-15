@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  solvitaire1master:
+    image: solvitaire1master
+    build:
+      context: .
+      dockerfile: ./Dockerfile

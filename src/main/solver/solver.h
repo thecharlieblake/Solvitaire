@@ -60,9 +60,16 @@ public:
         std::chrono::milliseconds time;
     };
 
-    explicit solver(const game_state&, uint64_t);
+    explicit solver(const game_state&, uint64_t);  
+    
+//     // copy constractor
+//     solver (const solver &obj) {
+     
+// }
 
     result run(boost::optional<std::chrono::milliseconds> = boost::none);
+    result run_DLS(uint64_t depth_limit, boost::optional<std::chrono::milliseconds> = boost::none);
+    result run_IDDFS(uint64_t depth_limit, boost::optional<std::chrono::milliseconds> = boost::none);
 
     void print_solution() const;
     static void print_header(long, command_line_helper::streamliner_opt);
@@ -76,7 +83,11 @@ private:
     typedef std::chrono::high_resolution_clock clock;
     typedef std::chrono::milliseconds millisec;
 
-    result::type dfs(boost::optional<clock::time_point> = boost::none);
+    result dfs(boost::optional<clock::time_point> = boost::none);
+    
+    // optimal solution: (minimal depth)
+    result iddfs(uint64_t, boost::optional<clock::time_point> = boost::none); 
+    result dls(uint64_t, boost::optional<clock::time_point> = boost::none); // DFS with depth bound
 
     bool revert_to_last_node_with_children(boost::optional<lru_cache::item_list::iterator> = boost::none);
     void set_to_child();

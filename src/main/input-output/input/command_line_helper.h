@@ -37,6 +37,9 @@ public:
     const std::string get_solitaire_type();
     const std::string get_rules_file();
     int get_random_deal();
+
+    // int get_optimal_solution();
+
     bool get_classify();
     bool get_deal_only();
     int get_solvability();
@@ -83,6 +86,8 @@ private:
     streamliner_opt streamliners;
     uint64_t cache_capacity;
     uint64_t timeout;
+    
+    // int optimal_solution;
 };
 
 #endif //SOLVITAIRE_COMMAND_LINE_HELPER_H
