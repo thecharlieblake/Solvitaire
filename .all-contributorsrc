@@ -35,11 +35,20 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "galcohensius",
+      "name": "Gal Cohensius",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/25342140?v=4",
+      "profile": "https://github.com/galcohensius",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "projectName": "Solvitaire",
-  "projectOwner": "thecharlesblake",
+  "projectOwner": "thecharlieblake",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true
