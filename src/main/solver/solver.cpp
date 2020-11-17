@@ -96,22 +96,6 @@ solver::result solver::run(boost::optional<millisec> timeout) {
      return res;
 }
 
-// solver::result solver::run_IDDFS(uint64_t depth_limit, boost::optional<millisec> timeout) {
-//     // Set interrupt handler
-//     signal(SIGINT, sigint_handler);
-//     // Set timings
-//     const clock::time_point start_time = clock::now();
-    
-//     // Optimal solution:
-//     result iddfs_result = timeout ? iddfs(depth_limit, start_time + *timeout) : iddfs(depth_limit);
-//     res.sol_type = iddfs_result.sol_type;
-//     res.states_removed_from_cache = cache.get_states_removed_from_cache();
-//     res.cache_size = cache.size();
-//     res.cache_bucket_count = cache.bucket_count();
-//     res.time = std::chrono::duration_cast<millisec>(clock::now() - start_time);
-//     return res;
-// }
-
 solver::result solver::run_DLS(uint64_t depth_limit, boost::optional<millisec> timeout) {
     // Set interrupt handler
     signal(SIGINT, sigint_handler);
@@ -129,25 +113,6 @@ solver::result solver::run_DLS(uint64_t depth_limit, boost::optional<millisec> t
     return res;
 }
 
-
-
-// // iterative deepening DFS, call to DFS with a bound on the depth_max_limit
-// solver::result solver::iddfs(uint64_t depth_limit, boost::optional<clock::time_point> end_time) {   
-//     solver::result dls_result;
-//     for (uint64_t depth = 1; depth < depth_limit; depth++) {
-//         cout << "check for solution at depth: " << depth;
-//         std::flush(cout);
-
-//         dls_result = dls(depth, end_time); 
-
-//         if (dls_result.sol_type != solver::result::type::UNSOLVABLE) { 
-//             //type = {TIMEOUT, SOLVED, MEM_LIMIT, TERMINATED}
-//             return dls_result;
-//         } // UNSOLVABLE -> search solution in depth++
-//     }
-//     dls_result.sol_type = solver::result::type::UNSOLVABLE;
-//     return dls_result;
-// }
 
 solver::result solver::dfs(boost::optional<clock::time_point> end_time) {
     bool states_exhausted = false;
@@ -229,7 +194,6 @@ solver::result solver::dfs(boost::optional<clock::time_point> end_time) {
 }
 
 
-
 solver::result solver::dls(uint64_t depth_limit, boost::optional<clock::time_point> end_time) {
     bool states_exhausted = false;
     result result_dls;
@@ -253,7 +217,7 @@ solver::result solver::dls(uint64_t depth_limit, boost::optional<clock::time_poi
         // If there is a dominance move available, adds it to the search tree
         // and repeats. Doesn't cache the state.
         optional<move> dominance_move = state.get_dominance_move();
-        if (dominance_move && res.depth < depth_limit) {
+        if (dominance_move && res.depth < depth_limit) { // -- diffrence from DFS
             // Adds the dominance move as a child of the current search node;
             current_node->child_moves.emplace_back(*dominance_move);
         } else {
@@ -265,7 +229,7 @@ solver::result solver::dls(uint64_t depth_limit, boost::optional<clock::time_poi
                 if (is_new_state) {
                     // search up to depth: depth_limit.
                     vector<move> next_moves;
-                    if (res.depth < depth_limit) { 
+                    if (res.depth < depth_limit) {  // -- diffrence from DFS
                     // Gets the legal moves in the current state
                          next_moves = state.get_legal_moves(current_node->mv);
                     }

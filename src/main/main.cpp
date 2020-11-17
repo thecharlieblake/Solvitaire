@@ -46,7 +46,7 @@ void solve_input_files(vector<string>, const sol_rules&, command_line_helper&);
 void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> seed, optional<const Document&> in_doc);
 pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout, uint64_t cache_capacity,
                                         game_state::streamliner_options str_opts,
-                                        optional<int> seed, optional<const Document&> in_doc);
+                                        optional<int> seed, optional<const Document&> in_doc, bool iddfs);
 void print_version();
 
 // Decides what to do given supplied command-line options
@@ -63,12 +63,6 @@ int main(int argc, const char* argv[]) {
         sol_preset_types::print_available_games();
         return EXIT_SUCCESS;
     } 
-
-    // run id-dfs solver after the dfs solver.
-    // if (clh.get_optimal_solution() != -1) {
-    //     LOG_ERROR ("Great! I get the optimal_solution parameter, now pass this parameter to solve_game and ask if it true, then run idDFS");
-    //     return EXIT_SUCCESS;
-    // } 
 
     // If the user has asked for the version, prints it
     if (clh.get_version()) {
@@ -176,14 +170,14 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
         timeout = clh.get_timeout();
         str_opt = clh.get_streamliners_game_state();
     }
-    solve_sol solution = solve_game(rules, timeout, clh.get_cache_capacity(), str_opt, seed, in_doc);
+    solve_sol solution = solve_game(rules, timeout, clh.get_cache_capacity(), str_opt, seed, in_doc, clh.get_optimal_solution());
 
     bool run_again = smart && solution.second.sol_type != solver::result::type::SOLVED;
     cout.flush();
     if (run_again)
         if (!clh.get_classify()) cout << "Unsolvable using streamliner. Running again...\n";
     optional<solve_sol> streamliner_solution = run_again
-            ? solve_game(rules, clh.get_timeout(), clh.get_cache_capacity(), game_state::streamliner_options::NONE, seed, in_doc)
+            ? solve_game(rules, clh.get_timeout(), clh.get_cache_capacity(), game_state::streamliner_options::NONE, seed, in_doc, clh.get_optimal_solution())
             : optional<solve_sol>();
 
     if (clh.get_classify()) {
@@ -205,9 +199,9 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
         pair<solver, solver::result> s = run_again ? *streamliner_solution : solution;
 
         if (s.second.sol_type == solver::result::type::SOLVED) {
-            // s.first.print_solution();
+            s.first.print_solution();
         } else {
-            // cout << "Deal:\n" << s.first.init_state << "\n";
+            cout << "Deal:\n" << s.first.init_state << "\n";
         }
         cout << "\n"<<s.second;
     }
@@ -216,8 +210,8 @@ void solve_game(const sol_rules& rules, command_line_helper& clh, optional<int> 
 
 pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout, uint64_t cache_capacity,
                                         game_state::streamliner_options str_opts,
-                                        optional<int> seed, optional<const Document&> in_doc) {
-
+                                        optional<int> seed, optional<const Document&> in_doc,
+                                        bool iddfs) {
     // DFS (non-optimal solution, used as an starting maximal depth for the)
     cout << "DFS:\n";
     game_state gs = seed ? game_state(rules, *seed, str_opts) : game_state(rules, *in_doc, str_opts);
@@ -225,23 +219,18 @@ pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout
     solver::result res = sol.run(std::chrono::milliseconds(timeout));
     cout << res;
     std::flush(cout);
-    if (res.sol_type != solver::result::type::SOLVED) {
-        // if no DFS solution, dont go into idDFS
+    if (res.sol_type != solver::result::type::SOLVED || !iddfs) {
+        // if no DFS solution or iddfs arg is false, dont go into idDFS
         return make_pair(sol, res);
     }
-    
-    
-    // TODO: accept another boolean argument, if (IDDFS == true) run the next script:
-    
-
+        
     // idDFS (starts at the DFS solution-1 and decreses the depth until the first unsolvable)
     cout << "ID-DFS:\n";
     game_state gs2 = seed ? game_state(rules, *seed, str_opts) : game_state(rules, *in_doc, str_opts);
     
     solver sol_iddfs(gs2, cache_capacity);
     solver::result res_iddfs;
-
-    solver sol_iddfs_optimal_depth = sol_iddfs;
+    solver sol_iddfs_optimal_depth(gs2, cache_capacity);
     solver::result res_iddfs_optimal_depth;
     
     uint64_t optimal_depth = res.depth;
@@ -260,8 +249,7 @@ pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout
         solver sol_iddfs(gs2, cache_capacity);
         res_iddfs = sol_iddfs.run_DLS(depth, std::chrono::milliseconds(timeout));
         
-        cout << " - " << depth << " " << res_iddfs.sol_type << "\n";
-        std::flush(cout);
+        cout << " -> at depth " << res_iddfs.depth << " " << res_iddfs.sol_type << "\n";
 
         if (res_iddfs.sol_type != solver::result::type::SOLVED) { //type = {TIMEOUT, UNSOLVABLE, MEM_LIMIT, TERMINATED}
             break;  
@@ -278,6 +266,5 @@ pair<solver, solver::result> solve_game(const sol_rules& rules, uint64_t timeout
     if (iddfs_found_better_solution) {
         return make_pair(sol_iddfs_optimal_depth, res_iddfs_optimal_depth);
     }
-
     return make_pair(sol, res);
 }

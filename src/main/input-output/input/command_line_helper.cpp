@@ -80,7 +80,7 @@ command_line_helper::command_line_helper()
                           "either 'random', 'benchmark', 'solvability' or list of deals to be "
                           "solved.")
             ("deal-only", "outputs the starting deal for a given game type & random seed as json")
-            ("iddfs", "preform iterative deeping DFS, returns the optimal solution (minimal depth)");
+            ("iddfs", "if true, preform iterative-deeping-DFS, which returns an optimal solution (minimal depth)");
 
     po::options_description hidden_options("Hidden options");
     hidden_options.add_options()
@@ -123,12 +123,7 @@ bool command_line_helper::parse(int argc, const char* argv[]) {
 
     deal_only = (vm.count("deal-only") != 0);
     
-    // optimal_solution = (vm.count("iddfs") != 0); // if true, after the DFS solution, solve with id-DFS
-    // if (vm.count("iddfs")) {
-    //     optimal_solution = vm["iddfs"].as<int>();
-    // } else {
-    //     optimal_solution = -1;
-    // }
+    optimal_solution = (vm.count("iddfs") != 0); // if true, after the DFS solution, solve with id-DFS
 
     if (vm.count("input-files")) {
         input_files = vm["input-files"].as<vector<string>>();
@@ -304,9 +299,9 @@ int command_line_helper::get_random_deal() {
     return random_deal;
 }
 
-// int command_line_helper::get_optimal_solution() {
-//     return optimal_solution;
-// }
+bool command_line_helper::get_optimal_solution() {
+    return optimal_solution;
+}
 
 bool command_line_helper::get_classify() {
     return classify;
