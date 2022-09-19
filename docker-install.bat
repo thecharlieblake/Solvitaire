@@ -1,4 +1,5 @@
 @echo off
+
 docker login
 
 @REM Downloads the image
