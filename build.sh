@@ -40,13 +40,15 @@ if [ "$#" -gt 2 ]; then
     error=true
 fi
 
+build_upper=$(echo "$build" | tr '[:lower:]' '[:upper:]')
+
 if [ "$error" = true ]; then
     echo "Usage: ./build.sh [--release|--debug] [--solvitaire|--unit-tests]"
     echo "(default args = --release --solvitaire)"
     exit 1
 else
-    cmake [-G "CodeBlocks - Unix Makefiles"] \
-    "-DCMAKE_BUILD_TYPE=${build^^}" \
+    cmake \
+    "-DCMAKE_BUILD_TYPE=$build_upper" \
     "-Bcmake-build-$build" -H. 
     cmake --build "cmake-build-$build" -- "$target"
     exit 0
