@@ -1,6 +1,6 @@
 /*
   Solvitaire: a solver for perfect information solitaire games
-  Copyright (C) 2018 Charles Blake <thecharlesblake@live.co.uk> and 
+  Copyright (C) 2018 Charles Blake <thecharlesblake@live.co.uk> and
   Ian Gent <Ian.Gent@st-andrews.ac.uk>
 
   This program is free software; you can redistribute it and/or modify
@@ -33,16 +33,18 @@
 #include "../solver/solver.h"
 #include "../input-output/input/command_line_helper.h"
 
-class solvability_calc {
+class solvability_calc
+{
 public:
-    explicit solvability_calc(const sol_rules&, uint64_t);
+    explicit solvability_calc(const sol_rules &, uint64_t);
 
-    void calculate_solvability_percentage(uint64_t, int, uint, command_line_helper::streamliner_opt, const std::vector<int>&);
+    void calculate_solvability_percentage(uint64_t, int, unsigned int, command_line_helper::streamliner_opt, const std::vector<int> &);
 
 private:
     typedef std::pair<int, solver::result> seed_result;
 
-    struct seed_results {
+    struct seed_results
+    {
         seed_results();
         void add_result(solver::result::type);
 
@@ -53,15 +55,15 @@ private:
     };
 
     // Printing methods
-    static void print_general_info(const seed_results&);
+    static void print_general_info(const seed_results &);
     static void print_seed_info(seed_result);
-    static void print_seeds_in_prog(std::set<int>&);
+    static void print_seeds_in_prog(std::set<int> &);
 
     // Solving methods
-    static void solver_thread(solvability_calc*, uint core);
-    static seed_result solve_seed(int, std::chrono::milliseconds, const sol_rules&, uint64_t, game_state::streamliner_options);
+    static void solver_thread(solvability_calc *, unsigned int core);
+    static seed_result solve_seed(int, std::chrono::milliseconds, const sol_rules &, uint64_t, game_state::streamliner_options);
 
-    const sol_rules& rules;
+    const sol_rules &rules;
     const uint64_t cache_capacity;
     std::chrono::milliseconds timeout;
     std::mutex results_mutex;
@@ -73,5 +75,4 @@ private:
     command_line_helper::streamliner_opt stream_opt;
 };
 
-
-#endif //SOLVITAIRE_SOLVABILITY_H
+#endif // SOLVITAIRE_SOLVABILITY_H

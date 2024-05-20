@@ -31,9 +31,9 @@
 #include "card.h"
 
 class pile {
-    friend class hasher;
+    friend struct hasher;
     friend class game_state;
-    friend class cached_game_state;
+    friend struct cached_game_state;
 public:
     typedef uint8_t size_type;
     const static size_type max_size_type;
