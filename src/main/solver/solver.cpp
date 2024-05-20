@@ -26,7 +26,6 @@
 #include <iostream>
 #include <algorithm>
 #include <list>
-#include <malloc.h>
 #include <chrono>
 #include <iomanip>
 #include <signal.h>

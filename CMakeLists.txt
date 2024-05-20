@@ -88,7 +88,7 @@ include_directories(lib/rapidjson)
 ## Boost setup ################################################################
 ###############################################################################
 
-# set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
@@ -137,15 +137,20 @@ endif()
 ## compile options ############################################################
 ###############################################################################
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DBOOST_LOG_DYN_LINK \
--lboost_system -pthread -pedantic -Wall -Wextra \
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 \
+-pthread -pedantic -Wall -Wextra -Wno-c++17-attribute-extensions \
 -Wcast-align -Wcast-qual -Wformat=2 -Winit-self \
--Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
+-Wmissing-declarations -Wmissing-include-dirs \
 -Wno-old-style-cast -Woverloaded-virtual -Wredundant-decls -Wno-shadow \
--Wstrict-null-sentinel -Werror")
+-Werror")
+
+# Specify clang or GCC (modify with your path; you may also/instead need to
+# set the environment variable: `export CXX="/usr/bin/clang"`)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCMAKE_CXX_COMPILER=/usr/bin/clang")
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O -fno-inline -fno-inline-functions -g -Wl,-O1") # uncomment for profiling
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -s -DNDEBUG -Wl,-O1") # uncomment otherwise
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -DNDEBUG") # uncomment otherwise
 
 ###############################################################################
 ## target definitions #########################################################
